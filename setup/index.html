@@ -105,7 +105,8 @@
           <span class="plat">macos · aarch64</span>
         </div>
 
-        <div class="app-card">
+        <!-- screen 1: sign in -->
+        <div class="app-card" data-screen="signin">
           <h3>Sign in to EAI</h3>
           <p>Sign in securely in your browser. Your password stays there.</p>
           <div class="app-note">
@@ -120,9 +121,103 @@
           <div class="app-status">All prerequisites are ready.</div>
         </div>
 
+        <!-- screen 2: name the app and pick where it goes -->
+        <div class="app-card" data-screen="start" hidden>
+          <h3>Start your EAI app</h3>
+          <p>Name your app and choose its parent folder.</p>
+
+          <label class="fld-label" for="projName">Project name</label>
+          <input class="fld" type="text" id="projName" placeholder="customer-portal" autocomplete="off" spellcheck="false" />
+          <div class="fld-help">Use lowercase words separated by hyphens. Example: <code>customer-portal</code>.</div>
+
+          <label class="fld-label" for="projFolder">Parent folder</label>
+          <div class="fld-row">
+            <input class="fld" type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
+            <button class="btn btn-outline" type="button" id="chooseFolder">Choose folder</button>
+          </div>
+          <div class="fld-help">A new folder with your project name will be created here. Use Choose folder to open Finder or File Explorer.</div>
+
+          <div class="app-actions" style="margin-top:22px;">
+            <button class="btn btn-green" type="button" id="createApp">Create and initialise app</button>
+          </div>
+
+          <div class="app-status" id="startStatus">Browser sign-in completed.</div>
+        </div>
+
+        <!-- screen 3: initialising -->
+        <div class="app-card" data-screen="running" hidden>
+          <h3 id="runTitle"><span class="spin" id="runSpin"></span> Creating your EAI app</h3>
+          <p id="runSub">Initialising the project and fetching the supported Gofer assets.</p>
+
+          <div class="run-meta">
+            <span id="runState">In progress</span>
+            <span id="runElapsed">Running…</span>
+          </div>
+          <div class="run-bar"><i id="runBar"></i></div>
+
+          <div class="run-log">
+            <div class="run-log-head">
+              <span>Recent activity</span>
+              <span id="runResult"></span>
+            </div>
+            <div id="runLines"></div>
+          </div>
+
+          <div class="app-actions" style="margin-top:20px;">
+            <button class="btn btn-green" type="button" id="openCopilot" hidden>Open in GitHub Copilot</button>
+          </div>
+        </div>
+
         <div class="app-foot">EAI Setup never stores your password or API secrets.</div>
       </div>
     </div>
+  </div>
+
+  <!-- the folder chooser the app opens ---------------------------- -->
+  <div class="win hidden" id="winFinder" style="left:24%; top:16%; width:56%; height:60%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Choose the app folder</span>
+    </div>
+    <div class="skin-finder">
+      <div class="fnd-side">
+        <div class="grp">Favourites</div>
+        <div class="row"><span class="i">&#128337;</span> Recents</div>
+        <div class="row"><span class="i">&#128193;</span> Applications</div>
+        <div class="row on" data-dir="Downloads"><span class="i">&#11015;</span> Downloads</div>
+        <div class="row" data-dir="Desktop"><span class="i">&#128421;</span> Desktop</div>
+        <div class="row" data-dir="Documents"><span class="i">&#128196;</span> Documents</div>
+        <div class="grp">Locations</div>
+        <div class="row"><span class="i">&#9729;</span> iCloud Drive</div>
+        <div class="row" data-dir="gareth"><span class="i">&#127968;</span> gareth</div>
+        <div class="row"><span class="i">&#128190;</span> Macintosh HD</div>
+      </div>
+      <div class="fnd-main">
+        <div class="fnd-bar">
+          <span class="nav">&#8249;</span><span class="nav">&#8250;</span>
+          <span class="crumb" id="fndCrumb">&#128193; Downloads</span>
+          <span class="spacer"></span>
+          <span class="search">&#128269; Search</span>
+        </div>
+        <div class="fnd-cols"><span>Name</span><span>Size</span><span>Kind</span><span>Date Added</span></div>
+        <div class="fnd-list" id="fndList"></div>
+        <div class="fnd-foot">
+          <button class="btn btn-ghost btn-sm" type="button" id="fndNew">New Folder</button>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" type="button" id="fndCancel">Cancel</button>
+          <button class="btn btn-blue btn-sm" type="button" id="fndOpen">Open</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- where the journey ends: Copilot, in the new project folder --- -->
+  <div class="win dark hidden" id="winHost" data-app="copilotProject" style="left:8%; top:9%; width:76%; height:74%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="hostTitle">Visual Studio Code</span>
+    </div>
+    <div class="host-body" id="hostBody"></div>
   </div>
 
   <!-- coach mark --------------------------------------------------- -->
@@ -264,6 +359,20 @@
     <div class="item tucked" data-app="setup">
       <span class="tip">EAI Setup</span>
       <span class="ico setup"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
+      <span class="dot"></span>
+    </div>
+
+    <!-- appears when the app hands over at the end -->
+    <div class="item tucked" data-app="copilotProject">
+      <span class="tip">GitHub Copilot</span>
+      <span class="ico">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" fill="#0d1117" />
+          <path d="M32 20c8 0 12 3 12 3s4-1 6 1c1.6 1.6 1.4 6 1.4 6s2.6 1.4 2.6 5.6c0 6-4 9.4-8 11.2-4 1.8-9 2.2-14 2.2s-10-.4-14-2.2c-4-1.8-8-5.2-8-11.2 0-4.2 2.6-5.6 2.6-5.6s-.2-4.4 1.4-6c2-2 6-1 6-1s4-3 12-3z" fill="#ffffff" />
+          <ellipse cx="24" cy="37" rx="5.4" ry="6.4" fill="#0d1117" />
+          <ellipse cx="40" cy="37" rx="5.4" ry="6.4" fill="#0d1117" />
+        </svg>
+      </span>
       <span class="dot"></span>
     </div>
 

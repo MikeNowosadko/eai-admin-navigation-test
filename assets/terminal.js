@@ -112,6 +112,12 @@ async function journey() {
       : 'Unknown input. Start with /EAI so I know you\'re describing an app.',
   });
 
+  // Reaching /EAI is the finish line for the experiment. The rest of the
+  // journey stays available for demos, behind "keep exploring".
+  await new Promise((resume) => {
+    setTimeout(() => endOfExperiment({ onContinue: resume }), 600);
+  });
+
   /* --- 6 & 7. Clarify → prototype → approve (with feedback loop) -- */
   let approvedPrototype = false;
   let round = 0;

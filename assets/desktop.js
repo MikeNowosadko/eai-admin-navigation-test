@@ -19,6 +19,7 @@ const WINDOWS = {
   host: document.getElementById('winHost'),
   setup: document.getElementById('winSetup'),
   dmg: document.getElementById('winDmg'),
+  finder: document.getElementById('winFinder'),
 };
 Object.keys(WINDOWS).forEach((k) => { if (!WINDOWS[k]) delete WINDOWS[k]; });
 
@@ -117,6 +118,42 @@ const HOSTS = {
     title: 'Claude Code — ~/work',
     dark: true,
     skin: agentSkin({ name: 'Claude Code', accent: '#d97757', model: 'claude-opus-5', hint: 'Try "build me an app" · ⏎ to send · ⌘K for commands' }),
+  },
+
+  // Copilot with the project explorer showing — how the setup app hands over.
+  copilotProject: {
+    menu: 'Code',
+    title: 'Visual Studio Code',
+    dark: true,
+    skin: `
+      <div class="skin-copilot with-explorer">
+        <div class="vs-activity">
+          <svg viewBox="0 0 24 24" fill="none" class="on"><path d="M3 5h7l2 2h9v12H3z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="7" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M7 8.4v7.2M9.4 6H15v3.6" stroke="currentColor" stroke-width="1.6"/></svg>
+        </div>
+        <div class="vs-side">
+          <div class="ttl">EXPLORER</div>
+          <div class="grp" data-project-folder>▾ PROJECT</div>
+          <div class="f on">README.md</div>
+          <div class="f">eai.config.ts</div>
+          <div class="f">package.json</div>
+          <div class="f">.gofer/</div>
+          <div class="f">app/</div>
+        </div>
+        <div class="vs-main">
+          <div class="vs-tabs"><span class="tab on">README.md</span></div>
+          <div class="vs-editor" style="height:auto; flex:1;"># <span data-project-name>project</span><br /><span class="p">Created by Enterprise AI Setup.</span><br /><br /><span class="k">const</span> <span class="p">tenant =</span> <span class="s">'northwind'</span><br /><span class="k">export default</span> <span class="p">defineApp({ tenant })</span></div>
+        </div>
+        <div class="cp-panel">
+          <div class="cp-head">
+            <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 20c8 0 12 3 12 3s4-1 6 1c1.6 1.6 1.4 6 1.4 6s2.6 1.4 2.6 5.6c0 6-4 9.4-8 11.2-4 1.8-9 2.2-14 2.2s-10-.4-14-2.2c-4-1.8-8-5.2-8-11.2 0-4.2 2.6-5.6 2.6-5.6s-.2-4.4 1.4-6c2-2 6-1 6-1s4-3 12-3z" fill="#e7e7e7"/><ellipse cx="24" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/><ellipse cx="40" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/></svg>
+            GitHub Copilot <span class="badge">agent · eai</span>
+          </div>
+          <div class="term-slot"></div>
+          <div class="cp-foot">Ask Copilot or run a command…</div>
+        </div>
+      </div>`,
   },
 
   codex: {
@@ -546,6 +583,37 @@ window.addEventListener('message', (e) => {
     }
   }
 });
+
+/* --- end of experiment ---------------------------------------------- */
+
+/**
+ * Both flows finish at the same place — the `/eai` prompt — so both end with
+ * the same unmissable message. A participant in an unmoderated test has no
+ * moderator to tell them they're done.
+ *
+ * `onContinue` is optional: the npx flow has more journey after this point,
+ * which is useful for demos even though the experiment stops here.
+ */
+function endOfExperiment({ onContinue } = {}) {
+  const overlay = document.createElement('div');
+  overlay.className = 'done-overlay on';
+  overlay.innerHTML = `
+    <div class="done-card">
+      <div class="mark">🎉</div>
+      <h3>Thank you — experiment done</h3>
+      <p>You've reached the point where you can describe the app you want to build. That's everything we needed. Please head back to the questions.</p>
+      <button class="btn btn-dark" data-done>Done</button>
+      ${onContinue ? '<button class="btn btn-ghost" data-continue>Keep exploring the prototype</button>' : ''}
+    </div>`;
+
+  document.getElementById('desktop').appendChild(overlay);
+
+  overlay.querySelector('[data-done]').addEventListener('click', () => overlay.remove());
+  overlay.querySelector('[data-continue]')?.addEventListener('click', () => {
+    overlay.remove();
+    onContinue();
+  });
+}
 
 /* --- coach marks ---------------------------------------------------- */
 
