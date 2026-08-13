@@ -88,29 +88,10 @@ const HOSTS = {
   },
 
   copilot: {
-    menu: 'Code',
-    title: 'work — Visual Studio Code — GitHub Copilot',
+    menu: 'GitHub Copilot',
+    title: 'GitHub Copilot',
     dark: true,
-    skin: `
-      <div class="skin-copilot">
-        <div class="vs-activity">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M3 5h7l2 2h9v12H3z" stroke="currentColor" stroke-width="1.6"/></svg>
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.6"/></svg>
-          <svg viewBox="0 0 24 24" fill="none" class="on"><path d="M4 12c0-4 3-6 8-6s8 2 8 6-3 6-8 6c-1.5 0-3-.2-4.2-.6L4 19z" stroke="currentColor" stroke-width="1.6"/></svg>
-        </div>
-        <div class="vs-main">
-          <div class="vs-tabs"><span class="tab on">README.md</span></div>
-          <div class="vs-editor" style="height:auto; flex:1;"># work<br /><span class="p">Scaffolded by the EAI CLI.</span><br /><br /><span class="k">const</span> <span class="p">tenant =</span> <span class="s">'northwind'</span><br /><span class="k">export default</span> <span class="p">defineApp({ tenant })</span></div>
-        </div>
-        <div class="cp-panel">
-          <div class="cp-head">
-            <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 20c8 0 12 3 12 3s4-1 6 1c1.6 1.6 1.4 6 1.4 6s2.6 1.4 2.6 5.6c0 6-4 9.4-8 11.2-4 1.8-9 2.2-14 2.2s-10-.4-14-2.2c-4-1.8-8-5.2-8-11.2 0-4.2 2.6-5.6 2.6-5.6s-.2-4.4 1.4-6c2-2 6-1 6-1s4-3 12-3z" fill="#e7e7e7"/><ellipse cx="24" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/><ellipse cx="40" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/></svg>
-            GitHub Copilot <span class="badge">agent · eai</span>
-          </div>
-          <div class="term-slot"></div>
-          <div class="cp-foot">Ask Copilot or run a command…</div>
-        </div>
-      </div>`,
+    skin: copilotSkin('work'),
   },
 
   claude: {
@@ -120,40 +101,12 @@ const HOSTS = {
     skin: agentSkin({ name: 'Claude Code', accent: '#d97757', model: 'claude-opus-5', hint: 'Try "build me an app" · ⏎ to send · ⌘K for commands' }),
   },
 
-  // Copilot with the project explorer showing — how the setup app hands over.
+  // Where the setup app hands over: Copilot, already open on the new project.
   copilotProject: {
-    menu: 'Code',
-    title: 'Visual Studio Code',
+    menu: 'GitHub Copilot',
+    title: 'GitHub Copilot',
     dark: true,
-    skin: `
-      <div class="skin-copilot with-explorer">
-        <div class="vs-activity">
-          <svg viewBox="0 0 24 24" fill="none" class="on"><path d="M3 5h7l2 2h9v12H3z" stroke="currentColor" stroke-width="1.6"/></svg>
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.6"/></svg>
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="7" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M7 8.4v7.2M9.4 6H15v3.6" stroke="currentColor" stroke-width="1.6"/></svg>
-        </div>
-        <div class="vs-side">
-          <div class="ttl">EXPLORER</div>
-          <div class="grp" data-project-folder>▾ PROJECT</div>
-          <div class="f on">README.md</div>
-          <div class="f">eai.config.ts</div>
-          <div class="f">package.json</div>
-          <div class="f">.gofer/</div>
-          <div class="f">app/</div>
-        </div>
-        <div class="vs-main">
-          <div class="vs-tabs"><span class="tab on">README.md</span></div>
-          <div class="vs-editor" style="height:auto; flex:1;"># <span data-project-name>project</span><br /><span class="p">Created by Enterprise AI Setup.</span><br /><br /><span class="k">const</span> <span class="p">tenant =</span> <span class="s">'northwind'</span><br /><span class="k">export default</span> <span class="p">defineApp({ tenant })</span></div>
-        </div>
-        <div class="cp-panel">
-          <div class="cp-head">
-            <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 20c8 0 12 3 12 3s4-1 6 1c1.6 1.6 1.4 6 1.4 6s2.6 1.4 2.6 5.6c0 6-4 9.4-8 11.2-4 1.8-9 2.2-14 2.2s-10-.4-14-2.2c-4-1.8-8-5.2-8-11.2 0-4.2 2.6-5.6 2.6-5.6s-.2-4.4 1.4-6c2-2 6-1 6-1s4-3 12-3z" fill="#e7e7e7"/><ellipse cx="24" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/><ellipse cx="40" cy="37" rx="5.4" ry="6.4" fill="#1f1f1f"/></svg>
-            GitHub Copilot <span class="badge">agent · eai</span>
-          </div>
-          <div class="term-slot"></div>
-          <div class="cp-foot">Ask Copilot or run a command…</div>
-        </div>
-      </div>`,
+    skin: copilotSkin('project'),
   },
 
   codex: {
@@ -170,6 +123,49 @@ const HOSTS = {
     skin: agentSkin({ name: 'Gemini CLI', accent: '#4285f4', model: 'gemini-3-pro', hint: 'Ask Gemini · ⏎ to send' }),
   },
 };
+
+/**
+ * GitHub Copilot as its own app, not VS Code with a panel bolted on: the chat
+ * is the whole window, with the workspace it has context on down the side.
+ */
+function copilotSkin(folder) {
+  return `
+    <div class="skin-cpapp">
+      <div class="cp-side">
+        <div class="cp-brand">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 20c8 0 12 3 12 3s4-1 6 1c1.6 1.6 1.4 6 1.4 6s2.6 1.4 2.6 5.6c0 6-4 9.4-8 11.2-4 1.8-9 2.2-14 2.2s-10-.4-14-2.2c-4-1.8-8-5.2-8-11.2 0-4.2 2.6-5.6 2.6-5.6s-.2-4.4 1.4-6c2-2 6-1 6-1s4-3 12-3z" fill="#e6edf3"/>
+            <ellipse cx="24" cy="37" rx="5.4" ry="6.4" fill="#0d1117"/>
+            <ellipse cx="40" cy="37" rx="5.4" ry="6.4" fill="#0d1117"/>
+          </svg>
+          GitHub Copilot
+        </div>
+        <div class="cp-new">&#65291;&nbsp; New chat</div>
+
+        <div class="cp-grp">Workspace</div>
+        <div class="cp-folder" data-project-folder>&#128193; ${folder}</div>
+        <div class="cp-file">README.md</div>
+        <div class="cp-file">eai.config.ts</div>
+        <div class="cp-file">package.json</div>
+        <div class="cp-file">.gofer/</div>
+        <div class="cp-file">app/</div>
+
+        <div class="cp-grp">Chats</div>
+        <div class="cp-chat on">Set up EAI workspace</div>
+      </div>
+
+      <div class="cp-main">
+        <div class="cp-topbar">
+          <span class="ctx">&#128193; <span data-project-name>${folder}</span></span>
+          <span class="spacer"></span>
+          <span class="pill">agent · eai</span>
+          <span class="pill">Claude Opus 5</span>
+        </div>
+        <div class="term-slot"></div>
+        <div class="cp-composer">Ask Copilot or run a command…</div>
+      </div>
+    </div>`;
+}
 
 /** Claude, Codex and Gemini share a shape: session list, transcript, composer. */
 function agentSkin({ name, accent, model, hint }) {
@@ -209,6 +205,8 @@ function setHost(app) {
   desktop.hostBody.innerHTML = host.skin;
   desktop.hostBody.querySelector('.term-slot').appendChild(termBody);
   termBody.scrollTop = termBody.scrollHeight;
+  // The chrome was just rebuilt, so anything a flow wrote into it is gone.
+  window.dispatchEvent(new CustomEvent('host-changed', { detail: { app } }));
 }
 
 /* --- window management -------------------------------------------- */

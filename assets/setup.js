@@ -294,22 +294,34 @@ document.getElementById('createApp').addEventListener('click', async () => {
 
 let handedOver = false;
 
+let project = { name: '', path: '' };
+
+/** Name the workspace after the project, however Copilot got opened. */
+function labelProject() {
+  if (!project.name) return;
+  document.getElementById('hostTitle').textContent = `${project.name} — GitHub Copilot`;
+  document.querySelectorAll('[data-project-folder]').forEach((n) => { n.textContent = `📁 ${project.name}`; });
+  document.querySelectorAll('[data-project-name]').forEach((n) => { n.textContent = project.name; });
+}
+
+// setHost rebuilds the chrome from a static template, so re-apply the naming
+// whenever it happens — including when Copilot is reopened from the dock.
+window.addEventListener('host-changed', labelProject);
+
 function openInCopilot(name, path) {
+  project = { name, path };
+
   const item = dockItem('copilotProject');
-  item.classList.remove('tucked');
   if (!handedOver) {
     item.classList.add('landing');
     setTimeout(() => item.classList.remove('landing'), 600);
   }
+  item.classList.remove('tucked');
 
   setHost('copilotProject');
-  document.getElementById('hostTitle').textContent = `${name} — Visual Studio Code`;
+  labelProject();
   focusWin('host');
   syncDock();
-
-  // Point the explorer and the README at the folder that was just created.
-  document.querySelectorAll('[data-project-folder]').forEach((n) => { n.textContent = `▾ ${name.toUpperCase()}`; });
-  document.querySelectorAll('[data-project-name]').forEach((n) => { n.textContent = name; });
 
   if (handedOver) return;
   handedOver = true;

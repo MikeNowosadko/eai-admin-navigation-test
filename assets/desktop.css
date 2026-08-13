@@ -121,13 +121,34 @@ html, body { height: 100%; overflow: hidden; }
 .vs-status { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; padding: 4px 12px; background: #0078d4; color: #ffffff; font-size: 11px; }
 .vs-status .sp { flex: 1; }
 
-/* GitHub Copilot: VS Code with the chat panel doing the work */
-.skin-copilot { display: grid; grid-template-columns: 48px 1fr 380px; background: #1e1e1e; color: #cccccc; font-size: 12px; }
-.skin-copilot.with-explorer { grid-template-columns: 48px 176px 1fr 400px; }
-.skin-copilot .cp-panel { display: flex; flex-direction: column; min-height: 0; background: #1f1f1f; border-left: 1px solid #2b2b2b; }
-.skin-copilot .cp-head { display: flex; align-items: center; gap: 8px; flex: none; padding: 10px 14px; border-bottom: 1px solid #2b2b2b; font-size: 11.5px; color: #e7e7e7; }
-.skin-copilot .cp-head .badge { margin-left: auto; padding: 2px 7px; border-radius: 4px; background: #2d2d2d; font-size: 10px; color: #9a9a9a; }
-.skin-copilot .cp-foot { flex: none; margin: 10px 12px 12px; padding: 9px 12px; border: 1px solid #3a3a3a; border-radius: 8px; background: #252526; color: #6f6f6f; font-size: 11.5px; }
+/* GitHub Copilot, as its own app — chat is the window, not a side panel */
+.skin-cpapp { display: grid; grid-template-columns: 232px 1fr; background: #0d1117; color: #e6edf3; font-size: 12.5px; }
+.skin-cpapp .cp-side { padding: 14px 12px; background: #010409; border-right: 1px solid #21262d; overflow-y: auto; }
+.skin-cpapp .cp-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; font-size: 13.5px; font-weight: 600; color: #ffffff; }
+.skin-cpapp .cp-brand svg { width: 20px; height: 20px; flex: none; }
+.skin-cpapp .cp-new {
+  padding: 7px 10px; margin-bottom: 20px;
+  border: 1px solid #30363d; border-radius: 7px;
+  font-size: 12px; color: #adbac7; text-align: center;
+}
+.skin-cpapp .cp-grp { margin: 16px 0 8px; font-size: 10.5px; letter-spacing: 0.8px; text-transform: uppercase; color: #7d8590; }
+.skin-cpapp .cp-folder { padding: 5px 8px; border-radius: 6px; background: #161b22; color: #e6edf3; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.skin-cpapp .cp-file { padding: 4px 8px 4px 22px; color: #7d8590; white-space: nowrap; }
+.skin-cpapp .cp-chat { padding: 6px 8px; border-radius: 6px; color: #adbac7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.skin-cpapp .cp-chat.on { background: #161b22; color: #ffffff; }
+
+.skin-cpapp .cp-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.skin-cpapp .cp-topbar { display: flex; align-items: center; gap: 8px; flex: none; padding: 11px 18px; border-bottom: 1px solid #21262d; font-size: 12px; color: #adbac7; }
+.skin-cpapp .cp-topbar .spacer { flex: 1; }
+.skin-cpapp .cp-topbar .ctx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.skin-cpapp .cp-topbar .pill { padding: 3px 9px; border: 1px solid #30363d; border-radius: 999px; font-size: 11px; color: #7d8590; }
+.skin-cpapp .term-slot { flex: 1; min-height: 0; }
+.skin-cpapp .term-body { background: #0d1117; }
+.skin-cpapp .cp-composer {
+  flex: none; margin: 12px 18px 16px; padding: 11px 14px;
+  background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+  font-size: 12.5px; color: #6e7681;
+}
 
 /* Claude */
 .skin-claude { display: grid; grid-template-columns: 210px 1fr; background: #1c1b19; color: #e8e6e3; font-size: 12px; }
