@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/developers" />
+<title>Prototype — EAI for developers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body class="site cli-page">
+
+  <nav class="nav eai-nav" style="background:#f4f4f5;">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="home.html">Platform</a><a href="configurator.html">Configurator</a><a href="#">Docs</a><a href="#">Pricing</a><a href="#">Enterprise</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="btn btn-dark btn-sm" href="#">Get Started</a>
+  </nav>
+
+  <!-- The developer-facing entry point, reached from the third search result -->
+  <section class="cli-hero">
+    <div class="eyebrow"><span class="pip"></span> EAI for developers</div>
+    <h1>The fastest way to production</h1>
+    <p class="lede">EAI ships with data, auth, tenancy, governance, integrations and hosting. Build straight from your terminal or your AI coding agent.</p>
+
+    <div class="cta-row">
+      <button class="copy-pill" id="copyPill" type="button">
+        <span class="cmd">$ npx install eai</span>
+        <span class="copy-chip" id="copyChip">COPY</span>
+      </button>
+      <a class="btn btn-ghost btn-docs" href="docs.html">Read the docs</a>
+    </div>
+
+    <div class="copy-note" id="copyNote">Requires Node 24+. Works in Terminal, iTerm, VS Code, Claude Code, GitHub Copilot and Cursor.</div>
+
+    <div class="steps-strip">
+      <span><b>1</b> Paste the command</span>
+      <span><b>2</b> Sign in, pick a plan</span>
+      <span><b>3</b> Name your workspace</span>
+      <span><b>4</b> Say what to build, then ship</span>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  const CMD = 'npx install eai';
+  const pill = document.getElementById('copyPill');
+  const chip = document.getElementById('copyChip');
+  const note = document.getElementById('copyNote');
+
+  pill.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(CMD); } catch (err) { /* blocked — flow still advances */ }
+    pill.classList.add('copied');
+    chip.textContent = 'COPIED';
+    note.innerHTML = '<strong>Copied.</strong> Open your terminal and paste it &mdash; we\'ll take it from there.';
+    tell({ action: 'copied', data: { text: CMD } });
+    setTimeout(() => { pill.classList.remove('copied'); chip.textContent = 'COPY'; }, 2600);
+  });
+</script>
+
+</body>
+</html>

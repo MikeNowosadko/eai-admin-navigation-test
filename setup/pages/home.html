@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com" />
+<title>Prototype — Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body class="site" style="background:#ffffff;">
+
+  <!-- Setup-app flow, step 2: land on the site and download the EAI app -->
+  <nav class="nav eai-nav">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a>
+      <a href="#">Products &#9662;</a>
+      <a href="#">About Us &#9662;</a>
+      <a href="#">Pricing &#9662;</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="#">Login</a>
+    <a class="btn btn-dark btn-sm" href="#" id="navStart">Get Started</a>
+  </nav>
+
+  <section class="eai-hero">
+    <h1>Enterprise AI solutions for secure,<br />measurable adoption</h1>
+    <p class="lede">EnterpriseAI brings GenAI agents, AI governance, and workflow automation into production in 6&ndash;8 weeks.</p>
+
+    <div class="start-row" id="start">
+      <button class="btn btn-dark btn-lg" id="downloadBtn" type="button">
+        &#8681;&nbsp; Download the EAI app
+      </button>
+      <a class="btn btn-ghost btn-lg" href="#">See how it works</a>
+    </div>
+    <div class="start-note" id="startNote">macOS 14+ · Apple silicon · 84 MB. Nothing to configure — the app checks your machine and signs you in.</div>
+
+    <!-- Simplified stand-in for the product screenshot on the live homepage -->
+    <div class="shot">
+      <div class="shot-bar"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="shot-url">enterpriseai.com / enterpriseAI</span></div>
+      <div class="shot-tabs"><span>Q&amp;A</span><span>Planning Pathway</span><span class="on">Document Checklist</span><span class="off">Submission</span></div>
+      <div class="shot-cols">
+        <div class="shot-card">
+          <div class="t">27 Willow Creek Drive, Granville NSW 2142</div>
+          <div class="map"></div>
+          <div class="tags"><span>Bushfire</span><span>No flood</span><span>Heritage</span></div>
+          <div class="kv"><b>Zone</b>R2 &mdash; Low Density Residential</div>
+          <div class="kv"><b>Property size</b>450 m&sup2;</div>
+        </div>
+        <div class="shot-card">
+          <div class="t">Document Validation</div>
+          <div class="sub">Review validation results for uploaded documents</div>
+          <div class="row"><span>Architectural Plans and Building Specifications</span><i class="rev">Review</i></div>
+          <div class="row"><span>Development Application Form</span><i class="pass">Pass</i></div>
+          <div class="row"><span>Owner's Consent</span><i class="pass">Pass</i></div>
+          <div class="row"><span>Proof of Application Fee Payment</span><i class="pass">Pass</i></div>
+        </div>
+        <div class="shot-card">
+          <div class="t">Daisy</div>
+          <div class="bub">Welcome! I can see you're looking at the property at 27 Willow Creek Drive. What type of development are you considering?</div>
+          <div class="q">Can I learn more about the types of development applications?</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // Downloading is a real browser behaviour: the file flies to Downloads and
+  // the disk image opens. The desktop handles both.
+  const btn = document.getElementById('downloadBtn');
+  const note = document.getElementById('startNote');
+  let downloaded = false;
+
+  btn.addEventListener('click', () => {
+    if (downloaded) {
+      note.innerHTML = '<strong>Already downloaded.</strong> Finish installing it from the disk image, then open it from your dock.';
+      return;
+    }
+    const r = btn.getBoundingClientRect();
+    tell({
+      action: 'download-app',
+      data: { app: 'EAI Setup', rect: { left: r.left, top: r.top, width: r.width, height: r.height } },
+    });
+    downloaded = true;
+    btn.textContent = 'Downloading…';
+    note.innerHTML = '<strong>EAI-Setup.dmg</strong> — saving to Downloads.';
+    setTimeout(() => { btn.innerHTML = '&#8681;&nbsp; Download the EAI app'; }, 2200);
+  });
+
+  document.getElementById('navStart').addEventListener('click', (e) => {
+    e.preventDefault();
+    const row = document.getElementById('start');
+    window.scrollTo({ top: Math.max(0, row.offsetTop - 120), behavior: 'smooth' });
+    row.classList.add('flash');
+    setTimeout(() => row.classList.remove('flash'), 1400);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/onboarding/workspace" />
+<title>Prototype — Name your builder workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body>
+
+  <div class="ws-wrap" style="min-height:100vh;">
+    <form class="ws-form" id="wsForm" onsubmit="return false;">
+      <img src="../../assets/logos/eai-mark-dark.svg" alt="" class="mark" />
+      <br />
+      <img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" />
+      <h3>Name your builder workspace</h3>
+      <p>This is the workspace name shown in the Admin Portal after signup.</p>
+
+      <label for="wsCountry">Country</label>
+      <select id="wsCountry">
+        <option value="">Select country</option>
+        <option>Australia</option>
+        <option>New Zealand</option>
+        <option>United Kingdom</option>
+        <option>United States</option>
+      </select>
+
+      <label for="wsName">Workspace name</label>
+      <input type="text" id="wsName" placeholder="My builder workspace" autocomplete="off" />
+
+      <div class="captcha">
+        <input type="checkbox" id="wsHuman" />
+        <label for="wsHuman" style="margin:0;">I am human</label>
+        <span class="brand">Friendly Captcha</span>
+      </div>
+
+      <button class="btn btn-dark go" id="wsGo" data-eai-action="workspace" disabled type="button">Continue</button>
+    </form>
+  </div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // Continue stays disabled until the form is actually complete.
+  const name = document.getElementById('wsName');
+  const country = document.getElementById('wsCountry');
+  const human = document.getElementById('wsHuman');
+  const go = document.getElementById('wsGo');
+
+  const check = () => { go.disabled = !(name.value.trim() && country.value && human.checked); };
+  [name, country, human].forEach((f) => { f.addEventListener('input', check); f.addEventListener('change', check); });
+
+  // Values travel with the click so the terminal can echo them back.
+  window.eaiData = () => ({ workspace: name.value.trim(), country: country.value });
+</script>
+
+</body>
+</html>

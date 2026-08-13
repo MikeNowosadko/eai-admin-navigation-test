@@ -1,0 +1,299 @@
+/* ------------------------------------------------------------------
+   EAI onboarding prototype — the desktop shell.
+
+   Everything in the journey happens on one fake machine: a browser
+   window plus whichever app the user runs the CLI in (Terminal, VS Code,
+   Claude or Copilot), so the hand-off between website and CLI is visible
+   rather than implied.
+------------------------------------------------------------------- */
+
+html, body { height: 100%; overflow: hidden; }
+
+.desktop {
+  position: fixed; inset: 0; overflow: hidden;
+  background: #0a1430 url('wallpaper.jpg') center / cover no-repeat;
+  font-family: var(--font);
+  user-select: none;
+}
+
+/* --- menu bar ----------------------------------------------------- */
+
+.menubar {
+  position: absolute; top: 0; left: 0; right: 0; height: 26px; z-index: 500;
+  display: flex; align-items: center; gap: 20px; padding: 0 14px;
+  background: rgba(18, 22, 32, 0.5);
+  backdrop-filter: blur(18px);
+  color: #ffffff; font-size: 12.5px;
+}
+.menubar .apple { font-size: 14px; cursor: pointer; padding: 0 4px; border-radius: 4px; }
+.menubar .apple:hover, .menubar .apple.on { background: rgba(255, 255, 255, 0.2); }
+.menubar .app { font-weight: 700; }
+.menubar .mi { opacity: 0.86; }
+.menubar .spacer { flex: 1; }
+.menubar .right { display: flex; align-items: center; gap: 14px; opacity: 0.92; }
+
+/* apple menu — the way back out of the prototype, without a prototype toolbar */
+.apple-menu {
+  position: absolute; top: 28px; left: 8px; z-index: 700; display: none;
+  min-width: 210px; padding: 5px;
+  background: rgba(40, 44, 54, 0.86);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  color: #ffffff; font-size: 13px;
+}
+.apple-menu.on { display: block; }
+.apple-menu a { display: block; padding: 5px 10px; border-radius: 5px; color: #ffffff; }
+.apple-menu a:hover { background: #0a84ff; }
+.apple-menu .sep { height: 1px; margin: 5px 8px; background: rgba(255, 255, 255, 0.16); }
+
+/* --- windows ------------------------------------------------------ */
+
+.win {
+  position: absolute; display: flex; flex-direction: column;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.win.hidden { opacity: 0; transform: scale(0.97) translateY(14px); pointer-events: none; }
+.win.focused { box-shadow: 0 36px 90px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(255, 255, 255, 0.16); }
+
+.win-bar {
+  display: flex; align-items: center; gap: 8px; flex: none;
+  padding: 0 12px; height: 38px; cursor: grab;
+  background: #ececed; border-bottom: 1px solid #d9d9dc;
+}
+.win-bar:active { cursor: grabbing; }
+.win.dark .win-bar { background: #1b1e26; border-bottom-color: #262a34; }
+.win-bar .tl { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+.win-bar .tl.r { background: #ff5f57; } .win-bar .tl.y { background: #febc2e; } .win-bar .tl.g { background: #28c840; }
+.win:not(.focused) .win-bar .tl { background: #cfd0d3; }
+.win.dark:not(.focused) .win-bar .tl { background: #3a3f4b; }
+.win-bar .wt { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; color: #3c4048; }
+.win.dark .win-bar .wt { color: #8d93a0; font-weight: 500; }
+
+/* browser chrome */
+.brow-chrome { display: flex; align-items: center; gap: 10px; flex: none; padding: 8px 12px; background: #f6f6f7; border-bottom: 1px solid #e2e2e5; }
+.brow-chrome .navbtn { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; color: #8a8f98; font-size: 13px; background: transparent; border: none; cursor: pointer; }
+.brow-chrome .navbtn:hover { background: #e8e8eb; color: #3c4048; }
+.brow-chrome .addr {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  height: 30px; padding: 0 14px; border-radius: 999px;
+  background: #ffffff; border: 1px solid #e2e2e5;
+  font-size: 12.5px; color: #3c4048; overflow: hidden; white-space: nowrap;
+}
+.brow-chrome .addr .lock { color: #6b7280; font-size: 11px; }
+.brow-frame { flex: 1; border: none; width: 100%; background: #ffffff; }
+
+/* --- host window: the app the CLI runs inside --------------------- */
+
+.host-body { flex: 1; min-height: 0; display: flex; }
+.host-body > * { flex: 1; min-width: 0; min-height: 0; }
+.term-slot { display: flex; flex-direction: column; min-height: 0; }
+.term-slot .term-body { flex: 1; min-height: 0; }
+
+/* Terminal.app */
+.skin-terminal { display: flex; flex-direction: column; background: #12141a; }
+
+/* Visual Studio Code */
+.skin-code { display: grid; grid-template-columns: 48px 190px 1fr; grid-template-rows: minmax(0, 1fr) auto; background: #1e1e1e; color: #cccccc; font-size: 12px; }
+
+/* VS Code furniture — shared by the Code and Copilot skins */
+.vs-activity { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 12px 0; background: #333333; color: #858585; }
+.vs-activity svg { width: 21px; height: 21px; flex: none; }
+.vs-activity .on { color: #ffffff; box-shadow: inset 2px 0 0 #ffffff; }
+.vs-side { background: #252526; padding: 10px 0; overflow: hidden; }
+.vs-side .ttl { padding: 0 16px 10px; font-size: 10.5px; letter-spacing: 0.8px; color: #bbbbbb; }
+.vs-side .grp { padding: 4px 12px; font-size: 11px; font-weight: 700; color: #cccccc; }
+.vs-side .f { padding: 3px 12px 3px 26px; color: #cccccc; white-space: nowrap; }
+.vs-side .f.on { background: #37373d; }
+.vs-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.vs-tabs { display: flex; flex: none; background: #252526; }
+.vs-tabs .tab { padding: 8px 16px; color: #8a8a8a; border-right: 1px solid #1e1e1e; white-space: nowrap; }
+.vs-tabs .tab.on { background: #1e1e1e; color: #ffffff; border-top: 1px solid #0078d4; }
+.vs-editor { flex: none; height: 96px; padding: 10px 18px; overflow: hidden; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: #6a9955; }
+.vs-editor .k { color: #569cd6; } .vs-editor .s { color: #ce9178; } .vs-editor .p { color: #d4d4d4; }
+.vs-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; border-top: 1px solid #2b2b2b; }
+.vs-panel-tabs { display: flex; gap: 18px; flex: none; padding: 7px 18px; background: #1e1e1e; font-size: 10.5px; letter-spacing: 0.6px; color: #8a8a8a; }
+.vs-panel-tabs b { color: #ffffff; font-weight: 600; box-shadow: 0 8px 0 -6px #e7e7e7; }
+.vs-status { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; padding: 4px 12px; background: #0078d4; color: #ffffff; font-size: 11px; }
+.vs-status .sp { flex: 1; }
+
+/* GitHub Copilot: VS Code with the chat panel doing the work */
+.skin-copilot { display: grid; grid-template-columns: 48px 1fr 380px; background: #1e1e1e; color: #cccccc; font-size: 12px; }
+.skin-copilot .cp-panel { display: flex; flex-direction: column; min-height: 0; background: #1f1f1f; border-left: 1px solid #2b2b2b; }
+.skin-copilot .cp-head { display: flex; align-items: center; gap: 8px; flex: none; padding: 10px 14px; border-bottom: 1px solid #2b2b2b; font-size: 11.5px; color: #e7e7e7; }
+.skin-copilot .cp-head .badge { margin-left: auto; padding: 2px 7px; border-radius: 4px; background: #2d2d2d; font-size: 10px; color: #9a9a9a; }
+.skin-copilot .cp-foot { flex: none; margin: 10px 12px 12px; padding: 9px 12px; border: 1px solid #3a3a3a; border-radius: 8px; background: #252526; color: #6f6f6f; font-size: 11.5px; }
+
+/* Claude */
+.skin-claude { display: grid; grid-template-columns: 210px 1fr; background: #1c1b19; color: #e8e6e3; font-size: 12px; }
+.skin-claude .cl-side { padding: 14px 10px; background: #201f1d; border-right: 1px solid #2e2c29; }
+.skin-claude .cl-side .brandline { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px; font-weight: 600; color: #ffffff; }
+.skin-claude .cl-side .brandline i { width: 16px; height: 16px; border-radius: 4px; background: #d97757; display: inline-block; }
+.skin-claude .cl-side .grp { margin: 14px 0 6px; font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; color: #8a857e; }
+.skin-claude .cl-side .row { padding: 6px 8px; border-radius: 6px; color: #b9b4ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.skin-claude .cl-side .row.on { background: #2e2c29; color: #ffffff; }
+.skin-claude .cl-main { display: flex; flex-direction: column; min-height: 0; }
+.skin-claude .cl-head { flex: none; padding: 11px 18px; border-bottom: 1px solid #2e2c29; font-size: 11.5px; color: #b9b4ad; }
+.skin-claude .cl-foot { flex: none; margin: 10px 16px 14px; padding: 10px 14px; border: 1px solid #3a3733; border-radius: 10px; background: #252320; color: #7d7871; font-size: 11.5px; }
+
+/* the EAI Setup app window */
+.skin-setup { background: #f5f5f7; overflow-y: auto; }
+.skin-setup .mac-body { padding: 22px; }
+
+/* the mounted disk image you drag the app out of */
+.skin-dmg {
+  position: relative; flex: 1; min-height: 0;
+  display: flex; align-items: center; justify-content: center; gap: 70px;
+  background: linear-gradient(160deg, #eef2f7, #dfe6ef);
+  color: #3c4048;
+}
+.skin-dmg .dmg-item { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 130px; text-align: center; font-size: 12.5px; }
+.skin-dmg .dmg-item .tile {
+  width: 84px; height: 84px; border-radius: 18px; display: grid; place-items: center;
+  background: #ffffff; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+}
+.skin-dmg .dmg-item .tile img { width: 54px; height: 54px; object-fit: contain; }
+.skin-dmg #dmgApp { cursor: grab; user-select: none; }
+.skin-dmg #dmgApp:active { cursor: grabbing; }
+.skin-dmg #dmgApplications .tile { background: linear-gradient(160deg, #5aa9f0, #2f7fd0); color: #ffffff; font-size: 30px; }
+.skin-dmg #dmgApplications.over .tile { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.5), 0 8px 22px rgba(0, 0, 0, 0.18); }
+.skin-dmg #dmgApplications.filled .tile { box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.6), 0 8px 22px rgba(0, 0, 0, 0.18); }
+.skin-dmg .arrow { font-size: 30px; color: #98a2ae; }
+.skin-dmg .dmg-hint {
+  position: absolute; left: 0; right: 0; bottom: 22px;
+  text-align: center; font-size: 12.5px; color: #6b7280;
+}
+
+/* --- dock ---------------------------------------------------------- */
+
+.dock {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 500;
+  display: flex; align-items: flex-end; gap: 9px;
+  padding: 8px 12px;
+  background: rgba(40, 46, 60, 0.42);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+}
+.dock .item { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.dock .ico {
+  width: 46px; height: 46px; border-radius: 11px; overflow: hidden;
+  display: grid; place-items: center;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  transition: transform 0.16s ease;
+}
+.dock .ico svg { width: 100%; height: 100%; display: block; }
+.dock .item:hover .ico { transform: translateY(-9px) scale(1.12); }
+.dock .ico.setup { background: linear-gradient(170deg, #ffffff, #eef2f7); padding: 9px; }
+.dock .ico.setup img { width: 100%; height: 100%; object-fit: contain; }
+.dock .dot { width: 4px; height: 4px; margin-top: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.85); opacity: 0; }
+.dock .item.open .dot { opacity: 1; }
+.dock .sep { align-self: center; width: 1px; height: 40px; margin: 0 3px; background: rgba(255, 255, 255, 0.22); }
+
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-12px); } }
+
+/* apps you haven't downloaded yet aren't in the dock */
+.dock .item.tucked { display: none; }
+.dock .item.landing .ico { animation: land 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes land { 0% { transform: scale(0.2); opacity: 0; } 70% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
+.dock .item.bump .ico { animation: bounce 0.55s ease 2; }
+
+.dock .badge {
+  position: absolute; top: -3px; right: -4px; z-index: 20;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  border-radius: 9px; border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: #ff3b30; color: #ffffff;
+  font-size: 10px; font-weight: 700; line-height: 14px; text-align: center;
+}
+
+/* the icon that flies from the docs page into the Downloads stack */
+.fly-icon {
+  position: absolute; z-index: 800; width: 46px; height: 46px;
+  border-radius: 11px; overflow: hidden; pointer-events: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}
+.fly-icon svg { width: 100%; height: 100%; display: block; }
+
+/* shadcn-style tooltip */
+.dock .tip {
+  position: absolute; bottom: 64px; left: 50%; z-index: 60;
+  transform: translateX(-50%) translateY(4px) scale(0.96);
+  padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+  background: #09090b; color: #fafafa;
+  border: 1px solid #27272a;
+  font-size: 12px; font-weight: 500; line-height: 1;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.dock .tip::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  width: 8px; height: 8px; transform: translate(-50%, -50%) rotate(45deg);
+  background: #09090b; border-right: 1px solid #27272a; border-bottom: 1px solid #27272a;
+}
+.dock .item:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+/* --- ⌘K panel: the only prototype chrome, and it stays hidden ------- */
+
+.sheet-backdrop {
+  position: absolute; inset: 0; z-index: 900;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0; pointer-events: none; transition: opacity 0.18s ease;
+}
+.sheet-backdrop.on { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  position: absolute; top: 0; right: 0; bottom: 0; z-index: 901;
+  width: 320px; display: flex; flex-direction: column;
+  padding: 20px;
+  background: rgba(9, 9, 11, 0.94);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid #27272a;
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+  color: #fafafa;
+  transform: translateX(100%);
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sheet.on { transform: translateX(0); }
+.sheet h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+.sheet p.sub { margin: 0 0 20px; font-size: 12.5px; line-height: 1.5; color: #a1a1aa; }
+.sheet .grp { margin: 18px 0 8px; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #71717a; }
+.sheet .act {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  margin-bottom: 8px; padding: 10px 12px;
+  background: #18181b; border: 1px solid #27272a; border-radius: 8px;
+  color: #fafafa; font-size: 13px; font-weight: 500; text-align: left; cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+.sheet .act:hover { background: #27272a; border-color: #3f3f46; }
+.sheet .act.primary { background: #fafafa; color: #09090b; border-color: #fafafa; }
+.sheet .act.primary:hover { background: #e4e4e7; }
+.sheet .act .sub { margin-left: auto; font-size: 11px; font-weight: 400; color: #a1a1aa; }
+.sheet .act.primary .sub { color: #52525b; }
+.sheet .act.on { border-color: #0099ff; }
+.sheet .close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #71717a; font-size: 16px; cursor: pointer; line-height: 1; }
+.sheet .close:hover { color: #fafafa; }
+.sheet .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid #27272a; font-size: 11.5px; line-height: 1.6; color: #71717a; }
+.sheet kbd {
+  display: inline-block; padding: 1px 5px; border-radius: 4px;
+  background: #27272a; border: 1px solid #3f3f46;
+  font-family: var(--font); font-size: 10.5px; color: #d4d4d8;
+}
+
+/* --- coach mark ----------------------------------------------------- */
+
+.coach {
+  position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%) translateY(10px);
+  z-index: 600; max-width: 460px;
+  padding: 12px 18px; border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  font-size: 13.5px; color: var(--dark); line-height: 1.5;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.coach.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.coach strong { display: block; margin-bottom: 2px; }

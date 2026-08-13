@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/docs/getting-started" />
+<title>Prototype — Getting Started | EnterpriseAI Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body class="site" style="background:#ffffff;">
+
+  <!-- Where "help get started" lands: the live /docs/getting-started page. -->
+  <nav class="nav eai-nav">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a><a href="#">Products &#9662;</a><a href="#">About Us &#9662;</a><a href="#">Pricing &#9662;</a><a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="#">Login</a>
+    <a class="btn btn-dark btn-sm" href="home.html">Get Started</a>
+  </nav>
+
+  <div class="docs-shell">
+
+    <aside class="docs-side">
+      <div class="grp">Docs</div>
+      <a href="#">What EnterpriseAI Is</a>
+      <a class="on" href="docs.html">Getting Started</a>
+      <a href="#">EAI Platform Docs</a>
+    </aside>
+
+    <main class="docs-main">
+      <h1>Getting Started</h1>
+      <p class="lede">Documentation for EnterpriseAI builders deploying secure AI agents, governed workflows and production-ready automation.</p>
+
+      <h2>Get Started</h2>
+      <p>Follow the 5 steps below to get started with Enterprise AI.</p>
+
+      <!-- Step 1 — pick the coding agent; everything downstream follows it -->
+      <div class="doc-step">
+        <div class="num">Step 1</div>
+        <h3>Pick your app</h3>
+        <p class="goal">All four options are supported equally. The page auto-selects macOS or Windows, but you can change it at any time.</p>
+
+        <div class="os-toggle">
+          <button type="button" class="on" data-os="macOS">macOS</button>
+          <button type="button" data-os="Windows">Windows</button>
+        </div>
+
+        <div class="picker-row">
+          <button class="pick-app on" type="button" data-app="Codex" data-url="https://chatgpt.com/codex" data-color="#10a37f" data-initial="C">
+            <span class="glyph" style="background:#10a37f;">C</span> Codex
+          </button>
+          <button class="pick-app" type="button" data-app="Claude" data-url="https://claude.ai/code" data-color="#d97757" data-initial="✳">
+            <span class="glyph" style="background:#d97757;">&#10033;</span> Claude
+          </button>
+          <button class="pick-app" type="button" data-app="VS Code" data-url="https://code.visualstudio.com" data-color="#0f6cbd" data-initial="V">
+            <span class="glyph" style="background:#0f6cbd;">V</span> VS Code
+          </button>
+          <button class="pick-app" type="button" data-app="Gemini" data-url="https://gemini.google.com" data-color="#4285f4" data-initial="G">
+            <span class="glyph" style="background:#4285f4;">G</span> Gemini
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="doc-step">
+        <div class="num">Step 2</div>
+        <h3>Open <span data-app-name>Codex</span></h3>
+        <p class="goal">Open <b data-app-name>Codex</b>. Pick or create the folder where this project will live. Make sure <span data-app-name>Codex</span> is using that folder before moving on.</p>
+        <button class="btn btn-ghost" id="downloadBtn" type="button">Download <span data-app-name>Codex</span></button>
+        <div class="prompt-hint" id="openHint">Downloads land in your dock, ready to open.</div>
+      </div>
+
+      <!-- Step 3 — the copy that hands the user over to their agent -->
+      <div class="doc-step">
+        <div class="num">Step 3</div>
+        <h3>Paste the setup prompt into <span data-app-name>Codex</span></h3>
+        <p class="goal">One prompt does the whole setup: installs the CLI, signs you in, and creates the project.</p>
+
+        <div class="prompt-box" id="promptBox" hidden>Set up this folder as an Enterprise AI project.
+
+1. Install the EAI CLI (npx install eai) and the eai-gofer workflow pack.
+2. Sign me in to EAI in the browser, then confirm my workspace.
+3. Run: eai init &lt;project-name&gt; --skip-prompts --tenant &lt;tenant-id&gt;
+4. Stop and wait for me to type /0_business_scenario.
+
+Ask me to confirm the folder, project name and company tenant before you run init.
+Only stop if something unexpected happens.</div>
+
+        <div class="prompt-actions">
+          <button class="btn btn-dark" id="copyPrompt" type="button">Copy prompt</button>
+          <button class="btn btn-ghost" id="viewPrompt" type="button">View prompt</button>
+        </div>
+        <div class="prompt-hint" id="promptHint">The prompt is the same for every app — only the place you paste it changes.</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="doc-step">
+        <div class="num">Step 4</div>
+        <h3>Finish setup, then open your project</h3>
+        <p class="goal">Follow <b data-app-name>Codex</b> prompts through sign-in. Before <code>eai init</code> runs, you will confirm a few things so it can skip the CLI questions and only stop if something unexpected happens.</p>
+        <ol class="doc-list">
+          <li><b>Approve the actions <span data-app-name>Codex</span> asks for</b> — you may need to click Approve or type yes so setup can keep moving.</li>
+          <li><b>Complete browser sign-in if it opens</b> — finish in the browser, then return to <span data-app-name>Codex</span>.</li>
+          <li><b>When prompted, confirm folder, project name, and company tenant</b> — <span data-app-name>Codex</span> will then run <code>eai init &lt;project-name&gt; --skip-prompts --tenant &lt;tenant-id&gt;</code>.</li>
+          <li><b>Keep the setup bound to your signup workspace</b> — for Builder, use the Builder workspace, not EAI Developers. Create apps or child companies later from Apps or the EAI CLI.</li>
+          <li><b>Point <span data-app-name>Codex</span> at the new project folder</b> — if it does not switch automatically, open the folder path the setup shows you as the active workspace.</li>
+          <li><b>Type <code>/0_business_scenario</code> followed by the app you would like to build</b> — explain as much as you can about what you want to build, then press Enter. It may take a few minutes to work through all the build steps.</li>
+        </ol>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="doc-step">
+        <div class="num">Step 5</div>
+        <h3>Start the business scenario and keep iterating</h3>
+        <p class="goal">Describe the business problem, answer the clarifying questions, then approve or feed back on what comes out. Keep going until it does what your team needs.</p>
+      </div>
+
+      <h2>Need more detail?</h2>
+      <div class="more-cards">
+        <div class="more-card">
+          <b>Complete your first EAI setup</b>
+          <span>A simple checklist for what to approve, verify, and do after the prompt runs.</span>
+          <a href="#">Open the checklist &rarr;</a>
+        </div>
+        <div class="more-card">
+          <b>What the setup prompt installs</b>
+          <span>See the exact tooling this setup path is expected to install and verify.</span>
+          <a href="#">See the tool list &rarr;</a>
+        </div>
+        <div class="more-card">
+          <b>Start your first EAI session</b>
+          <span>Confirm the tenant, create the project, and start <code>/0_business_scenario</code>.</span>
+          <a href="#">Start the first session &rarr;</a>
+        </div>
+        <div class="more-card">
+          <b>EAI Platform Docs</b>
+          <span>CLI reference, app template, gofer workflows and worked examples.</span>
+          <a href="#">Open the platform docs &rarr;</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // Picking an app rewrites the rest of the page, the way the live docs do.
+  const appName = (name) => document.querySelectorAll('[data-app-name]').forEach((n) => { n.textContent = name; });
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openHint = document.getElementById('openHint');
+  const installed = new Set();
+  let picked = 'Codex';
+
+  function refreshButton() {
+    downloadBtn.innerHTML = `${installed.has(picked) ? 'Open' : 'Download'} <span data-app-name>${picked}</span>`;
+  }
+
+  document.querySelectorAll('.pick-app').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pick-app').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      picked = btn.dataset.app;
+      appName(picked);
+      refreshButton();
+      openHint.textContent = installed.has(picked)
+        ? `${picked} is already in your dock.`
+        : 'Downloads land in your dock, ready to open.';
+    });
+  });
+
+  // Download animates into the dock; a second click opens the app. Both stay
+  // on this desktop rather than leaving for a real download page.
+  downloadBtn.addEventListener('click', () => {
+    if (installed.has(picked)) {
+      tell({ action: 'open-app', data: { app: picked } });
+      openHint.innerHTML = `Opening <strong>${picked}</strong> — paste the prompt there.`;
+      return;
+    }
+    const r = downloadBtn.getBoundingClientRect();
+    tell({
+      action: 'download-app',
+      data: { app: picked, rect: { left: r.left, top: r.top, width: r.width, height: r.height } },
+    });
+    installed.add(picked);
+    refreshButton();
+    openHint.innerHTML = `Downloading <strong>${picked}</strong> — watch the dock.`;
+  });
+
+  document.querySelectorAll('.os-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.os-toggle button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+
+  document.getElementById('viewPrompt').addEventListener('click', (e) => {
+    const box = document.getElementById('promptBox');
+    box.hidden = !box.hidden;
+    e.currentTarget.textContent = box.hidden ? 'View prompt' : 'Hide prompt';
+  });
+
+  // Copying here is the same hand-off as the homepage: the desktop nudges
+  // whichever CLI app you're going to paste into.
+  document.getElementById('copyPrompt').addEventListener('click', async () => {
+    const text = document.getElementById('promptBox').textContent;
+    try { await navigator.clipboard.writeText(text); } catch (err) { /* blocked — flow still advances */ }
+    document.getElementById('promptHint').innerHTML =
+      '<strong>Copied.</strong> Open the app you picked and paste it — setup runs from there.';
+    // The desktop keeps the text, so pasting into the app gives you this exact prompt.
+    tell({ action: 'copied', data: { text } });
+  });
+</script>
+
+</body>
+</html>
