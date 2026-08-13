@@ -77,43 +77,6 @@
     <div class="host-body" id="hostBody"></div>
   </div>
 
-  <!-- the EAI Setup app, as a window rather than a page ------------- -->
-  <div class="win hidden" id="winSetup" style="left:16%; top:11%; width:52%; height:74%;">
-    <div class="win-bar" data-drag>
-      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
-      <span class="wt">Enterprise AI Setup</span>
-    </div>
-    <div class="skin-setup">
-      <div class="mac-body">
-        <div class="app-head">
-          <span class="icon"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
-          <div>
-            <div class="eyebrow-sm">ENTERPRISE AI</div>
-            <h2>Enterprise AI Setup</h2>
-          </div>
-          <span class="plat">macos · aarch64</span>
-        </div>
-
-        <div class="app-card">
-          <h3>Sign in to EAI</h3>
-          <p>Sign in securely in your browser. Your password stays there.</p>
-          <div class="app-note">
-            <b>Next</b>
-            <span>Your browser will open. After sign-in, setup continues automatically.</span>
-          </div>
-          <div class="app-actions">
-            <button class="btn btn-green" type="button" id="setupSignin">Sign in with browser</button>
-            <button class="btn btn-outline" type="button" id="setupCreate">Create an EAI account</button>
-          </div>
-          <div class="app-hint" id="setupHint">New to EAI? Create an account first, then return here to sign in.</div>
-          <div class="app-status">All prerequisites are ready.</div>
-        </div>
-
-        <div class="app-foot">EAI Setup never stores your password or API secrets.</div>
-      </div>
-    </div>
-  </div>
-
   <!-- coach mark --------------------------------------------------- -->
   <div class="coach" id="coach"></div>
 
@@ -268,7 +231,7 @@
     </div>
 
     <!-- dev apps arrive here once they're "downloaded" from the docs -->
-    <div class="item tucked" data-app="vscode">
+    <div class="item" data-app="vscode">
       <span class="tip">Visual Studio Code</span>
       <span class="ico">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -281,7 +244,7 @@
       <span class="dot"></span>
     </div>
 
-    <div class="item tucked" data-app="claude">
+    <div class="item" data-app="claude">
       <span class="tip">Claude</span>
       <span class="ico">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -295,7 +258,7 @@
       <span class="dot"></span>
     </div>
 
-    <div class="item tucked" data-app="copilot">
+    <div class="item" data-app="copilot">
       <span class="tip">GitHub Copilot</span>
       <span class="ico">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -308,7 +271,7 @@
       <span class="dot"></span>
     </div>
 
-    <div class="item tucked" data-app="codex">
+    <div class="item" data-app="codex">
       <span class="tip">Codex</span>
       <span class="ico">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -326,7 +289,7 @@
       <span class="dot"></span>
     </div>
 
-    <div class="item tucked" data-app="gemini">
+    <div class="item" data-app="gemini">
       <span class="tip">Gemini</span>
       <span class="ico">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -339,12 +302,6 @@
     </div>
 
     <div class="sep"></div>
-
-    <div class="item" data-app="setup">
-      <span class="tip">EAI Setup</span>
-      <span class="ico setup"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
-      <span class="dot"></span>
-    </div>
 
     <div class="item" data-app="settings">
       <span class="tip">System Settings</span>

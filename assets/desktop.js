@@ -382,9 +382,11 @@ function downloadApp(name, rect) {
     setTimeout(() => {
       desktop.lastInstalled = app;
       if (typeof onDownloaded === 'function' && onDownloaded(app, name) === 'handled') return;
+      // A fresh app pops into the dock; one you already had just bounces.
+      const fresh = item.classList.contains('tucked');
       item.classList.remove('tucked');
-      item.classList.add('landing');
-      setTimeout(() => item.classList.remove('landing'), 600);
+      item.classList.add(fresh ? 'landing' : 'bump');
+      setTimeout(() => item.classList.remove('landing', 'bump'), fresh ? 600 : 1200);
       syncDock();
     }, 420);
   };
@@ -393,15 +395,6 @@ function downloadApp(name, rect) {
 /** Flows can override what a finished download does (see setup.js). */
 let onDownloaded = null;
 function setDownloadHandler(fn) { onDownloaded = fn; }
-
-/* --- the EAI Setup app window -------------------------------------- */
-
-const setupHint = document.getElementById('setupHint');
-const sayInSetup = (msg) => {
-  if (setupHint) setupHint.innerHTML = `<strong>${msg}</strong> — that flow hasn't been defined yet.`;
-};
-document.getElementById('setupSignin')?.addEventListener('click', () => sayInSetup('Browser would open for sign-in.'));
-document.getElementById('setupCreate')?.addEventListener('click', () => sayInSetup('Account creation would open in the browser.'));
 
 /* --- ⌘K panel -------------------------------------------------------- */
 
