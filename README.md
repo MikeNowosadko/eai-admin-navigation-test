@@ -23,8 +23,8 @@ search — so a tester can be handed one URL and nothing else.
 
 | Flow | Path | Test URL | State |
 | --- | --- | --- | --- |
-| **npx flow** | `npx/` | `/npx` | Complete: search → deployed app |
-| **eai setup app flow** | `setup/` | `/setup` | Search → download → Applications → sign-in |
+| **npx flow** | `npx/` | [/npx](https://eai-onboarding-prototypes.vercel.app/npx) | Complete: search → deployed app |
+| **eai setup app flow** | `setup/` | [/setup](https://eai-onboarding-prototypes.vercel.app/setup) | Search → download → Applications → sign-in |
 
 `index.html` at the root is an internal launch pad listing both. Testers don't
 need it — give them `/npx` or `/setup` directly.
@@ -33,11 +33,17 @@ Both run on the same fake macOS desktop (`assets/desktop.*`).
 
 ## Hosting
 
+**Currently deployed to:** <https://eai-onboarding-prototypes.vercel.app>
+
+> ⚠️ This is a **personal** Vercel account (`garethchainey-gmailcoms-projects`),
+> set up to unblock testing. Move it to an EAI-owned Vercel team before this
+> becomes anything more than a one-off study — see *Moving it to EAI* below.
+
 Requirements: publicly reachable, isolated from production, cheap, disposable.
 
-**Recommended — a separate Vercel project pointed at this folder.** It is a
-static site with no build, so it costs nothing on the Hobby tier and cannot
-touch the Azure production deploy.
+**A separate Vercel project pointed at this folder.** It is a static site with
+no build, so it costs nothing on the Hobby tier and cannot touch the Azure
+production deploy.
 
 1. Vercel → *Add New… → Project* → import `EAI-Website/com.enterpriseaigroup`
 2. Set **Root Directory** to `playground`
@@ -48,10 +54,27 @@ touch the Azure production deploy.
 Or from the CLI:
 
 ```bash
-cd playground
-vercel link          # create/choose the project (do NOT link the repo root)
+cd playground        # important: link from here, never the repo root
+vercel link
 vercel deploy --prod
 ```
+
+`trailingSlash: true` in `vercel.json` matters: `/npx` redirects to `/npx/` so
+the pages' relative paths resolve. A rewrite instead of a redirect leaves the
+URL at `/npx`, and every `pages/*.html` request 404s from the site root.
+
+### Moving it to EAI
+
+The project is currently under a personal Vercel account. To move it:
+
+1. Create (or use) an EAI-owned Vercel team.
+2. Vercel → the project → *Settings → General → Transfer*, or re-import the repo
+   under the EAI team with Root Directory `playground`.
+3. Re-link locally: `rm -rf playground/.vercel && cd playground && vercel link`.
+4. Update the URLs in this file and in the experiment plan.
+
+Do it before the URLs go to anyone outside the team — the prototypes show
+EAI branding, pricing and product copy on a domain nobody at EAI controls.
 
 Alternatives considered:
 
