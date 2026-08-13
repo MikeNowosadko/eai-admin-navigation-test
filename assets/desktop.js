@@ -426,15 +426,31 @@ document.addEventListener('click', () => {
 
 /* --- browser ------------------------------------------------------- */
 
+const HOME_PAGE = 'pages/google.html';
+
+/**
+ * The fake browser only ever loads pages from this site. Anything with a
+ * scheme (`javascript:`, `data:`) or a protocol-relative host is refused —
+ * page.js messages are the one place an outside value could reach here.
+ */
+function safePath(url) {
+  const ok = typeof url === 'string'
+    && url.length < 512
+    && !/^[a-z][a-z0-9+.-]*:/i.test(url)
+    && !url.startsWith('//');
+  return ok ? url : HOME_PAGE;
+}
+
 const browser = {
   history: [],
   at: -1,
 
   go(url, { push = true } = {}) {
-    desktop.frame.src = url;
+    const path = safePath(url);
+    desktop.frame.src = path;
     if (push) {
       browser.history = browser.history.slice(0, browser.at + 1);
-      browser.history.push(url);
+      browser.history.push(path);
       browser.at = browser.history.length - 1;
     }
     focusWin('browser');
@@ -454,7 +470,7 @@ document.getElementById('browFwd').addEventListener('click', () => {
   if (browser.at < browser.history.length - 1) { browser.at += 1; browser.go(browser.history[browser.at], { push: false }); }
 });
 document.getElementById('browReload').addEventListener('click', () => {
-  desktop.frame.src = desktop.frame.src;
+  browser.go(browser.history[browser.at] || HOME_PAGE, { push: false });
 });
 
 /**
@@ -473,7 +489,7 @@ desktop.frame.addEventListener('load', () => {
 
   if (browser.history[browser.at] !== path) {
     browser.history = browser.history.slice(0, browser.at + 1);
-    browser.history.push(doc.location.pathname);
+    browser.history.push(safePath(doc.location.pathname));
     browser.at = browser.history.length - 1;
   }
 
@@ -484,16 +500,19 @@ desktop.frame.addEventListener('load', () => {
 });
 
 window.addEventListener('message', (e) => {
+  // Only the page inside our own browser window may drive the desktop.
+  if (e.source !== desktop.frame.contentWindow) return;
   const msg = e.data;
   if (!msg || !msg.eai) return;
 
   if (msg.nav) {
-    desktop.urlBar.textContent = msg.nav.url;
-    desktop.titleBar.textContent = msg.nav.title || 'Safari';
+    desktop.urlBar.textContent = String(msg.nav.url || '');
+    desktop.titleBar.textContent = String(msg.nav.title || 'Safari');
     const current = browser.history[browser.at];
-    if (msg.nav.file && msg.nav.file !== current) {
+    const file = msg.nav.file && safePath(msg.nav.file);
+    if (file && file !== current) {
       browser.history = browser.history.slice(0, browser.at + 1);
-      browser.history.push(msg.nav.file);
+      browser.history.push(file);
       browser.at = browser.history.length - 1;
     }
   }
@@ -531,7 +550,9 @@ window.addEventListener('message', (e) => {
 /* --- coach marks ---------------------------------------------------- */
 
 function coach(title, text) {
-  desktop.coach.innerHTML = `<strong>${title}</strong>${text}`;
+  const heading = document.createElement('strong');
+  heading.textContent = title;
+  desktop.coach.replaceChildren(heading, document.createTextNode(text));
   desktop.coach.classList.add('on');
 }
 function hideCoach() { desktop.coach.classList.remove('on'); }
@@ -552,7 +573,7 @@ window.addEventListener('scroll', () => window.scrollTo(0, 0), { passive: true }
 /* --- boot ----------------------------------------------------------- */
 
 setHost('terminal');
-browser.history = ['pages/google.html'];
+browser.history = [HOME_PAGE];
 browser.at = 0;
 focusWin('browser');
 syncDock();
