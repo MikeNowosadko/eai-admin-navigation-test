@@ -27,8 +27,8 @@ building. Everything before that is prep, and prep is what we're testing.
 | # | Experiment | What the participant gets | URL to test |
 | --- | --- | --- | --- |
 | 1 | Existing | The docs we have today | <https://www.enterpriseaigroup.com/docs/getting-started> |
-| 2 | npx flow | Prototype: copy one command, paste it, sign in from the terminal | <https://eai-onboarding-prototypes.vercel.app/npx> |
-| 3 | Setup app | Prototype: download an app, open it, sign in | <https://eai-onboarding-prototypes.vercel.app/setup> |
+| 2 | npx flow | Prototype: copy one command, paste it, sign in from the terminal | <https://eai-website.github.io/prototypes/npx> |
+| 3 | Setup app | Prototype: download an app, open it, sign in | <https://eai-website.github.io/prototypes/setup> |
 
 Different people in each experiment, so nobody arrives already knowing the
 journey. Paste the URL straight into Lyssna as the live website for that test.

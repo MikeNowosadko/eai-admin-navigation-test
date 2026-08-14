@@ -51,8 +51,8 @@ the hand-off between website and machine is visible.
 
 | Path | URL | Source |
 | --- | --- | --- |
-| B — npx flow | [/npx](https://eai-onboarding-prototypes.vercel.app/npx) | `npx/` |
-| C — Setup app | [/setup](https://eai-onboarding-prototypes.vercel.app/setup) | `setup/` |
+| B — npx flow | [/npx](https://eai-website.github.io/prototypes/npx) | `npx/` |
+| C — Setup app | [/setup](https://eai-website.github.io/prototypes/setup) | `setup/` |
 
 See [../README.md](../README.md) for hosting and how to edit.
 

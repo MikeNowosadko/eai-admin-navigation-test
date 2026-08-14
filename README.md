@@ -26,8 +26,8 @@ search — so a tester can be handed one URL and nothing else.
 
 | Flow | Path | Test URL | State |
 | --- | --- | --- | --- |
-| **npx flow** | `npx/` | [/npx](https://eai-onboarding-prototypes.vercel.app/npx) | Complete: search → deployed app |
-| **eai setup app flow** | `setup/` | [/setup](https://eai-onboarding-prototypes.vercel.app/setup) | Search → download → Applications → sign-in |
+| **npx flow** | `npx/` | [/npx](https://eai-website.github.io/prototypes/npx) | Complete: search → deployed app |
+| **eai setup app flow** | `setup/` | [/setup](https://eai-website.github.io/prototypes/setup) | Search → download → Applications → sign-in |
 
 `index.html` at the root is an internal launch pad listing both. Testers don't
 need it — give them `/npx` or `/setup` directly.
@@ -36,56 +36,23 @@ Both run on the same fake macOS desktop (`assets/desktop.*`).
 
 ## Hosting
 
-**Currently deployed to:** <https://eai-onboarding-prototypes.vercel.app>
+**Live:** <https://eai-website.github.io/prototypes/> — [/npx](https://eai-website.github.io/prototypes/npx) and [/setup](https://eai-website.github.io/prototypes/setup)
 
-> ⚠️ This is a **personal** Vercel account (`garethchainey-gmailcoms-projects`),
-> set up to unblock testing. Move it to an EAI-owned Vercel team before this
-> becomes anything more than a one-off study — see *Moving it to EAI* below.
+GitHub Pages, published by `.github/workflows/pages.yml` on every push to
+`main`. No build step: the repo root is the site.
 
-Vercel project `eai-onboarding-prototypes`. Static, no build, so it costs
-nothing and cannot touch the Azure production deploy.
+Deliberately **not** on an `enterpriseaigroup.com` subdomain. These pages carry
+invented pricing, plan tiers and a mocked sign-in; `noindex` keeps them out of
+search, but it doesn't stop a participant sharing the link. On the org's own
+github.io they read as what they are. Every page carries
+`<meta name="robots" content="noindex, nofollow">`.
 
-**Deploying today** — from a clone of this repo:
+If a nicer URL is ever needed, DNS for enterpriseaigroup.com is on Azure DNS and
+`prototypes` is unused — one CNAME to `eai-website.github.io` would do it. Worth
+the brand trade-off only if these are shown to customers rather than test
+participants.
 
-```bash
-vercel link          # once: choose the existing eai-onboarding-prototypes project
-vercel deploy --prod
-```
-
-**To get automatic deploys on push** (worth doing), the Vercel GitHub app needs
-access to the `EAI-Website` org. `vercel git connect` fails until then:
-
-1. Vercel → the project → *Settings → Git → Connect Git Repository*
-2. Pick `EAI-Website/eai-onboarding-prototypes`; approve the GitHub app for the
-   org when prompted (an org admin can do this)
-3. After that: push to `main` → production deploys; every PR gets a preview URL
-
-`trailingSlash: true` in `vercel.json` matters: `/npx` redirects to `/npx/` so
-the pages' relative paths resolve. A rewrite instead of a redirect leaves the
-URL at `/npx`, and every `pages/*.html` request 404s from the site root.
-
-### Moving it to EAI
-
-The project is currently under a personal Vercel account. To move it:
-
-1. Create (or use) an EAI-owned Vercel team.
-2. Vercel → the project → *Settings → General → Transfer*, or re-import the repo
-   under the EAI team with Root Directory `playground`.
-3. Re-link locally: `rm -rf .vercel && vercel link`.
-4. Update the URLs in this file and in the experiment plan.
-
-Do it before the URLs go to anyone outside the team — the prototypes show
-EAI branding, pricing and product copy on a domain nobody at EAI controls.
-
-Alternatives considered:
-
-- **Azure Static Web Apps** — matches the existing Azure estate and could be
-  provisioned from `infra/`, but needs a Bicep change, a deploy workflow and
-  service-principal credentials. Worth it only if this outlives user testing.
-- **GitHub Pages** — free, but this repo is internal, and Pages on non-public
-  repos requires GitHub Enterprise Cloud.
-- **Serving from the existing Next site** (`/prototypes/...`) — rejected: it
-  would publish the prototypes on the production domain.
+**There are no preview deployments**, so test locally before merging.
 
 ## npx flow
 
