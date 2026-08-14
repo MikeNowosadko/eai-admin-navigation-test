@@ -182,14 +182,29 @@ button, input, textarea { font-family: inherit; }
 .fork-card {
   display: flex; flex-direction: column; gap: 14px;
   padding: 30px; text-align: left;
-  background: #ffffff; border: 1px solid var(--n300); border-radius: 18px;
+  background: #ffffff; border-radius: 18px;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.18s ease, transform 0.18s ease;
 }
 .fork-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
-.fork-card .tag { align-self: flex-start; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
-.fork-card .tag.browser { background: rgba(0, 153, 255, 0.12); color: #0072c2; }
-.fork-card .tag.terminal { background: rgba(23, 23, 23, 0.08); color: var(--dark); }
+/* --- rows of prototype cards ------------------------------------- */
+.rows { max-width: 1180px; margin: 0 auto; padding: 56px 40px 130px; }
+.rows h1 { margin: 0 0 12px; font-size: 52px; line-height: 1.05; font-weight: 800; letter-spacing: -2px; }
+.rows .rows-note { max-width: none; margin: 0 0 48px; text-align: left; }
+
+.row { margin-bottom: 52px; }
+.row-title {
+  display: inline-flex; align-items: baseline; gap: 9px;
+  margin: 0 0 18px; font-size: 22px; font-weight: 700; letter-spacing: -0.6px;
+}
+.row-title .arrow { font-size: 17px; color: #a1a1aa; transition: transform 0.18s ease, color 0.18s ease; }
+a.row-title:hover .arrow { transform: translateX(4px); color: var(--dark); }
+
+/* Cards stretch to the tallest in the row, and the button is pinned to the
+   bottom by .go, so a card with a longer list doesn't sit taller than its
+   neighbours. Keep descriptions to two lines and lists to single-line items
+   and the rows match each other too. */
+.row-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
 .fork-card h2 { margin: 0; font-size: 24px; letter-spacing: -0.7px; }
 .fork-card p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--n600); }
 .fork-card ul { margin: 4px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.9; color: var(--n600); }

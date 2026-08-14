@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com" />
+<title>Prototype — Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body class="site" style="background:#ffffff;">
+
+  <!-- Flow step 2: lands on the EAI site and presses Get Started -->
+  <nav class="nav eai-nav">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a>
+      <a href="#">Products &#9662;</a>
+      <a href="#">About Us &#9662;</a>
+      <a href="#">Pricing &#9662;</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="#">Login</a>
+    <a class="btn btn-dark btn-sm" href="#" id="navStart">Get Started</a>
+  </nav>
+
+  <section class="eai-hero">
+    <h1>Enterprise AI solutions for secure,<br />measurable adoption</h1>
+    <p class="lede">EnterpriseAI brings GenAI agents, AI governance, and workflow automation into production in 6&ndash;8 weeks.</p>
+
+    <!-- The get-started moment: one command, copied, taken to the terminal. -->
+    <div class="start-row" id="start">
+      <button class="cmd-field" id="cmdField" type="button">
+        <span class="pfx">$</span><span class="cmd">npx install eai</span>
+        <span class="hint-copy" id="fieldHint">click to copy</span>
+      </button>
+      <button class="btn btn-dark btn-lg" id="npxBtn" type="button">npx install</button>
+      <!-- "help get started" (docs.html) is deliberately not linked during the
+           experiment: we're testing whether the command alone gets them there. -->
+    </div>
+    <div class="start-note" id="startNote">Node 24+. Works in Terminal, iTerm, VS Code, Claude Code, GitHub Copilot and Cursor.</div>
+
+    <!-- Simplified stand-in for the product screenshot on the live homepage -->
+    <div class="shot">
+      <div class="shot-bar"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="shot-url">enterpriseai.com / enterpriseAI</span></div>
+      <div class="shot-tabs"><span>Q&amp;A</span><span>Planning Pathway</span><span class="on">Document Checklist</span><span class="off">Submission</span></div>
+      <div class="shot-cols">
+        <div class="shot-card">
+          <div class="t">27 Willow Creek Drive, Granville NSW 2142</div>
+          <div class="map"></div>
+          <div class="tags"><span>Bushfire</span><span>No flood</span><span>Heritage</span></div>
+          <div class="kv"><b>Zone</b>R2 &mdash; Low Density Residential</div>
+          <div class="kv"><b>Property size</b>450 m&sup2;</div>
+          <div class="kv"><b>Max building height</b>8.5 m</div>
+        </div>
+        <div class="shot-card">
+          <div class="t">Document Validation</div>
+          <div class="sub">Review validation results for uploaded documents</div>
+          <div class="row"><span>Architectural Plans and Building Specifications</span><i class="rev">Review</i></div>
+          <div class="row"><span>Development Application Form</span><i class="pass">Pass</i></div>
+          <div class="row"><span>Owner's Consent</span><i class="pass">Pass</i></div>
+          <div class="row"><span>Proof of Application Fee Payment</span><i class="pass">Pass</i></div>
+          <div class="row"><span>Site Survey Plan (1:200 or 1:500 scale)</span><i class="pass">Pass</i></div>
+        </div>
+        <div class="shot-card">
+          <div class="t">Daisy</div>
+          <div class="bub">Welcome! I can see you're looking at the property at 27 Willow Creek Drive. What type of development are you considering?</div>
+          <div class="q">Can I learn more about the types of development applications?</div>
+          <div class="q">How do I determine what documents are needed?</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // Copying the command is the hand-off: the desktop then nudges the Terminal.
+  const CMD = 'npx install eai';
+  const note = document.getElementById('startNote');
+  const field = document.getElementById('cmdField');
+  const hint = document.getElementById('fieldHint');
+
+  async function copyCommand() {
+    try { await navigator.clipboard.writeText(CMD); } catch (err) { /* blocked — flow still advances */ }
+    field.classList.add('copied');
+    hint.textContent = 'copied';
+    note.innerHTML = '<strong>Copied.</strong> Open your terminal and paste it &mdash; we\'ll take it from there.';
+    tell({ action: 'copied', data: { text: CMD } });
+    setTimeout(() => { field.classList.remove('copied'); hint.textContent = 'click to copy'; }, 2600);
+  }
+
+  document.getElementById('npxBtn').addEventListener('click', copyCommand);
+  field.addEventListener('click', copyCommand);
+
+  // "Get Started" in the nav points at the same command — one obvious next action.
+  // Scroll this page only; an anchor jump would drag the desktop shell with it.
+  document.getElementById('navStart').addEventListener('click', (e) => {
+    e.preventDefault();
+    const row = document.getElementById('start');
+    window.scrollTo({ top: Math.max(0, row.offsetTop - 120), behavior: 'smooth' });
+    row.classList.add('flash');
+    setTimeout(() => row.classList.remove('flash'), 1400);
+  });
+</script>
+
+</body>
+</html>

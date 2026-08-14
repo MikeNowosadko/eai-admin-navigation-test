@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Prototype — npx flow</title>
+<title>Prototype — EAI CLI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -54,7 +54,7 @@
   </div>
 
   <!-- browser window ---------------------------------------------- -->
-  <div class="win" id="winBrowser" style="left:2%; top:5.5%; width:68%; height:81%;">
+  <div class="win hidden" id="winBrowser" style="left:2%; top:5.5%; width:68%; height:81%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
       <span class="wt" id="browserTitle">Safari</span>
@@ -66,6 +66,140 @@
       <div class="addr"><span class="lock">&#128274;</span><span id="browUrl">google.com</span></div>
     </div>
     <iframe class="brow-frame" id="browFrame" src="pages/google.html" title="Browser"></iframe>
+  </div>
+
+  <!-- the EAI Setup app itself ------------------------------------ -->
+  <div class="win" id="winSetup" style="left:15%; top:7%; width:52%; height:84%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Enterprise AI Setup</span>
+    </div>
+    <div class="skin-setup">
+      <div class="mac-body">
+        <div class="app-head">
+          <span class="icon"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
+          <div>
+            <div class="eyebrow-sm">ENTERPRISE AI</div>
+            <h2>Enterprise AI Setup</h2>
+          </div>
+          <span class="plat">macos · aarch64</span>
+        </div>
+
+        <!-- screen 1: sign in -->
+        <div class="app-card" data-screen="signin">
+          <h3>Sign in to EAI</h3>
+          <p>Sign in securely in your browser. Your password stays there.</p>
+          <div class="app-note">
+            <b>Next</b>
+            <span>Your browser will open. After sign-in, setup continues automatically.</span>
+          </div>
+          <div class="app-actions">
+            <button class="btn btn-green" type="button" id="setupSignin">Sign in with browser</button>
+            <button class="btn btn-outline" type="button" id="setupCreate">Create an EAI account</button>
+          </div>
+          <div class="app-hint" id="setupHint">New to EAI? Create an account first, then return here to sign in.</div>
+          <div class="app-status">All prerequisites are ready.</div>
+        </div>
+
+        <!-- screen 2: name the app and pick where it goes -->
+        <div class="app-card" data-screen="start" hidden>
+          <h3>Start your EAI app</h3>
+          <p>Name your app and choose its parent folder.</p>
+
+          <label class="fld-label" for="projName">Project name</label>
+          <input class="fld" type="text" id="projName" placeholder="customer-portal" autocomplete="off" spellcheck="false" />
+          <div class="fld-help">Use lowercase words separated by hyphens. Example: <code>customer-portal</code>.</div>
+
+          <label class="fld-label" for="projFolder">Parent folder</label>
+          <div class="fld-row">
+            <input class="fld" type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
+            <button class="btn btn-outline" type="button" id="chooseFolder">Choose folder</button>
+          </div>
+          <div class="fld-help">A new folder with your project name will be created here. Use Choose folder to open Finder or File Explorer.</div>
+
+          <label class="fld-label" for="projHost">Your coding app</label>
+          <select class="fld" id="projHost">
+            <option value="copilot">GitHub Copilot</option>
+            <option value="claude">Claude Code</option>
+            <option value="terminal">Terminal</option>
+            <option value="vscode">Visual Studio Code</option>
+            <option value="codex">Codex</option>
+            <option value="gemini">Gemini CLI</option>
+          </select>
+          <div class="fld-help">EAI opens here when setup finishes. The CLI is the same in all of them — switch any time from the dock.</div>
+
+          <div class="app-actions" style="margin-top:22px;">
+            <button class="btn btn-green" type="button" id="createApp">Create and initialise app</button>
+          </div>
+
+          <div class="app-status" id="startStatus">Browser sign-in completed.</div>
+        </div>
+
+        <!-- screen 3: initialising -->
+        <div class="app-card" data-screen="running" hidden>
+          <h3 id="runTitle"><span class="spin" id="runSpin"></span> Creating your EAI app</h3>
+          <p id="runSub">Initialising the project and fetching the supported Gofer assets.</p>
+
+          <div class="run-meta">
+            <span id="runState">In progress</span>
+            <span id="runElapsed">Running…</span>
+          </div>
+          <div class="run-bar"><i id="runBar"></i></div>
+
+          <div class="run-log">
+            <div class="run-log-head">
+              <span>Recent activity</span>
+              <span id="runResult"></span>
+            </div>
+            <div id="runLines"></div>
+          </div>
+
+          <div class="app-actions" style="margin-top:20px;">
+            <button class="btn btn-green" type="button" id="openHost" hidden>Open in GitHub Copilot</button>
+          </div>
+        </div>
+
+        <div class="app-foot">EAI Setup never stores your password or API secrets.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- the folder chooser the app opens ---------------------------- -->
+  <div class="win hidden" id="winFinder" style="left:24%; top:16%; width:56%; height:60%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Choose the app folder</span>
+    </div>
+    <div class="skin-finder">
+      <div class="fnd-side">
+        <div class="grp">Favourites</div>
+        <div class="row"><span class="i">&#128337;</span> Recents</div>
+        <div class="row"><span class="i">&#128193;</span> Applications</div>
+        <div class="row on" data-dir="Downloads"><span class="i">&#11015;</span> Downloads</div>
+        <div class="row" data-dir="Desktop"><span class="i">&#128421;</span> Desktop</div>
+        <div class="row" data-dir="Documents"><span class="i">&#128196;</span> Documents</div>
+        <div class="grp">Locations</div>
+        <div class="row"><span class="i">&#9729;</span> iCloud Drive</div>
+        <div class="row" data-dir="gareth"><span class="i">&#127968;</span> gareth</div>
+        <div class="row"><span class="i">&#128190;</span> Macintosh HD</div>
+      </div>
+      <div class="fnd-main">
+        <div class="fnd-bar">
+          <span class="nav">&#8249;</span><span class="nav">&#8250;</span>
+          <span class="crumb" id="fndCrumb">&#128193; Downloads</span>
+          <span class="spacer"></span>
+          <span class="search">&#128269; Search</span>
+        </div>
+        <div class="fnd-cols"><span>Name</span><span>Size</span><span>Kind</span><span>Date Added</span></div>
+        <div class="fnd-list" id="fndList"></div>
+        <div class="fnd-foot">
+          <button class="btn btn-ghost btn-sm" type="button" id="fndNew">New Folder</button>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" type="button" id="fndCancel">Cancel</button>
+          <button class="btn btn-blue btn-sm" type="button" id="fndOpen">Open</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- host window: Terminal / VS Code / Claude / Copilot ------------ -->
@@ -91,11 +225,15 @@
     <a class="act primary" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
     <a class="act" href="index.html">&#8635;&nbsp; Restart this flow</a>
 
+    <button class="act" type="button" id="skipSetup">&#8677;&nbsp; Skip setup <span class="sub">straight to the CLI</span></button>
+
     <div class="grp">Run the CLI in</div>
     <button class="act" type="button" data-host="terminal">Terminal</button>
     <button class="act" type="button" data-host="vscode">Visual Studio Code</button>
     <button class="act" type="button" data-host="claude">Claude</button>
     <button class="act" type="button" data-host="copilot">GitHub Copilot</button>
+    <button class="act" type="button" data-host="codex">Codex</button>
+    <button class="act" type="button" data-host="gemini">Gemini</button>
 
     <div class="foot">
       <kbd>⌘</kbd> <kbd>K</kbd> toggles this panel · <kbd>esc</kbd> closes it.
@@ -215,6 +353,12 @@
     </div>
 
     <div class="sep"></div>
+
+    <div class="item" data-app="setup">
+      <span class="tip">EAI Setup</span>
+      <span class="ico setup"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
+      <span class="dot"></span>
+    </div>
 
     <div class="item" data-app="terminal">
       <span class="tip">Terminal</span>
@@ -357,6 +501,7 @@
 
 <script src="../assets/desktop.js"></script>
 <script src="../assets/term-runtime.js"></script>
-<script src="../assets/terminal.js"></script>
+<script src="../assets/cli.js"></script>
+<script src="../assets/cli-setup.js"></script>
 </body>
 </html>

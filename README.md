@@ -11,32 +11,53 @@ nobody has to think about the website when changing it. It started life inside
 **Run locally:** any static server pointed at this folder, e.g.
 
 ```bash
-npx serve .                 # then http://localhost:3000/npx
-python3 -m http.server 8899 # then http://localhost:8899/npx
+npx serve .                 # then http://localhost:3000/cli
+python3 -m http.server 8899 # then http://localhost:8899/cli
 ```
 
 **Edit:** everything is plain HTML, CSS and JS. Open a file, change it, reload.
-The whole npx journey is one readable async function at the top of
-`assets/terminal.js`; the setup-app flow is `assets/setup.js`.
+The CLI prototype — the one currently being worked on — is `assets/cli.js`, a
+list of steps at the top of the file and one async function each.
 
 ## Flows
 
-Each flow is a self-contained journey that starts at step 1 — a mocked Google
-search — so a tester can be handed one URL and nothing else.
+Each flow is a self-contained journey a tester can be handed as one URL and
+nothing else. The two studies start at a mocked Google search; the CLI
+prototype starts later, on a machine where EAI Setup is already installed.
 
 | Flow | Path | Test URL | State |
 | --- | --- | --- | --- |
 | **npx flow** | `npx/` | [/npx](https://eai-website.github.io/prototypes/npx) | Complete: search → deployed app |
 | **eai setup app flow** | `setup/` | [/setup](https://eai-website.github.io/prototypes/setup) | Search → download → Applications → sign-in |
+| **EAI CLI** | `cli/` | [/cli](https://eai-website.github.io/prototypes/cli) | In progress — the one being worked on |
 
-`index.html` at the root is an internal launch pad listing both. Testers don't
-need it — give them `/npx` or `/setup` directly.
+`index.html` at the root is an internal launch pad listing all three. Testers
+don't need it — give them the flow's URL directly.
 
-Both run on the same fake macOS desktop (`assets/desktop.*`).
+They all run on the same fake macOS desktop (`assets/desktop.*`).
+
+### One prototype, one URL
+
+A prototype that has been in front of people is evidence, so it keeps its URL
+and stops changing. New thinking goes in a new folder rather than on top of an
+old one, and every version stays clickable at its own address.
+
+What that means in practice:
+
+- **Shared, and reused freely** — `assets/`: the desktop, the app skins, the
+  terminal runtime, the CSS. Changing these changes every flow, so changes here
+  are the plumbing kind, not the design kind.
+- **Owned by one flow, and copied to start the next** — its `index.html`, its
+  `pages/`, its journey file. `cli/pages/` began as a copy of `npx/pages/`, and
+  the two now go their own ways.
+
+To start the next iteration, copy the folder — `cli/` → `cli-2/`, plus a journey
+file beside `assets/cli.js` — and add a card to the launch pad. The old URL
+carries on working.
 
 ## Hosting
 
-**Live:** <https://eai-website.github.io/prototypes/> — [/npx](https://eai-website.github.io/prototypes/npx) and [/setup](https://eai-website.github.io/prototypes/setup)
+**Live:** <https://eai-website.github.io/prototypes/> — [/npx](https://eai-website.github.io/prototypes/npx), [/setup](https://eai-website.github.io/prototypes/setup) and [/cli](https://eai-website.github.io/prototypes/cli)
 
 GitHub Pages, published by `.github/workflows/pages.yml` on every push to
 `main`. No build step: the repo root is the site.
@@ -98,6 +119,34 @@ say so when clicked. EAI Setup opens as a window on the same desktop.
 That's as far as the flow is defined. The two buttons in the app say so when
 clicked; the rest of the setup UX comes next.
 
+## EAI CLI
+
+Where the CLI experience gets designed. The setup app is the route we're going
+with, so this flow starts from it — already installed, already in the dock:
+
+1. **EAI Setup is open on the desktop.** No search, no download, no `npx`.
+   Getting the app onto the machine is `/setup`'s job and it's already answered
+2. Sign in — the browser opens for it, then closes again
+3. Name the app, choose a parent folder, and **pick your coding app** — Copilot,
+   Claude, Terminal, VS Code, Codex or Gemini
+4. It initialises, then hands over: your coding app opens on the new project
+5. **The CLI experience** — everything from here is what this prototype is for
+
+Seen the setup app once? **⌘K → Skip setup** goes straight to step 5 with a
+default project. Sitting through four screens to reach the part being designed
+gets old fast.
+
+The hand-off names the project everywhere — window title, sidebar, breadcrumb —
+in whichever app you chose, and switching apps from the dock mid-flow keeps the
+transcript and re-labels the new one.
+
+`assets/cli-setup.js` is the setup app, `assets/cli.js` is the CLI: a `STEPS`
+list at the top and one async function per step. `cliProject` carries the name,
+path and chosen app across the hand-off.
+
+The CLI half is still the npx journey's content — describe, clarify, prototype,
+build, admin, test, deploy. That's the placeholder being replaced.
+
 ## What the prototype won't fake
 
 A web page can't bounce a dock icon or launch an app, so copying a command
@@ -109,19 +158,25 @@ different command.
 ## Layout
 
 ```
-assets/
-  proto.css      page styling (site, Google, terminal, admin, plans…)
-  desktop.css    the fake OS: wallpaper, windows, dock, app skins
-  desktop.js     windows, dock, browser, app skins, page ↔ app message bus
-  terminal.js    the npx journey — one async function, top of file
-  setup.js       the setup-app flow: disk image, drag to Applications
-  page.js        loaded by every page inside the browser window
+assets/                shared by every flow
+  proto.css        page styling (site, Google, terminal, admin, plans…)
+  desktop.css      the fake OS: wallpaper, windows, dock, app skins
+  desktop.js       windows, dock, browser, app skins, page ↔ app message bus
+  term-runtime.js  what a journey prints and asks with: out, ask, choose…
+  page.js          loaded by every page inside the browser window
   wallpaper.jpg
-npx/
-  index.html     desktop shell for the npx flow
-  pages/         what the browser window shows
-setup/
-  index.html     desktop shell for the setup app flow
+  terminal.js      the npx journey
+  cli-setup.js     the CLI flow's starting point: EAI Setup, already installed
+  cli.js           the CLI journey, from the hand-off onwards
+  setup.js         the setup-app flow: disk image, drag to Applications
+npx/                   the onboarding study — finished, leave it alone
+  index.html       desktop shell for the npx flow
+  pages/           what the browser window shows
+setup/                 the setup-app study — finished, leave it alone
+  index.html
+  pages/
+cli/                   the CLI prototype — this is the one that changes
+  index.html       desktop with EAI Setup installed and open
   pages/
 ```
 
@@ -133,11 +188,18 @@ setup/
 
 ## Editing
 
-The whole npx script lives in `journey()` at the top of `assets/terminal.js`.
-Reorder or reword steps there; the helpers below it (`out`, `ask`, `choose`,
-`progress`, `inBrowser`) don't need touching. Pages inside the browser report
-back with `data-eai-action="..."`, which is what `inBrowser()` waits for.
+Work on the CLI happens in `assets/cli.js`. It opens with `STEPS`, the running
+order, and everything below is one of those steps: an async function that
+prints, asks, and hands off to the browser. Reorder the list, add a step, or
+comment one out — nothing else has to change. What each step learns (workspace
+name, country, the brief) goes on `state` for later steps to read.
+
+Steps talk to the user through `assets/term-runtime.js` — `out`, `gap`, `tick`,
+`banner`, `progress`, `confirmKey`, `ask`, `choose`, `inBrowser`. Pages inside
+the browser report back with `data-eai-action="..."`, which is what
+`inBrowser()` waits for. `assets/terminal.js` is the same shape for the npx
+flow, but that one is finished.
 
 App skins live in the `HOSTS` map in `assets/desktop.js` — each is a chunk of
 HTML containing a `.term-slot`, which the shared terminal element is moved into.
-Add an app by adding an entry there plus a dock icon in `npx/index.html`.
+Add an app by adding an entry there plus a dock icon in the flow's `index.html`.

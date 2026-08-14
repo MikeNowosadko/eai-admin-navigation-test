@@ -69,7 +69,7 @@ const HOSTS = {
         </div>
         <div class="vs-side">
           <div class="ttl">EXPLORER</div>
-          <div class="grp">▾ WORK</div>
+          <div class="grp">▾ <span data-project-dir>WORK</span></div>
           <div class="f on">README.md</div>
           <div class="f">package.json</div>
           <div class="f">eai.config.ts</div>
@@ -173,7 +173,7 @@ function agentSkin({ name, accent, model, hint }) {
     <div class="skin-claude">
       <div class="cl-side">
         <div class="brandline"><i style="background:${accent}"></i> ${name}</div>
-        <div class="row on">~/work</div>
+        <div class="row on" data-project-dir>~/work</div>
         <div class="grp">Recent</div>
         <div class="row">Set up EAI workspace</div>
         <div class="row">Contract renewals app</div>
@@ -181,7 +181,7 @@ function agentSkin({ name, accent, model, hint }) {
         <div class="row">eai · connected</div>
       </div>
       <div class="cl-main">
-        <div class="cl-head">~/work · ${model} · eai CLI</div>
+        <div class="cl-head"><span data-project-dir>~/work</span> · ${model} · eai CLI</div>
         <div class="term-slot"></div>
         <div class="cl-foot">${hint}</div>
       </div>

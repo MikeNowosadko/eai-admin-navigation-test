@@ -18,45 +18,69 @@
     <span style="font-size:13px; color:#4d4d4d;">Onboarding prototypes</span>
   </nav>
 
-  <section class="hero" style="padding-bottom:20px;">
-    <div class="eyebrow"><span class="pip"></span> Clickable HTML prototypes — not production code</div>
-    <h1>Getting started flows</h1>
-    <p class="lede">Each card is a complete, clickable journey from first search to a deployed app. Built to answer one question: can someone actually get set up without help?</p>
-    <p class="kbd-note">
-      Inside a flow there's no prototype chrome — press <kbd>⌘</kbd><kbd>K</kbd> for controls
-      (back here, restart, switch app), or use the Apple menu. <kbd>esc</kbd> closes it.
+  <main class="rows">
+
+    <h1>Experiment prototypes</h1>
+
+    <p class="kbd-note rows-note">
+      Inside a prototype, press <kbd>⌘</kbd><kbd>K</kbd> for controls
     </p>
-  </section>
 
-  <section class="fork" style="padding-bottom:130px;">
+    <section class="row">
+      <a class="row-title" href="https://app.notion.com/p/3bbcd7477dd5818ab477c911387da562">
+        Onboarding: current vs npx vs setup app <span class="arrow">&rarr;</span>
+      </a>
 
-    <a class="fork-card" href="npx/index.html">
-      <span class="tag terminal">Ready</span>
-      <h2>npx flow</h2>
-      <p>Google search &rarr; EAI site &rarr; <code>npx install eai</code> &rarr; sign in from the terminal &rarr; choose a plan &rarr; name your workspace &rarr; build, approve and deploy.</p>
-      <ul>
-        <li>Runs on a fake desktop — browser and terminal side by side</li>
-        <li>Starts at a mocked Google results page</li>
-        <li>Interactive terminal: type, choose, approve</li>
-        <li>Browser opens only for sign-in, plan, workspace</li>
-      </ul>
-      <div class="go"><span class="btn btn-dark">Run the npx flow &rarr;</span></div>
-    </a>
+      <div class="row-cards">
 
-    <a class="fork-card" href="setup/index.html">
-      <span class="tag browser">Ready to sign-in</span>
-      <h2>eai setup app flow</h2>
-      <p>Same start, but a native <strong>Enterprise AI Setup</strong> app does the work: download it from the site, drag it to Applications, open it, sign in.</p>
-      <ul>
-        <li>Download animates into the dock, the disk image opens</li>
-        <li>Drag to Applications, then it's in your dock</li>
-        <li>Opens on "Sign in to EAI" with prerequisites already checked</li>
-        <li>What happens after sign-in is still to be defined</li>
-      </ul>
-      <div class="go"><span class="btn btn-ghost">Run the setup app flow &rarr;</span></div>
-    </a>
+        <a class="fork-card" href="npx/index.html">
+          <h2>npx flow</h2>
+          <p>Search, <code>npx install eai</code>, sign in from the terminal, then build and deploy.</p>
+          <ul>
+            <li>Fake desktop: browser + terminal</li>
+            <li>Starts at a mocked Google search</li>
+            <li>Type, choose and approve in-terminal</li>
+            <li>Browser only for sign-in and plan</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run the npx flow &rarr;</span></div>
+        </a>
 
-  </section>
+        <a class="fork-card" href="setup/index.html">
+          <h2>eai setup app flow</h2>
+          <p>Same start, but a native <strong>EAI Setup</strong> app does the work: download, install, sign in.</p>
+          <ul>
+            <li>Download flies into the dock</li>
+            <li>Drag to Applications to install</li>
+            <li>Opens on "Sign in to EAI"</li>
+            <li>Prerequisites already green</li>
+          </ul>
+          <div class="go"><span class="btn btn-ghost">Run the setup app flow &rarr;</span></div>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="row">
+      <h2 class="row-title">In progress</h2>
+
+      <div class="row-cards">
+
+        <a class="fork-card" href="cli/index.html">
+          <h2>EAI CLI</h2>
+          <p>Starts with <strong>EAI Setup already installed</strong>, then hands over to your coding app.</p>
+          <ul>
+            <li>No search, no download, no <code>npx</code></li>
+            <li>Six coding apps to choose from</li>
+            <li>Switch apps mid-flow, session follows</li>
+            <li>⌘K to skip setup, straight to the CLI</li>
+          </ul>
+          <div class="go"><span class="btn btn-ghost">Run the CLI flow &rarr;</span></div>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
 
 </body>
 </html>
