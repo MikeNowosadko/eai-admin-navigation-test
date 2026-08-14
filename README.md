@@ -1,20 +1,23 @@
-# Playground — onboarding prototypes
+# EAI onboarding prototypes
 
 Clickable HTML prototypes of the "get started" journeys, built for user testing.
 Static files only: no build step, no framework, no data, nothing wired to a real
 service.
 
-**This directory is deliberately outside `public/`.** The production deploy
-copies `public/` into the Next standalone bundle, so anything in there ships to
-enterpriseaigroup.com. Nothing here is part of the website build — it is hosted
-separately (see *Hosting* below).
+**This is a playground, not production.** It lives in its own repo precisely so
+nobody has to think about the website when changing it. It started life inside
+`com.enterpriseaigroup` and was moved out with its history intact.
 
 **Run locally:** any static server pointed at this folder, e.g.
 
 ```bash
-npx serve playground        # then http://localhost:3000/npx
-python3 -m http.server 8899 --directory playground
+npx serve .                 # then http://localhost:3000/npx
+python3 -m http.server 8899 # then http://localhost:8899/npx
 ```
+
+**Edit:** everything is plain HTML, CSS and JS. Open a file, change it, reload.
+The whole npx journey is one readable async function at the top of
+`assets/terminal.js`; the setup-app flow is `assets/setup.js`.
 
 ## Flows
 
@@ -39,25 +42,23 @@ Both run on the same fake macOS desktop (`assets/desktop.*`).
 > set up to unblock testing. Move it to an EAI-owned Vercel team before this
 > becomes anything more than a one-off study — see *Moving it to EAI* below.
 
-Requirements: publicly reachable, isolated from production, cheap, disposable.
+Vercel project `eai-onboarding-prototypes`. Static, no build, so it costs
+nothing and cannot touch the Azure production deploy.
 
-**A separate Vercel project pointed at this folder.** It is a static site with
-no build, so it costs nothing on the Hobby tier and cannot touch the Azure
-production deploy.
-
-1. Vercel → *Add New… → Project* → import `EAI-Website/com.enterpriseaigroup`
-2. Set **Root Directory** to `playground`
-3. Framework preset: **Other**. No build command, output directory `.`
-4. Deploy. `vercel.json` here already handles `/npx` and `/setup`, and sends
-   `X-Robots-Tag: noindex` so the prototypes never get indexed.
-
-Or from the CLI:
+**Deploying today** — from a clone of this repo:
 
 ```bash
-cd playground        # important: link from here, never the repo root
-vercel link
+vercel link          # once: choose the existing eai-onboarding-prototypes project
 vercel deploy --prod
 ```
+
+**To get automatic deploys on push** (worth doing), the Vercel GitHub app needs
+access to the `EAI-Website` org. `vercel git connect` fails until then:
+
+1. Vercel → the project → *Settings → Git → Connect Git Repository*
+2. Pick `EAI-Website/eai-onboarding-prototypes`; approve the GitHub app for the
+   org when prompted (an org admin can do this)
+3. After that: push to `main` → production deploys; every PR gets a preview URL
 
 `trailingSlash: true` in `vercel.json` matters: `/npx` redirects to `/npx/` so
 the pages' relative paths resolve. A rewrite instead of a redirect leaves the
@@ -70,7 +71,7 @@ The project is currently under a personal Vercel account. To move it:
 1. Create (or use) an EAI-owned Vercel team.
 2. Vercel → the project → *Settings → General → Transfer*, or re-import the repo
    under the EAI team with Root Directory `playground`.
-3. Re-link locally: `rm -rf playground/.vercel && cd playground && vercel link`.
+3. Re-link locally: `rm -rf .vercel && vercel link`.
 4. Update the URLs in this file and in the experiment plan.
 
 Do it before the URLs go to anyone outside the team — the prototypes show
@@ -152,10 +153,16 @@ assets/
 npx/
   index.html     desktop shell for the npx flow
   pages/         what the browser window shows
-setup-app/
+setup/
   index.html     desktop shell for the setup app flow
   pages/
 ```
+
+## Related
+
+- [`experiments/`](./experiments) — the plan, the results and the decision for
+  the study these prototypes were built for. Mirrored from Notion (EAI Product
+  Management → Experiments → EAI CLI set up), which is the source of truth.
 
 ## Editing
 
