@@ -454,7 +454,10 @@ document.addEventListener('click', () => {
 
 /* --- browser ------------------------------------------------------- */
 
-const HOME_PAGE = 'pages/google.html';
+// Where the browser starts, and what it falls back to. A flow whose journey
+// begins somewhere other than the search sets window.EAI_HOME before this
+// file loads.
+const HOME_PAGE = window.EAI_HOME || 'pages/google.html';
 
 /**
  * The fake browser only ever loads pages from this site. Anything with a

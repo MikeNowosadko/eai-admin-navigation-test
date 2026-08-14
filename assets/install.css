@@ -1,0 +1,472 @@
+/* ------------------------------------------------------------------
+   App-install prototype — styles owned by /install.
+
+   Two jobs: the disk image's opening sequence, and the minimal skin
+   for the EAI Setup app that follows it.
+
+   Everything is scoped to .dmg-anim or #winSetup, which only
+   install/index.html reaches — the shared rules in desktop.css and
+   proto.css are untouched, so /setup keeps the look it was tested on.
+------------------------------------------------------------------- */
+
+/* ==================================================================
+   THE DISK IMAGE
+
+   Three beats: the wordmark fades in and rises, lifts into a title,
+   then the two icons arrive underneath. Timings live in BEATS at the
+   top of the sequence in assets/install.js.
+================================================================== */
+
+.skin-dmg.dmg-anim {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: #ffffff;
+}
+
+/* The window chrome goes white too, so the title bar stops being a
+   separate grey band and the whole surface reads as one thing. */
+#winDmg .win-bar {
+  background: #ffffff;
+  border-bottom-color: #ececef;
+}
+
+/* --- 1. the wordmark arriving ---------------------------------------- */
+
+/* Dead centre until the lift, so it owns the window on its own. */
+.dmg-anim .dmg-intro {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  transition: transform 0.62s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.dmg-anim .dmg-mark { position: relative; display: block; }
+
+/* Neutral near-black rather than the brand navy and cyan — the palette
+   here is white, one grey and near-black, following the app screens. */
+.dmg-anim .dmg-mark img {
+  display: block;
+  height: 30px;
+  width: auto;
+  opacity: 0;
+  filter: saturate(0) brightness(0.45);
+}
+
+.dmg-anim.play .dmg-mark img {
+  animation: dmgFadeIn 0.72s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes dmgFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 2. lifting into a title ----------------------------------------- */
+
+.dmg-anim.lift .dmg-intro {
+  transform: translateY(calc(-50% - 92px)) scale(0.76);
+}
+
+/* --- 3. the icons arriving ------------------------------------------- */
+
+.dmg-anim .dmg-row {
+  display: flex;
+  align-items: center;
+  gap: 70px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.42s ease, transform 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.dmg-anim.reveal .dmg-row { opacity: 1; transform: translateY(0); }
+
+/* The hint follows a beat later — it's the least urgent thing here. */
+.dmg-anim .dmg-hint {
+  opacity: 0;
+  color: #71717a;
+  transition: opacity 0.42s ease 0.16s;
+}
+.dmg-anim.reveal .dmg-hint { opacity: 1; }
+
+/* --- the two tiles, as outlines rather than raised objects ------------ */
+
+.dmg-anim .dmg-item .tile {
+  box-shadow: none;
+  border: 1px solid #e8e8ea;
+  border-radius: 22px;
+}
+.dmg-anim #dmgApplications .tile {
+  background: #f4f4f5;
+  border-color: #e8e8ea;
+  filter: grayscale(1);
+}
+.dmg-anim #dmgApplications.over .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.16); }
+.dmg-anim #dmgApplications.filled .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.28); }
+.dmg-anim .arrow { color: #c9c9ce; }
+.dmg-anim .dmg-item { color: #171717; }
+
+/* --- reduced motion --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .dmg-anim .dmg-mark img { opacity: 1; }
+  .dmg-anim.play .dmg-mark img { animation: none; }
+  .dmg-anim .dmg-intro,
+  .dmg-anim.lift .dmg-intro { transition: none; transform: translateY(calc(-50% - 92px)) scale(0.76); }
+  .dmg-anim .dmg-row,
+  .dmg-anim .dmg-hint { opacity: 1; transform: none; transition: none; }
+}
+
+/* ==================================================================
+   THE SETUP APP — built from Paper frames 1CQ-0, UC-0 and 1GL-0
+
+   The token names below are the ones the design file uses, with the
+   same values, so a change there is a one-line change here and the two
+   can be diffed by eye. Everything is scoped to #winSetup, which only
+   /install loads — /setup keeps the look it was tested on.
+
+   Frames, for reference:
+     1CQ-0  sign in      body gap 32, actions gap 8, primary has a ring
+     UC-0   name your app body gap 24, actions gap 12, buttons inside fields
+     1GL-0  initialising body gap 24, same row component as sign-in
+================================================================== */
+
+#winSetup.win {
+  /* From the design system in the Paper file. */
+  --color-background: oklch(100% 0 0);
+  --color-foreground: oklch(14.5% 0 0);
+  --color-primary: oklch(20.5% 0 0);
+  --color-primary-foreground: oklch(98.5% 0 0);
+  --color-muted-foreground: oklch(55.6% 0 0);
+  --color-border: oklch(92.2% 0 0);
+  --color-tick: oklch(60% 0.118 184.7);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --text-xs: 12px;
+  --text-xl: 20px;
+  --font-weight-medium: 500;
+
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+}
+
+#winSetup .win-bar {
+  background: var(--color-background);
+  border-bottom-color: oklch(94% 0 0);
+}
+
+#winSetup .skin-setup.eai { background: var(--color-background); }
+
+/* Body: padding 24, column. Gap differs per frame, so it's set per screen. */
+#winSetup .eai-body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-6);
+  font-family: var(--font-sans);
+}
+
+#winSetup .eai-screen { display: flex; flex-direction: column; }
+#winSetup .eai-screen[hidden] { display: none; }
+#winSetup .eai-screen.gap-8 { gap: var(--spacing-8); }
+#winSetup .eai-screen.gap-6 { gap: var(--spacing-6); }
+
+/* --- heading block ---------------------------------------------------- */
+
+#winSetup .eai-head {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+}
+#winSetup .eai-head h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.025em;
+  line-height: 24px;
+  color: var(--color-foreground);
+}
+/* The sub-line is near-black in the design, not muted grey. */
+#winSetup .eai-head p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-primary);
+}
+
+/* --- the row list, shared by sign-in and initialising ----------------- */
+
+#winSetup .eai-rows {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+#winSetup .eai-row {
+  display: flex; align-items: center;
+  gap: var(--spacing-3);
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+#winSetup .eai-row:last-child { border-bottom: none; }
+
+#winSetup .eai-row .mk {
+  /* Fixed basis and min-width: a flex item defaults to min-width:auto, which
+     let the spinner's bars size the marker and knocked the running row's
+     label out of the lane the other rows share. */
+  flex: 0 0 16px;
+  min-width: 16px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; line-height: 12px;
+  font-style: normal;
+}
+#winSetup .eai-row .mk.done { background: var(--color-tick); color: #ffffff; }
+/* Not-yet-done is an empty ring, not a spinner. */
+#winSetup .eai-row .mk.pending {
+  border: 2px solid var(--color-border);
+  color: transparent;
+}
+
+#winSetup .eai-row .lbl {
+  flex: 1;
+  font-size: 14px; line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup .eai-row.pending .lbl { color: var(--color-muted-foreground); }
+#winSetup .eai-row .val {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 16px;
+  color: var(--color-muted-foreground);
+}
+
+/* --- fields ------------------------------------------------------------ */
+
+#winSetup .eai-fields {
+  display: flex; flex-direction: column;
+  align-self: stretch;
+  gap: var(--spacing-4);
+}
+#winSetup .eai-field { display: flex; flex-direction: column; gap: var(--spacing-2); }
+#winSetup .eai-field label {
+  font-size: 14px; line-height: 18px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+}
+
+#winSetup .eai-input,
+#winSetup .eai-combo {
+  height: 44px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px; line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup .eai-input { width: 100%; padding: 0 14px; outline: none; }
+#winSetup .eai-input::placeholder { color: var(--color-muted-foreground); }
+
+/* The action sits inside the field, so the right padding is only 3px. */
+#winSetup .eai-combo {
+  display: flex; align-items: center;
+  padding: 0 3px 0 14px;
+}
+#winSetup .eai-combo input {
+  flex: 1; min-width: 0;
+  height: 100%;
+  border: none; outline: none; background: none;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 16px;
+  color: var(--color-muted-foreground);
+}
+#winSetup .eai-combo .val-sans {
+  flex: 1;
+  font-size: 14px; line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup .eai-inner {
+  flex: none;
+  padding: 9px var(--spacing-4);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 16px;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+#winSetup .eai-inner.muted { color: var(--color-muted-foreground); }
+
+/* --- actions ----------------------------------------------------------- */
+
+#winSetup .eai-acts { display: flex; justify-content: flex-end; }
+#winSetup .eai-acts.gap-2 { gap: var(--spacing-2); }
+#winSetup .eai-acts.gap-3 { gap: var(--spacing-3); }
+#winSetup .eai-acts.pt-2 { padding-top: var(--spacing-2); }
+
+#winSetup .eai-btn {
+  display: flex; align-items: center; justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px; line-height: 18px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+#winSetup .eai-btn.primary {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border-color: var(--color-primary);
+}
+/* 1CQ-0 draws the primary with a black hairline; the other two frames don't. */
+#winSetup .eai-btn.primary.ring { border-color: #000000; }
+#winSetup .eai-btn.primary:hover { background: #000000; }
+
+#winSetup .eai-status {
+  font-size: 13px; line-height: 16px;
+  color: var(--color-muted-foreground);
+}
+
+/* --- window height ------------------------------------------------------
+   The Paper frames are height: fit-content, so the padding above the heading
+   and below the actions is always --spacing-6. A fixed window height left a
+   different amount of dead space on every screen, which is what made the
+   dialogs look inconsistently padded. */
+#winSetup.win { height: auto; }
+#winSetup .skin-setup.eai { flex: none; overflow: visible; }
+
+/* --- the in-progress marker ---------------------------------------------
+   macOS's spinner: eight tapered bars around a circle, each fading in turn,
+   rather than a rotating arc. Only the step actually running gets one —
+   steps below it stay as empty rings, so the eye lands on the live one.
+
+   Called .busy, not .spin: desktop.css already styles .skin-setup .spin for
+   the old setup app, and that rule was adding margin-right and a rotation
+   to this marker. */
+#winSetup .eai-row .mk.busy {
+  border: none;
+  background: none;
+  color: transparent;
+  /* Block, not flex: the rotated bars perturb a flex container's measured
+     box, which pushed the label of the running row out of the lane. */
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+}
+#winSetup .eai-row .mk.busy s {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1.7px; height: 4.4px;
+  margin: -7px 0 0 -0.85px;
+  border-radius: 1px;
+  background: var(--color-muted-foreground);
+  transform-origin: 0.85px 7px;
+  animation: mkSpin 0.9s linear infinite;
+}
+#winSetup .eai-row .mk.busy s:nth-child(1) { transform: rotate(0deg);   animation-delay: -0.9000s; }
+#winSetup .eai-row .mk.busy s:nth-child(2) { transform: rotate(45deg);  animation-delay: -0.7875s; }
+#winSetup .eai-row .mk.busy s:nth-child(3) { transform: rotate(90deg);  animation-delay: -0.6750s; }
+#winSetup .eai-row .mk.busy s:nth-child(4) { transform: rotate(135deg); animation-delay: -0.5625s; }
+#winSetup .eai-row .mk.busy s:nth-child(5) { transform: rotate(180deg); animation-delay: -0.4500s; }
+#winSetup .eai-row .mk.busy s:nth-child(6) { transform: rotate(225deg); animation-delay: -0.3375s; }
+#winSetup .eai-row .mk.busy s:nth-child(7) { transform: rotate(270deg); animation-delay: -0.2250s; }
+#winSetup .eai-row .mk.busy s:nth-child(8) { transform: rotate(315deg); animation-delay: -0.1125s; }
+
+@keyframes mkSpin {
+  0%   { opacity: 1; }
+  100% { opacity: 0.15; }
+}
+
+/* The running step reads as live; the ones below it haven't started. */
+#winSetup .eai-row.active .lbl { color: var(--color-foreground); }
+
+@media (prefers-reduced-motion: reduce) {
+  #winSetup .eai-row .mk.busy s { animation: none; opacity: 0.5; }
+}
+
+/* ==================================================================
+   ERROR STATES
+
+   Red is carried by the icon alone — no tinted rows, no red copy, no
+   red field borders. A failed value goes to --color-primary, which
+   reads as emphasis next to the muted values of the rows that passed.
+================================================================== */
+
+#winSetup.win { --color-destructive: oklch(57.7% 0.245 27.3); }
+
+#winSetup .eai-row .mk.fail {
+  background: var(--color-destructive);
+  color: #ffffff;
+  border: none;
+}
+/* An exclamation rather than a cross, for the explanation blocks. */
+#winSetup .mk.bang {
+  flex: 0 0 16px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-destructive);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 700; line-height: 12px;
+  font-style: normal;
+}
+#winSetup .mk.bang.sm { flex-basis: 14px; width: 14px; height: 14px; font-size: 9px; }
+
+/* The failed row: normal surface, emphasised value. */
+#winSetup .eai-row.failed .lbl { color: var(--color-foreground); }
+#winSetup .eai-row.failed .val { color: var(--color-primary); }
+
+/* Explanation block — same shell as the row list, so it belongs. */
+#winSetup .eai-note {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px 16px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+#winSetup .eai-note[hidden] { display: none; }
+#winSetup .eai-note .tx { display: flex; flex-direction: column; gap: 4px; }
+#winSetup .eai-note .tx b {
+  font-size: 14px; line-height: 18px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+}
+#winSetup .eai-note .tx span {
+  font-size: 13px; line-height: 18px;
+  color: var(--color-muted-foreground);
+}
+
+/* Inline field error: icon plus primary text, no red border on the field. */
+#winSetup .eai-inline-err { display: flex; align-items: center; gap: 8px; }
+#winSetup .eai-inline-err[hidden] { display: none; }
+#winSetup .eai-inline-err span {
+  font-size: 13px; line-height: 18px;
+  color: var(--color-primary);
+}
+
+/* A blocked action reads as unavailable rather than dangerous. */
+#winSetup .eai-btn.off,
+#winSetup .eai-btn.primary.off {
+  background: oklch(97% 0 0);
+  border-color: var(--color-border);
+  color: var(--color-muted-foreground);
+  cursor: default;
+}

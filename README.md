@@ -22,17 +22,19 @@ list of steps at the top of the file and one async function each.
 ## Flows
 
 Each flow is a self-contained journey a tester can be handed as one URL and
-nothing else. The two studies start at a mocked Google search; the CLI
-prototype starts later, on a machine where EAI Setup is already installed.
+nothing else. Most start at a mocked Google search; the CLI prototype starts
+later, on a machine where EAI Setup is already installed.
 
 | Flow | Path | Test URL | State |
 | --- | --- | --- | --- |
 | **npx flow** | `npx/` | [/npx](https://eai-website.github.io/prototypes/npx) | Complete: search → deployed app |
 | **eai setup app flow** | `setup/` | [/setup](https://eai-website.github.io/prototypes/setup) | Search → download → Applications → sign-in |
-| **EAI CLI** | `cli/` | [/cli](https://eai-website.github.io/prototypes/cli) | In progress — the one being worked on |
+| **EAI CLI** | `cli/` | [/cli](https://eai-website.github.io/prototypes/cli) | In progress — the CLI experience |
+| **App install** | `install/` | [/install](https://eai-website.github.io/prototypes/install) | In progress — getting the app onto the machine |
 
-`index.html` at the root is an internal launch pad listing all three. Testers
-don't need it — give them the flow's URL directly.
+`index.html` at the root is an internal launch pad, grouping the flows under
+the question each one answers. Testers don't need it — give them the flow's URL
+directly.
 
 They all run on the same fake macOS desktop (`assets/desktop.*`).
 
@@ -53,11 +55,11 @@ What that means in practice:
 
 To start the next iteration, copy the folder — `cli/` → `cli-2/`, plus a journey
 file beside `assets/cli.js` — and add a card to the launch pad. The old URL
-carries on working.
+carries on working. `install/` began exactly this way, as a copy of `setup/`.
 
 ## Hosting
 
-**Live:** <https://eai-website.github.io/prototypes/> — [/npx](https://eai-website.github.io/prototypes/npx), [/setup](https://eai-website.github.io/prototypes/setup) and [/cli](https://eai-website.github.io/prototypes/cli)
+**Live:** <https://eai-website.github.io/prototypes/> — [/npx](https://eai-website.github.io/prototypes/npx), [/setup](https://eai-website.github.io/prototypes/setup), [/cli](https://eai-website.github.io/prototypes/cli) and [/install](https://eai-website.github.io/prototypes/install)
 
 GitHub Pages, published by `.github/workflows/pages.yml` on every push to
 `main`. No build step: the repo root is the site.
@@ -147,6 +149,54 @@ path and chosen app across the hand-off.
 The CLI half is still the npx journey's content — describe, clarify, prototype,
 build, admin, test, deploy. That's the placeholder being replaced.
 
+## App install
+
+Getting EAI onto the machine, end to end:
+
+1. **The marketing site** — not a search. Whether people can find EAI is the
+   onboarding study's question and it's already answered
+2. **The install button** — the download flies into the dock and the disk
+   image opens
+3. **Drag to Applications** (or double-click) — the app lands in the dock
+4. **Open it and set up** — sign in through the browser, name the app, choose
+   a parent folder, initialise
+5. **Ready to build** — your coding app opens on the new project, at the
+   prompt. `/cli` picks up from here
+
+**The download doesn't open itself.** It lands in Downloads and badges, and
+you open the disk image from the stack — Safari hasn't opened safe files by
+default for years, and whether people make that step unaided is the thing worth
+testing rather than papering over.
+
+**The disk image opens with a sequence** rather than appearing fully formed:
+the wordmark fades in and rises, lifts from the middle of the window into a
+title, and only then do the two icons and the hint come up underneath. Beats
+live in `BEATS` at the top of the sequence in `assets/install.js`.
+
+**The app that follows is skinned to match** — white surface, content sitting
+directly on it instead of inside a tinted card, no app header, no legal footer,
+one black primary per screen. The flow is untouched: sign-in still goes out to
+the browser, the folder chooser still opens, the hand-off still happens. All of
+it is `assets/install.css`, scoped to `.dmg-anim` and `#winSetup`, so `/setup`
+keeps the look it was tested on. **⌘K → Replay the intro** re-runs the opening.
+`prefers-reduced-motion` skips to the end state.
+
+`assets/install.js` is the journey. It began as a copy of the setup-app study,
+so nothing is improved yet — this is the baseline, on a URL that can change
+without touching `/setup`. The study's "experiment done" card is gone, since
+this one is for design rather than testing.
+
+**Variations.** The point of this one is to vary it. Copy the folder and its
+journey file:
+
+```bash
+cp -r install install-2 && cp assets/install.js assets/install-2.js
+# then point install-2/index.html at ../assets/install-2.js
+```
+
+Add a card to the "Improving the app install" row and both are clickable, side
+by side, each on its own URL.
+
 ## What the prototype won't fake
 
 A web page can't bounce a dock icon or launch an app, so copying a command
@@ -168,15 +218,21 @@ assets/                shared by every flow
   terminal.js      the npx journey
   cli-setup.js     the CLI flow's starting point: EAI Setup, already installed
   cli.js           the CLI journey, from the hand-off onwards
-  setup.js         the setup-app flow: disk image, drag to Applications
+  setup.js         the setup-app study: disk image, drag to Applications
+  install.js       the app-install prototype — setup.js's mutable copy,
+                   one file per variation from here
+  install.css      /install's own styles: the disk-image opening sequence
 npx/                   the onboarding study — finished, leave it alone
   index.html       desktop shell for the npx flow
   pages/           what the browser window shows
 setup/                 the setup-app study — finished, leave it alone
   index.html
   pages/
-cli/                   the CLI prototype — this is the one that changes
+cli/                   the CLI prototype — the CLI experience
   index.html       desktop with EAI Setup installed and open
+  pages/
+install/               app install — marketing site to ready-to-build
+  index.html
   pages/
 ```
 
