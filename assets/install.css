@@ -23,6 +23,10 @@
   justify-content: center;
   gap: 0;
   background: #ffffff;
+  /* Pushes the centred icon row down so the finished composition —
+     title, subtext, icons — sits centred as a group rather than riding
+     high with dead space underneath. */
+  padding-top: 64px;
 }
 
 /* The window chrome goes white too, so the title bar stops being a
@@ -34,14 +38,15 @@
 
 /* --- 1. the wordmark arriving ---------------------------------------- */
 
-/* Dead centre until the lift, so it owns the window on its own. */
+/* Dead centre until the lift, so it owns the window on its own. The
+   subtext rides with it, arriving underneath once the title has settled. */
 .dmg-anim .dmg-intro {
   position: absolute;
   left: 0; right: 0;
   top: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   transform: translateY(-50%);
   transition: transform 0.62s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -52,10 +57,13 @@
    here is white, one grey and near-black, following the app screens. */
 .dmg-anim .dmg-mark img {
   display: block;
-  height: 30px;
+  height: 34px;
   width: auto;
   opacity: 0;
   filter: saturate(0) brightness(0.45);
+  /* Shrinks into a title rather than being scaled, so the subtext beneath
+     it keeps its own size. */
+  transition: height 0.62s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .dmg-anim.play .dmg-mark img {
@@ -69,9 +77,8 @@
 
 /* --- 2. lifting into a title ----------------------------------------- */
 
-.dmg-anim.lift .dmg-intro {
-  transform: translateY(calc(-50% - 92px)) scale(0.76);
-}
+.dmg-anim.lift .dmg-intro { transform: translateY(calc(-50% - 84px)); }
+.dmg-anim.lift .dmg-mark img { height: 24px; }
 
 /* --- 3. the icons arriving ------------------------------------------- */
 
@@ -85,8 +92,17 @@
 }
 .dmg-anim.reveal .dmg-row { opacity: 1; transform: translateY(0); }
 
-/* The hint follows a beat later — it's the least urgent thing here. */
+/* Sits under the title now, not pinned to the bottom of the window, and
+   follows a beat behind the icons. */
+/* Hangs below the wordmark rather than sitting in the flow with it: while
+   it's still invisible during the fade-in beat, in-flow it would push the
+   wordmark off dead centre. */
 .dmg-anim .dmg-hint {
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  bottom: auto;
+  margin-top: 14px;
   opacity: 0;
   color: #71717a;
   transition: opacity 0.42s ease 0.16s;
@@ -95,16 +111,21 @@
 
 /* --- the two tiles, as outlines rather than raised objects ------------ */
 
+/* More air between an icon and its name than the shared 10px. */
+.dmg-anim .dmg-item { gap: 18px; }
+
 .dmg-anim .dmg-item .tile {
   box-shadow: none;
   border: 1px solid #e8e8ea;
   border-radius: 22px;
 }
+/* The real macOS Tahoe folder, so it needs no tile drawn behind it. */
 .dmg-anim #dmgApplications .tile {
-  background: #f4f4f5;
-  border-color: #e8e8ea;
-  filter: grayscale(1);
+  background: none;
+  border: none;
+  filter: none;
 }
+.dmg-anim #dmgApplications .tile img { width: 84px; height: 84px; }
 .dmg-anim #dmgApplications.over .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.16); }
 .dmg-anim #dmgApplications.filled .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.28); }
 .dmg-anim .arrow { color: #c9c9ce; }
@@ -116,7 +137,8 @@
   .dmg-anim .dmg-mark img { opacity: 1; }
   .dmg-anim.play .dmg-mark img { animation: none; }
   .dmg-anim .dmg-intro,
-  .dmg-anim.lift .dmg-intro { transition: none; transform: translateY(calc(-50% - 92px)) scale(0.76); }
+  .dmg-anim.lift .dmg-intro { transition: none; transform: translateY(calc(-50% - 84px)); }
+  .dmg-anim .dmg-mark img, .dmg-anim.lift .dmg-mark img { transition: none; height: 24px; }
   .dmg-anim .dmg-row,
   .dmg-anim .dmg-hint { opacity: 1; transform: none; transition: none; }
 }
