@@ -25,8 +25,9 @@
   background: #ffffff;
   /* Pushes the centred icon row down so the finished composition —
      title, subtext, icons — sits centred as a group rather than riding
-     high with dead space underneath. */
-  padding-top: 64px;
+     high with dead space underneath. Tuned against the lift below and
+     the window's 58% height: change one and all three need re-solving. */
+  padding-top: 137px;
 }
 
 /* The window chrome goes white too, so the title bar stops being a
@@ -42,12 +43,16 @@
    subtext rides with it, arriving underneath once the title has settled. */
 .dmg-anim .dmg-intro {
   position: absolute;
-  left: 0; right: 0;
+  left: 50%;
   top: 50%;
+  /* Only as wide as the wordmark, so the subtext beneath wraps to the logo
+     rather than running past it — the block tapers instead of squaring off.
+     max-content means it tracks the wordmark as that shrinks on the lift. */
+  width: max-content;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
   transition: transform 0.62s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -77,7 +82,7 @@
 
 /* --- 2. lifting into a title ----------------------------------------- */
 
-.dmg-anim.lift .dmg-intro { transform: translateY(calc(-50% - 84px)); }
+.dmg-anim.lift .dmg-intro { transform: translate(-50%, calc(-50% - 120px)); }
 .dmg-anim.lift .dmg-mark img { height: 24px; }
 
 /* --- 3. the icons arriving ------------------------------------------- */
@@ -102,17 +107,31 @@
   top: 100%;
   left: 0; right: 0;
   bottom: auto;
-  margin-top: 14px;
+  margin-top: 42px;
   opacity: 0;
-  color: #71717a;
+  color: #a1a1aa;
+  font-size: 13.5px;
+  line-height: 1.5;
   transition: opacity 0.42s ease 0.16s;
 }
+/* The two nouns you act on carry the weight; the rest recedes. */
+.dmg-anim .dmg-hint b { font-weight: 500; color: #3f3f46; }
 .dmg-anim.reveal .dmg-hint { opacity: 1; }
 
 /* --- the two tiles, as outlines rather than raised objects ------------ */
 
 /* More air between an icon and its name than the shared 10px. */
 .dmg-anim .dmg-item { gap: 18px; }
+
+/* Names sit in pills rather than floating as loose captions. */
+.dmg-anim .dmg-item .nm {
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: #f1f1f3;
+  font-size: 13px;
+  line-height: 16px;
+  color: #3f3f46;
+}
 
 .dmg-anim .dmg-item .tile {
   box-shadow: none;
@@ -128,7 +147,13 @@
 .dmg-anim #dmgApplications .tile img { width: 84px; height: 84px; }
 .dmg-anim #dmgApplications.over .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.16); }
 .dmg-anim #dmgApplications.filled .tile { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.28); }
-.dmg-anim .arrow { color: #c9c9ce; }
+.dmg-anim .arrow {
+  display: flex;
+  align-items: center;
+  font-size: 0;
+  color: #c2c2c8;
+}
+.dmg-anim .arrow svg { width: 28px; height: 16px; display: block; }
 .dmg-anim .dmg-item { color: #171717; }
 
 /* --- reduced motion --------------------------------------------------- */
@@ -137,7 +162,7 @@
   .dmg-anim .dmg-mark img { opacity: 1; }
   .dmg-anim.play .dmg-mark img { animation: none; }
   .dmg-anim .dmg-intro,
-  .dmg-anim.lift .dmg-intro { transition: none; transform: translateY(calc(-50% - 84px)); }
+  .dmg-anim.lift .dmg-intro { transition: none; transform: translate(-50%, calc(-50% - 120px)); }
   .dmg-anim .dmg-mark img, .dmg-anim.lift .dmg-mark img { transition: none; height: 24px; }
   .dmg-anim .dmg-row,
   .dmg-anim .dmg-hint { opacity: 1; transform: none; transition: none; }

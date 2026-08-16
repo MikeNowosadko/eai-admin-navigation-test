@@ -25,6 +25,9 @@ const dmgApp = document.getElementById('dmgApp');
 const dmgTarget = document.getElementById('dmgApplications');
 const dmgHint = document.getElementById('dmgHint');
 
+// The two nouns you act on are emphasised, so this is markup not text.
+const HINT_DEFAULT = 'To install, drag <b>EAI Setup</b> to <b>Applications</b>';
+
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ============================ 1. INSTALL ========================== */
@@ -55,7 +58,7 @@ function resetDmg() {
   dmgApp.style.transform = '';
   dmgApp.hidden = false;
   dmgTarget.classList.remove('over', 'filled');
-  dmgHint.textContent = 'Drag EAI Setup onto the Applications folder — or double-click it.';
+  dmgHint.innerHTML = HINT_DEFAULT;
   playIntro();
 }
 
@@ -109,7 +112,7 @@ function install() {
   installed = true;
   dmgApp.hidden = true;
   dmgTarget.classList.add('filled');
-  dmgHint.textContent = 'Copied to Applications.';
+  dmgHint.innerHTML = 'Copied to <b>Applications</b>';
 
   const item = dockItem('setup');
   item.classList.remove('tucked');

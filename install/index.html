@@ -71,7 +71,7 @@
   </div>
 
   <!-- the mounted disk image -------------------------------------- -->
-  <div class="win hidden" id="winDmg" style="left:30%; top:26%; width:44%; height:46%;">
+  <div class="win hidden" id="winDmg" style="left:29%; top:20%; width:46%; height:58%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
       <span class="wt">EAI Setup</span>
@@ -84,18 +84,20 @@
         <span class="dmg-mark">
           <img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
         </span>
-        <div class="dmg-hint" id="dmgHint">Drag EAI Setup onto the Applications folder — or double-click it.</div>
+        <div class="dmg-hint" id="dmgHint">To install, drag <b>EAI Setup</b> to <b>Applications</b></div>
       </div>
 
       <div class="dmg-row" id="dmgRow">
         <div class="dmg-item" id="dmgApp">
           <span class="tile"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
-          EAI Setup
+          <span class="nm">EAI Setup</span>
         </div>
-        <span class="arrow">&#10230;</span>
+        <span class="arrow" aria-hidden="true">
+          <svg viewBox="0 0 28 16" fill="none"><path d="M3 8h19M16.5 2.5 22.5 8l-6 5.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
         <div class="dmg-item" id="dmgApplications">
           <span class="tile"><img src="../assets/logos/applications-folder.png" alt="" /></span>
-          Applications
+          <span class="nm">Applications</span>
         </div>
       </div>
 
