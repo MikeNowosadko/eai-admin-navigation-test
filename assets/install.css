@@ -501,12 +501,52 @@
   color: var(--color-muted-foreground);
 }
 
-/* Inline field error: icon plus primary text, no red border on the field. */
-#winSetup .eai-inline-err { display: flex; align-items: center; gap: 8px; }
-#winSetup .eai-inline-err[hidden] { display: none; }
-#winSetup .eai-inline-err span {
-  font-size: 13px; line-height: 18px;
+/* --- field descriptions and errors -------------------------------------
+
+   Why-it's-being-asked sits under each control. When that field is wrong
+   the error takes its place rather than stacking beneath it, so the form
+   doesn't grow and shove the buttons around mid-correction.
+
+   Placement follows shadcn — the message belongs to the field, not to the
+   bottom of the dialog. Colour doesn't: red stays on the icon, and the
+   words stay --color-primary. */
+
+#winSetup .eai-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 17px;
+  color: var(--color-muted-foreground);
+}
+#winSetup .eai-field.invalid .eai-desc { display: none; }
+
+#winSetup .eai-err { display: flex; align-items: flex-start; gap: 8px; }
+#winSetup .eai-err[hidden] { display: none; }
+#winSetup .eai-err span {
+  font-size: 12.5px; line-height: 17px;
   color: var(--color-primary);
+}
+#winSetup .eai-err .mk.bang.sm { margin-top: 1px; }
+
+/* --- shake ---------------------------------------------------------------
+   Short and small: enough to pull the eye to the field that needs fixing,
+   not enough to feel like a rejection. */
+#winSetup .eai-field.shake .eai-input,
+#winSetup .eai-field.shake .eai-combo {
+  animation: eaiShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes eaiShake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-5px); }
+  30%      { transform: translateX(4px); }
+  45%      { transform: translateX(-3px); }
+  60%      { transform: translateX(2px); }
+  80%      { transform: translateX(-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #winSetup .eai-field.shake .eai-input,
+  #winSetup .eai-field.shake .eai-combo { animation: none; }
 }
 
 /* A blocked action reads as unavailable rather than dangerous. */

@@ -262,6 +262,7 @@ function escapeHtml(s) {
 
 function chooseFolder() {
   if (!selected) return;
+  clearFieldError('folder');
   const base = currentDir === 'gareth' ? '/Users/gareth' : `/Users/gareth/${currentDir}`;
   projFolder.value = `${base}/${selected}`;
   hideWin('finder');
@@ -347,17 +348,53 @@ function setRowState(row, state, value) {
 
 function markDone(row, value) { setRowState(row, 'done', value); }
 
+
+/* --- field errors ----------------------------------------------------- */
+
+/* The message belongs to the field it's about, and the field shakes once so
+   the eye goes there. Re-triggering needs the class off and a reflow, or the
+   animation is treated as already running and nothing moves. */
+
+function fieldEl(name) {
+  return document.querySelector(`#winSetup .eai-field[data-field="${name}"]`);
+}
+
+function setFieldError(name, message) {
+  const f = fieldEl(name);
+  if (!f) return;
+  const err = f.querySelector('.eai-err');
+  err.querySelector('span').textContent = message;
+  err.hidden = false;
+  f.classList.add('invalid');
+
+  f.classList.remove('shake');
+  void f.offsetWidth;
+  f.classList.add('shake');
+}
+
+function clearFieldError(name) {
+  const f = fieldEl(name);
+  if (!f) return;
+  f.querySelector('.eai-err').hidden = true;
+  f.classList.remove('invalid', 'shake');
+}
+
+function clearAllFieldErrors() {
+  document.querySelectorAll('#winSetup .eai-field').forEach((f) => {
+    f.querySelector('.eai-err').hidden = true;
+    f.classList.remove('invalid', 'shake');
+  });
+}
+
 document.getElementById('createApp').addEventListener('click', async () => {
   const name = projName.value.trim() || 'customer-portal';
   const folder = projFolder.value.trim();
-  const status = document.getElementById('startStatus');
 
   if (!folder) {
-    status.hidden = false;
-    status.textContent = 'Choose a parent folder first.';
+    setFieldError('folder', "Pick where the app should live before we create it.");
     return;
   }
-  status.hidden = true;
+  clearAllFieldErrors();
 
   projName.value = name;
   const path = `${folder}/${name}`;
@@ -397,6 +434,9 @@ document.getElementById('createApp').addEventListener('click', async () => {
 // Both Back buttons step the flow back rather than doing nothing.
 document.getElementById('startBack')?.addEventListener('click', () => showScreen('signin'));
 document.getElementById('runBack')?.addEventListener('click', () => showScreen('start'));
+
+// Typing resolves the name collision, so the error shouldn't linger.
+projName.addEventListener('input', () => clearFieldError('name'));
 
 // "Change app" is display-only in the design; say so rather than fake it.
 document.getElementById('changeApp')?.addEventListener('click', () => {
@@ -545,11 +585,10 @@ const FAILURES = {
   start() {
     showScreen('start');
     if (!projName.value) projName.value = 'contract-renewals';
-    const err = document.getElementById('nameErr');
-    err.querySelector('span').textContent =
+    if (!projFolder.value) projFolder.value = '/Users/gareth/Downloads';
+    setFieldError('name',
       `A folder called ${projName.value} already exists in /Users/gareth/Downloads. `
-      + 'Pick another name, or choose a different folder.';
-    err.hidden = false;
+      + 'Pick another name, or choose a different folder.');
     document.querySelector('[data-screen="start"] .eai-head p').textContent =
       'That name is already taken in this folder.';
     document.getElementById('createApp').classList.add('off');
@@ -591,7 +630,7 @@ function clearFailures() {
   document.getElementById('setupCreate').textContent = 'Create an EAI account';
   document.getElementById('setupSignin').classList.remove('off');
 
-  document.getElementById('nameErr').hidden = true;
+  clearAllFieldErrors();
   document.querySelector('[data-screen="start"] .eai-head p').textContent =
     'Name your app and choose where it lives.';
   document.getElementById('createApp').classList.remove('off');

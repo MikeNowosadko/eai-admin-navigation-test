@@ -152,30 +152,35 @@
             <p>Name your app and choose where it lives.</p>
           </div>
 
+          <!-- Each field says why it's being asked, in plain terms — the
+               people doing this are not developers. The error line replaces
+               the description rather than stacking under it. -->
           <div class="eai-fields">
-            <div class="eai-field">
+            <div class="eai-field" data-field="name">
               <label for="projName">Project name</label>
               <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
-              <div class="eai-inline-err" id="nameErr" hidden>
-                <i class="mk fail bang sm">!</i>
-                <span></span>
-              </div>
+              <p class="eai-desc">The name your team will see, and the folder we create on your Mac. Lowercase words with hyphens work best.</p>
+              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
 
-            <div class="eai-field">
+            <div class="eai-field" data-field="folder">
               <label for="projFolder">Parent folder</label>
               <div class="eai-combo">
                 <input type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
                 <button class="eai-inner" type="button" id="chooseFolder">Choose folder</button>
               </div>
+              <p class="eai-desc">Where your app's files will live. We make a new folder inside this one &mdash; nothing already in there is touched.</p>
+              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
 
-            <div class="eai-field">
+            <div class="eai-field" data-field="app">
               <label>Your coding app</label>
               <div class="eai-combo">
                 <span class="val-sans">GitHub Copilot</span>
                 <button class="eai-inner muted" type="button" id="changeApp">Change app</button>
               </div>
+              <p class="eai-desc">Where you'll describe what you want built. EAI opens here once setup finishes.</p>
+              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
           </div>
 
@@ -183,7 +188,6 @@
             <button class="eai-btn" type="button" id="startBack">Back</button>
             <button class="eai-btn primary" type="button" id="createApp">Create and initialise app</button>
           </div>
-          <div class="eai-status" id="startStatus" hidden></div>
         </div>
 
         <!-- 1GL-0 — initialising -->
