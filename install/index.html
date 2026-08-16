@@ -66,6 +66,29 @@
       <button class="navbtn" id="browFwd" type="button" title="Forward">&#8250;</button>
       <button class="navbtn" id="browReload" type="button" title="Reload">&#8635;</button>
       <div class="addr"><span class="lock">&#128274;</span><span id="browUrl">google.com</span></div>
+
+      <!-- Safari's downloads button: appears when a download starts, fills a
+           progress ring, then opens a list. macOS stopped flying files into
+           the dock a long time ago; this is what people actually see. -->
+      <button class="dl-btn" id="dlBtn" type="button" title="Downloads" hidden>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4v10M7.5 10.5 12 15l4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M5 18h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span class="ring" id="dlRing"></span>
+      </button>
+
+      <div class="dl-pop" id="dlPop" hidden>
+        <div class="dl-pop-hd">Downloads</div>
+        <button class="dl-row" id="dlItem" type="button">
+          <span class="dl-ico"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
+          <span class="dl-meta">
+            <b>EAI-Setup.dmg</b>
+            <i id="dlSize">84 MB</i>
+          </span>
+          <span class="dl-open">Open</span>
+        </button>
+      </div>
     </div>
     <iframe class="brow-frame" id="browFrame" src="pages/home.html" title="Browser"></iframe>
   </div>
@@ -152,34 +175,34 @@
             <p>Name your app and choose where it lives.</p>
           </div>
 
-          <!-- Each field says why it's being asked, in plain terms — the
-               people doing this are not developers. The error line replaces
-               the description rather than stacking under it. -->
+          <!-- shadcn order: label, description, control, message. The why sits
+               under the title where it's read before the field is filled in;
+               the error sits under the control it's about. -->
           <div class="eai-fields">
             <div class="eai-field" data-field="name">
               <label for="projName">Project name</label>
-              <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
               <p class="eai-desc">The name your team will see, and the folder we create on your Mac. Lowercase words with hyphens work best.</p>
+              <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
               <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
 
             <div class="eai-field" data-field="folder">
               <label for="projFolder">Parent folder</label>
+              <p class="eai-desc">Where your app's files will live. We make a new folder inside this one &mdash; nothing already in there is touched.</p>
               <div class="eai-combo">
                 <input type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
                 <button class="eai-inner" type="button" id="chooseFolder">Choose folder</button>
               </div>
-              <p class="eai-desc">Where your app's files will live. We make a new folder inside this one &mdash; nothing already in there is touched.</p>
               <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
 
             <div class="eai-field" data-field="app">
               <label>Your coding app</label>
+              <p class="eai-desc">Where you'll describe what you want built. EAI opens here once setup finishes.</p>
               <div class="eai-combo">
                 <span class="val-sans">GitHub Copilot</span>
                 <button class="eai-inner muted" type="button" id="changeApp">Change app</button>
               </div>
-              <p class="eai-desc">Where you'll describe what you want built. EAI opens here once setup finishes.</p>
               <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
           </div>

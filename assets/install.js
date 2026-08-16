@@ -34,24 +34,87 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let installed = false;
 
-// A finished download lands in Downloads and stops there. Safari can be set
-// to open safe files automatically, but it isn't by default any more — and
-// whether people find their way from the badge to the disk image on their own
-// is exactly what this prototype should be testing, not papering over.
-setDownloadHandler(() => 'handled');
+/* --- the download, the way Safari does it ------------------------------
 
-// Opening it is the user's move: click the Downloads stack. Captured on the
-// dock so desktop.js's own "nothing to see here" handler never runs.
-document.querySelector('.dock')?.addEventListener('click', (e) => {
-  if (!e.target.closest('.item[data-app="downloads"]')) return;
-  if (!downloadCount) return;               // nothing downloaded yet
+   No flight to the dock: macOS hasn't done that in years. The file flies
+   into the browser's downloads button, which pops into the toolbar and
+   fills a progress ring. Opening the disk image is then the user's move —
+   whether people find their way there unaided is the thing worth watching.
+*/
+
+const dlBtn = document.getElementById('dlBtn');
+const dlRing = document.getElementById('dlRing');
+const dlPop = document.getElementById('dlPop');
+
+setDownloadStartHandler((data) => {
+  startBrowserDownload(data && data.rect);
+  return 'handled';
+});
+
+function startBrowserDownload(rect) {
+  dlBtn.hidden = false;
+  dlBtn.classList.remove('done', 'bounce');
+  dlRing.style.setProperty('--p', 0);
+
+  flyToToolbar(rect);
+
+  // Fill the ring over roughly the time an 84 MB file would take.
+  const total = 1400;
+  const start = performance.now();
+  const tick = (now) => {
+    const p = Math.min(1, (now - start) / total);
+    dlRing.style.setProperty('--p', Math.round(p * 100));
+    if (p < 1) return requestAnimationFrame(tick);
+    dlBtn.classList.add('done', 'bounce');
+    setTimeout(() => dlBtn.classList.remove('bounce'), 520);
+  };
+  requestAnimationFrame(tick);
+}
+
+/** The file itself, arcing from the button on the page up to the toolbar. */
+function flyToToolbar(rect) {
+  if (!rect) return;
+  const frame = desktop.frame.getBoundingClientRect();
+  const target = dlBtn.getBoundingClientRect();
+
+  const fly = document.createElement('div');
+  fly.className = 'dl-fly';
+  fly.innerHTML = '<img src="../assets/logos/eai-mark-dark.svg" alt="" />';
+  const x = frame.left + rect.left + rect.width / 2 - 17;
+  const y = frame.top + rect.top + rect.height / 2 - 17;
+  fly.style.left = `${x}px`;
+  fly.style.top = `${y}px`;
+  document.body.appendChild(fly);
+
+  const dx = target.left + target.width / 2 - (x + 17);
+  const dy = target.top + target.height / 2 - (y + 17);
+
+  fly.animate([
+    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+    { transform: `translate(${dx * 0.5}px, ${dy * 0.45 - 40}px) scale(0.8)`, opacity: 1, offset: 0.6 },
+    { transform: `translate(${dx}px, ${dy}px) scale(0.25)`, opacity: 0 },
+  ], { duration: 620, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }).onfinish = () => fly.remove();
+}
+
+dlBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  const badge = document.querySelector('.dock .item[data-app="downloads"] .badge');
-  if (badge) badge.hidden = true;
+  dlPop.hidden = !dlPop.hidden;
+});
+
+// Clicking the file opens the disk image, as it would in Safari.
+document.getElementById('dlItem').addEventListener('click', () => {
+  dlPop.hidden = true;
   resetDmg();
   focusWin('dmg');
   syncDock();
-}, true);
+});
+
+// Anywhere else closes the list.
+document.addEventListener('click', (e) => {
+  if (dlPop.hidden) return;
+  if (e.target.closest('#dlPop') || e.target.closest('#dlBtn')) return;
+  dlPop.hidden = true;
+});
 
 function resetDmg() {
   installed = false;

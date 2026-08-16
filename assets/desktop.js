@@ -396,6 +396,10 @@ function downloadApp(name, rect) {
 let onDownloaded = null;
 function setDownloadHandler(fn) { onDownloaded = fn; }
 
+/** Flows can override the download presentation entirely (see install.js). */
+let onDownloadStart = null;
+function setDownloadStartHandler(fn) { onDownloadStart = fn; }
+
 /* --- ⌘K panel -------------------------------------------------------- */
 
 const sheet = document.getElementById('sheet');
@@ -557,6 +561,10 @@ window.addEventListener('message', (e) => {
     if (msg.action === 'copied') desktop.clipboard = (msg.data && msg.data.text) || '';
 
     if (msg.action === 'download-app') {
+      // A flow can own the whole download presentation — /install shows it
+      // arriving in Safari's toolbar rather than flying to the dock, which
+      // is what macOS actually does now.
+      if (typeof onDownloadStart === 'function' && onDownloadStart(msg.data) === 'handled') return;
       downloadApp(msg.data.app, msg.data.rect);
       return;
     }
