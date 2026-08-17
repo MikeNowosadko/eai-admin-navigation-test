@@ -20,6 +20,9 @@ const WINDOWS = {
   setup: document.getElementById('winSetup'),
   dmg: document.getElementById('winDmg'),
   finder: document.getElementById('winFinder'),
+  // The EAI app's own chat window (/chat only) — a second window of the same
+  // app as `setup`, not a separate app.
+  chat: document.getElementById('winChat'),
 };
 Object.keys(WINDOWS).forEach((k) => { if (!WINDOWS[k]) delete WINDOWS[k]; });
 
@@ -218,7 +221,7 @@ function focusWin(name) {
   win.classList.remove('hidden');
   win.classList.add('focused');
   win.style.zIndex = ++desktop.z;
-  const MENU = { setup: 'EAI Setup', dmg: 'Finder', browser: 'Safari' };
+  const MENU = { setup: 'EAI Setup', chat: 'Enterprise AI', dmg: 'Finder', browser: 'Safari' };
   desktop.menuApp.textContent = name === 'host'
     ? (HOSTS[win.dataset.app] || HOSTS.terminal).menu
     : (MENU[name] || 'Safari');
@@ -233,6 +236,14 @@ function dockItem(name) {
   return document.querySelector(`.dock .item[data-app="${name}"]`);
 }
 
+/**
+ * Which window the EAI app's dock icon brings forward. Setup is the only one
+ * in most flows; /chat hands the icon over to the chat window once the app
+ * gets there, since by then that's what the app is.
+ */
+let appWindow = 'setup';
+function setAppWindow(name) { appWindow = name; }
+
 /** Dots under the dock icons follow which windows are actually open. */
 function syncDock() {
   const host = desktop.wins.host;
@@ -241,7 +252,11 @@ function syncDock() {
     const app = item.dataset.app;
     let open = false;
     if (app === 'browser') open = !desktop.wins.browser.classList.contains('hidden');
-    else if (app === 'setup') open = desktop.wins.setup && !desktop.wins.setup.classList.contains('hidden');
+    else if (app === 'setup') {
+      // One app, two windows: the dot stays lit while either is open.
+      const wins = [desktop.wins.setup, desktop.wins.chat].filter(Boolean);
+      open = wins.some((w) => !w.classList.contains('hidden'));
+    }
     else if (HOSTS[app]) open = hostOpen && app === host.dataset.app;
     item.classList.toggle('open', open);
   });
@@ -314,7 +329,7 @@ document.querySelectorAll('.dock .item').forEach((item) => {
       hideCoach();
       window.dispatchEvent(new CustomEvent('terminal-opened'));
     } else if (app === 'setup') {
-      focusWin('setup');
+      focusWin(appWindow);
     } else if (app === 'downloads') {
       const badge = item.querySelector('.badge');
       coach('Downloads', downloadCount
@@ -346,7 +361,7 @@ function downloadApp(name, rect) {
   if (!item || !dl) return;
 
   const frame = desktop.frame.getBoundingClientRect();
-  const size = 46;
+  const size = 56;
   const startX = frame.left + rect.left + rect.width / 2 - size / 2;
   const startY = frame.top + rect.top + rect.height / 2 - size / 2;
 

@@ -100,6 +100,59 @@
       </div>
     </section>
 
+    <section class="row">
+      <h2 class="row-title">What is the app?</h2>
+
+      <p class="kbd-note rows-note">
+        The two scenarios under test. <strong>1</strong> is the app as EAI
+        Setup: the six steps the real installer runs, ending in a choice of
+        AI app. <strong>2</strong> is the app as the coding agent: many of
+        the same steps, but you finish in a chat rather than in Copilot.
+        The third card is the spike &mdash; how much of the setup can stop
+        being the user's problem if 2 is where we land.
+      </p>
+
+      <div class="row-cards">
+
+        <a class="fork-card" href="install/index.html">
+          <h2>1. App as EAI Setup</h2>
+          <p>The six steps, then <strong>pick your AI app</strong>. GitHub Copilot opens on the new project and you build there.</p>
+          <ul>
+            <li>Install, prerequisites, sign in, name it</li>
+            <li>Ends at the <code>/eai</code> prompt in Copilot</li>
+            <li>Previews open in Safari</li>
+            <li>The EAI app's job is done</li>
+          </ul>
+          <div class="go"><span class="btn btn-ghost">Run scenario 1 &rarr;</span></div>
+        </a>
+
+        <a class="fork-card" href="chat/index.html">
+          <h2>2. App as a coding agent</h2>
+          <p>The same steps, but the app <strong>opens a chat</strong> instead of another app. Building happens right there.</p>
+          <ul>
+            <li>Identical to 1 until you're signed in</li>
+            <li>Previews open beside the chat</li>
+            <li>&ldquo;Open in&hellip;&rdquo; moves the session to your editor</li>
+            <li>Moving is offered, never required</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run scenario 2 &rarr;</span></div>
+        </a>
+
+        <a class="fork-card" href="agent/index.html">
+          <h2>2b. The spike: hide the setup</h2>
+          <p>Setup only. Install, sign in, and the <strong>setup happens in the chat</strong> before you type anything. Stops at &ldquo;ready&rdquo;.</p>
+          <ul>
+            <li>One screen before the chat: sign in</li>
+            <li>&ldquo;Set it up for me&rdquo; &mdash; or choose it yourself</li>
+            <li>Nothing installed on the Mac at all&hellip;</li>
+            <li>&hellip;until you ask for your own editor</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run the spike &rarr;</span></div>
+        </a>
+
+      </div>
+    </section>
+
   </main>
 
 </body>

@@ -4,14 +4,19 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Prototype — EAI app install</title>
+<title>Prototype — Enterprise AI as the agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/proto.css" />
 <link rel="stylesheet" href="../assets/desktop.css" />
+<!-- The disk image is /install's, unchanged — getting the app onto the
+     machine is the one thing no amount of agency can hide. chat.css is
+     shared with /chat: same chat window, different amount of setup in
+     front of it. -->
 <link rel="stylesheet" href="../assets/install.css" />
+<link rel="stylesheet" href="../assets/chat.css" />
 </head>
 <body>
 
@@ -140,18 +145,27 @@
     <div class="skin-setup eai">
       <div class="eai-body">
 
-        <!-- 1CQ-0 — sign in -->
+        <!-- The whole app, before the chat. There is one screen, because
+             there is one thing only a person can do: sign in.
+
+             What used to be here, and why it isn't:
+               the welcome panel   nothing to promise — you're one click in
+               the prerequisites   nothing is installed until something needs
+                                   it, so there is nothing to check
+               name and folder     the agent proposes both from your first
+                                   sentence, in the chat, undoably
+               the AI surface      you're already in it -->
         <div class="eai-screen gap-8" data-screen="signin">
           <div class="eai-head">
             <h3>Sign in to Enterprise AI</h3>
-            <p>We checked this machine first. Everything below is ready.</p>
+            <p>Sign in and start building. Setup happens as you go.</p>
           </div>
 
-          <div class="eai-rows">
-            <div class="eai-row"><i class="mk done">&#10003;</i><span class="lbl">Node runtime</span><span class="val">v24.3.0</span></div>
-            <div class="eai-row"><i class="mk done">&#10003;</i><span class="lbl">Disk space</span><span class="val">18.4 GB free</span></div>
-            <div class="eai-row"><i class="mk done">&#10003;</i><span class="lbl">Admin rights</span><span class="val">Granted</span></div>
-            <div class="eai-row" id="rowNetwork"><i class="mk done">&#10003;</i><span class="lbl">Network</span><span class="val">api.eai.com reachable</span></div>
+          <div class="eai-note" id="signinPromise">
+            <div class="tx">
+              <b>Nothing is installed on this Mac yet</b>
+              <span>Enterprise AI brings its own runtime. Developer tools only get installed if you later choose to open your app in your own editor &mdash; and it asks first.</span>
+            </div>
           </div>
 
           <div class="eai-note" id="signinNote" hidden>
@@ -165,74 +179,6 @@
           <div class="eai-acts gap-2">
             <button class="eai-btn" type="button" id="setupCreate">Create an EAI account</button>
             <button class="eai-btn primary ring" type="button" id="setupSignin">Sign in with browser</button>
-          </div>
-        </div>
-
-        <!-- UC-0 — name it and choose where it lives -->
-        <div class="eai-screen gap-6" data-screen="start" hidden>
-          <div class="eai-head">
-            <h3>Start your EAI app</h3>
-            <p>Name your app and choose where it lives.</p>
-          </div>
-
-          <!-- shadcn order: label, description, control, message. The why sits
-               under the title where it's read before the field is filled in;
-               the error sits under the control it's about. -->
-          <div class="eai-fields">
-            <div class="eai-field" data-field="name">
-              <label for="projName">Project name</label>
-              <p class="eai-desc">The name your team will see, and the folder we create on your Mac. Lowercase words with hyphens work best.</p>
-              <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
-              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
-            </div>
-
-            <div class="eai-field" data-field="folder">
-              <label for="projFolder">Parent folder</label>
-              <p class="eai-desc">Where your app's files will live. We make a new folder inside this one &mdash; nothing already in there is touched.</p>
-              <div class="eai-combo">
-                <input type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
-                <button class="eai-inner" type="button" id="chooseFolder">Choose folder</button>
-              </div>
-              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
-            </div>
-
-            <div class="eai-field" data-field="app">
-              <label>Your coding app</label>
-              <p class="eai-desc">Where you'll describe what you want built. EAI opens here once setup finishes.</p>
-              <div class="eai-combo">
-                <span class="val-sans">GitHub Copilot</span>
-                <button class="eai-inner muted" type="button" id="changeApp">Change app</button>
-              </div>
-              <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
-            </div>
-          </div>
-
-          <div class="eai-acts gap-3 pt-2">
-            <button class="eai-btn" type="button" id="startBack">Back</button>
-            <button class="eai-btn primary" type="button" id="createApp">Create and initialise app</button>
-          </div>
-        </div>
-
-        <!-- 1GL-0 — initialising -->
-        <div class="eai-screen gap-6" data-screen="running" hidden>
-          <div class="eai-head">
-            <h3 id="runTitle">Creating your EAI app</h3>
-            <p id="runSub">Setting up the project and connecting your tenant.</p>
-          </div>
-
-          <div class="eai-rows" id="runLines"></div>
-
-          <div class="eai-note" id="runNote" hidden>
-            <i class="mk fail bang">!</i>
-            <div class="tx">
-              <b>Gofer assets returned 403</b>
-              <span>Your tenant is connected, but this account can't read the Gofer asset library. An EAI admin can grant it, or you can retry once they have.</span>
-            </div>
-          </div>
-
-          <div class="eai-acts gap-3 pt-2">
-            <button class="eai-btn" type="button" id="runBack">Back</button>
-            <button class="eai-btn primary" type="button" id="openCopilot">Create and initialise app</button>
           </div>
         </div>
 
@@ -278,8 +224,94 @@
     </div>
   </div>
 
-  <!-- where the journey ends: Copilot, in the new project folder --- -->
-  <div class="win dark hidden" id="winHost" data-app="copilotProject" style="left:8%; top:9%; width:76%; height:74%;">
+  <!-- the chat, inside the EAI app ------------------------------------
+       The whole point of this variation. Same window furniture as the
+       setup dialog it grows out of — white surface, Geist, one black
+       primary — because it is the same app, not a second one. -->
+  <div class="win hidden" id="winChat" style="left:6%; top:8%; width:80%; height:79%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="chatTitle">Enterprise AI</span>
+    </div>
+
+    <div class="skin-chat">
+
+      <div class="ch-side">
+        <div class="ch-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
+        <button class="ch-new" type="button" id="chatNew">&#65291;&nbsp; New app</button>
+
+        <div class="ch-grp">This app</div>
+        <div class="ch-app">
+          <b data-project-name>customer-portal</b>
+          <span data-project-path>~/Downloads/customer-portal</span>
+        </div>
+
+        <div class="ch-grp">Chats</div>
+        <div class="ch-chat on">Build <span data-project-name>customer-portal</span></div>
+
+        <div class="ch-acct">
+          <span class="av">GC</span>
+          <span class="tx"><b>Gareth Chainey</b><i>Northwind Group &middot; AU</i></span>
+        </div>
+      </div>
+
+      <div class="ch-main">
+        <div class="ch-top">
+          <span class="ch-where">&#128193; <span data-project-name>customer-portal</span></span>
+          <span class="ch-state" id="chatState"><i></i>Ready</span>
+          <span class="spacer"></span>
+          <!-- The escape hatch, always visible and never in the way: you can
+               leave for your own editor at any point, and nothing here needs
+               you to. -->
+          <button class="ch-move" type="button" id="chatMove">Open in&hellip; <span class="cv">&#9662;</span></button>
+        </div>
+
+        <div class="ch-scroll" id="chatScroll">
+          <div class="ch-thread" id="chatThread"></div>
+        </div>
+
+        <div class="ch-composer">
+          <div class="ch-chips" id="chatChips"></div>
+          <div class="ch-input">
+            <input type="text" id="chatInput" placeholder="Describe the app you want to build&hellip;" autocomplete="off" spellcheck="false" disabled />
+            <button class="ch-send" type="button" id="chatSend" disabled aria-label="Send">&#8593;</button>
+          </div>
+          <div class="ch-hint" id="chatHint">Setup happens here as we go. Move to your own editor any time &mdash; it installs what that needs, then.</div>
+        </div>
+
+        <!-- the picker behind "Open in…" -->
+        <div class="ch-menu" id="chatMoveMenu" hidden>
+          <div class="hd">Continue this session in</div>
+          <button class="row" type="button" data-move="copilot">GitHub Copilot</button>
+          <button class="row" type="button" data-move="claude">Claude Code</button>
+          <button class="row" type="button" data-move="codex">Codex</button>
+          <button class="row" type="button" data-move="vscode">VS Code</button>
+          <button class="row" type="button" data-move="gemini">Gemini CLI</button>
+          <button class="row" type="button" data-move="terminal">Terminal</button>
+          <div class="ft">The chat stays open here either way.</div>
+        </div>
+      </div>
+
+      <!-- What the app can do that a hand-off can't: show you the thing it
+           built without sending you somewhere else. Safari is still one
+           click away for anyone who wants a real browser. -->
+      <div class="ch-preview" id="chatPreview" hidden>
+        <div class="ch-preview-bar">
+          <span class="ttl" id="chatPreviewTitle">Preview</span>
+          <span class="url" id="chatPreviewUrl">localhost:4310</span>
+          <span class="spacer"></span>
+          <button class="lnk" type="button" id="chatPreviewSafari">Open in Safari</button>
+          <button class="x" type="button" id="chatPreviewClose" aria-label="Close preview">&#10005;</button>
+        </div>
+        <iframe class="ch-preview-frame" id="chatPreviewFrame" title="Preview"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- optional, and never required: the coding app you can move the session
+       into. It starts tucked away and only ever opens if you ask for it. -->
+  <div class="win dark hidden" id="winHost" data-app="copilot" style="left:12%; top:12%; width:74%; height:72%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
       <span class="wt" id="hostTitle">Visual Studio Code</span>
@@ -297,23 +329,34 @@
     <h3>Prototype controls</h3>
     <p class="sub">Hidden by default so the desktop reads as a real machine.</p>
 
+    <div class="grp">The spike</div>
+    <button class="act" type="button" id="showSkipped">&#9776;&nbsp; What did we skip? <span class="sub">6 steps</span></button>
+
     <div class="grp">Error states</div>
-    <button class="act" type="button" data-err="signin">Prerequisite fails <span class="sub">can't reach EAI</span></button>
-    <button class="act" type="button" data-err="start">Name is taken <span class="sub">folder already exists</span></button>
-    <button class="act" type="button" data-err="running">Install fails <span class="sub">403 on Gofer assets</span></button>
+    <button class="act" type="button" data-err="signin">Can't reach EAI <span class="sub">at sign-in</span></button>
     <button class="act" type="button" data-err="clear">&#8635;&nbsp; Back to the happy path</button>
 
-    <div class="grp">Disk image</div>
-    <button class="act" type="button" id="replayIntro">&#8635;&nbsp; Replay the intro</button>
+    <div class="grp">Jump</div>
+    <button class="act primary" type="button" id="skipSetup">&#8594;&nbsp; Straight to the chat <span class="sub">skip install</span></button>
+    <button class="act" type="button" id="replayIntro">&#8635;&nbsp; Replay the disk-image intro</button>
+
+    <div class="grp">Move the session</div>
+    <button class="act" type="button" data-move="copilot">GitHub Copilot</button>
+    <button class="act" type="button" data-move="claude">Claude Code</button>
+    <button class="act" type="button" data-move="codex">Codex</button>
+    <button class="act" type="button" data-move="vscode">VS Code</button>
+    <button class="act" type="button" data-move="gemini">Gemini CLI</button>
+    <button class="act" type="button" data-move="terminal">Terminal</button>
+    <button class="act" type="button" id="backToChat">&#8592;&nbsp; Back to Enterprise AI</button>
 
     <div class="grp">Go</div>
-    <a class="act primary" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
+    <a class="act" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
     <a class="act" href="index.html">&#8635;&nbsp; Restart this flow</a>
 
     <div class="foot">
       <kbd>⌘</kbd> <kbd>K</kbd> toggles this panel · <kbd>esc</kbd> closes it.
       <br /><br />
-      Getting the EAI app onto the machine, end to end &mdash; and the prototype where that gets improved.
+      The spike: how much of the six-step setup disappears when the app is the agent. Install, sign in, build &mdash; the rest happens in the conversation.
     </div>
   </aside>
 
@@ -371,10 +414,40 @@
       <span class="dot"></span>
     </div>
 
-    <!-- appears when the app hands over at the end -->
-    <div class="item tucked" data-app="copilotProject">
+    <!-- only if you move the session out; the app never needs one -->
+    <div class="item tucked" data-app="copilot">
       <span class="tip">GitHub Copilot</span>
       <span class="ico" data-icon="copilot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="claude">
+      <span class="tip">Claude</span>
+      <span class="ico" data-icon="claude"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="codex">
+      <span class="tip">Codex</span>
+      <span class="ico" data-icon="codex"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="vscode">
+      <span class="tip">Visual Studio Code</span>
+      <span class="ico" data-icon="vscode"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="gemini">
+      <span class="tip">Gemini</span>
+      <span class="ico" data-icon="gemini"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="terminal">
+      <span class="tip">Terminal</span>
+      <span class="ico" data-icon="terminal"></span>
       <span class="dot"></span>
     </div>
 
@@ -410,6 +483,6 @@
 </script>
 <script src="../assets/icons.js"></script>
 <script src="../assets/desktop.js"></script>
-<script src="../assets/install.js"></script>
+<script src="../assets/agent.js"></script>
 </body>
 </html>

@@ -1,0 +1,627 @@
+/* ------------------------------------------------------------------
+   The chat window inside the EAI app — styles owned by /chat.
+
+   Everything is scoped to #winChat, so /install and /setup are
+   untouched: this flow loads install.css for the disk image and the
+   setup dialog, and this file only for the window those grow into.
+
+   It reads as the same app as the setup dialog on purpose — the same
+   white surface, the same Geist, the same single black primary — so
+   arriving at the chat feels like the app opening up rather than a
+   second product starting.
+------------------------------------------------------------------- */
+
+#winChat.win {
+  /* Same design-system values as the setup screens (see install.css). */
+  --color-background: oklch(100% 0 0);
+  --color-foreground: oklch(14.5% 0 0);
+  --color-primary: oklch(20.5% 0 0);
+  --color-primary-foreground: oklch(98.5% 0 0);
+  --color-muted: oklch(97% 0 0);
+  --color-muted-foreground: oklch(55.6% 0 0);
+  --color-border: oklch(92.2% 0 0);
+  --color-tick: oklch(60% 0.118 184.7);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+#winChat .win-bar {
+  background: var(--color-background);
+  border-bottom-color: oklch(94% 0 0);
+}
+
+.skin-chat {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 228px minmax(0, 1fr);
+  background: var(--color-background);
+  font-family: var(--font-sans);
+  color: var(--color-foreground);
+}
+/* The preview slides in as a third column rather than covering the chat:
+   you approve what you're looking at without losing the conversation. */
+.skin-chat.with-preview { grid-template-columns: 228px minmax(0, 1fr) 44%; }
+
+/* ==================================================================
+   SIDEBAR — what the app is holding for you
+================================================================== */
+
+.skin-chat .ch-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 12px 12px;
+  background: oklch(98.4% 0 0);
+  border-right: 1px solid var(--color-border);
+}
+
+.skin-chat .ch-brand { padding: 2px 6px 14px; }
+.skin-chat .ch-brand img {
+  display: block;
+  /* Width-led, so the wordmark can't outgrow the sidebar; the height follows
+     it. Neutral near-black to match the rest of the app. */
+  width: 132px;
+  max-width: 100%;
+  height: auto;
+  filter: saturate(0) brightness(0.45);
+}
+
+.skin-chat .ch-new {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-foreground);
+  text-align: left;
+  cursor: pointer;
+}
+.skin-chat .ch-new:hover { background: var(--color-muted); }
+
+.skin-chat .ch-grp {
+  margin: 20px 6px 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.skin-chat .ch-app {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+}
+.skin-chat .ch-app b { font-size: 13px; font-weight: 500; }
+.skin-chat .ch-app span {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-muted-foreground);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+.skin-chat .ch-chat {
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--color-muted-foreground);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.skin-chat .ch-chat.on { background: var(--color-muted); color: var(--color-foreground); }
+
+.skin-chat .ch-acct {
+  display: flex; align-items: center; gap: 9px;
+  margin-top: auto;
+  padding: 10px 8px 2px;
+  border-top: 1px solid var(--color-border);
+}
+.skin-chat .ch-acct .av {
+  flex: none;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-size: 10.5px; font-weight: 500;
+}
+.skin-chat .ch-acct .tx { display: flex; flex-direction: column; min-width: 0; }
+.skin-chat .ch-acct .tx b { font-size: 12.5px; font-weight: 500; }
+.skin-chat .ch-acct .tx i {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+}
+
+/* ==================================================================
+   MAIN — top bar, transcript, composer
+================================================================== */
+
+.skin-chat .ch-main {
+  position: relative;
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+}
+
+.skin-chat .ch-top {
+  flex: none;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12.5px;
+  color: var(--color-muted-foreground);
+}
+.skin-chat .ch-top .spacer { flex: 1; }
+.skin-chat .ch-where {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  color: var(--color-foreground);
+}
+.skin-chat .ch-state { display: flex; align-items: center; gap: 6px; }
+.skin-chat .ch-state i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-tick);
+}
+.skin-chat .ch-state.busy i { animation: chPulse 1.1s ease-in-out infinite; }
+@keyframes chPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.skin-chat .ch-move {
+  flex: none;
+  padding: 7px 12px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+.skin-chat .ch-move:hover { background: var(--color-muted); }
+.skin-chat .ch-move .cv { color: var(--color-muted-foreground); }
+
+/* --- the picker behind "Open in…" -------------------------------------- */
+
+.skin-chat .ch-menu {
+  position: absolute;
+  top: 46px; right: 14px;
+  z-index: 30;
+  width: 232px;
+  padding: 6px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+  animation: chMenuIn 0.14s ease;
+}
+.skin-chat .ch-menu[hidden] { display: none; }
+@keyframes chMenuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.skin-chat .ch-menu .hd {
+  padding: 6px 10px 8px;
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+}
+.skin-chat .ch-menu .row {
+  display: block; width: 100%;
+  padding: 8px 10px;
+  border: none; border-radius: 8px;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-foreground);
+  text-align: left;
+  cursor: pointer;
+}
+.skin-chat .ch-menu .row:hover { background: var(--color-muted); }
+.skin-chat .ch-menu .ft {
+  margin-top: 4px;
+  padding: 8px 10px 4px;
+  border-top: 1px solid var(--color-border);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+
+/* --- transcript --------------------------------------------------------- */
+
+.skin-chat .ch-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 26px 0 8px;
+}
+.skin-chat .ch-thread {
+  display: flex; flex-direction: column;
+  gap: 20px;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 0 28px 20px;
+}
+
+/* The assistant doesn't get a bubble: it's the app talking, not a
+   correspondent, and the text runs long. The user does, so the turns are
+   still easy to tell apart at a glance. */
+.skin-chat .ch-msg {
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--color-foreground);
+  white-space: pre-wrap;
+}
+.skin-chat .ch-msg em {
+  font-style: normal;
+  color: var(--color-muted-foreground);
+}
+.skin-chat .ch-msg b { font-weight: 500; }
+.skin-chat .ch-msg code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--color-muted);
+}
+.skin-chat .ch-msg a { color: var(--color-foreground); text-decoration: underline; }
+
+.skin-chat .ch-me {
+  align-self: flex-end;
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--color-muted);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.skin-chat .ch-in { animation: chIn 0.26s cubic-bezier(0.2, 0.7, 0.2, 1); }
+@keyframes chIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* thinking */
+.skin-chat .ch-dots { display: flex; gap: 5px; padding: 4px 0; }
+.skin-chat .ch-dots i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: oklch(80% 0 0);
+  animation: chBlink 1.1s ease-in-out infinite;
+}
+.skin-chat .ch-dots i:nth-child(2) { animation-delay: 0.16s; }
+.skin-chat .ch-dots i:nth-child(3) { animation-delay: 0.32s; }
+@keyframes chBlink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+/* --- work cards --------------------------------------------------------- */
+
+/* The same row component as the setup screens, so "what the app is doing"
+   looks the same before and after you've signed in. */
+.skin-chat .ch-card {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.skin-chat .ch-card .hd {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13px; font-weight: 500;
+}
+.skin-chat .ch-card .hd .sub {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px; font-weight: 400;
+  color: var(--color-muted-foreground);
+}
+.skin-chat .ch-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+.skin-chat .ch-row:last-child { border-bottom: none; }
+.skin-chat .ch-row .lbl { flex: 1; font-size: 13.5px; line-height: 18px; }
+.skin-chat .ch-row.pending .lbl { color: var(--color-muted-foreground); }
+.skin-chat .ch-row .val {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-muted-foreground);
+}
+
+.skin-chat .ch-row .mk {
+  flex: 0 0 16px; min-width: 16px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; line-height: 12px;
+  font-style: normal;
+}
+.skin-chat .ch-row .mk.done { background: var(--color-tick); color: #ffffff; }
+.skin-chat .ch-row .mk.pending { border: 2px solid var(--color-border); color: transparent; }
+/* macOS's spinner, same construction as the setup screens'. */
+.skin-chat .ch-row .mk.busy {
+  border: none; background: none; color: transparent;
+  display: block; position: relative; box-sizing: border-box;
+}
+.skin-chat .ch-row .mk.busy s {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1.7px; height: 4.4px;
+  margin: -7px 0 0 -0.85px;
+  border-radius: 1px;
+  background: var(--color-muted-foreground);
+  transform-origin: 0.85px 7px;
+  animation: chSpin 0.9s linear infinite;
+}
+.skin-chat .ch-row .mk.busy s:nth-child(1) { transform: rotate(0deg);   animation-delay: -0.9000s; }
+.skin-chat .ch-row .mk.busy s:nth-child(2) { transform: rotate(45deg);  animation-delay: -0.7875s; }
+.skin-chat .ch-row .mk.busy s:nth-child(3) { transform: rotate(90deg);  animation-delay: -0.6750s; }
+.skin-chat .ch-row .mk.busy s:nth-child(4) { transform: rotate(135deg); animation-delay: -0.5625s; }
+.skin-chat .ch-row .mk.busy s:nth-child(5) { transform: rotate(180deg); animation-delay: -0.4500s; }
+.skin-chat .ch-row .mk.busy s:nth-child(6) { transform: rotate(225deg); animation-delay: -0.3375s; }
+.skin-chat .ch-row .mk.busy s:nth-child(7) { transform: rotate(270deg); animation-delay: -0.2250s; }
+.skin-chat .ch-row .mk.busy s:nth-child(8) { transform: rotate(315deg); animation-delay: -0.1125s; }
+@keyframes chSpin { 0% { opacity: 1; } 100% { opacity: 0.15; } }
+
+/* --- decisions the agent made for you (/agent) --------------------------
+
+   A wizard field becomes a settled row with the change still on it. The
+   action has to sit right next to the value it changes, and read as
+   available rather than urgent — the whole claim is that you don't have
+   to touch it. */
+
+.skin-chat .ch-row .ch-act {
+  flex: none;
+  margin-left: 2px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+}
+.skin-chat .ch-row .ch-act:hover {
+  background: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+/* Renaming in place: the value becomes the field, so nothing moves. */
+.skin-chat .ch-edit {
+  width: 168px;
+  padding: 3px 8px;
+  border: 1px solid oklch(80% 0 0);
+  border-radius: 6px;
+  outline: none;
+  background: var(--color-background);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-foreground);
+}
+
+/* A row that carries a sentence under its label — used by the spike's
+   "what happened to the six steps" card. */
+.skin-chat .ch-row.stack { align-items: flex-start; }
+.skin-chat .ch-row.stack .mk { margin-top: 2px; }
+.skin-chat .ch-row.stack .lbl { display: flex; flex-direction: column; gap: 3px; }
+.skin-chat .ch-row.stack .lbl em {
+  font-style: normal;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+.skin-chat .ch-row.stack .val { margin-top: 2px; }
+
+/* Removed rather than done: an outlined minus, not a filled tick, so the
+   one step that survived still reads as the exception. */
+.skin-chat .ch-row .mk.skip {
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-muted-foreground);
+  font-weight: 500;
+}
+
+/* --- the result of a build, with somewhere to go ------------------------ */
+
+.skin-chat .ch-result {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+.skin-chat .ch-result .tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.skin-chat .ch-result .tx b { font-size: 13.5px; font-weight: 500; }
+.skin-chat .ch-result .tx span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-muted-foreground);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.skin-chat .ch-result .go {
+  flex: none;
+  padding: 8px 14px;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 12.5px; font-weight: 500;
+  color: var(--color-primary-foreground);
+  cursor: pointer;
+}
+.skin-chat .ch-result .go:hover { background: #000000; }
+.skin-chat .ch-result .go.ghost {
+  background: var(--color-background);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
+}
+.skin-chat .ch-result .go.ghost:hover { background: var(--color-muted); }
+
+/* --- composer ----------------------------------------------------------- */
+
+.skin-chat .ch-composer {
+  flex: none;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 4px 28px 18px;
+}
+
+.skin-chat .ch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.skin-chat .ch-chips:not(:empty) { padding-bottom: 10px; }
+.skin-chat .ch-chip {
+  padding: 7px 13px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+.skin-chat .ch-chip:hover { background: var(--color-muted); }
+.skin-chat .ch-chip.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+.skin-chat .ch-chip.primary:hover { background: #000000; }
+
+.skin-chat .ch-input {
+  display: flex; align-items: center; gap: 8px;
+  height: 48px;
+  padding: 0 6px 0 16px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+.skin-chat .ch-input:focus-within { border-color: oklch(80% 0 0); }
+.skin-chat .ch-input input {
+  flex: 1; min-width: 0;
+  height: 100%;
+  border: none; outline: none; background: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-foreground);
+}
+.skin-chat .ch-input input::placeholder { color: var(--color-muted-foreground); }
+
+.skin-chat .ch-send {
+  flex: none;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: none; border-radius: 9px;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-size: 14px;
+  cursor: pointer;
+}
+.skin-chat .ch-send[disabled] {
+  background: oklch(94% 0 0);
+  color: var(--color-muted-foreground);
+  cursor: default;
+}
+
+.skin-chat .ch-hint {
+  padding: 9px 4px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+
+/* ==================================================================
+   THE PREVIEW PANE
+
+   A hand-off has to send you to a browser to see what was built. The
+   app doesn't, so this is the column the chat keeps talking beside.
+================================================================== */
+
+.skin-chat .ch-preview {
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-background);
+  animation: chSlide 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.skin-chat .ch-preview[hidden] { display: none; }
+@keyframes chSlide {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.skin-chat .ch-preview-bar {
+  flex: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 12px 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12.5px;
+}
+.skin-chat .ch-preview-bar .spacer { flex: 1; }
+.skin-chat .ch-preview-bar .ttl { font-weight: 500; }
+.skin-chat .ch-preview-bar .url {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-muted-foreground);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.skin-chat .ch-preview-bar .lnk {
+  padding: 6px 10px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 11.5px; font-weight: 500;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+.skin-chat .ch-preview-bar .lnk:hover { background: var(--color-muted); }
+.skin-chat .ch-preview-bar .x {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  background: none; border: none; border-radius: 7px;
+  color: var(--color-muted-foreground);
+  font-size: 12px;
+  cursor: pointer;
+}
+.skin-chat .ch-preview-bar .x:hover { background: var(--color-muted); color: var(--color-foreground); }
+
+.skin-chat .ch-preview-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: none;
+  background: #ffffff;
+}
+
+/* ==================================================================
+   THE MOVED SESSION
+
+   The coding-app skins draw a composer as set dressing, because in the
+   other flows nothing types into them. Here the moved session is real —
+   its prompt is the last line of the transcript — so a second, dead
+   input next to it would be a trap. Only in this flow, only that.
+================================================================== */
+
+#winHost .cp-composer,
+#winHost .cl-foot { display: none; }
+
+/* Narrow windows can't carry three columns; the preview takes the chat's
+   place rather than squeezing it. */
+@media (max-width: 1180px) {
+  .skin-chat.with-preview { grid-template-columns: 228px minmax(0, 1fr); }
+  .skin-chat.with-preview .ch-main { display: none; }
+  .skin-chat.with-preview .ch-preview { border-left: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skin-chat .ch-in,
+  .skin-chat .ch-menu,
+  .skin-chat .ch-preview { animation: none; }
+  .skin-chat .ch-row .mk.busy s { animation: none; opacity: 0.5; }
+  .skin-chat .ch-dots i { animation: none; opacity: 0.5; }
+  .skin-chat .ch-state.busy i { animation: none; }
+}

@@ -4,14 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Prototype — EAI app install</title>
+<title>Prototype — Enterprise AI, chat in the app</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/proto.css" />
 <link rel="stylesheet" href="../assets/desktop.css" />
+<!-- The disk image and the setup app are /install's, unchanged: this
+     variation only forks after you are signed in. chat.css owns the
+     chat window and nothing else. -->
 <link rel="stylesheet" href="../assets/install.css" />
+<link rel="stylesheet" href="../assets/chat.css" />
 </head>
 <body>
 
@@ -196,12 +200,15 @@
               <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
 
+            <!-- The one field that differs from /install. There, this asks which
+                 coding app to hand you over to; here there is nothing to choose,
+                 because the app you already have is the one you build in. -->
             <div class="eai-field" data-field="app">
-              <label>Your coding app</label>
-              <p class="eai-desc">Where you'll describe what you want built. EAI opens here once setup finishes.</p>
+              <label>Where you'll build</label>
+              <p class="eai-desc">Right here, in Enterprise AI &mdash; nothing else to install. You can move the session to your own coding app at any point.</p>
               <div class="eai-combo">
-                <span class="val-sans">GitHub Copilot</span>
-                <button class="eai-inner muted" type="button" id="changeApp">Change app</button>
+                <span class="val-sans">Enterprise AI</span>
+                <button class="eai-inner muted" type="button" id="changeApp">What about my editor?</button>
               </div>
               <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
             </div>
@@ -232,7 +239,7 @@
 
           <div class="eai-acts gap-3 pt-2">
             <button class="eai-btn" type="button" id="runBack">Back</button>
-            <button class="eai-btn primary" type="button" id="openCopilot">Create and initialise app</button>
+            <button class="eai-btn primary" type="button" id="openChat">Create and initialise app</button>
           </div>
         </div>
 
@@ -278,8 +285,94 @@
     </div>
   </div>
 
-  <!-- where the journey ends: Copilot, in the new project folder --- -->
-  <div class="win dark hidden" id="winHost" data-app="copilotProject" style="left:8%; top:9%; width:76%; height:74%;">
+  <!-- the chat, inside the EAI app ------------------------------------
+       The whole point of this variation. Same window furniture as the
+       setup dialog it grows out of — white surface, Geist, one black
+       primary — because it is the same app, not a second one. -->
+  <div class="win hidden" id="winChat" style="left:6%; top:8%; width:80%; height:79%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="chatTitle">Enterprise AI</span>
+    </div>
+
+    <div class="skin-chat">
+
+      <div class="ch-side">
+        <div class="ch-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
+        <button class="ch-new" type="button" id="chatNew">&#65291;&nbsp; New app</button>
+
+        <div class="ch-grp">This app</div>
+        <div class="ch-app">
+          <b data-project-name>customer-portal</b>
+          <span data-project-path>~/Downloads/customer-portal</span>
+        </div>
+
+        <div class="ch-grp">Chats</div>
+        <div class="ch-chat on">Build <span data-project-name>customer-portal</span></div>
+
+        <div class="ch-acct">
+          <span class="av">GC</span>
+          <span class="tx"><b>Gareth Chainey</b><i>Northwind Group &middot; AU</i></span>
+        </div>
+      </div>
+
+      <div class="ch-main">
+        <div class="ch-top">
+          <span class="ch-where">&#128193; <span data-project-name>customer-portal</span></span>
+          <span class="ch-state" id="chatState"><i></i>Ready</span>
+          <span class="spacer"></span>
+          <!-- The escape hatch, always visible and never in the way: you can
+               leave for your own editor at any point, and nothing here needs
+               you to. -->
+          <button class="ch-move" type="button" id="chatMove">Open in&hellip; <span class="cv">&#9662;</span></button>
+        </div>
+
+        <div class="ch-scroll" id="chatScroll">
+          <div class="ch-thread" id="chatThread"></div>
+        </div>
+
+        <div class="ch-composer">
+          <div class="ch-chips" id="chatChips"></div>
+          <div class="ch-input">
+            <input type="text" id="chatInput" placeholder="Describe the app you want to build&hellip;" autocomplete="off" spellcheck="false" disabled />
+            <button class="ch-send" type="button" id="chatSend" disabled aria-label="Send">&#8593;</button>
+          </div>
+          <div class="ch-hint" id="chatHint">Everything happens in this window. Move it to your own editor whenever you like.</div>
+        </div>
+
+        <!-- the picker behind "Open in…" -->
+        <div class="ch-menu" id="chatMoveMenu" hidden>
+          <div class="hd">Continue this session in</div>
+          <button class="row" type="button" data-move="copilot">GitHub Copilot</button>
+          <button class="row" type="button" data-move="claude">Claude Code</button>
+          <button class="row" type="button" data-move="codex">Codex</button>
+          <button class="row" type="button" data-move="vscode">VS Code</button>
+          <button class="row" type="button" data-move="gemini">Gemini CLI</button>
+          <button class="row" type="button" data-move="terminal">Terminal</button>
+          <div class="ft">The chat stays open here either way.</div>
+        </div>
+      </div>
+
+      <!-- What the app can do that a hand-off can't: show you the thing it
+           built without sending you somewhere else. Safari is still one
+           click away for anyone who wants a real browser. -->
+      <div class="ch-preview" id="chatPreview" hidden>
+        <div class="ch-preview-bar">
+          <span class="ttl" id="chatPreviewTitle">Preview</span>
+          <span class="url" id="chatPreviewUrl">localhost:4310</span>
+          <span class="spacer"></span>
+          <button class="lnk" type="button" id="chatPreviewSafari">Open in Safari</button>
+          <button class="x" type="button" id="chatPreviewClose" aria-label="Close preview">&#10005;</button>
+        </div>
+        <iframe class="ch-preview-frame" id="chatPreviewFrame" title="Preview"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- optional, and never required: the coding app you can move the session
+       into. It starts tucked away and only ever opens if you ask for it. -->
+  <div class="win dark hidden" id="winHost" data-app="copilot" style="left:12%; top:12%; width:74%; height:72%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
       <span class="wt" id="hostTitle">Visual Studio Code</span>
@@ -303,17 +396,27 @@
     <button class="act" type="button" data-err="running">Install fails <span class="sub">403 on Gofer assets</span></button>
     <button class="act" type="button" data-err="clear">&#8635;&nbsp; Back to the happy path</button>
 
-    <div class="grp">Disk image</div>
-    <button class="act" type="button" id="replayIntro">&#8635;&nbsp; Replay the intro</button>
+    <div class="grp">Jump</div>
+    <button class="act primary" type="button" id="skipSetup">&#8594;&nbsp; Straight to the chat <span class="sub">skip install</span></button>
+    <button class="act" type="button" id="replayIntro">&#8635;&nbsp; Replay the disk-image intro</button>
+
+    <div class="grp">Move the session</div>
+    <button class="act" type="button" data-move="copilot">GitHub Copilot</button>
+    <button class="act" type="button" data-move="claude">Claude Code</button>
+    <button class="act" type="button" data-move="codex">Codex</button>
+    <button class="act" type="button" data-move="vscode">VS Code</button>
+    <button class="act" type="button" data-move="gemini">Gemini CLI</button>
+    <button class="act" type="button" data-move="terminal">Terminal</button>
+    <button class="act" type="button" id="backToChat">&#8592;&nbsp; Back to Enterprise AI</button>
 
     <div class="grp">Go</div>
-    <a class="act primary" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
+    <a class="act" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
     <a class="act" href="index.html">&#8635;&nbsp; Restart this flow</a>
 
     <div class="foot">
       <kbd>⌘</kbd> <kbd>K</kbd> toggles this panel · <kbd>esc</kbd> closes it.
       <br /><br />
-      Getting the EAI app onto the machine, end to end &mdash; and the prototype where that gets improved.
+      Install, sign in, then build by chatting inside the EAI app &mdash; with your own coding app there if you want it, and never needed.
     </div>
   </aside>
 
@@ -371,10 +474,40 @@
       <span class="dot"></span>
     </div>
 
-    <!-- appears when the app hands over at the end -->
-    <div class="item tucked" data-app="copilotProject">
+    <!-- only if you move the session out; the app never needs one -->
+    <div class="item tucked" data-app="copilot">
       <span class="tip">GitHub Copilot</span>
       <span class="ico" data-icon="copilot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="claude">
+      <span class="tip">Claude</span>
+      <span class="ico" data-icon="claude"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="codex">
+      <span class="tip">Codex</span>
+      <span class="ico" data-icon="codex"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="vscode">
+      <span class="tip">Visual Studio Code</span>
+      <span class="ico" data-icon="vscode"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="gemini">
+      <span class="tip">Gemini</span>
+      <span class="ico" data-icon="gemini"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="terminal">
+      <span class="tip">Terminal</span>
+      <span class="ico" data-icon="terminal"></span>
       <span class="dot"></span>
     </div>
 
@@ -410,6 +543,6 @@
 </script>
 <script src="../assets/icons.js"></script>
 <script src="../assets/desktop.js"></script>
-<script src="../assets/install.js"></script>
+<script src="../assets/chat.js"></script>
 </body>
 </html>

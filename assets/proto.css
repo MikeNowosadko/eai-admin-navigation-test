@@ -192,7 +192,11 @@ button, input, textarea { font-family: inherit; }
 .rows h1 { margin: 0 0 12px; font-size: 52px; line-height: 1.05; font-weight: 800; letter-spacing: -2px; }
 .rows .rows-note { max-width: none; margin: 0 0 48px; text-align: left; }
 
-.row { margin-bottom: 52px; }
+/* Scoped to the launch pad on purpose. `row` is a common enough class name
+   that the app skins use it too — the Finder sidebar, the Claude/Codex/Gemini
+   session lists, the "Open in…" menu — and an unscoped 52px margin here put
+   a gap between every one of those list items. */
+.rows > .row { margin-bottom: 52px; }
 .row-title {
   display: inline-flex; align-items: baseline; gap: 9px;
   margin: 0 0 18px; font-size: 22px; font-weight: 700; letter-spacing: -0.6px;

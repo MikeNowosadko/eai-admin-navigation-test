@@ -267,27 +267,30 @@ html, body { height: 100%; overflow: hidden; }
 
 .dock {
   position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 500;
-  display: flex; align-items: flex-end; gap: 9px;
-  padding: 8px 12px;
+  display: flex; align-items: flex-end; gap: 0;
+  padding: 5px 7px;
   background: rgba(40, 46, 60, 0.42);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 20px;
+  border-radius: 22px;
 }
 .dock .item { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+
+/* Each icon draws its own squircle inset inside a transparent tile, the
+   way a real .icns does, so the box is bigger than the shape and the
+   gap between icons is the tiles' own padding — hence gap: 0 above.
+   It also means the shadow has to follow the artwork's alpha, so it is
+   a drop-shadow() filter and not a box-shadow. */
 .dock .ico {
-  width: 46px; height: 46px; border-radius: 11px; overflow: hidden;
-  display: grid; place-items: center;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  width: 56px; height: 56px; display: block;
+  filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.36));
   transition: transform 0.16s ease;
 }
-.dock .ico svg { width: 100%; height: 100%; display: block; }
-.dock .item:hover .ico { transform: translateY(-9px) scale(1.12); }
-.dock .ico.setup { background: linear-gradient(170deg, #ffffff, #eef2f7); padding: 9px; }
-.dock .ico.setup img { width: 100%; height: 100%; object-fit: contain; }
-.dock .dot { width: 4px; height: 4px; margin-top: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.85); opacity: 0; }
+.dock .ico svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.dock .item:hover .ico { transform: translateY(-8px) scale(1.1); }
+.dock .dot { width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: rgba(255, 255, 255, 0.85); opacity: 0; }
 .dock .item.open .dot { opacity: 1; }
-.dock .sep { align-self: center; width: 1px; height: 40px; margin: 0 3px; background: rgba(255, 255, 255, 0.22); }
+.dock .sep { align-self: center; width: 1px; height: 40px; margin: 0 6px; background: rgba(255, 255, 255, 0.22); }
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-12px); } }
 
@@ -307,15 +310,15 @@ html, body { height: 100%; overflow: hidden; }
 
 /* the icon that flies from the docs page into the Downloads stack */
 .fly-icon {
-  position: absolute; z-index: 800; width: 46px; height: 46px;
-  border-radius: 11px; overflow: hidden; pointer-events: none;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  position: absolute; z-index: 800; width: 56px; height: 56px;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
 }
-.fly-icon svg { width: 100%; height: 100%; display: block; }
+.fly-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
 /* shadcn-style tooltip */
 .dock .tip {
-  position: absolute; bottom: 64px; left: 50%; z-index: 60;
+  position: absolute; bottom: 62px; left: 50%; z-index: 60;
   transform: translateX(-50%) translateY(4px) scale(0.96);
   padding: 6px 10px; border-radius: 6px; white-space: nowrap;
   background: #09090b; color: #fafafa;

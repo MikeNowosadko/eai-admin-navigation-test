@@ -1,1 +1,6 @@
 .vercel
+
+# agent and tooling scratch — untracked but, until now, not ignored
+.context/
+.conductor/
+.playwright-mcp/

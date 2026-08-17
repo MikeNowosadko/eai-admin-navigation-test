@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="admin.enterpriseaigroup.com/contract-renewals" />
+<title>Prototype — Admin · Contract Renewals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+</head>
+<body>
+
+  <!-- Where the user manages the app once it's built -->
+  <div class="admin" style="min-height:100vh;">
+    <div class="side">
+      <img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" style="height:12px; margin:4px 0 18px 10px;" />
+      <div class="grp">App</div>
+      <a class="on" href="#">Overview</a>
+      <a href="#">Data model</a>
+      <a href="#">Workflows</a>
+      <a href="#">Screens</a>
+      <div class="grp">Governance</div>
+      <a href="#">Users &amp; roles</a>
+      <a href="#">Approvals</a>
+      <a href="#">Audit log</a>
+      <div class="grp">Operations</div>
+      <a href="#">Environments</a>
+      <a href="#">Deployments</a>
+    </div>
+    <div class="main">
+      <h3>Supplier Contract Renewals</h3>
+      <div class="cards">
+        <div class="card"><div class="t">Workspace</div><div class="v" id="wsCell">Your builder workspace</div></div>
+        <div class="card"><div class="t">Country</div><div class="v" id="countryCell">Australia</div></div>
+        <div class="card"><div class="t">Plan</div><div class="v">Builder (Free preview)</div></div>
+        <div class="card"><div class="t">Approval policy</div><div class="v">Ops manager, then Finance &gt; $50k</div></div>
+        <div class="card"><div class="t">Users</div><div class="v">1 of 2 used</div></div>
+        <div class="card"><div class="t">Environment</div><div class="v">Preview — not yet public</div></div>
+      </div>
+      <p style="margin-top:26px; font-size:13px; color:#4d4d4d;">
+        Head back to Enterprise AI to run tests and deploy.
+      </p>
+    </div>
+  </div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // The app passes the chosen workspace through the query string.
+  const q = new URLSearchParams(window.location.search);
+  if (q.get('ws')) document.getElementById('wsCell').textContent = q.get('ws');
+  if (q.get('country')) document.getElementById('countryCell').textContent = q.get('country');
+</script>
+
+</body>
+</html>
