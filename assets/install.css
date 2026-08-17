@@ -289,6 +289,22 @@
   font-size: 14px; line-height: 18px;
   color: var(--color-foreground);
 }
+
+/* A row you choose rather than read — the workspace list in /install-2.
+   Same row, so the list still reads as one thing; a button underneath, so
+   it can be picked with a keyboard. */
+#winSetup .eai-row.pick {
+  width: 100%;
+  margin: 0;
+  background: none;
+  border-left: none; border-right: none; border-top: none;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+#winSetup .eai-row.pick:hover { background: oklch(98% 0 0); }
+#winSetup .eai-row.pick:last-child { border-bottom: none; }
+#winSetup .eai-row.pick .mk.pending { border-color: oklch(85% 0 0); }
 #winSetup .eai-row.pending .lbl { color: var(--color-muted-foreground); }
 #winSetup .eai-row .val {
   flex: none;

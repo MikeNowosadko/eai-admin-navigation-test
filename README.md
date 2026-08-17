@@ -33,6 +33,7 @@ later, on a machine where EAI Setup is already installed.
 | **App install** | `install/` | [/install](https://eai-website.github.io/prototypes/install) | In progress — getting the app onto the machine |
 | **Chat in the app** | `chat/` | [/chat](https://eai-website.github.io/prototypes/chat) | In progress — `/install`, but you never leave the app |
 | **App as the agent** | `agent/` | [/agent](https://eai-website.github.io/prototypes/agent) | In progress — the spike: setup only, done inside the chat |
+| **Simpler setup form** | `install-2/` | [/install-2](https://eai-website.github.io/prototypes/install-2) | In progress — `/install` with the prerequisites hidden and one question per screen |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
 experiment they belong to. Finished experiments carry a Completed badge and
@@ -199,6 +200,32 @@ cp -r install install-2 && cp assets/install.js assets/install-2.js
 
 Add a card to the "Improving the app install" row and both are clickable, side
 by side, each on its own URL.
+
+## Simpler setup form
+
+`/install-2` is `/install` at a lighter weight, built from the flow on the
+board: download → install → log in → workspace → app name → folder → `eai init`
+→ `/eai` in your tool. Both end in the same place, so what's being compared is
+the shape of the form.
+
+Two changes, pulling in opposite directions on purpose:
+
+- **The prerequisites disappear.** `/install` opens on a checklist of four
+  green ticks — four lines of reassurance about work nobody asked to see. Here
+  Node, Git, npm and the CLI come down while the app is being copied to
+  Applications, and are never mentioned unless one fails. **⌘K → "Prereq
+  install failed"** is that screen, and it's the one this variation exists to
+  get right: an app you just installed, telling you about a dependency you
+  didn't know it had, with one action that fixes it.
+- **Every screen asks one thing.** `/install` puts name, folder and coding app
+  on a single screen. This asks them one at a time, and adds the **workspace**
+  question the real installer has and `/install` skipped.
+
+So: fewer decisions per screen, more screens. That's the trade the two exist to
+settle.
+
+`assets/install-2.js` shares `/install`'s install section, folder chooser and
+hand-off; the middle is its own.
 
 ## Chat in the app
 
