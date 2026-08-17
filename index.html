@@ -28,7 +28,9 @@
 
     <section class="row">
       <a class="row-title" href="https://app.notion.com/p/3bbcd7477dd5818ab477c911387da562">
-        Onboarding: current vs npx vs setup app <span class="arrow">&rarr;</span>
+        Onboarding: current vs npx vs setup app
+        <span class="badge done">Completed</span>
+        <span class="arrow">&rarr;</span>
       </a>
 
       <div class="row-cards">
@@ -61,93 +63,50 @@
     </section>
 
     <section class="row">
-      <h2 class="row-title">In progress</h2>
-
-      <div class="row-cards">
-
-        <a class="fork-card" href="cli/index.html">
-          <h2>EAI CLI</h2>
-          <p>Starts with <strong>EAI Setup already installed</strong>, then hands over to your coding app.</p>
-          <ul>
-            <li>No search, no download, no <code>npx</code></li>
-            <li>Six coding apps to choose from</li>
-            <li>Switch apps mid-flow, session follows</li>
-            <li>⌘K to skip setup, straight to the CLI</li>
-          </ul>
-          <div class="go"><span class="btn btn-ghost">Run the CLI flow &rarr;</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <section class="row">
-      <h2 class="row-title">Improving the app install</h2>
-
-      <div class="row-cards">
-
-        <a class="fork-card" href="install/index.html">
-          <h2>App install</h2>
-          <p>Marketing site to ready-to-build, end to end. The baseline we vary from.</p>
-          <ul>
-            <li>Starts on the marketing site</li>
-            <li>Install button, then drag to install</li>
-            <li>App opens, sign in, name the app</li>
-            <li>Ends ready to build</li>
-          </ul>
-          <div class="go"><span class="btn btn-ghost">Run the install flow &rarr;</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <section class="row">
-      <h2 class="row-title">What is the app?</h2>
+      <h2 class="row-title">Setup form vs harness</h2>
 
       <p class="kbd-note rows-note">
-        The two scenarios under test. <strong>1</strong> is the app as EAI
-        Setup: the six steps the real installer runs, ending in a choice of
-        AI app. <strong>2</strong> is the app as the coding agent: many of
-        the same steps, but you finish in a chat rather than in Copilot.
-        The third card is the spike &mdash; how much of the setup can stop
-        being the user's problem if 2 is where we land.
+        Two things vary: which <strong>form</strong> does the setup, and whose
+        <strong>harness</strong> you build in afterwards. The third drops the
+        form altogether and lets the harness do the setup itself.
       </p>
 
       <div class="row-cards">
 
         <a class="fork-card" href="install/index.html">
-          <h2>1. App as EAI Setup</h2>
-          <p>The six steps, then <strong>pick your AI app</strong>. GitHub Copilot opens on the new project and you build there.</p>
+          <h2>EAI Setup form and external harness</h2>
+          <p>The six-step form, then <strong>pick your AI app</strong>. GitHub Copilot opens on the new project and you build there.</p>
           <ul>
             <li>Install, prerequisites, sign in, name it</li>
             <li>Ends at the <code>/eai</code> prompt in Copilot</li>
             <li>Previews open in Safari</li>
             <li>The EAI app's job is done</li>
           </ul>
-          <div class="go"><span class="btn btn-ghost">Run scenario 1 &rarr;</span></div>
+          <div class="go"><span class="btn btn-ghost">Run the external harness &rarr;</span></div>
         </a>
 
         <a class="fork-card" href="chat/index.html">
-          <h2>2. App as a coding agent</h2>
-          <p>The same steps, but the app <strong>opens a chat</strong> instead of another app. Building happens right there.</p>
+          <h2>EAI Setup form and EAI harness</h2>
+          <p>The same form, but the app <strong>opens its own chat</strong> instead of another app. Building happens right there.</p>
           <ul>
-            <li>Identical to 1 until you're signed in</li>
+            <li>Identical to the first until you're signed in</li>
             <li>Previews open beside the chat</li>
             <li>&ldquo;Open in&hellip;&rdquo; moves the session to your editor</li>
             <li>Moving is offered, never required</li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run scenario 2 &rarr;</span></div>
+          <div class="go"><span class="btn btn-dark">Run the EAI harness &rarr;</span></div>
         </a>
 
         <a class="fork-card" href="agent/index.html">
-          <h2>2b. The spike: hide the setup</h2>
-          <p>Setup only. Install, sign in, and the <strong>setup happens in the chat</strong> before you type anything. Stops at &ldquo;ready&rdquo;.</p>
+          <h2>EAI harness as setup</h2>
+          <p>No form. Install, sign in, and the <strong>harness does the setup</strong> in the chat before you type anything. Stops at &ldquo;ready&rdquo;.</p>
           <ul>
             <li>One screen before the chat: sign in</li>
             <li>&ldquo;Set it up for me&rdquo; &mdash; or choose it yourself</li>
             <li>Nothing installed on the Mac at all&hellip;</li>
             <li>&hellip;until you ask for your own editor</li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run the spike &rarr;</span></div>
+          <div class="go"><span class="btn btn-dark">Run harness-as-setup &rarr;</span></div>
         </a>
 
       </div>

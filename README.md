@@ -34,8 +34,9 @@ later, on a machine where EAI Setup is already installed.
 | **Chat in the app** | `chat/` | [/chat](https://eai-website.github.io/prototypes/chat) | In progress — `/install`, but you never leave the app |
 | **App as the agent** | `agent/` | [/agent](https://eai-website.github.io/prototypes/agent) | In progress — the spike: setup only, done inside the chat |
 
-`index.html` at the root is an internal launch pad, grouping the flows under
-the question each one answers. Testers don't need it — give them the flow's URL
+`index.html` at the root is an internal launch pad, grouping the flows by the
+experiment they belong to. Finished experiments carry a Completed badge and
+their working flows drop off the pad — the URLs keep working. Testers don't need it — give them the flow's URL
 directly.
 
 They all run on the same fake macOS desktop (`assets/desktop.*`).
