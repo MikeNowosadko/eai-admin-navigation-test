@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>EAI Setup — how the form got here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/history.css" />
+</head>
+<body class="site">
+
+  <nav class="nav">
+    <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" style="height:15px;" /></a>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="../index.html">All prototypes</a>
+  </nav>
+
+  <main class="hist">
+
+    <header class="hist-head">
+      <p class="hist-eyebrow">EAI Setup &middot; external harness</p>
+      <h1>Four passes at the same&nbsp;four questions</h1>
+      <p class="hist-lede">
+        Every version installs the app, signs you in, and ends in your own coding
+        app. What changed is how much the person is asked to carry. Each one is
+        still live at its own URL, so any of them can be opened and clicked
+        through.
+      </p>
+    </header>
+
+    <!-- the shape of the argument, before the detail -->
+    <section class="hist-summary">
+      <div class="hist-sum">
+        <b>v1</b>
+        <span>Four prerequisite ticks to read. Three questions on one screen.</span>
+      </div>
+      <div class="hist-sum">
+        <b>v2</b>
+        <span>Prerequisites hidden. One question per screen &mdash; four Continues.</span>
+      </div>
+      <div class="hist-sum">
+        <b>v3</b>
+        <span>One page. Answering reveals the next question. No Continue.</span>
+      </div>
+      <div class="hist-sum on">
+        <b>v4</b>
+        <span>The workspace's standard decides. Everything else collapses.</span>
+      </div>
+    </section>
+
+    <!-- v1 -->
+    <section class="hist-v" id="v1">
+      <div class="hist-meta">
+        <span class="hist-num">v1</span>
+        <h2>The full form</h2>
+        <p class="hist-what">
+          The baseline. The app opens on a checklist of four green ticks, then
+          asks for the project name, the parent folder and your coding app on a
+          single screen.
+        </p>
+        <ul class="hist-notes">
+          <li><b>The problem it revealed.</b> Four ticks is four lines of reassurance about work nobody asked to see, read before you have done anything.</li>
+          <li><b>And the other one.</b> Three unrelated questions on one screen means three chances to be wrong before any feedback.</li>
+        </ul>
+        <a class="btn btn-ghost btn-sm" href="../install/index.html">Open v1 &rarr;</a>
+      </div>
+      <div class="hist-shots">
+        <figure><img src="../assets/history/v1-signin.png" alt="Sign-in screen with four green prerequisite ticks" /><figcaption>Four ticks, before you have asked for anything</figcaption></figure>
+        <figure><img src="../assets/history/v1-form.png" alt="Name, folder and coding app on one screen" /><figcaption>Three questions, one screen</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- v2 -->
+    <section class="hist-v" id="v2">
+      <div class="hist-meta">
+        <span class="hist-num">v2</span>
+        <h2>Prerequisites go quiet</h2>
+        <p class="hist-what">
+          Node, Git, npm and the CLI install while the app is being copied to
+          Applications, and are never mentioned unless one fails. Then one
+          question per screen, and the workspace question the real installer
+          has and v1 skipped.
+        </p>
+        <ul class="hist-notes">
+          <li><b>What it got right.</b> The failure became the only time prerequisites exist for the user &mdash; which is the only time they are the user's problem.</li>
+          <li><b>What it got wrong.</b> Fewer decisions per screen, but four Continues to get through them. A click that only means &ldquo;yes, I did just answer that&rdquo; is a click worth deleting.</li>
+        </ul>
+        <a class="btn btn-ghost btn-sm" href="../install-2/index.html">Open v2 &rarr;</a>
+      </div>
+      <div class="hist-shots">
+        <figure><img src="../assets/history/v2-signin.png" alt="Sign-in screen with no checklist" /><figcaption>Nothing to read before signing in</figcaption></figure>
+        <figure><img src="../assets/history/v2-step.png" alt="Choose a workspace on its own screen" /><figcaption>One question, and a Continue</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- v3 -->
+    <section class="hist-v" id="v3">
+      <div class="hist-meta">
+        <span class="hist-num">v3</span>
+        <h2>One page, no Continue</h2>
+        <p class="hist-what">
+          The window opens big enough to hold the whole form. Choosing a
+          workspace reveals the name field; naming reveals the folder; choosing
+          a folder reveals the button. Answered steps stay on screen and stay
+          editable.
+        </p>
+        <ul class="hist-notes">
+          <li><b>The check came back, stated.</b> v1 made you read a report, v2 left you wondering whether anything happened. One line says the Mac is ready, and expands into the full list only when something failed.</li>
+          <li><b>Nothing opens itself.</b> Finishing setup and leaving for your editor are two intentions, and the second one is the user's.</li>
+        </ul>
+        <a class="btn btn-ghost btn-sm" href="../install-3/index.html">Open v3 &rarr;</a>
+      </div>
+      <div class="hist-shots">
+        <figure><img src="../assets/history/v3-signin.png" alt="Bigger sign-in window with the wordmark and a single check row" /><figcaption>The check as one line, not four</figcaption></figure>
+        <figure><img src="../assets/history/v3-form.png" alt="All three questions on one page, each answered" /><figcaption>Three questions, no Continue between them</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- v4 -->
+    <section class="hist-v current" id="v4">
+      <div class="hist-meta">
+        <span class="hist-num">v4 <i>current</i></span>
+        <h2>The workspace decides</h2>
+        <p class="hist-what">
+          The last question &mdash; which AI app you build in &mdash; stops being
+          a list of six. An administrator sets the standard in workspace
+          settings, so it gets a box of its own and everything else collapses
+          behind it. Most people see one box and one button.
+        </p>
+        <ul class="hist-notes">
+          <li><b>Not having one is handled.</b> Most of these are npm packages and setup installed npm a minute ago, so it offers to install them. VS Code is an app download, and says so.</li>
+          <li><b>What it can't do, it says.</b> Installing a tool doesn't get you an account, so the alert above the button always names what it will ask for next.</li>
+          <li><b>No standard set?</b> No box. A note points at the administrator who could set one, and the whole list opens.</li>
+        </ul>
+        <a class="btn btn-dark btn-sm" href="../install-4/index.html">Open v4 &rarr;</a>
+      </div>
+      <div class="hist-shots">
+        <figure><img src="../assets/history/v4-harness.png" alt="The workspace standard in its own box, with everything else collapsed" /><figcaption>One box, one button</figcaption></figure>
+        <figure><img src="../assets/history/v4-expanded.png" alt="The other options expanded and grouped by what is installed" /><figcaption>Opened, and grouped by what you already have</figcaption></figure>
+      </div>
+    </section>
+
+    <footer class="hist-foot">
+      <p>
+        Each version keeps its URL and stops changing, so the earlier ones stay
+        clickable as evidence &mdash; they come off the launch pad, not offline.
+        Inside any prototype, press <kbd>⌘</kbd><kbd>K</kbd> for the error states.
+      </p>
+      <p class="hist-also">
+        Also still live, and not part of this flow:
+        <a href="../chat/index.html">chat in the app</a>,
+        <a href="../cli/index.html">the CLI</a>,
+        <a href="../npx/index.html">npx</a>,
+        <a href="../setup/index.html">the original setup app</a>.
+      </p>
+    </footer>
+
+  </main>
+
+</body>
+</html>

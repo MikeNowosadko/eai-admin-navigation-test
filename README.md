@@ -35,10 +35,17 @@ later, on a machine where EAI Setup is already installed.
 | **App as the agent** | `agent/` | [/agent](https://eai-website.github.io/prototypes/agent) | In progress — the spike: setup only, done inside the chat |
 | **Simpler setup form** | `install-2/` | [/install-2](https://eai-website.github.io/prototypes/install-2) | In progress — `/install` with the prerequisites hidden and one question per screen |
 | **One-page setup form** | `install-3/` | [/install-3](https://eai-website.github.io/prototypes/install-3) | In progress — `/install-2` again, on one page with no Continue |
+| **EAI Setup + external harness** | `install-4/` | [/install-4](https://eai-website.github.io/prototypes/install-4) | **Current** — the fourth pass at this flow |
+| **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
 experiment they belong to. Finished experiments carry a Completed badge and
-their working flows drop off the pad — the URLs keep working. Testers don't need it — give them the flow's URL
+their working flows drop off the pad — the URLs keep working.
+
+**The pad shows what's worth handing to someone, not everything that exists.**
+The setup form's earlier passes are iterations rather than options, so they came
+off it; `/history` is where they live now, and its footer lists whatever else is
+still up but no longer on the pad. Testers don't need it — give them the flow's URL
 directly.
 
 They all run on the same fake macOS desktop (`assets/desktop.*`).
@@ -263,6 +270,53 @@ the chooser's New Folder button is easy to miss.
 `assets/install-3.js` shares `/install-2`'s install section, folder chooser and
 hand-off. `assets/install-3.css` is this version's own, scoped to
 `#winSetup.i3`.
+
+## Version history
+
+`/history` tells the story of the external-harness flow in one page: the four
+passes, what each changed, what it got right and what the next one fixed, with
+a screenshot of the key screen from each and a link to run it.
+
+Screens live in `assets/history/`. They're element screenshots of `#winSetup`
+rather than the whole desktop, so the versions can be compared without the
+wallpaper and dock getting in the way. Re-take them the same way if a version
+changes: drive the flow to the screen, hide `.dock`, screenshot the window.
+
+## Harness picker
+
+`/install-4` is `/install-3` with the last question done properly. Picking your
+AI app is a list of six only if you already have one; three things make it more
+than that.
+
+**Some are here and some aren't**, and the app can tell — the CLI reports it
+(`eai ai-surfaces`). The list says which, in words, in the trailing lane.
+
+**Most of the missing ones can be installed from here.** Claude Code, Copilot,
+Codex and Gemini are npm packages, and setup installed npm a minute ago; the CLI
+already has the hook (`eai start --surface <id> --install`). So "go and get this
+yourself" is usually a lie. **VS Code is the exception** — an app download, not
+a package — and that difference is visible, because it changes what the button
+can promise. The verb carries it: *Open* when it's there, *Install and open*
+when we can fetch it, *Get* when you have to.
+
+**What we can't do is get you an account.** Installing Claude Code doesn't sign
+anyone in to Anthropic. So the line under the button always names what it will
+ask for next, and says EAI never sees it. Offering to install something is only
+honest if you're equally clear about the half you can't do.
+
+**The workspace gets an opinion.** A workspace can name a preferred harness; it
+sorts first and carries the only chip on the screen. Recommending isn't
+installing — a managed Mac may forbid it — so a recommended-but-missing tool
+goes through the same install affordance as any other.
+
+The download case is the one state the app can't resolve itself: it opens the
+provider's page, then waits, saying the app is already created and nothing is
+lost by closing the window. **"I've installed it — check again"** re-detects
+rather than taking your word for it.
+
+**⌘K** has the four states worth designing for: the recommended one missing,
+nothing installed at all, a download required, and npm refusing to write on a
+managed Mac.
 
 ## Chat in the app
 

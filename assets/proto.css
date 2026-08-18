@@ -206,6 +206,7 @@ a.row-title:hover .arrow { transform: translateX(4px); color: var(--dark); }
 
 /* A finished experiment says so next to its title. Quiet on purpose: it
    marks a row as settled, it isn't a thing to click. */
+.fork-card h2 .badge,
 .row-title .badge {
   padding: 3px 9px;
   border: 1px solid #d4d4d8;
@@ -216,7 +217,11 @@ a.row-title:hover .arrow { transform: translateX(4px); color: var(--dark); }
   color: #52525b;
   white-space: nowrap;
 }
-.row-title .badge.done { border-color: #cfe6d8; background: #f1f8f4; color: #1f6b45; }
+.row-title .badge.done,
+.fork-card h2 .badge.done { border-color: #cfe6d8; background: #f1f8f4; color: #1f6b45; }
+/* In a card title the badge rides beside 24px type, so it needs its own
+   baseline rather than the title's. */
+.fork-card h2 .badge { vertical-align: middle; margin-left: 8px; letter-spacing: 0; }
 
 /* Cards stretch to the tallest in the row, and the button is pinned to the
    bottom by .go, so a card with a longer list doesn't sit taller than its

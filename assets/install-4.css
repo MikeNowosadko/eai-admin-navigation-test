@@ -1,0 +1,373 @@
+/* ------------------------------------------------------------------
+   Choosing a harness — the only thing /install-4 adds to /install-3.
+
+   Loaded after install-3.css, same #winSetup.i3 scope, so everything
+   up to the last screen is inherited rather than restated.
+
+   The list has to carry three states at once — installed, installable,
+   needs a download — without turning into a table of badges. So the
+   state lives in the trailing lane as one quiet line of text, the
+   recommendation is the only thing allowed a chip, and the selected
+   row is the only one with a filled marker.
+------------------------------------------------------------------- */
+
+/* --- back ------------------------------------------------------------
+
+   The confirmation that the app exists came off this screen, which turns
+   it from an ending into a step — and steps can be left. */
+
+#winSetup.i3 .i4-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 12px 6px 9px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  line-height: 18px;
+  color: var(--color-foreground);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+#winSetup.i3 .i4-back:hover { background: var(--color-accent); }
+#winSetup.i3 .i4-back:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+#winSetup.i3 .i4-back svg { width: 14px; height: 14px; flex: none; }
+
+/* ==================================================================
+   THE WORKSPACE'S STANDARD
+
+   Not a badge on a row. An administrator set this in workspace
+   settings, so it gets the weight of a decision already taken: its own
+   box, a heavier border than anything else on the screen, and the
+   reason written underneath. Everything else collapses behind it.
+================================================================== */
+
+#winSetup.i3 .i4-standard { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+#winSetup.i3 .i4-standard[hidden] { display: none; }
+
+#winSetup.i3 .i4-standard-label {
+  font-size: 10.5px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 14px;
+  color: var(--color-muted-foreground);
+}
+
+/* The only 1.5px border in the app. It is doing the job the badge did,
+   and doing it without shouting. */
+#winSetup.i3 .i4-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  border: 1.5px solid var(--color-foreground);
+  border-radius: 12px;
+}
+#winSetup.i3 .i4-box .tx { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+#winSetup.i3 .i4-box .tx b {
+  font-size: 17px;
+  font-weight: var(--font-weight-medium);
+  line-height: 22px;
+  letter-spacing: -0.01em;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i4-box .tx span {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-muted-foreground);
+}
+
+#winSetup.i3 .i4-box-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  border-radius: 11px;
+}
+#winSetup.i3 .i4-box-icon svg { width: 26px; height: 26px; }
+
+#winSetup.i3 .i4-box-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .i4-box-state.ready { color: var(--color-foreground); }
+#winSetup.i3 .i4-box-state .dot {
+  display: grid;
+  place-items: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--color-tick);
+  color: #ffffff;
+}
+#winSetup.i3 .i4-box-state .dot svg { width: 9px; height: 9px; }
+#winSetup.i3 .i4-box-state .glyph { display: grid; place-items: center; width: 16px; height: 16px; }
+#winSetup.i3 .i4-box-state .glyph svg { width: 14px; height: 14px; }
+
+/* ==================================================================
+   ALERT
+
+   shadcn's Alert, once, used everywhere this screen has something to
+   say: a bordered card, an icon in its own lane, the point in the
+   title and the detail underneath.
+
+   It replaces a centred grey paragraph under the primary button, which
+   is the hardest shape of text to read — centred, so every line starts
+   somewhere new, and muted at 12.5px, so it reads as fine print you
+   are meant to skip. It wasn't fine print; it said what the button was
+   about to do.
+================================================================== */
+
+#winSetup.i3 .i4-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .i4-alert[hidden] { display: none; }
+
+/* A lane of its own, so titles line up whether or not the icon is
+   there — shadcn puts the icon on its own grid column for the same
+   reason. */
+#winSetup.i3 .i4-alert > svg {
+  width: 16px; height: 16px;
+  flex: none;
+  margin-top: 1px;
+}
+
+#winSetup.i3 .i4-alert .tx { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+#winSetup.i3 .i4-alert .tx b {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 18px;
+  letter-spacing: -0.01em;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i4-alert .tx span {
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--color-muted-foreground);
+}
+/* The one place a monospace run belongs in here: the command being run. */
+#winSetup.i3 .i4-alert .tx code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-foreground);
+}
+
+/* Softly tinted, so it reads as context rather than as a control. */
+#winSetup.i3 .i4-alert.muted { background: oklch(98.4% 0 0); }
+
+/* --- the disclosure --------------------------------------------------- */
+
+/* --- the disclosure --------------------------------------------------- */
+
+#winSetup.i3 .i4-disclosure {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+#winSetup.i3 .i4-disclosure[hidden] { display: none; }
+#winSetup.i3 .i4-disclosure:hover { background: var(--color-accent); }
+#winSetup.i3 .i4-disclosure:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+#winSetup.i3 .i4-disclosure .lbl {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: var(--font-weight-medium);
+  line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i4-disclosure .count { font-size: 12.5px; line-height: 16px; color: var(--color-muted-foreground); }
+#winSetup.i3 .i4-disclosure svg {
+  width: 14px; height: 14px; flex: none;
+  color: var(--color-muted-foreground);
+  transition: transform 0.18s ease;
+}
+#winSetup.i3 .i4-disclosure[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+#winSetup.i3 .i4-list[hidden] { display: none; }
+
+/* --- the harness rows ------------------------------------------------ */
+
+/* --- the harness rows ------------------------------------------------ */
+
+#winSetup.i3 .i4-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 13px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+#winSetup.i3 .i4-row:last-child { border-bottom: none; }
+#winSetup.i3 .i4-row:hover { background: var(--color-accent); }
+#winSetup.i3 .i4-row:focus-visible { outline: 2px solid var(--color-ring); outline-offset: -2px; }
+
+/* One marker lane for every row, filled only on the chosen one. */
+#winSetup.i3 .i4-row .mark {
+  flex: 0 0 16px;
+  width: 16px; height: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+#winSetup.i3 .i4-row.on .mark {
+  border: none;
+  background: var(--color-primary);
+}
+#winSetup.i3 .i4-row .mark svg { width: 9px; height: 9px; opacity: 0; }
+#winSetup.i3 .i4-row.on .mark svg { opacity: 1; }
+
+#winSetup.i3 .i4-row .nm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-foreground);
+}
+
+/* The only chip on the screen. If everything can be badged, nothing is
+   worth badging — this one is the org telling you what to pick. */
+#winSetup.i3 .i4-chip {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  line-height: 16px;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+
+/* State lives in the trailing lane, in words. "Installed" earns the
+   foreground colour because it is the thing you are scanning for. */
+#winSetup.i3 .i4-row .state {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+#winSetup.i3 .i4-row.ready .state { color: var(--color-foreground); }
+
+/* Not-installed rows are still choosable — choosing one changes what the
+   button does, it doesn't refuse. So they recede, but not out of reach. */
+#winSetup.i3 .i4-row.missing .nm { color: var(--color-muted-foreground); }
+
+/* A 24px tile per harness. Six tools as six lines of text was the reason
+   nobody could scan this list. */
+#winSetup.i3 .i4-row .tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px; height: 24px;
+  border-radius: 6px;
+}
+#winSetup.i3 .i4-row .tile svg { width: 14px; height: 14px; }
+
+/* Group headers, inside the same card — the structure answers "what do I
+   already have?" before a single word is read. */
+#winSetup.i3 .i4-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px 7px;
+  background: oklch(98.4% 0 0);
+  border-bottom: 1px solid var(--color-border);
+}
+#winSetup.i3 .i4-group b {
+  font-size: 10.5px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 14px;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .i4-group span { font-size: 11px; line-height: 14px; color: oklch(65% 0 0); }
+
+/* --- the action, and the sentence under it --------------------------- */
+
+#winSetup.i3 .i4-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+/* --- waiting for a download to finish -------------------------------- */
+
+/* The one state the app cannot resolve itself: they have gone to a
+   website. It stays on screen and does nothing until they say so. */
+#winSetup.i3 .i4-wait {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+#winSetup.i3 .i4-wait[hidden] { display: none; }
+#winSetup.i3 .i4-wait .tx { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+#winSetup.i3 .i4-wait .tx b {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i4-wait .tx span {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-muted-foreground);
+}
+
+/* --- fitting -----------------------------------------------------------
+
+   This screen carries two headers, six rows and an action, which is the
+   most the window ever holds. On a short display it was tipping into a
+   27px scroll — enough to hide nothing, and enough to feel wrong. The
+   rhythm is tightened rather than the content cut: the app being ready
+   is a premise here, so its block can afford to sit closer in. */
+
+#winSetup.i3 [data-screen="done"] { gap: 18px; }
+#winSetup.i3 [data-screen="done"] .i4-done-head { padding-bottom: 0; }
+#winSetup.i3 [data-screen="done"] .i4-actions { gap: 8px; }
+#winSetup.i3 [data-screen="done"] .i4-row { padding-top: 11px; padding-bottom: 11px; }

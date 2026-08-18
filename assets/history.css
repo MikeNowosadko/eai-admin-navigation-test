@@ -1,0 +1,144 @@
+/* ------------------------------------------------------------------
+   The version history — styles owned by /history.
+
+   A page for telling the story out loud: what each pass changed, what
+   it got right, and what it got wrong that the next one fixed. The
+   screens do the arguing, so the type stays quiet and the images are
+   given room.
+------------------------------------------------------------------- */
+
+.hist { max-width: 1180px; margin: 0 auto; padding: 64px 40px 120px; }
+
+/* --- the opening ------------------------------------------------------ */
+
+.hist-head { max-width: 720px; padding-bottom: 56px; }
+.hist-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a92;
+}
+.hist-head h1 {
+  margin: 0 0 18px;
+  font-size: 52px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+.hist-lede { margin: 0; font-size: 17px; line-height: 1.65; color: var(--n600); }
+
+/* --- the argument in four lines, before any detail -------------------- */
+
+.hist-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  padding-bottom: 72px;
+}
+.hist-sum {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 2px solid var(--n300);
+}
+.hist-sum b { font-family: var(--mono); font-size: 13px; font-weight: 500; color: #8a8a92; }
+.hist-sum span { font-size: 14px; line-height: 1.5; color: var(--n600); }
+/* The one that is current gets the only dark rule on the page. */
+.hist-sum.on { border-top-color: var(--dark); }
+.hist-sum.on b, .hist-sum.on span { color: var(--dark); }
+
+/* --- a version ---------------------------------------------------------
+   Text left, screens right. The screens are the point, so they get the
+   wider column and the text column stops at a readable measure. */
+
+.hist-v {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 56px;
+  padding: 48px 0 52px;
+  border-top: 1px solid var(--n300);
+}
+
+.hist-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; position: sticky; top: 40px; align-self: start; }
+.hist-num {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #8a8a92;
+}
+.hist-num i {
+  font-style: normal;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--dark);
+  color: #ffffff;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+}
+.hist-v h2 { margin: 0; font-size: 27px; line-height: 1.2; letter-spacing: -0.9px; }
+.hist-what { margin: 0; font-size: 15px; line-height: 1.65; color: var(--n600); }
+
+.hist-notes { margin: 4px 0 6px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.hist-notes li {
+  padding-left: 14px;
+  border-left: 2px solid var(--n300);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--n600);
+}
+.hist-notes b { color: var(--dark); font-weight: 600; }
+
+/* --- the screens ------------------------------------------------------- */
+
+.hist-shots { display: flex; flex-direction: column; gap: 34px; min-width: 0; }
+.hist-shots figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.hist-shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+}
+.hist-shots figcaption { font-size: 13px; line-height: 1.5; color: #8a8a92; }
+
+/* The current version's screens sit slightly forward of the rest. */
+.hist-v.current .hist-shots img { box-shadow: var(--shadow-lg); }
+
+/* --- close ------------------------------------------------------------- */
+
+.hist-foot {
+  padding-top: 40px;
+  border-top: 1px solid var(--n300);
+  max-width: 720px;
+}
+.hist-foot p { margin: 0; font-size: 14px; line-height: 1.7; color: #8a8a92; }
+.hist-foot kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--n100);
+  border: 1px solid var(--n300);
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--n700);
+}
+
+/* --- narrow ------------------------------------------------------------ */
+
+@media (max-width: 1000px) {
+  .hist-summary { grid-template-columns: repeat(2, 1fr); }
+  .hist-v { grid-template-columns: 1fr; gap: 28px; }
+  .hist-meta { position: static; }
+}
+
+/* Prototypes that are still live but no longer on the launch pad. Quiet:
+   they are here so nothing becomes unfindable, not to be browsed. */
+.hist-also { margin: 14px 0 0; font-size: 13.5px; line-height: 1.7; color: #a1a1aa; }
+.hist-also a { color: var(--n600); text-decoration: underline; text-underline-offset: 2px; }
+.hist-also a:hover { color: var(--dark); }
