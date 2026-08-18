@@ -34,6 +34,7 @@ later, on a machine where EAI Setup is already installed.
 | **Chat in the app** | `chat/` | [/chat](https://eai-website.github.io/prototypes/chat) | In progress — `/install`, but you never leave the app |
 | **App as the agent** | `agent/` | [/agent](https://eai-website.github.io/prototypes/agent) | In progress — the spike: setup only, done inside the chat |
 | **Simpler setup form** | `install-2/` | [/install-2](https://eai-website.github.io/prototypes/install-2) | In progress — `/install` with the prerequisites hidden and one question per screen |
+| **One-page setup form** | `install-3/` | [/install-3](https://eai-website.github.io/prototypes/install-3) | In progress — `/install-2` again, on one page with no Continue |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
 experiment they belong to. Finished experiments carry a Completed badge and
@@ -226,6 +227,42 @@ settle.
 
 `assets/install-2.js` shares `/install`'s install section, folder chooser and
 hand-off; the middle is its own.
+
+## One-page setup form
+
+`/install-3` is the second pass at `/install-2`. That one answered "what if the
+prerequisites were invisible and every screen asked one thing"; the answer was
+fewer decisions per screen, but four Continues to get through them. This keeps
+the first half and drops the second.
+
+- **The window opens big enough for the whole form**, with the wordmark centred
+  above the title. Growing a window under someone mid-task is worse than
+  starting roomy.
+- **The check is stated, not listed.** `/install` shows four green ticks;
+  `/install-2` showed nothing. Both are wrong the same way — one makes you read
+  a report, the other leaves you wondering whether anything happened. So: one
+  row saying the Mac is ready, in the component the complex form uses, and the
+  full list only when something in it failed. **⌘K → "Prereq install failed"**
+  is that expansion.
+- **Sign-in lands on a tick** that holds long enough to read, then hands its
+  title to *Let's get set up*.
+- **Setup is one page.** Choosing a workspace reveals the name field; naming
+  reveals the folder; choosing a folder reveals the button. No Continue
+  anywhere — a click whose only meaning is "yes, I did just answer that" is a
+  click worth deleting. Answered steps stay on screen and stay editable, so
+  changing your mind is editing a field rather than walking backwards.
+- **Nothing opens itself.** Finishing setup and leaving for your editor are two
+  intentions, and the second is the user's, so it gets a success state and one
+  big button.
+- **Buttons have states** — hover, keyboard focus ring, active — on shadcn's
+  model.
+
+The folder step says out loud that a **new folder** is the recommendation, since
+the chooser's New Folder button is easy to miss.
+
+`assets/install-3.js` shares `/install-2`'s install section, folder chooser and
+hand-off. `assets/install-3.css` is this version's own, scoped to
+`#winSetup.i3`.
 
 ## Chat in the app
 

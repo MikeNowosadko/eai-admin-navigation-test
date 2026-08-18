@@ -1,0 +1,282 @@
+/* ------------------------------------------------------------------
+   The simpler setup form, second pass — styles owned by /install-3.
+
+   Loaded after install.css and scoped to #winSetup.i3, so /install and
+   /install-2 keep the look they were built with. What changes here:
+
+     · the window opens bigger, with the wordmark centred above the title
+     · buttons get real states — hover, focus ring, active — on shadcn's
+       model: the primary lightens to primary/90, everything else picks
+       up the accent fill
+     · setup is one page. Three questions revealed downwards as each is
+       answered, rather than three screens with Continue between them
+     · sign-in and finish both get a moment: a tick that lands, rather
+       than a screen that swaps
+------------------------------------------------------------------- */
+
+#winSetup.i3 {
+  /* shadcn's neutrals, continued from install.css. */
+  --color-accent: oklch(97% 0 0);
+  --color-ring: oklch(70.8% 0 0);
+  --color-primary-hover: oklch(30% 0 0);
+
+  /* Tall enough for the whole form, capped so a long folder path can't
+     push the window off the desktop. The body scrolls instead. */
+  max-height: 84vh;
+}
+
+#winSetup.i3 .skin-setup.eai {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* More air than the small dialog needed: this holds a whole form now. */
+#winSetup.i3 .eai-body { padding: 32px 36px 34px; }
+
+/* --- the wordmark, centred above the title --------------------------- */
+
+#winSetup.i3 .i3-brand {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+#winSetup.i3 .i3-brand img {
+  display: block;
+  width: 148px;
+  max-width: 60%;
+  height: auto;
+  /* Neutral near-black, like the disk image's — the palette in here is
+     white, one grey and near-black. */
+  filter: saturate(0) brightness(0.45);
+}
+
+/* ==================================================================
+   BUTTON STATES
+
+   install.css draws the buttons; it doesn't give them anywhere to go.
+   These are shadcn's: hover is a fill change, focus is a ring and only
+   ever from the keyboard, active is a hairline press.
+================================================================== */
+
+#winSetup.i3 .eai-btn {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+#winSetup.i3 .eai-btn:hover { background: var(--color-accent); }
+#winSetup.i3 .eai-btn:active { transform: translateY(0.5px); }
+
+#winSetup.i3 .eai-btn.primary:hover { background: var(--color-primary-hover); }
+#winSetup.i3 .eai-btn.primary:active { background: var(--color-primary); }
+
+#winSetup.i3 .eai-btn:focus-visible,
+#winSetup.i3 .eai-input:focus-visible,
+#winSetup.i3 .eai-inner:focus-visible,
+#winSetup.i3 .eai-row.pick:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* The button that lives inside a field follows the same rules. */
+#winSetup.i3 .eai-inner {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+#winSetup.i3 .eai-inner:hover {
+  background: var(--color-accent);
+  color: var(--color-foreground);
+}
+
+/* Typing into a field should show the field is live. */
+#winSetup.i3 .eai-input,
+#winSetup.i3 .eai-combo { transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+#winSetup.i3 .eai-input:focus { border-color: oklch(80% 0 0); }
+
+/* A disabled primary is unavailable, not dangerous. */
+#winSetup.i3 .eai-btn[disabled] {
+  background: oklch(97% 0 0);
+  border-color: var(--color-border);
+  color: var(--color-muted-foreground);
+  cursor: default;
+}
+#winSetup.i3 .eai-btn[disabled]:hover { background: oklch(97% 0 0); }
+
+/* The end of the journey deserves a bigger target than "Back" does. */
+#winSetup.i3 .eai-btn.big {
+  height: 52px;
+  padding: 0 28px;
+  font-size: 15px;
+}
+#winSetup.i3 .eai-btn.ghost-quiet {
+  border-color: transparent;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .eai-btn.ghost-quiet:hover {
+  background: var(--color-accent);
+  color: var(--color-foreground);
+}
+
+/* ==================================================================
+   THE CHECK
+
+   Stated, not listed. One row saying the machine is ready, in the same
+   component the complex form uses for its four — so when a check does
+   fail, the list it expands into is already familiar.
+================================================================== */
+
+#winSetup.i3 .eai-row .sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .eai-row .lbl { display: block; }
+
+/* ==================================================================
+   SIGNED IN, AND FINISHED
+
+   Both are the same shape: a tick that lands, a line about what just
+   happened. One hands over to the form, the other to your editor.
+================================================================== */
+
+#winSetup.i3 .i3-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 26px 0 22px;
+  text-align: center;
+}
+#winSetup.i3 .i3-welcome h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.025em;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i3-welcome p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+#winSetup.i3 .i3-welcome code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-foreground);
+}
+
+#winSetup.i3 .i3-tick {
+  display: grid;
+  place-items: center;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--color-tick);
+  color: #ffffff;
+  animation: i3TickIn 0.42s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+#winSetup.i3 .i3-tick svg { width: 26px; height: 26px; }
+#winSetup.i3 .i3-tick svg path {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  animation: i3Draw 0.36s 0.16s ease forwards;
+}
+
+@keyframes i3TickIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes i3Draw { to { stroke-dashoffset: 0; } }
+
+#winSetup.i3 .i3-done-acts {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+/* ==================================================================
+   THE ONE-PAGE FORM
+
+   Steps sit in a column and arrive from below as they are unlocked.
+   An answered step stays where it is and stays editable — nothing is
+   ever behind a Back button.
+================================================================== */
+
+#winSetup.i3 .i3-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+#winSetup.i3 .i3-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#winSetup.i3 .i3-step[hidden] { display: none; }
+
+/* Arriving, rather than appearing. The eye needs to know something was
+   added below rather than that the page changed. */
+#winSetup.i3 .i3-step.i3-in,
+#winSetup.i3 .i3-reveal.i3-in {
+  animation: i3StepIn 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes i3StepIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#winSetup.i3 .i3-step-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+#winSetup.i3 .i3-step-head .tx {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+#winSetup.i3 .i3-step-head b {
+  font-size: 15px;
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i3-step-head span {
+  font-size: 12.5px;
+  line-height: 17px;
+  color: var(--color-muted-foreground);
+}
+
+/* The number is the only progress indicator: a bar would be lying, since
+   there are exactly three and you can see all of them. */
+#winSetup.i3 .i3-num {
+  flex: none;
+  width: 22px; height: 22px;
+  margin-top: 1px;
+  display: grid; place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+#winSetup.i3 .i3-step.answered .i3-num {
+  background: var(--color-tick);
+  border-color: var(--color-tick);
+  color: #ffffff;
+  font-family: var(--font-sans);
+}
+
+/* An answered step recedes, but stays legible and stays editable. */
+#winSetup.i3 .i3-step.answered .i3-step-head span { color: oklch(65% 0 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  #winSetup.i3 .i3-step.i3-in,
+  #winSetup.i3 .i3-reveal.i3-in,
+  #winSetup.i3 .i3-tick,
+  #winSetup.i3 .i3-tick svg path { animation: none; }
+  #winSetup.i3 .i3-tick svg path { stroke-dashoffset: 0; }
+}

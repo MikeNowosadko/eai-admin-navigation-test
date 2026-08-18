@@ -223,8 +223,8 @@ a.row-title:hover .arrow { transform: translateX(4px); color: var(--dark); }
    neighbours. Keep descriptions to two lines and lists to single-line items
    and the rows match each other too. */
 .row-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
-/* Four cards in a three-wide grid leaves one stranded on its own line, so a
-   row of four goes two-by-two instead. */
+/* A row of four goes two-by-two: in a three-wide grid the fourth is
+   stranded on its own line. Five is fine as 3 + 2. */
 .row-cards.two-up { grid-template-columns: repeat(2, 1fr); }
 .fork-card h2 { margin: 0; font-size: 24px; letter-spacing: -0.7px; }
 .fork-card p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--n600); }
