@@ -312,10 +312,15 @@ sorts first and carries the only chip on the screen. Recommending isn't
 installing — a managed Mac may forbid it — so a recommended-but-missing tool
 goes through the same install affordance as any other.
 
-The download case is the one state the app can't resolve itself: it opens the
-provider's page, then waits, saying the app is already created and nothing is
-lost by closing the window. **"I've installed it — check again"** re-detects
-rather than taking your word for it.
+The download case sends them to the provider's page and then waits, saying the
+app is already created and nothing is lost by closing the window. **It resolves
+itself**: the moment the harness lands in Applications the waiting box checks,
+finds it and enables *Next*. There used to be an **I've installed it — check
+again** button there, which asked somebody to tell the app what it could see for
+itself, and read as a thing that might say no. What the auto-detect deliberately
+does *not* do is raise the setup window or take focus — whether they remember to
+come back on their own is the measurement, and pulling them back the instant the
+drag finishes would answer it for them.
 
 **⌘K** has the four states worth designing for: the recommended one missing,
 nothing installed at all, a download required, and npm refusing to write on a
@@ -359,7 +364,13 @@ URL so *back* means back. The plan you're on is marked, not sold.
 4. `verify.html` — the email-code screen. **Only the email route reaches it**;
    Microsoft has already asserted the address, so there is nothing to confirm.
    It is the most expensive screen in the journey — the one where a person
-   leaves for another app — which is the argument for Microsoft leading
+   leaves for another app — which is the argument for Microsoft leading. **The
+   code is filled in on arrival**, with the fake inbox left underneath to say
+   where it came from. Copying six digits out of a made-up email is a
+   transcription exercise: it tells you whether somebody can retype a number,
+   which is not what any of this is for. The screen still exists, because the
+   cost of leaving is the argument for Microsoft; what it no longer does is
+   charge admission
 5. `workspace.html` — the last thing between a person and the product, and now
    the only thing: country, name, captcha, and one line saying the plan is
    Builder. Carried through the query string
@@ -392,7 +403,13 @@ URL so *back* means back. The plan you're on is marked, not sold.
    other, so the card's name became the page's name and **the card itself went**.
    A card means "one of several", and there is only ever this; the border was
    drawn around the page's entire reason for existing. What was in it is now
-   just the page.
+   just the page — except that the download and the instruction share one
+   border, because downloading the app and typing `/eai` in the window it opens
+   are a single act with a wait in the middle, and stacked as two boxes they
+   read as two topics. The instruction is headed **Get started with EAI** and
+   names the harnesses by kind: *once you have completed the installation of
+   the EAI Setup app and you are in your external harness (Codex, Claude etc.),
+   type `/eai`*.
    Two ways in, app first, and no black — a terminal-coloured slab reads as an
    advert and would be the loudest object on a page whose job is a quiet
    choice. The four steps came off it: they narrated the installer's journey
@@ -445,6 +462,11 @@ hint or a chip in there. Everything below follows from taking that seriously.
   that isn't `/eai` gets a harness-style *Unknown slash command*; `/eai` prints
   one line and raises a **congratulations** card over the desktop. Whether
   somebody gets there unaided is the whole question.
+- **Claude's harness is light.** The shared agent skin in `assets/desktop.js` is
+  dark, which is right for Codex and Gemini and wrong for this one — the window
+  a tester is handed should look like the app they would actually get. Scoped to
+  `#winHost.light` in `signup.css` and switched by `signup.js` on `host-changed`,
+  so `/install-3` and `/install-4` keep the dark one they were tested with.
 - **So the guidance moves upstream**, and is said twice in the two places we do
   control: the web app's CLI tab, and the setup app. Each carries the same
   alert — *when it opens, type `/eai`* — and the same short animation under it.
@@ -508,15 +530,18 @@ one is live.
    From there it happens where it really happens, on the machine: the file
    arrives in Safari's download list above `EAI-Setup.dmg`, opening it mounts a
    disk image with the app to drag to Applications, and the app then runs its
-   own welcome and its own **Sign In** — Google, or an email address. Nothing in
-   any of it has heard of Enterprise AI.
+   own welcome and its own **Sign In** — Google, or an email address. Then it
+   opens **as itself**: sidebar, empty recents, the account in the footer and a
+   prompt you can type in, in light. It used to end on a centred "You're signed
+   in" card with a picture of a chat box under it — a dialog with nothing to
+   press, at the moment a person is deciding what to do next. Nothing in any of
+   it has heard of Enterprise AI.
 
    **That is the measurement.** An earlier version ended with a button reading
    *Open EAI Setup*, which is both a lie — Anthropic's installer would never say
    that — and a way of answering the only question being asked: *do they
    remember to come back?* EAI Setup sits behind that window the whole time,
-   still waiting, with **I've installed it — check again** ready for whenever
-   they find it.
+   and by then it has already found the harness and is ready to carry on.
 
 The administrator-chose-one case came off the screen: these are new users
 signing themselves up, so there is nobody to have chosen. Terminal stays in the

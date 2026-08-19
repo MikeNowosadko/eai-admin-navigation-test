@@ -265,27 +265,35 @@
 
         <div class="nb-cli">
 
-          <div class="nb-row">
-            <span class="tx">Download the app</span>
-            <button class="nb-btn primary" id="downloadBtn" type="button">Download EAI Setup app &middot; 84 MB</button>
-          </div>
+          <!-- The download and the instruction are one box now. They were
+               two, stacked, and read as two topics — but downloading the
+               app and typing /eai in the window it opens are a single act
+               with a wait in the middle. Inside the same border, the
+               instruction is part of getting the app rather than a notice
+               underneath it. -->
+          <div class="nb-get">
 
-          <!-- Said here because it cannot be said where it is needed. An
-               external harness opens empty and nothing we ship can put a
-               line of text inside one, so the last instruction a person
-               gets is whatever they read before they leave. The same block
-               is on the setup app's last screen, for the same reason.
+            <div class="nb-row">
+              <span class="tx">Download the app</span>
+              <button class="nb-btn primary" id="downloadBtn" type="button">Download EAI Setup app &middot; 84 MB</button>
+            </div>
 
-               The video is the thing being measured: whether anyone plays
-               it tells us if a still instruction was enough. -->
-          <div class="nb-note">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
-            </span>
-            <span class="tx">
-              <b>Once it's installed, your app opens in your AI tool. Type <code>/eai</code> there.</b>
-              <span>Setup creates the app, then hands you to Claude Code, Copilot or whichever tool you use. That window opens empty &mdash; type <code>/eai</code> at its prompt and press enter to start building.</span>
-            </span>
+            <!-- Said here because it cannot be said where it is needed. An
+                 external harness opens empty and nothing we ship can put a
+                 line of text inside one, so the last instruction a person
+                 gets is whatever they read before they leave. The same
+                 block is on the setup app's last screen, for the same
+                 reason. -->
+            <div class="nb-note">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+              </span>
+              <span class="tx">
+                <b>Get started with EAI</b>
+                <span>Once you have completed the installation of the EAI Setup app and you are in your external harness (Codex, Claude etc.), type <code>/eai</code> to start using Enterprise AI CLI.</span>
+              </span>
+            </div>
+
           </div>
 
           <!-- The video lives only in the setup app now. Here it was a

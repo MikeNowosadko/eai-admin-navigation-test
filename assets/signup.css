@@ -877,14 +877,23 @@
   margin-top: 26px;
 }
 
-/* the app: a bordered row, so the button is the only fill in it */
+/* One box: the download, and what to do once it lands. The border used
+   to be on the row alone, with the instruction in its own panel below —
+   two objects for one act. */
+.nb-get {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* the app: the top line of that box, so the button is the only fill in it */
 .nb-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
 }
 .nb-row .tx { flex: 1; font-size: 13.5px; font-weight: 600; line-height: 18px; }
 .nb-row .nb-btn { height: 34px; }
@@ -1738,25 +1747,132 @@
 .ha-fine { margin: 2px 0 0; font-size: 11.5px; line-height: 1.55; color: #8b8983; }
 .ha-fine u { cursor: pointer; }
 
-/* D · the empty app they land in */
-.ha-chat {
+/* D · the app they land in.
+
+   Every other .ha-screen is a dialog: centred, padded, one thing to
+   press. This one is a window, so it undoes all of that and fills. It
+   was a centred card reading "You're signed in" above a picture of a
+   chat box — nothing to do, at the moment a person is deciding what to
+   do next. */
+.ha-app {
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.haw {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+}
+
+.haw-side {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  max-width: 340px;
-  margin-top: 6px;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 12px;
+  background: #f5f4f1;
+  border-right: 1px solid #e8e6e1;
 }
-.ha-chat-line { font-size: 14px; color: #6f6d68; }
-.ha-chat-input {
-  padding: 13px 15px;
+.haw-brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: #1f1f22; }
+.haw-brand .ha-mark { border-radius: 6px; box-shadow: none; }
+.haw-brand .ha-mark svg { width: 13px; height: 13px; }
+
+.haw-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
   background: #ffffff;
   border: 1px solid #e3e1dc;
-  border-radius: 12px;
-  text-align: left;
-  font-size: 14px;
-  color: #a8a6a1;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1f1f22;
+  cursor: pointer;
 }
+.haw-new:hover { background: #faf9f7; }
+
+.haw-grp { margin-top: 6px; font-size: 10.5px; letter-spacing: 0.7px; text-transform: uppercase; color: #8b8983; }
+.haw-empty { margin: 0; font-size: 12.5px; color: #a8a6a1; }
+
+.haw-acct { display: flex; align-items: center; gap: 8px; margin-top: auto; min-width: 0; }
+.haw-acct .av {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d97757;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.haw-acct .tx { font-size: 11.5px; color: #6f6d68; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.haw-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.haw-head {
+  flex: none;
+  padding: 11px 16px;
+  border-bottom: 1px solid #eceae5;
+  font-size: 12px;
+  color: #8b8983;
+}
+.haw-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+}
+/* Beats `.ha-screen h2`, which is the 30px title the dialogs use. */
+.ha-app .haw-hello { margin: 0; font-size: 19px; font-weight: 500; letter-spacing: -0.2px; color: #1f1f22; }
+
+.haw-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 440px;
+  padding: 11px 13px;
+  background: #ffffff;
+  border: 1px solid #e3e1dc;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px -16px rgba(16, 24, 40, 0.6);
+}
+.haw-composer input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1f1f22;
+}
+.haw-composer input::placeholder { color: #a8a6a1; }
+.haw-composer .send {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #d97757;
+  color: #ffffff;
+}
+.haw-composer .send svg { width: 14px; height: 14px; }
+
+.haw-fine { margin: 0; font-size: 11.5px; color: #a8a6a1; }
 
 /* the harness's mark, mid-flight from the page to the toolbar */
 .dl-fly-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; }
@@ -1796,3 +1912,45 @@
 #winSetup.i3 { max-height: none; }
 #winSetup.i3 .eai-body { padding: 26px 34px 28px; }
 #winSetup.i3 .i3-steps { gap: 20px; }
+
+/* --- the Claude harness, in light ------------------------------------
+
+   The shared agent skin (assets/desktop.js) is dark, which is right for
+   Codex and Gemini and wrong for Claude — the window a tester is handed
+   should look like the app they would actually get. Scoped to
+   `#winHost.light`, set by signup.js on `host-changed`, so /install-3 and
+   /install-4 keep the dark one they were tested with.
+
+   Anthropic's neutrals: paper #faf9f7, a warmer sidebar, and the one
+   accent doing the work of the terminal's orange prompt. */
+
+#winHost.light .win-bar { background: #f0eee9; border-bottom-color: #e3e1dc; }
+#winHost.light .win-bar .wt { color: #3c3a36; font-weight: 600; }
+#winHost.light:not(.focused) .win-bar .tl { background: #d6d3cd; }
+
+#winHost.light .skin-claude { background: #faf9f7; color: #1f1f22; }
+#winHost.light .cl-side { background: #f0eee9; border-right-color: #e3e1dc; }
+#winHost.light .cl-side .brandline { color: #1f1f22; }
+#winHost.light .cl-side .grp { color: #8b8983; }
+#winHost.light .cl-side .row { color: #56544f; }
+#winHost.light .cl-side .row.on { background: #e3e1dc; color: #1f1f22; }
+#winHost.light .cl-head { border-bottom-color: #e8e6e1; color: #8b8983; }
+#winHost.light .cl-foot { background: #f5f4f1; border-color: #e3e1dc; color: #8b8983; }
+
+/* the prompt itself: same terminal, on paper */
+#winHost.light .term-body { color: #34322d; }
+#winHost.light .term-body::-webkit-scrollbar-thumb { background: #ddd9d2; }
+#winHost.light .ln.dim { color: #8b8983; }
+#winHost.light .ln.head,
+#winHost.light .ln.user { color: #1f1f22; }
+#winHost.light .ln.ok { color: #1f6b45; }
+#winHost.light .ln.blue { color: #2f6fb0; }
+#winHost.light .ln.warn { color: #8a6100; }
+#winHost.light .ln.err { color: #b42318; }
+#winHost.light .ln .pfx,
+#winHost.light .tin .pfx { color: #d97757; }
+#winHost.light .ln .kbd { background: #ece9e3; color: #1f1f22; }
+#winHost.light .tin input { color: #1f1f22; caret-color: #d97757; }
+#winHost.light .tin input::placeholder { color: #a8a6a1; }
+#winHost.light .cursor { background: #34322d; }
+#winHost.light .banner { color: #d97757; }

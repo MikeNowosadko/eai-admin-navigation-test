@@ -53,13 +53,15 @@
         Didn&rsquo;t get it? <u>Send it again</u> &middot; <a href="signup.html"><u>Use a different address</u></a>
       </div>
 
-      <!-- Not part of the product: a tester has no inbox to open. -->
+      <!-- Not part of the product: a tester has no inbox to open. The code
+           is already in the boxes above, so this is here to say where it
+           came from rather than to be pressed. The button that filled it
+           in went with the typing. -->
       <div class="vf-inbox">
         <div class="vf-inbox-hd">Your inbox &mdash; prototype only</div>
         <div class="vf-mail">
           <b>Enterprise AI</b>
-          <span>Your code is <em>418 209</em></span>
-          <button class="btn btn-ghost btn-sm" type="button" id="vfFill">Fill it in</button>
+          <span>Your code is <em>418 209</em> &mdash; already filled in</span>
         </div>
       </div>
     </div>
@@ -91,17 +93,19 @@
     });
   });
 
-  document.getElementById('vfFill').addEventListener('click', () => {
-    boxes.forEach((b, i) => { b.value = CODE[i]; });
-    check();
-    go.focus();
-  });
-
   go.addEventListener('click', () => {
     window.location.href = `workspace.html?email=${encodeURIComponent(email)}`;
   });
 
-  boxes[0].focus();
+  /* Filled in, not typed. Six digits copied out of a fake inbox is a
+     transcription exercise, and it tells us nothing about the thing this
+     round is measuring — it only tells us whether somebody can retype a
+     number. The screen still exists, because the cost of leaving for
+     another app is the argument for Microsoft being the primary route;
+     what it no longer does is charge admission. */
+  boxes.forEach((b, i) => { b.value = CODE[i]; });
+  check();
+  go.focus();
 </script>
 
 </body>

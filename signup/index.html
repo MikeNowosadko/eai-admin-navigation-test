@@ -574,14 +574,50 @@
         </div>
       </section>
 
-      <!-- D · signed in, and nothing to do here -->
-      <section class="ha-screen ha-ready" data-ha="ready" hidden>
-        <span class="ha-mark" id="haMark2"></span>
-        <h2 id="haReadyTitle">You&rsquo;re signed in</h2>
-        <p id="haReadySub">Claude Code is ready to use.</p>
-        <div class="ha-chat">
-          <span class="ha-chat-line">How can I help you today?</span>
-          <span class="ha-chat-input">Ask anything&hellip;</span>
+      <!-- D · the app itself, once they're signed in.
+
+           This used to be a centred "You're signed in" card with a picture
+           of a chat box under it — a dialog with nothing to press, which
+           reads as a prototype running out of road at the exact moment a
+           person is deciding what to do next. It is the real app now:
+           sidebar, empty recents, a prompt you can type in. Light, because
+           that is how it opens.
+
+           What it still does not do is mention us. No hand-back, no "return
+           to EAI Setup". Whether they remember on their own is the
+           measurement, and a button here would answer the question for
+           them. -->
+      <section class="ha-screen ha-app" data-ha="ready" hidden>
+        <div class="haw">
+          <aside class="haw-side">
+            <div class="haw-brand">
+              <span class="ha-mark" id="haMark2"></span>
+              <b id="haReadyTitle">Claude Code</b>
+            </div>
+            <button class="haw-new" type="button">
+              <span aria-hidden="true">+</span> New chat
+            </button>
+            <div class="haw-grp">Recents</div>
+            <p class="haw-empty">Nothing yet</p>
+            <div class="haw-acct">
+              <span class="av" id="haAcctAv">U</span>
+              <span class="tx" id="haAcctEmail">usertesting@gmail.com</span>
+            </div>
+          </aside>
+
+          <main class="haw-main">
+            <div class="haw-head" id="haReadySub">Claude Code</div>
+            <div class="haw-body">
+              <h2 class="haw-hello">How can I help you today?</h2>
+              <div class="haw-composer">
+                <input type="text" id="haPrompt" placeholder="Reply to Claude&hellip;" autocomplete="off" spellcheck="false" />
+                <span class="send" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+              <p class="haw-fine">Claude can make mistakes. Please double-check responses.</p>
+            </div>
+          </main>
         </div>
       </section>
     </div>

@@ -35,6 +35,13 @@ const dmgHint = document.getElementById('dmgHint');
 // The two nouns you act on are emphasised, so this is markup not text.
 const HINT_DEFAULT = 'To install, drag <b>EAI Setup</b> to <b>Applications</b>';
 
+/* Every field that asks for an address is filled in with this. Testers
+   would not spend a real one on what looks like a real Microsoft page,
+   and stopping to decide is not what we are here to watch. It is in the
+   markup too (ms-signin.html, signup.html, #haEmail); this is for the
+   places JS has to write it back. */
+const TEST_EMAIL = 'usertesting@gmail.com';
+
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function escapeHtml(s) {
@@ -1176,11 +1183,15 @@ document.getElementById('dlHarnessItem').addEventListener('click', () => {
   document.getElementById('haAppName').textContent = openHarness.name;
   document.getElementById('haDmgName').textContent = openHarness.name;
   document.getElementById('haWelcomeTitle').textContent = `${openHarness.name} for Mac`;
-  document.getElementById('haReadyTitle').textContent = "You're signed in";
-  document.getElementById('haReadySub').textContent = `${openHarness.name} is ready to use.`;
+  // The app's own chrome, not a status message: its name in the sidebar
+  // and again in the header, the way it would be if you'd just opened it.
+  document.getElementById('haReadyTitle').textContent = openHarness.name;
+  document.getElementById('haReadySub').textContent = openHarness.name;
   document.getElementById('haMaker').textContent = openHarness.account || openHarness.name;
 
-  [['haAppIcon', 46], ['haMark', 56], ['haMark2', 56]].forEach(([id, size]) => {
+  // The mark in the sidebar is a 22px brand lockup; the other two are the
+  // big centred icon on the disk image and the welcome screen.
+  [['haAppIcon', 46], ['haMark', 56], ['haMark2', 22]].forEach(([id, size]) => {
     const el = document.getElementById(id);
     el.style.background = icon.bg;
     el.style.width = `${size}px`;
@@ -1188,7 +1199,10 @@ document.getElementById('dlHarnessItem').addEventListener('click', () => {
     el.innerHTML = icon.svg;
   });
 
-  document.getElementById('haEmail').value = '';
+  // Prefilled, like every other address field in the flow. This used to
+  // blank it, which quietly undid the prefill in the one variation where
+  // somebody is asked for an account that isn't even ours.
+  document.getElementById('haEmail').value = TEST_EMAIL;
   document.getElementById('haDmgHint').innerHTML =
     `To install, drag <b>${escapeHtml(openHarness.name)}</b> to <b>Applications</b>`;
 
@@ -1207,11 +1221,12 @@ function haInstall() {
   haApp.style.transform = '';
   haTarget.classList.remove('over');
 
-  // On the machine now. EAI Setup finds it whenever they go back.
+  // On the machine now, and EAI Setup notices from over here — the
+  // waiting box resolves itself rather than waiting to be told.
   openHarness.installed = true;
   openHarness.version = 'just installed';
-  if (waitingFor === openHarness.id) waitingFor = null;
   renderHarnesses();
+  harnessArrived(openHarness);
 
   const item = dockItem(HOST_FOR[openHarness.id]);
   if (item) {
@@ -1322,7 +1337,7 @@ document.getElementById('handoffBack').addEventListener('click', () => {
   setupWin.querySelector('.skin-setup')?.scrollTo({ top: 0 });
 });
 
-/** The state the app can't resolve on its own. */
+/** The state the app can't resolve on its own — yet. */
 function showWaiting(h) {
   let el = document.getElementById('harnessWait');
   if (!el) {
@@ -1331,18 +1346,16 @@ function showWaiting(h) {
     el.id = 'harnessWait';
     el.innerHTML = '<i class="mk pending" style="flex:0 0 16px;width:16px;height:16px;border:2px solid var(--color-border);border-radius:50%;"></i>'
       + '<div class="tx"><b></b><span></span></div>';
-    const btn = document.createElement('button');
-    btn.className = 'eai-btn';
-    btn.type = 'button';
-    btn.textContent = "I've installed it — check again";
-    btn.addEventListener('click', () => recheck(h));
-    el.appendChild(btn);
     harnessRows.after(el);
   }
+  /* No "I've installed it — check again" button any more. A real installer
+     watches /Applications; asking somebody to tell us what already
+     happened is a question the app can answer itself, and people read a
+     button that says "check again" as a thing that might fail. */
   el.querySelector('.tx b').textContent = `Waiting for ${h.name}`;
   el.querySelector('.tx span').textContent =
-    `${h.site} is open in your browser. Download ${h.name}, install it and sign in — then come `
-    + 'back here and choose Check again. Your app is already created, so nothing is lost if you '
+    `${h.site} is open in your browser. Download ${h.name}, install it and sign in — this will `
+    + 'update by itself when it lands. Your app is already created, so nothing is lost if you '
     + 'close this window.';
   el.hidden = false;
 
@@ -1354,20 +1367,32 @@ function showWaiting(h) {
   document.getElementById('harnessFine').hidden = true;
 }
 
-/** They say it's installed; the app checks rather than takes their word. */
-async function recheck(h) {
+/**
+ * It landed in /Applications, so the setup app notices.
+ *
+ * Deliberately silent about it. The window is not raised and focus is not
+ * taken: whether somebody remembers to come back to EAI Setup on their own
+ * is the one thing this round measures, and pulling them back the instant
+ * the drag finishes would answer it for them. All this does is make sure
+ * that when they do return, the app is ready rather than still asking.
+ */
+async function harnessArrived(h) {
+  h.installed = true;
+  if (waitingFor === h.id) waitingFor = null;
+
   const el = document.getElementById('harnessWait');
+  if (!el || el.hidden) { renderHarnesses(); return; }
+
+  // A beat of looking for it, so the row doesn't just blink from one
+  // state to the other while nobody is watching this window.
   el.querySelector('.tx b').textContent = `Checking for ${h.name}`;
   el.querySelector('.tx span').textContent = 'Looking for it on this Mac.';
   await wait(1200);
 
-  h.installed = true;
   h.version = 'found';
-  waitingFor = null;
   el.hidden = true;
   renderHarnesses();
   selectHarness(h.id);
-  focusWin('setup');
 }
 
 function finish(name, path) {
@@ -1446,6 +1471,19 @@ const HOST_FOR = {
   gemini: 'gemini',
   vscode: 'vscode',
 };
+
+/* Claude opens light. The shared skin is dark for every agent, which is
+   right for Codex and Gemini and wrong for this one — and the harness a
+   tester sees is meant to look like the app they'd actually get. Done
+   here rather than in desktop.js because that file is every flow's, and
+   /install-3 and /install-4 have been in front of people with the dark
+   one. The palette is in signup.css under `#winHost.light`. */
+window.addEventListener('host-changed', (e) => {
+  const host = desktop.wins.host;
+  const light = e.detail.app === 'claude';
+  host.classList.toggle('light', light);
+  host.classList.toggle('dark', !light && (HOSTS[e.detail.app] || HOSTS.terminal).dark);
+});
 /* The end of the journey — and the part we do not control.
 
    Assume nothing can be written into an external harness. Claude Code,

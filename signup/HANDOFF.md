@@ -65,6 +65,16 @@ EAI exists. Everything else follows from taking that seriously:
    Microsoft page, the email route on `signup.html`, and the harness maker's
    sign-in. That is deliberate: testers would not spend a real address on what
    looks like a real Microsoft page. Don't empty them to "make it realistic".
+   `signup.js` writes it back into `#haEmail` when the harness app opens; it
+   used to blank the field there, which silently undid the prefill in
+   variation 2. The verification code on `verify.html` is filled in for the
+   same reason.
+8. **The waiting box resolves itself, and must not steal focus.**
+   `harnessArrived()` is called when the harness lands in Applications. It
+   marks it installed and enables *Next* without raising the setup window —
+   because whether somebody remembers to come back on their own is the
+   measurement. Adding a `focusWin('setup')` there would quietly delete the
+   thing the round is for.
 
 ## Where things live
 
