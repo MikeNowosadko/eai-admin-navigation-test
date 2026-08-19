@@ -52,7 +52,10 @@
 
       <form class="su-email" id="emailForm" onsubmit="return false;">
         <label for="suEmail">Work email</label>
-        <input type="email" id="suEmail" placeholder="you@company.com" autocomplete="email" spellcheck="false" />
+        <!-- Prefilled for the same reason as the Microsoft field: nobody
+             should have to decide whether to spend a real address on a
+             prototype. -->
+        <input type="email" id="suEmail" value="usertesting@gmail.com" placeholder="you@company.com" autocomplete="email" spellcheck="false" />
         <button class="btn btn-ghost" type="button" id="suGo">Continue with email</button>
       </form>
 

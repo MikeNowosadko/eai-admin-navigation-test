@@ -12,12 +12,12 @@ handed on their own:
 - `/signup?scenario=installed` — Claude Code is already on the Mac
 - `/signup?scenario=none` — nothing is, so they have to go and get it
 
-Marketing site → create account → **Microsoft sign-in** (empty field, they type
-their address, and it follows them everywhere after) → workspace → the logged-in
-app, **on its CLI tab** → download EAI Setup → drag to Applications → sign in
-(one click; the browser session is live) → **template → name → folder** → init →
-choose a harness → *Next* → the hand-off screen → the harness opens **empty** →
-they type `/eai` → congratulations.
+Marketing site → create account → **Microsoft sign-in** (prefilled with
+`usertesting@gmail.com`; they press enter, and it follows them everywhere after)
+→ workspace → the logged-in app, **on its CLI tab** → download EAI Setup → drag
+to Applications → sign in (one click; the browser session is live) → **template
+→ name → folder** → init → choose a harness → *Next* → the hand-off screen → the
+harness opens **empty** → they type `/eai` → congratulations.
 
 ## The one thing the round measures
 
@@ -56,6 +56,15 @@ EAI exists. Everything else follows from taking that seriously:
    to top instead.
 5. **The browser caches hard.** When a change doesn't show, it's usually the
    iframe's stylesheet, not your edit. Bust with a query param.
+6. **The setup window must stay above the dock.** `#winSetup` is `top:4%;
+   height:84%` for a reason: it used to have no height, grew with its content
+   and covered the dock, which is where the Downloads folder lives. If you give
+   it back an auto height, that bug comes back. Check the bottom edge against
+   `.dock` before changing the geometry.
+7. **Every email field is prefilled** with `usertesting@gmail.com` — the
+   Microsoft page, the email route on `signup.html`, and the harness maker's
+   sign-in. That is deliberate: testers would not spend a real address on what
+   looks like a real Microsoft page. Don't empty them to "make it realistic".
 
 ## Where things live
 
@@ -88,8 +97,13 @@ screens via `data-screen`), the harness's own app (`#winHarnessApp`, screens via
 
 - **The video is drawn, not recorded.** Survives these tools redesigning their
   chrome; wrong if people will judge the content rather than click it.
-- **Nothing is timed.** We capture whether `/eai` was typed, not how long it took
-  or what was typed first. Worth adding for unmoderated sessions.
+- **Nothing is timed, on purpose.** Rounds are run in Lyssna and the recordings
+  are watched, which gives you what somebody tried first and how long they
+  hunted — better than anything instrumentation would infer. Don't build it.
+- **The tallest setup screens still scroll on a short desktop.** The four-step
+  form is ~730px of content and the window can only be ~605px tall above the
+  dock on a 720px screen. Fits from roughly 900px up. Fixing it properly means
+  shortening the form, not resizing the window again.
 - **The player pushed "Or install it yourself" below the fold** on the CLI tab.
   That was the trade for a video nobody can miss.
 - `.context/todos.md` in the working copy has the full checklist with everything

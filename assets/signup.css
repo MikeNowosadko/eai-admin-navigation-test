@@ -856,28 +856,26 @@
 .nb-empty b { font-size: 14px; font-weight: 600; }
 .nb-empty span { font-size: 13px; line-height: 1.6; color: var(--muted-foreground); }
 
-/* --- the CLI card, to the Paper frame -------------------------------
+/* --- the CLI page ---------------------------------------------------
 
-   Values straight off the design (page "EAI Setup — card variations +
-   onboarding"): 24px padding, 20px gap, one 14px radius, and the only
-   dark thing on it is the button. The command sits in a muted field
-   rather than a terminal — a black slab here reads as an advert, and it
-   would be the loudest object on a page whose whole job is a choice
-   between two quiet ones. */
+   This was a card, to the Paper frame on page "EAI Setup — card
+   variations + onboarding": 24px padding, a 14px radius, a border and a
+   shadow. It lost all of them. A card says "one of several" and there is
+   only ever this, so the border was drawing a box around the page's
+   entire reason for existing — and its title and the page title were
+   saying the same sentence to each other.
 
-.nb-card {
+   What the frame decided is still here: the only dark thing is the
+   button, and the command sits in a muted field rather than a terminal.
+   A black slab reads as an advert, and would be the loudest object on a
+   page whose whole job is a choice between two quiet ones. */
+
+.nb-cli {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin-top: 22px;
-  padding: 24px;
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 6px 24px -8px rgba(16, 24, 40, 0.08);
+  gap: 16px;
+  margin-top: 26px;
 }
-
-.nb-card-title { font-size: 18px; font-weight: 600; line-height: 22px; letter-spacing: -0.3px; }
 
 /* the app: a bordered row, so the button is the only fill in it */
 .nb-row {
@@ -1782,3 +1780,19 @@
   color: var(--n600);
 }
 .hs-other .tile b { font-size: 15px; color: var(--dark); }
+
+/* --- the setup app's window, in this flow only ------------------------
+
+   The window is given a fixed height in signup/index.html now, so this
+   undoes install-3's cap: a max-height that agrees with the height is
+   fine until somebody changes one of them, and then it clips.
+
+   The rest is air taken back out of the form. The tallest screens — the
+   four-step setup and the harness list — ran to about 760px of content,
+   which no window can show above the dock on a 720px-tall desktop. This
+   doesn't fix that on the smallest screens, but it is the difference
+   between fitting and not on an ordinary laptop. */
+
+#winSetup.i3 { max-height: none; }
+#winSetup.i3 .eai-body { padding: 26px 34px 28px; }
+#winSetup.i3 .i3-steps { gap: 20px; }

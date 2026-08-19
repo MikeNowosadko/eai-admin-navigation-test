@@ -162,7 +162,18 @@
   <!-- Built to the three Paper frames 1CQ-0 / UC-0 / 1GL-0. Values come
        from those frames; the token names below are the same ones the
        design file uses, so the two stay comparable. -->
-  <div class="win hidden i3" id="winSetup" style="left:19%; top:10%; width:62%;">
+  <!-- One size, for every screen in it. It used to have no height at all:
+       the window grew to whatever the current step needed, from 362px at
+       sign-in to the 84vh cap by the time you were choosing a folder. Two
+       things went wrong with that. It grew downwards over the dock, so the
+       Downloads folder disappeared behind it; and once it hit the cap the
+       body scrolled instead, so revealing a step pushed the title off the
+       top and the app looked like it had shifted down.
+
+       A real Mac app doesn't resize itself between steps. This one is now
+       a healthy size from the moment it opens, sitting clear of the dock,
+       with room for the content to grow into. -->
+  <div class="win hidden i3" id="winSetup" style="left:16%; top:4%; width:68%; height:84%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
       <span class="wt">Enterprise AI Setup</span>
@@ -553,7 +564,11 @@
             <span class="g" aria-hidden="true">G</span> Continue with Google
           </button>
           <div class="ha-or">OR</div>
-          <input type="email" id="haEmail" placeholder="Enter your email" autocomplete="email" spellcheck="false" />
+          <!-- Prefilled too. This is the harness maker's own sign-in, so
+               it is the one place a tester is asked for an account that
+               isn't even ours — the most likely of the three to stop
+               somebody who doesn't want to spend a real one. -->
+          <input type="email" id="haEmail" value="usertesting@gmail.com" placeholder="Enter your email" autocomplete="email" spellcheck="false" />
           <button class="ha-btn" type="button" id="haEmailGo">Continue with email</button>
           <p class="ha-fine">By continuing, you acknowledge <span id="haMaker">Anthropic</span>&rsquo;s <u>Privacy Policy</u> and agree to get occasional promotional emails and notifications.</p>
         </div>

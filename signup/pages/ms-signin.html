@@ -32,10 +32,19 @@
     <!-- A · which account -->
     <section class="ms-step" data-ms="email">
       <h1>Sign in</h1>
-      <!-- Empty on purpose. The address they type is the account the rest of
-           the journey uses — the workspace owner, the device confirmation,
-           the name in the native app — so it has to be theirs, not ours. -->
-      <input class="ms-input" type="email" id="msEmail" placeholder="Email, phone, or Skype" spellcheck="false" autocomplete="username" autofocus />
+      <!-- Filled in, and that is a change. It used to be empty on the
+           argument that the address should be theirs, because the rest of
+           the journey uses it — the workspace owner, the device
+           confirmation, the name in the native app.
+
+           Testers wouldn't type one. Nothing on screen tells you this Mac
+           is a drawing, so being asked for a work address at a Microsoft
+           sign-in reads as a real request for a real account, and the
+           careful answer is to stop. A test address already in the field
+           answers the question before it is asked: press enter. It still
+           travels the whole way through, so everything downstream is
+           unchanged. -->
+      <input class="ms-input" type="email" id="msEmail" value="usertesting@gmail.com" placeholder="Email, phone, or Skype" spellcheck="false" autocomplete="username" autofocus />
       <div class="ms-err" id="msErr" hidden>Enter a valid email address, phone number, or Skype name.</div>
       <p class="ms-small">No account? <u>Create one!</u></p>
       <p class="ms-small"><u>Can&rsquo;t access your account?</u></p>

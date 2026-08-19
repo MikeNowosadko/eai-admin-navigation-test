@@ -347,7 +347,15 @@ URL so *back* means back. The plan you're on is marked, not sold.
    password, number-matching MFA, the consent screen naming EAI, "stay signed
    in". This is the moment EAI hands someone to their own IT department, and it
    is where a sign-up either feels like joining a company tool or being stopped
-   by one
+   by one. **The address is prefilled** — `usertesting@gmail.com`, in every
+   field that asks for one: here, the email route on `signup.html`, and the
+   harness maker's own sign-in in variation 2. It used to be empty on the
+   argument that the account should be theirs, since the rest of the journey
+   names it. Testers wouldn't type one, and they were right to hesitate:
+   nothing on screen says this Mac is a drawing, so a Microsoft page asking for
+   a work address reads as a real request for a real account. A test address
+   already in the field answers that before it is asked — press enter. It still
+   travels the whole way through, so everything downstream is unchanged
 4. `verify.html` — the email-code screen. **Only the email route reaches it**;
    Microsoft has already asserted the address, so there is nothing to confirm.
    It is the most expensive screen in the journey — the one where a person
@@ -373,12 +381,18 @@ URL so *back* means back. The plan you're on is marked, not sold.
    Setup — card variations + onboarding*: **Get started with the EAI Setup
    app**, then *Download the app* with the only dark button on the page, then
    *Or install yourself* with `npx install eai` in a muted field and a COPY
-   chip. The card was called *Get started building with CLI* until a read-through
-   caught it promising a command line — the one action in it is a Mac app, and
-   the CLI is the tab it lives on, not what you get. The hero lost its
-   standfirst at the same time: *Whole apps in a folder on your Mac* described
-   the experience rather than the choice, and it stood between the heading and
-   the only thing to do on the page.
+   chip. It took three passes to get to one heading. It was *Get started
+   building with CLI* until a read-through caught it promising a command line —
+   the one action is a Mac app, and the CLI is the tab it lives on, not what
+   you get. The hero lost its standfirst at the same time: *Whole apps in a
+   folder on your Mac* described the experience rather than the choice, and it
+   stood between the heading and the only thing to do on the page. Then the two
+   remaining titles — *Build on your machine* over a card called *Get started
+   with the EAI Setup app* — turned out to be saying the same sentence to each
+   other, so the card's name became the page's name and **the card itself went**.
+   A card means "one of several", and there is only ever this; the border was
+   drawn around the page's entire reason for existing. What was in it is now
+   just the page.
    Two ways in, app first, and no black — a terminal-coloured slab reads as an
    advert and would be the loudest object on a page whose job is a quiet
    choice. The four steps came off it: they narrated the installer's journey
@@ -405,6 +419,17 @@ URL so *back* means back. The plan you're on is marked, not sold.
 - **The app is told who signed up.** The portal posts workspace, country and
   email up to the shell (`action: 'context'`), so the native app shows the
   person's own words back to them.
+- **The setup window is one size for the whole journey.** It had no height at
+  all: it grew to whatever the current step needed, 362px at sign-in and up to
+  the 84vh cap by the folder step. Two things went wrong with that in testing.
+  It grew *downwards*, over the dock, so the Downloads folder vanished behind
+  it; and once it hit the cap the body scrolled instead, so revealing a step
+  pushed the title off the top and the app read as having shifted down. It is
+  now a fixed 68% × 84%, sitting clear of the dock, with a little air taken out
+  of the form so more of it fits. A real Mac app doesn't resize itself between
+  steps. On a desktop shorter than about 900px the two tallest screens still
+  scroll — the four-step form runs to ~730px of content, and nothing that tall
+  fits above a dock on a 720px screen.
 
 **What it costs** is four screens and a Microsoft round trip before anyone sees
 a dmg. That is the trade the experiment is for.
