@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="login.microsoftonline.com/common/oauth2/v2.0/authorize" />
+<title>Prototype — Sign in to your account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="ms-page">
+
+  <!-- Step 3. Somebody else's sign-in.
+
+       It is worth building rather than skipping. This is the moment EAI
+       hands the user to their own IT department: the branding changes, the
+       tenant may add MFA, and the consent screen names permissions that a
+       cautious person will read. Whatever we do afterwards, this is where
+       the sign-up either feels like joining a company tool or like being
+       stopped by one. -->
+
+  <div class="ms-card">
+    <div class="ms-brand">
+      <span class="ms-mark" aria-hidden="true"><i style="background:#f25022"></i><i style="background:#7fba00"></i><i style="background:#00a4ef"></i><i style="background:#ffb900"></i></span>
+      <span>Microsoft</span>
+    </div>
+
+    <!-- A · which account -->
+    <section class="ms-step" data-ms="email">
+      <h1>Sign in</h1>
+      <!-- Empty on purpose. The address they type is the account the rest of
+           the journey uses — the workspace owner, the device confirmation,
+           the name in the native app — so it has to be theirs, not ours. -->
+      <input class="ms-input" type="email" id="msEmail" placeholder="Email, phone, or Skype" spellcheck="false" autocomplete="username" autofocus />
+      <div class="ms-err" id="msErr" hidden>Enter a valid email address, phone number, or Skype name.</div>
+      <p class="ms-small">No account? <u>Create one!</u></p>
+      <p class="ms-small"><u>Can&rsquo;t access your account?</u></p>
+      <div class="ms-acts">
+        <button class="ms-btn" type="button" data-ms-next="password">Next</button>
+      </div>
+    </section>
+
+    <!-- B · password -->
+    <section class="ms-step" data-ms="password" hidden>
+      <div class="ms-back"><span aria-hidden="true">&#8592;</span> <span data-ms-account></span></div>
+      <h1>Enter password</h1>
+      <input class="ms-input" type="password" id="msPassword" value="••••••••••" autocomplete="current-password" />
+      <p class="ms-small"><u>Forgot my password</u></p>
+      <div class="ms-acts">
+        <button class="ms-btn" type="button" data-ms-next="mfa">Sign in</button>
+      </div>
+    </section>
+
+    <!-- C · the tenant's MFA. Nothing to click: the point of the screen is
+         that the person has to pick up a phone. -->
+    <section class="ms-step" data-ms="mfa" hidden>
+      <div class="ms-back"><span aria-hidden="true">&#8592;</span> <span data-ms-account></span></div>
+      <h1>Approve sign in request</h1>
+      <p class="ms-body">Open your Microsoft Authenticator app and enter the number shown to sign in.</p>
+      <div class="ms-number">47</div>
+      <div class="ms-waiting"><i></i> Waiting for approval&hellip;</div>
+      <p class="ms-small"><u>I can&rsquo;t use my Microsoft Authenticator app right now</u></p>
+    </section>
+
+    <!-- D · consent. The scopes are the honest ones for an OIDC sign-in. -->
+    <section class="ms-step" data-ms="consent" hidden>
+      <div class="ms-back"><span data-ms-account></span></div>
+      <h1>Permissions requested</h1>
+      <div class="ms-app">
+        <span class="ms-app-icon"><img src="../../assets/logos/eai-mark-dark.svg" alt="" /></span>
+        <span class="tx"><b>Enterprise AI Group</b><span>enterpriseaigroup.com</span></span>
+      </div>
+      <p class="ms-body">This application is not published by Microsoft. This app would like to:</p>
+      <ul class="ms-scopes">
+        <li>Sign you in and read your profile</li>
+        <li>View your basic profile (name, picture, email address)</li>
+        <li>Maintain access to data you have given it access to</li>
+      </ul>
+      <p class="ms-small">Accepting these permissions means that you allow this app to use your data as specified in their terms of service and privacy statement. <u>Report it here</u>.</p>
+      <div class="ms-acts">
+        <button class="ms-btn ghost" type="button" data-ms-cancel>Cancel</button>
+        <button class="ms-btn" type="button" data-ms-next="stay">Accept</button>
+      </div>
+    </section>
+
+    <!-- E · stay signed in -->
+    <section class="ms-step" data-ms="stay" hidden>
+      <div class="ms-back"><span data-ms-account></span></div>
+      <h1>Stay signed in?</h1>
+      <p class="ms-body">Do this to reduce the number of times you are asked to sign in.</p>
+      <label class="ms-check"><input type="checkbox" id="msDontAsk" /> Don&rsquo;t show this again</label>
+      <div class="ms-acts">
+        <button class="ms-btn ghost" type="button" data-ms-done>No</button>
+        <button class="ms-btn" type="button" data-ms-done>Yes</button>
+      </div>
+    </section>
+
+    <!-- F · the redirect back -->
+    <section class="ms-step" data-ms="redirect" hidden>
+      <h1>Signing you in</h1>
+      <p class="ms-body">Taking you back to <b>enterpriseaigroup.com</b>&hellip;</p>
+      <div class="ms-waiting"><i></i> Redirecting</div>
+    </section>
+  </div>
+
+  <div class="ms-foot"><span>&hellip;</span> Terms of use &nbsp; Privacy &amp; cookies</div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  const card = document.querySelector('.ms-card');
+  const steps = card.querySelectorAll('[data-ms]');
+
+  const emailField = document.getElementById('msEmail');
+  const emailErr = document.getElementById('msErr');
+
+  /** Microsoft's own bar: something@something. Nothing stricter. */
+  const looksLikeEmail = (value) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value);
+
+  function show(name) {
+    steps.forEach((s) => { s.hidden = s.dataset.ms !== name; });
+    // The account line follows whatever was typed on the first screen.
+    const email = emailField.value.trim();
+    card.querySelectorAll('[data-ms-account]').forEach((n) => { n.textContent = email; });
+
+    // MFA and the redirect resolve themselves — there is nothing here for
+    // the user to press, and a fake wait is how that reads as real.
+    if (name === 'mfa') setTimeout(() => show('consent'), 2600);
+    // Straight to the workspace: the plan is Builder, free, and nobody is
+    // asked to price a product they haven't seen. The address travels with
+    // them, because everything after this names the account.
+    if (name === 'redirect') {
+      setTimeout(() => {
+        window.location.href = `workspace.html?email=${encodeURIComponent(email)}`;
+      }, 1100);
+    }
+  }
+
+  card.querySelectorAll('[data-ms-next]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      // Leaving the first screen means having typed an address.
+      if (btn.dataset.msNext === 'password' && !looksLikeEmail(emailField.value.trim())) {
+        emailErr.hidden = false;
+        emailField.focus();
+        return;
+      }
+      emailErr.hidden = true;
+      show(btn.dataset.msNext);
+    });
+  });
+  card.querySelectorAll('[data-ms-done]').forEach((btn) => {
+    btn.addEventListener('click', () => show('redirect'));
+  });
+  card.querySelector('[data-ms-cancel]').addEventListener('click', () => { window.location.href = 'signup.html'; });
+
+  emailField.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    card.querySelector('[data-ms-next="password"]').click();
+  });
+  emailField.addEventListener('input', () => { emailErr.hidden = true; });
+  document.getElementById('msPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') show('mfa'); });
+</script>
+
+</body>
+</html>

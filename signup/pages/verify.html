@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/signup/verify" />
+<title>Prototype — Confirm your email</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="site" style="background:#fafafa;">
+
+  <!-- "Authenticate email address", from the flow board.
+
+       Only the email route reaches this. It is the most expensive screen in
+       the journey — the one where a person leaves for another app and may
+       not come back — which is the argument for Microsoft being the primary
+       route rather than one of three equals. The fake inbox card is a
+       prototype affordance: a tester has no real email to check. -->
+
+  <nav class="nav eai-nav">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a><a href="#">Products &#9662;</a><a href="#">About Us &#9662;</a><a href="#">Pricing &#9662;</a><a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="signup.html">Login</a>
+    <a class="btn btn-dark btn-sm" href="signup.html">Get Started</a>
+  </nav>
+
+  <section style="padding:64px 40px 90px;">
+    <div class="auth-card su-card">
+      <h3>Confirm your email</h3>
+      <p class="sub">We sent a six-digit code to <b id="who">you@company.com</b>.</p>
+
+      <div class="vf-code">
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 5" />
+        <input class="vf-box" inputmode="numeric" maxlength="1" aria-label="Digit 6" />
+      </div>
+
+      <button class="btn btn-dark" type="button" id="vfGo" disabled>Confirm email</button>
+
+      <div class="foot">
+        Didn&rsquo;t get it? <u>Send it again</u> &middot; <a href="signup.html"><u>Use a different address</u></a>
+      </div>
+
+      <!-- Not part of the product: a tester has no inbox to open. -->
+      <div class="vf-inbox">
+        <div class="vf-inbox-hd">Your inbox &mdash; prototype only</div>
+        <div class="vf-mail">
+          <b>Enterprise AI</b>
+          <span>Your code is <em>418 209</em></span>
+          <button class="btn btn-ghost btn-sm" type="button" id="vfFill">Fill it in</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  const boxes = [...document.querySelectorAll('.vf-box')];
+  const go = document.getElementById('vfGo');
+  const CODE = '418209';
+
+  const q = new URLSearchParams(window.location.search);
+  const email = q.get('email') || 'you@company.com';
+  document.getElementById('who').textContent = email;
+
+  function check() {
+    go.disabled = boxes.map((b) => b.value).join('').length !== 6;
+  }
+
+  boxes.forEach((box, i) => {
+    box.addEventListener('input', () => {
+      box.value = box.value.replace(/\D/g, '').slice(0, 1);
+      if (box.value && boxes[i + 1]) boxes[i + 1].focus();
+      check();
+    });
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !box.value && boxes[i - 1]) boxes[i - 1].focus();
+      if (e.key === 'Enter' && !go.disabled) go.click();
+    });
+  });
+
+  document.getElementById('vfFill').addEventListener('click', () => {
+    boxes.forEach((b, i) => { b.value = CODE[i]; });
+    check();
+    go.focus();
+  });
+
+  go.addEventListener('click', () => {
+    window.location.href = `workspace.html?email=${encodeURIComponent(email)}`;
+  });
+
+  boxes[0].focus();
+</script>
+
+</body>
+</html>

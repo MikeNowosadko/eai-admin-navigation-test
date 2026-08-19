@@ -23,6 +23,8 @@ const WINDOWS = {
   // The EAI app's own chat window (/chat only) — a second window of the same
   // app as `setup`, not a separate app.
   chat: document.getElementById('winChat'),
+  // A harness's own app, downloaded from its makers (/signup only).
+  harnessApp: document.getElementById('winHarnessApp'),
 };
 Object.keys(WINDOWS).forEach((k) => { if (!WINDOWS[k]) delete WINDOWS[k]; });
 

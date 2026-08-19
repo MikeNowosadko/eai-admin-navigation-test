@@ -1,0 +1,1784 @@
+/* ------------------------------------------------------------------
+   The sign-up journey — at /signup.
+
+   Only the web half needs new CSS. The native app is /install-4's, down
+   to the stylesheet, because the experiment is about what happens before
+   it opens rather than anything inside it.
+
+   Four things live here:
+
+   1. the sign-up card and its identity providers
+   2. Microsoft's sign-in, which is somebody else's design and has to
+      look like it — a page that looked like ours would quietly hide the
+      moment we hand the user to their own IT department
+   3. the email code screen
+   4. the logged-in app, where the download now lives — the No-Code
+      Builder's own shell, rebuilt from eainocodebuilder rather than
+      invented here, so what we are proposing to change is visible
+      against what exists
+
+   Everything runs inside the desktop's browser window, which is about
+   900px wide. Nothing here should need more than that.
+------------------------------------------------------------------- */
+
+/* ===================== sign up / sign in ========================== */
+
+.su-card { max-width: 420px; }
+.su-card h3 { margin-bottom: 6px; }
+.su-card .sub { margin-bottom: 22px; }
+
+.su-idp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  margin-bottom: 10px;
+  padding: 0 18px;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--dark);
+  cursor: pointer;
+}
+.su-idp:hover { background: var(--n100); }
+.su-idp.primary { background: var(--dark); border-color: var(--dark); color: #ffffff; }
+.su-idp.primary:hover { background: #000000; }
+
+.su-g {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: #4285f4;
+}
+
+/* Microsoft's four squares, used on the sign-up card and on their page. */
+.ms-mark {
+  display: grid;
+  grid-template-columns: 9px 9px;
+  gap: 2px;
+  width: 20px;
+  flex: none;
+}
+.ms-mark i { display: block; width: 9px; height: 9px; }
+
+.su-or {
+  position: relative;
+  margin: 20px 0;
+  text-align: center;
+}
+.su-or::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  border-top: 1px solid var(--n300);
+}
+.su-or span {
+  position: relative;
+  padding: 0 12px;
+  background: #ffffff;
+  font-size: 12px;
+  color: #9aa0a6;
+}
+
+.su-email { text-align: left; }
+.su-email label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--n700); }
+.su-email input {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 12px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 9px;
+  font-size: 14px;
+  color: var(--dark);
+  outline: none;
+}
+.su-email input:focus { border-color: var(--blue); }
+.su-email input.bad { border-color: #dc2626; animation: su-shake 0.4s ease; }
+.su-email .btn { width: 100%; height: 44px; }
+
+@keyframes su-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Who is signed in, in the site nav, once there is somebody. */
+.su-who { font-size: 13px; color: var(--n600); white-space: nowrap; }
+
+/* There was a progress rail here, for Account → Plan → Workspace. Taking
+   the plan out left two steps, and two steps do not need a rail. */
+
+/* The account the setup app is asking for. */
+.su-acct {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.su-acct:hover { border-color: var(--dark); background: var(--n50); }
+.su-acct .av {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.su-acct .tx { display: flex; flex-direction: column; gap: 2px; }
+.su-acct .tx b { font-size: 14.5px; }
+.su-acct .tx span { font-size: 12.5px; color: var(--n600); }
+.su-acct .go { margin-left: auto; color: #9aa0a6; font-size: 16px; }
+
+.su-device {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--n300);
+  font-size: 12px;
+  color: var(--n600);
+}
+
+/* ================== Microsoft's sign-in page ====================== */
+
+/* Deliberately not our type scale or radii. Segoe first, because that is
+   what the real page uses and what the difference is made of. */
+
+.ms-page {
+  min-height: 100vh;
+  padding: 46px 20px;
+  background: #f2f2f2;
+  background-image: linear-gradient(160deg, #eef3f8 0%, #f7f7f7 55%, #f1eef6 100%);
+  font-family: 'Segoe UI', 'Inter', -apple-system, sans-serif;
+}
+
+.ms-card {
+  width: 440px;
+  margin: 0 auto;
+  padding: 44px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.ms-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  color: #5e5e5e;
+  font-weight: 600;
+}
+
+.ms-card h1 { margin: 0 0 14px; font-size: 24px; font-weight: 600; color: #1b1b1b; letter-spacing: 0; }
+.ms-body { margin: 0 0 18px; font-size: 13px; line-height: 1.5; color: #1b1b1b; }
+.ms-small { margin: 0 0 10px; font-size: 13px; color: #1b1b1b; }
+.ms-small u { color: #0067b8; text-decoration: none; cursor: pointer; }
+.ms-small u:hover { text-decoration: underline; }
+
+.ms-input {
+  width: 100%;
+  height: 34px;
+  margin: 4px 0 18px;
+  padding: 0 6px;
+  border: none;
+  border-bottom: 1px solid #666666;
+  border-radius: 0;
+  font-size: 15px;
+  color: #1b1b1b;
+  outline: none;
+  background: transparent;
+}
+.ms-input:focus { border-bottom: 2px solid #0067b8; }
+
+.ms-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #1b1b1b;
+}
+
+.ms-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.ms-btn {
+  min-width: 108px;
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 0;
+  background: #0067b8;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.ms-btn:hover { background: #005da6; }
+.ms-btn.ghost { background: #ffffff; color: #1b1b1b; border: 1px solid #8a8886; }
+.ms-btn.ghost:hover { background: #f3f2f1; }
+
+/* Number matching. The number is the screen — everything else is a
+   caption for it. */
+.ms-number {
+  margin: 22px 0;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 600;
+  color: #1b1b1b;
+  letter-spacing: 2px;
+}
+
+.ms-waiting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: #5e5e5e;
+}
+.ms-waiting i {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #d6d6d6;
+  border-top-color: #0067b8;
+  border-radius: 50%;
+  animation: ms-spin 0.9s linear infinite;
+}
+@keyframes ms-spin { to { transform: rotate(360deg); } }
+
+.ms-app {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
+}
+.ms-app-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  padding: 6px;
+}
+.ms-app-icon img { width: 100%; height: 100%; object-fit: contain; }
+.ms-app .tx { display: flex; flex-direction: column; }
+.ms-app .tx b { font-size: 14px; color: #1b1b1b; }
+.ms-app .tx span { font-size: 12px; color: #5e5e5e; }
+
+.ms-scopes { margin: 0 0 16px; padding-left: 20px; font-size: 13px; line-height: 1.9; color: #1b1b1b; }
+
+.ms-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1b1b1b; }
+.ms-check input { width: 16px; height: 16px; }
+
+.ms-foot {
+  width: 440px;
+  margin: 10px auto 0;
+  padding: 0 4px;
+  text-align: right;
+  font-size: 12px;
+  color: #747474;
+}
+.ms-foot span { float: left; }
+
+/* ======================= email verification ======================= */
+
+.vf-code { display: flex; justify-content: center; gap: 8px; margin: 8px 0 22px; }
+.vf-box {
+  width: 46px;
+  height: 56px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--dark);
+  outline: none;
+}
+.vf-box:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.15); }
+
+.auth-card .vf-inbox {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--n300);
+  text-align: left;
+}
+.vf-inbox-hd { margin-bottom: 8px; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #9aa0a6; }
+.vf-mail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--n50);
+  border: 1px solid var(--n300);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--n600);
+}
+.vf-mail b { flex: none; color: var(--dark); white-space: nowrap; }
+.vf-mail span { flex: 1; }
+.vf-mail em { font-style: normal; font-family: var(--mono); color: var(--dark); }
+/* .auth-card stretches every button to full width; this one is a chip. */
+.auth-card .vf-mail .btn { flex: none; width: auto; height: 32px; padding: 0 12px; font-size: 12px; }
+/* ================= the logged-in app: Home ==========================
+
+   Built to the Paper design (file "No Code Builder", page homepage/admin,
+   frame 1GV5-0) rather than invented here: the 264px sidebar on #FBFBFB,
+   the tab group, the composer card, the template cards and the process
+   rows, on Geist and the shadcn tokens the setup app already uses.
+
+   The tab group is the load-bearing part. **No code builder | CLI** is
+   what makes the CLI a way to build rather than a banner — one workspace,
+   two ways in, and the choice sits above everything else in the sidebar.
+   The download lives inside the CLI tab, in an ordinary white card: the
+   black panel it replaces read as an advert, and grey-on-black is the
+   hardest thing on a page to read.
+================================================================== */
+
+.nb {
+  --background: oklch(100% 0 0);
+  --foreground: oklch(14.5% 0 0);
+  --muted: oklch(97% 0 0);
+  --muted-foreground: oklch(55.6% 0 0);
+  --border: oklch(92.2% 0 0);
+  --accent: oklch(97% 0 0);
+  --ring: oklch(70.8% 0 0);
+  --info: #2563eb;
+  --info-bg: #eff6ff;
+  --success: #16a34a;
+
+  --sidebar: #fbfbfb;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Same trap as the setup app's: a display rule outranks [hidden]. */
+.nb [hidden] { display: none !important; }
+
+.nb-shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+
+/* --- sidebar ------------------------------------------------------- */
+
+.nb-side {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+}
+
+.nb-ws {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 8px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+}
+.nb-ws:hover { background: var(--muted); }
+.nb-ws .tile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: var(--foreground);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+.nb-ws .tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.nb-ws .tx b { font-size: 14px; font-weight: 600; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-ws .tx > span { font-size: 12px; line-height: 16px; color: var(--muted-foreground); }
+.nb-ws svg { width: 16px; height: 16px; flex: none; }
+
+/* the fork: two ways to build, one workspace */
+.nb-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  margin-top: 16px;
+  padding: 4px;
+  background: #f0f0ec;
+  border: 1px solid #e6e6e1;
+  border-radius: var(--radius-lg);
+}
+.nb-tab {
+  flex: 1;
+  height: 100%;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b6b63;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.nb-tab:hover { color: var(--foreground); }
+.nb-tab.on {
+  background: #ffffff;
+  border-color: #e2e2dc;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  font-weight: 600;
+  color: #171717;
+}
+.nb-tab:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+
+.nb-nav { display: flex; flex-direction: column; gap: 2px; margin-top: 20px; }
+.nb-nav + .nb-nav { margin-top: 24px; }
+
+.nb-group {
+  padding: 0 8px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+}
+
+.nb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.nb-item:hover { background: var(--muted); }
+.nb-item.on { background: var(--muted); border-color: var(--border); font-weight: 600; }
+.nb-item svg { width: 18px; height: 18px; flex: none; color: var(--muted-foreground); }
+.nb-item.on svg { color: var(--foreground); }
+.nb-item > span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-item .count { font-style: normal; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+.nb-item .tag {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--info-bg);
+  color: var(--info);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.nb-side-ft { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 16px; }
+
+/* Sign-up stopped asking which plan, so the product has to be where the
+   free one runs out. Quiet, and next to the evidence. */
+.nb-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+}
+.nb-plan:hover { border-color: #d4d4d8; }
+.nb-plan .hd { display: flex; align-items: baseline; gap: 6px; }
+.nb-plan .hd b { font-size: 13px; font-weight: 600; }
+.nb-plan .hd i { font-style: normal; font-size: 11px; color: var(--muted-foreground); }
+.nb-plan .lbl { font-size: 11px; line-height: 1.4; color: var(--muted-foreground); }
+.nb-plan .cta { margin-top: 2px; font-size: 12px; font-weight: 500; }
+.nb-plan:hover .cta { text-decoration: underline; }
+
+.nb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+}
+.nb-user:hover { background: var(--muted); }
+.nb-user .av {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  background: #dce5ff;
+  color: #2b4b9b;
+  font-size: 12px;
+  font-weight: 600;
+}
+.nb-user .tx { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.nb-user .tx b { font-size: 13px; font-weight: 600; line-height: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-user .tx span { font-size: 11px; line-height: 14px; color: var(--muted-foreground); }
+.nb-user svg { width: 16px; height: 16px; flex: none; }
+
+/* --- main ---------------------------------------------------------- */
+
+.nb-main { display: flex; flex-direction: column; min-width: 0; }
+
+.nb-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 56px;
+  flex: none;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--border);
+}
+.nb-top > b { font-size: 14px; font-weight: 600; }
+
+.nb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 400px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+}
+.nb-search svg { width: 15px; height: 15px; flex: none; }
+.nb-search span { flex: 1; font-size: 13px; }
+.nb-search kbd { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; }
+
+.nb-top-acts { display: flex; align-items: center; gap: 8px; }
+
+.nb-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.nb-icon:hover { background: var(--muted); }
+.nb-icon svg { width: 17px; height: 17px; }
+
+.nb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.nb-btn:hover { background: var(--muted); }
+.nb-btn svg { width: 16px; height: 16px; }
+.nb-btn.primary { background: var(--foreground); border-color: var(--foreground); color: #ffffff; }
+.nb-btn.primary:hover { background: #000000; }
+.nb-btn[disabled] { opacity: 0.65; cursor: default; }
+.nb-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+.nb-page {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+
+.nb-hero { margin: 0; text-align: center; font-size: 34px; font-weight: 700; letter-spacing: -1.2px; }
+.nb-sub {
+  margin: 10px auto 0;
+  max-width: 620px;
+  text-align: center;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* the composer: the no-code builder's front door */
+.nb-composer {
+  margin-top: 28px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px -8px rgba(16, 24, 40, 0.08), 0 2px 6px -2px rgba(16, 24, 40, 0.04);
+  overflow: hidden;
+}
+.nb-composer .field { padding: 18px 20px 8px; }
+.nb-composer input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--foreground);
+}
+.nb-composer input::placeholder { color: #a6a6ad; }
+.nb-composer .tools { display: flex; align-items: center; gap: 8px; padding: 10px 14px 14px; }
+.nb-composer .tools .spacer { flex: 1; }
+.nb-composer .sq {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.nb-composer .sq:hover { background: var(--muted); }
+.nb-composer .sq svg { width: 17px; height: 17px; }
+.nb-composer .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 11px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.nb-composer .chip:hover { background: var(--muted); }
+.nb-composer .chip svg { width: 15px; height: 15px; }
+.nb-composer .go {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--foreground);
+  cursor: pointer;
+}
+.nb-composer .go:hover { background: #000000; }
+.nb-composer .go svg { width: 17px; height: 17px; }
+
+.nb-sec-hd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 34px 0 14px;
+}
+.nb-sec-hd b { font-size: 14px; font-weight: 600; }
+.nb-sec-hd a { font-size: 13px; color: var(--muted-foreground); }
+.nb-sec-hd a:hover { color: var(--foreground); }
+
+/* --- template cards ------------------------------------------------ */
+
+.nb-templates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.nb-tpl {
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.16s ease;
+}
+.nb-tpl:hover { box-shadow: 0 6px 20px -10px rgba(16, 24, 40, 0.2); }
+
+.nb-tpl .art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 106px;
+  padding: 0 14px;
+}
+.nb-tpl .art.cyan { background: #ecfeff; border-bottom: 1px solid #cff1f6; }
+.nb-tpl .art.blue { background: #eff6ff; border-bottom: 1px solid #dceafe; }
+.nb-tpl .art.violet { background: #f5f0ff; border-bottom: 1px solid #e7defb; }
+
+/* the little drawings. Sketches, not screenshots — they say what shape
+   the thing is and nothing more. */
+.form-sk {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 172px;
+  padding: 11px 12px;
+  background: #ffffff;
+  border: 1px solid #cde9ee;
+  border-radius: 7px;
+  box-shadow: 0 2px 6px rgba(14, 116, 144, 0.08);
+}
+.form-sk .fld { display: flex; flex-direction: column; gap: 4px; }
+.form-sk .lbl { width: 32%; height: 3px; border-radius: 2px; background: #94a3b8; }
+.form-sk .lbl.w2 { width: 44%; }
+.form-sk .in { height: 14px; border: 1px solid #d3e9ec; border-radius: 4px; }
+.form-sk .submit { align-self: flex-end; width: 52px; height: 16px; border-radius: 4px; background: #0891b2; }
+
+.doc-sk {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 42px;
+  height: 54px;
+  padding: 7px 6px;
+  background: #ffffff;
+  border: 1px solid #c9def9;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(29, 78, 216, 0.08);
+}
+.doc-sk i { height: 2.5px; border-radius: 2px; background: #dbe5f2; }
+.doc-sk i:first-child { width: 60%; height: 3px; background: var(--info); }
+.doc-sk i.s { width: 75%; }
+
+.nb-tpl .arrow { width: 20px; height: 20px; flex: none; }
+
+.grid-sk {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 82px;
+  height: 54px;
+  background: #ffffff;
+  border: 1px solid #c9def9;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(29, 78, 216, 0.08);
+}
+.grid-sk i { border-right: 1px solid #eaf1fb; border-bottom: 1px solid #eaf1fb; }
+.grid-sk i:nth-child(-n + 3) { background: #dceafe; border-bottom-color: #c9def9; }
+
+.chain { display: flex; align-items: center; }
+.chain .node {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  background: #ffffff;
+  border: 1px solid #ddcef8;
+  border-radius: 6px;
+}
+.chain .node.fill { background: #7c3aed; border-color: #7c3aed; }
+.chain .node svg { width: 15px; height: 15px; }
+.chain .link { width: 15px; height: 2px; background: #d9c9f7; }
+
+.nb-tpl .body { display: flex; flex-direction: column; gap: 8px; padding: 14px; }
+.nb-tpl .body .hd { display: flex; align-items: center; gap: 8px; }
+.nb-tpl .body .hd b { font-size: 14px; font-weight: 600; }
+.nb-tpl .ico { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 7px; }
+.nb-tpl .ico svg { width: 14px; height: 14px; }
+.nb-tpl .ico.cyan { background: #ecfeff; }
+.nb-tpl .ico.blue { background: #eff6ff; }
+.nb-tpl .ico.violet { background: #f5f0ff; }
+.nb-tpl .desc { font-size: 12px; line-height: 17px; color: var(--muted-foreground); }
+.nb-tpl .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+.nb-tpl .tags i {
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--muted);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+/* --- empty states, and the CLI's card ------------------------------ */
+
+.nb-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 34px 24px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.nb-empty b { font-size: 14px; font-weight: 600; }
+.nb-empty span { font-size: 13px; line-height: 1.6; color: var(--muted-foreground); }
+
+/* --- the CLI card, to the Paper frame -------------------------------
+
+   Values straight off the design (page "EAI Setup — card variations +
+   onboarding"): 24px padding, 20px gap, one 14px radius, and the only
+   dark thing on it is the button. The command sits in a muted field
+   rather than a terminal — a black slab here reads as an advert, and it
+   would be the loudest object on a page whose whole job is a choice
+   between two quiet ones. */
+
+.nb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 22px;
+  padding: 24px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px -8px rgba(16, 24, 40, 0.08);
+}
+
+.nb-card-title { font-size: 18px; font-weight: 600; line-height: 22px; letter-spacing: -0.3px; }
+
+/* the app: a bordered row, so the button is the only fill in it */
+.nb-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.nb-row .tx { flex: 1; font-size: 13.5px; font-weight: 600; line-height: 18px; }
+.nb-row .nb-btn { height: 34px; }
+
+/* and the command, for anyone who would rather type it */
+.nb-install { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 18px; }
+.nb-install .lbl { font-size: 13.5px; font-weight: 600; line-height: 18px; }
+
+.nb-cmd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.nb-cmd .pfx {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--muted-foreground);
+}
+.nb-cmd code {
+  flex: 1;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--foreground);
+}
+.nb-cmd .copy {
+  height: 30px;
+  padding: 0 12px;
+  flex: none;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.nb-cmd .copy:hover { background: var(--muted); }
+.nb-cmd .copy:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+.nb-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.nb-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.nb-fact .ico {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  background: var(--muted);
+  color: var(--foreground);
+}
+.nb-fact .ico svg { width: 16px; height: 16px; }
+.nb-fact b { font-size: 13.5px; font-weight: 600; }
+.nb-fact span { font-size: 12.5px; line-height: 1.55; color: var(--muted-foreground); }
+
+/* Placeholder feedback. A dead nav item should say so — the alternative
+   was href="#", which scrolls the page away from you inside the frame. */
+.nb-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 9px 14px;
+  background: var(--foreground);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 12.5px;
+  box-shadow: 0 8px 24px -8px rgba(16, 24, 40, 0.4);
+}
+
+/* --- new workflow, the no-code half -------------------------------- */
+
+.nw {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+}
+.nw-back {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+}
+.nw-back:hover { color: var(--foreground); }
+
+.nw-head { margin-bottom: 40px; text-align: center; }
+.nw-spark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.nw-spark svg { width: 24px; height: 24px; }
+.nw-head h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.8px; }
+.nw-head p { margin: 8px 0 0; font-size: 16px; color: var(--muted-foreground); }
+
+.nw-box { width: 100%; max-width: 672px; }
+.nw-field { position: relative; }
+.nw-field input {
+  width: 100%;
+  padding: 16px 56px 16px 20px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--foreground);
+  outline: none;
+}
+.nw-field input:focus { box-shadow: 0 0 0 2px var(--ring); }
+.nw-go {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.nw-go svg { width: 16px; height: 16px; }
+
+.nw-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.nw-chips button {
+  padding: 7px 14px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.nw-chips button:hover { background: var(--accent); color: var(--foreground); }
+
+.nw-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--accent);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+.nw-note b { color: var(--foreground); font-weight: 600; }
+.nw-note a { color: var(--foreground); text-decoration: underline; }
+
+/* The desktop's browser window is about 900px wide, so this is the shape
+   most testers see: everything holds down to there, and below it the
+   sidebar goes rather than squeezing the page it exists to navigate. */
+@media (max-width: 900px) {
+  .nb-shell { grid-template-columns: 1fr; }
+  .nb-side { display: none; }
+  .nb-search { display: none; }
+  .nb-facts { grid-template-columns: 1fr; }
+  .nb-templates { grid-template-columns: 1fr; }
+  .nb-row { flex-wrap: wrap; }
+  .nb-row .nb-btn { width: 100%; }
+}
+
+/* ================== one fix to the setup app ======================
+
+   #winSetup .eai-acts sets display:flex, which outranks the [hidden]
+   attribute — so "Create app" is on screen from the moment the form
+   opens, before there is anything to create, and the button that is
+   supposed to arrive when you finish never arrives at all. It shows up
+   here because this journey pre-answers step 1, which puts the stray
+   button next to a form with one question left in it.
+
+   Scoped to this flow rather than fixed in install.css on purpose:
+   /install-4 has been in front of people and keeps the behaviour it was
+   tested with. Worth fixing there before the next round.
+================================================================== */
+
+#winSetup [hidden] { display: none !important; }
+
+/* ===================== plans, after the fact =======================
+
+   Not a step in sign-up any more. It is where you land from the plan card
+   or the chip in the header, so it opens with a way back rather than a
+   progress rail, and the plan you are on is marked rather than sold.
+================================================================== */
+
+.pl { max-width: 1100px; margin: 0 auto; }
+
+.pl-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--n300);
+}
+.pl-top .spacer { flex: 1; }
+.pl-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--n600); }
+.pl-back:hover { color: var(--dark); }
+.pl-back svg { width: 16px; height: 16px; }
+.pl-who { font-size: 13px; color: var(--n600); }
+
+.pl-head { padding: 32px 24px 0; }
+.pl-head h1 { margin: 0 0 6px; font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+.pl-head p { margin: 0; max-width: 620px; font-size: 14px; line-height: 1.6; color: var(--n600); }
+
+.pl .plans { padding: 26px 24px 24px; }
+
+/* The one you are on: marked, and not for sale. */
+.plan.current { border: 2px solid var(--dark); }
+.plan.current .ribbon { background: var(--dark); }
+.plan .pick[disabled] { cursor: default; }
+
+.pl-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 24px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--n600);
+}
+.pl-note b { color: var(--dark); }
+.pl-note a { color: var(--dark); text-decoration: underline; }
+
+/* the one line about the plan on the workspace form */
+.ws-form .ws-plan { margin: 16px 0 0; font-size: 12px; line-height: 1.55; color: #9aa0a6; }
+.ws-form .ws-plan b { color: var(--n600); }
+
+/* The graph-paper background came from the npx flow and is the only page
+   in this journey with a pattern on it. Plain grey, like every other page
+   here, so the form is the only thing to look at. */
+.ws-wrap.plain { background: var(--n50); background-image: none; }
+
+
+/* =============== the guidance, and the video ======================
+
+   Said in the web app and again on the setup app's last screen,
+   because it cannot be said where it is needed: an external harness
+   opens empty and nothing we ship can write a line into it. The video
+   is the second attempt at the same sentence, and whether anyone plays
+   it is the measurement.
+================================================================== */
+
+.nb-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.nb-note .ico { flex: none; width: 20px; height: 20px; color: var(--foreground); }
+.nb-note .ico svg { width: 20px; height: 20px; display: block; }
+.nb-note .tx { display: flex; flex-direction: column; gap: 4px; }
+.nb-note .tx b { font-size: 14px; font-weight: 600; line-height: 20px; }
+.nb-note .tx > span { font-size: 13px; line-height: 20px; color: var(--muted-foreground); }
+.nb-note code,
+.nb-guide code {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--foreground);
+}
+
+
+/* ============== the finish line, inside the desktop ================
+
+   The harness is somebody else's window and we cannot write in it, so
+   the only thing that can mark the end of the journey is us — after
+   the fact, over the top, once /eai has actually been typed.
+================================================================== */
+
+.eai-done {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+  background: rgba(9, 9, 11, 0.5);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.eai-done.on { opacity: 1; }
+
+.eai-done-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(420px, 100%);
+  padding: 32px 30px 28px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 30px 60px -20px rgba(16, 24, 40, 0.5);
+  text-align: center;
+  font-family: 'Geist', system-ui, sans-serif;
+}
+.eai-done-card .tick {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+}
+.eai-done-card .tick svg { width: 24px; height: 24px; }
+.eai-done-card h3 { margin: 4px 0 0; font-size: 21px; font-weight: 600; letter-spacing: -0.5px; color: oklch(14.5% 0 0); }
+.eai-done-card p { margin: 0; font-size: 14px; line-height: 22px; color: oklch(55.6% 0 0); }
+.eai-done-card p b { color: oklch(14.5% 0 0); font-weight: 600; }
+.eai-done-card .eai-btn { margin-top: 8px; min-width: 120px; }
+
+/* ============== somebody else's site, mid-setup ===================
+
+   Variation 2's detour, and the part of the round that has to work
+   rather than gesture: install, sign up, come back. Three numbered
+   cards that light up in turn, so the length of the trip is visible
+   while you are taking it.
+
+   Plain on purpose — what matters is not what Anthropic's marketing
+   looks like, it is that a person has been handed to a stranger halfway
+   through setting something else up.
+================================================================== */
+
+.hs-page { background: #ffffff; }
+/* Same trap as everywhere else: a display rule outranks [hidden]. */
+.hs-page [hidden] { display: none !important; }
+.hs { max-width: 720px; padding: 56px 40px 90px; font-family: 'Inter', system-ui, sans-serif; }
+
+.hs-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.hs-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--dark);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.hs-brand b { font-size: 17px; letter-spacing: -0.3px; }
+
+.hs h1 { margin: 0 0 14px; font-size: 40px; line-height: 1.1; letter-spacing: -1.5px; }
+.hs-lede { margin: 0 0 34px; max-width: 520px; font-size: 16px; line-height: 1.6; color: var(--n600); }
+
+/* --- the three jobs ------------------------------------------------ */
+
+.hs-step-card {
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  border: 1px solid var(--n300);
+  border-radius: 14px;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+.hs-step-card.off { opacity: 0.55; }
+.hs-step-card.done { border-color: #cfe6d8; background: #fbfdfc; }
+
+.hs-step-hd { display: flex; align-items: center; gap: 12px; }
+.hs-step-hd .num {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--dark);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.hs-step-card.off .hs-step-hd .num { background: var(--n200); color: var(--n600); }
+.hs-step-card.done .hs-step-hd .num { background: #1f6b45; }
+.hs-step-hd b { flex: 1; font-size: 15.5px; letter-spacing: -0.2px; }
+.hs-step-hd .state { font-size: 12.5px; color: var(--n600); white-space: nowrap; }
+.hs-step-card.done .hs-step-hd .state { color: #1f6b45; font-weight: 500; }
+
+.hs-step-body { padding: 14px 0 2px 36px; }
+.hs-step-card.done .hs-step-body { display: none; }
+.hs-hint { margin: 0 0 12px; font-size: 13.5px; line-height: 1.6; color: var(--n600); }
+
+.hs-progress { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; max-width: 360px; }
+.hs-progress .bar { height: 5px; border-radius: 999px; background: var(--n200); overflow: hidden; }
+.hs-progress .bar i { display: block; height: 100%; width: 0; background: var(--dark); transition: width 0.2s linear; }
+.hs-progress .lbl { font-size: 12.5px; color: var(--n600); }
+
+.hs-form { display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+.hs-form input {
+  height: 42px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid var(--n300);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--dark);
+  outline: none;
+}
+.hs-form input:focus { border-color: var(--dark); }
+.hs-form input:disabled { background: var(--n50); color: #a1a1aa; }
+.hs-form .btn { align-self: flex-start; }
+.hs-form.bad input { border-color: #dc2626; }
+
+.hs-note { margin-top: 34px; max-width: 520px; font-size: 13.5px; line-height: 1.7; color: #6b7280; }
+
+/* ---- the /eai instruction on the setup app's last screen ---------- */
+
+#winSetup.i3 .i4-eai { display: flex; flex-direction: column; gap: 10px; }
+
+#winSetup.i3 .i4-eai-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+#winSetup.i3 .i4-eai-note .kbd {
+  flex: none;
+  padding: 4px 9px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i4-eai-note .tx { display: flex; flex-direction: column; gap: 3px; }
+#winSetup.i3 .i4-eai-note .tx b { font-size: 13.5px; font-weight: var(--font-weight-semibold); line-height: 19px; color: var(--color-foreground); }
+#winSetup.i3 .i4-eai-note .tx > span { font-size: 12.5px; line-height: 18px; color: var(--color-muted-foreground); }
+#winSetup.i3 .i4-eai code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--color-foreground);
+}
+
+/* The player is the shared .eai-vid component; the setup app only says
+   how much room it gets. */
+#winSetup.i3 .i4-eai-video { display: block; }
+#winSetup.i3 .i4-eai-video .tx { display: flex; flex-direction: column; gap: 1px; text-align: left; }
+#winSetup.i3 .i4-eai-video .tx b { font-size: 13px; font-weight: var(--font-weight-semibold); color: var(--color-foreground); }
+#winSetup.i3 .i4-eai-video .tx > span { font-size: 12px; color: var(--color-muted-foreground); }
+
+/* ============== template cards, in the setup app ==================
+
+   Radio cards rather than a select, because the difference between
+   these options is a sentence each. The first is pre-selected: an
+   unanswered first question is a wall, and most people want the common
+   shape. "No template" is last and says what it costs.
+================================================================== */
+
+#winSetup.i3 .i3-cards { display: flex; flex-direction: column; gap: 8px; }
+
+#winSetup.i3 .i3-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  text-align: left;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+#winSetup.i3 .i3-card:hover { background: var(--color-accent); }
+#winSetup.i3 .i3-card:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+#winSetup.i3 .i3-card.on { border-color: var(--color-foreground); background: var(--color-background); }
+
+#winSetup.i3 .i3-card .dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 2px;
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+}
+#winSetup.i3 .i3-card.on .dot { border-color: var(--color-foreground); }
+#winSetup.i3 .i3-card.on .dot::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background: var(--color-foreground);
+}
+
+#winSetup.i3 .i3-card .tx { display: flex; flex-direction: column; gap: 3px; }
+#winSetup.i3 .i3-card .tx b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 18px;
+  color: var(--color-foreground);
+}
+#winSetup.i3 .i3-card .tx b i {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+  color: var(--color-primary-foreground);
+}
+#winSetup.i3 .i3-card .tx > span { font-size: 12.5px; line-height: 18px; color: var(--color-muted-foreground); }
+
+/* Microsoft's inline validation, for an empty field they have to fill. */
+.ms-err { margin: -12px 0 16px; font-size: 13px; color: #a80000; }
+
+
+/* ==================== the video, played in place ==================
+
+   Full size before it is pressed. The first version was a 116px
+   thumbnail that opened a lightbox — two bets against itself: a small
+   target asks to be skipped, and a modal asks permission to take over
+   the screen. This is the size it will be while it runs, sitting in the
+   page looking like something you could press, because whether anyone
+   presses it is the measurement.
+================================================================== */
+
+.eai-vid {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid oklch(92.2% 0 0);
+  border-radius: 12px;
+  overflow: hidden;
+  background: oklch(100% 0 0);
+}
+
+.eai-vid-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* A flex item with an aspect-ratio and a max-height shrinks its width
+     to keep the ratio, which left the stage floating at 476px in an
+     820px card. A fixed height is what this actually wants. */
+  width: 100%;
+  height: 268px;
+  padding: 22px;
+  background: oklch(97% 0 0);
+  cursor: pointer;
+}
+.eai-vid-stage.playing { cursor: default; }
+
+.eai-vid-win {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  background: oklch(100% 0 0);
+  border: 1px solid oklch(92.2% 0 0);
+  border-radius: 9px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -18px rgba(16, 24, 40, 0.5);
+}
+.eai-vid-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  flex: none;
+  padding: 0 10px;
+  background: oklch(97% 0 0);
+  border-bottom: 1px solid oklch(92.2% 0 0);
+}
+.eai-vid-bar i { width: 7px; height: 7px; border-radius: 999px; background: #d4d4d8; }
+.eai-vid-title {
+  margin-left: 8px;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 11px;
+  color: oklch(55.6% 0 0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eai-vid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 88px;
+  padding: 14px 13px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 13.5px;
+}
+.eai-vid-line { display: flex; align-items: center; gap: 8px; }
+.eai-vid-line em { font-style: normal; color: oklch(55.6% 0 0); }
+.eai-vid-line b { font-weight: 500; color: oklch(14.5% 0 0); }
+.eai-vid-caret {
+  width: 7px;
+  height: 16px;
+  background: oklch(14.5% 0 0);
+  text-decoration: none;
+  animation: eai-vid-blink 1s step-end infinite;
+}
+.eai-vid-caret.flash { animation: none; opacity: 1; }
+@keyframes eai-vid-blink { 50% { opacity: 0; } }
+.eai-vid-ok { font-family: 'Geist', system-ui, sans-serif; font-size: 12.5px; color: #166534; }
+
+/* the one thing to press */
+.eai-vid-play {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: none;
+  border-radius: 999px;
+  background: oklch(14.5% 0 0);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -8px rgba(16, 24, 40, 0.6);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.eai-vid-play svg { width: 24px; height: 24px; margin-left: 2px; }
+.eai-vid-stage:hover .eai-vid-play { transform: scale(1.06); }
+.eai-vid-stage.playing .eai-vid-play { opacity: 0; pointer-events: none; }
+.eai-vid-play:focus-visible { outline: 2px solid oklch(70.8% 0 0); outline-offset: 3px; }
+/* Once it has played, the button moves out of the way — the last frame
+   is the answer, and a play button sitting on top of it is in front of
+   the thing it was advertising. */
+.eai-vid-play.replay {
+  right: 14px;
+  bottom: 14px;
+  width: 38px;
+  height: 38px;
+  opacity: 0.9;
+}
+.eai-vid-play.replay svg { width: 16px; height: 16px; }
+
+.eai-vid-ft {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px 14px 14px;
+  background: oklch(100% 0 0);
+}
+.eai-vid-caption {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  color: oklch(14.5% 0 0);
+}
+.eai-vid-track { height: 3px; border-radius: 999px; background: oklch(92.2% 0 0); overflow: hidden; }
+.eai-vid-track i { display: block; height: 100%; width: 0; background: oklch(14.5% 0 0); }
+
+/* ============= the harness's own app, on the desktop ==============
+
+   Downloaded from its makers and opened from the download list. Drawn
+   from the real thing — a disk image to drag from, a welcome, a sign-in
+   with Google or an email — and deliberately ignorant of us. Nothing in
+   here says "go back to EAI Setup", because whether they remember to is
+   the measurement.
+================================================================== */
+
+/* The same trap as everywhere else in this file: .ha-screen sets
+   display:flex, which outranks the [hidden] attribute, so every screen
+   rendered at once. */
+#winHarnessApp [hidden] { display: none !important; }
+
+#winHarnessApp .ha {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: #faf9f7;
+  font-family: 'Geist', system-ui, sans-serif;
+}
+
+.ha-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex: 1;
+  padding: 32px;
+  text-align: center;
+}
+
+/* A · the disk image */
+.ha-dmg-row { display: flex; align-items: center; gap: 26px; }
+.ha-dmg-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: grab;
+}
+.ha-dmg-item .tile {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px -10px rgba(16, 24, 40, 0.5);
+}
+.ha-dmg-item .tile img { width: 100%; height: 100%; object-fit: contain; }
+.ha-dmg-item .tile svg { width: 34px; height: 34px; }
+.ha-dmg-item .nm { font-size: 13px; font-weight: 500; color: #1f1f22; }
+.ha-dmg-item.target { cursor: default; border: 2px dashed transparent; }
+.ha-dmg-item.target.over { border-color: #1f1f22; background: rgba(0, 0, 0, 0.04); }
+.ha-arrow { width: 34px; color: #b9b7b2; }
+.ha-arrow svg { width: 100%; }
+.ha-dmg-hint { margin: 0; font-size: 13px; color: #6f6d68; }
+.ha-dmg-hint b { color: #1f1f22; }
+
+/* B and D · their welcome, and after */
+.ha-mark {
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -12px rgba(16, 24, 40, 0.5);
+}
+.ha-mark svg { width: 30px; height: 30px; }
+.ha-screen h2 {
+  margin: 0;
+  font-family: 'Inter', Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+  color: #1f1f22;
+}
+.ha-screen > p { margin: 0; font-size: 15px; color: #6f6d68; }
+
+.ha-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  height: 44px;
+  padding: 0 22px;
+  background: #1f1f22;
+  border: 1px solid #1f1f22;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+.ha-btn:hover { background: #000000; }
+.ha-btn.ghost { background: #ffffff; border-color: #e3e1dc; color: #1f1f22; }
+.ha-btn.ghost:hover { background: #f4f3f0; }
+.ha-btn .g {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e3e1dc;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4285f4;
+}
+
+/* C · sign in */
+.ha-signin { justify-content: center; gap: 26px; }
+.ha-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #eceae5;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -20px rgba(16, 24, 40, 0.4);
+}
+.ha-or { font-size: 12px; color: #8b8983; }
+.ha-card input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #e3e1dc;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: #1f1f22;
+  outline: none;
+}
+.ha-card input:focus { border-color: #b9b7b2; }
+.ha-card input.bad { border-color: #dc2626; }
+.ha-fine { margin: 2px 0 0; font-size: 11.5px; line-height: 1.55; color: #8b8983; }
+.ha-fine u { cursor: pointer; }
+
+/* D · the empty app they land in */
+.ha-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 6px;
+}
+.ha-chat-line { font-size: 14px; color: #6f6d68; }
+.ha-chat-input {
+  padding: 13px 15px;
+  background: #ffffff;
+  border: 1px solid #e3e1dc;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 14px;
+  color: #a8a6a1;
+}
+
+/* the harness's mark, mid-flight from the page to the toolbar */
+.dl-fly-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; }
+.dl-fly-mark svg { width: 20px; height: 20px; }
+
+/* their product page, now that it is only a product page */
+.hs-acts .apple { font-size: 15px; }
+.hs-other { margin-top: 54px; }
+.hs-other .lbl { display: block; margin-bottom: 14px; font-size: 13.5px; color: var(--n600); }
+.hs-other .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.hs-other .tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 84px;
+  padding: 12px 8px;
+  border: 1px solid var(--n300);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--n600);
+}
+.hs-other .tile b { font-size: 15px; color: var(--dark); }

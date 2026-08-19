@@ -101,6 +101,87 @@
       </div>
     </section>
 
+    <section class="row">
+      <h2 class="row-title">Where the download comes from</h2>
+
+      <p class="kbd-note rows-note">
+        Everything above starts by downloading an installer from the marketing
+        site. This moves it: you make an account first, and the download waits
+        inside the product next to the no-code builder. From the disk image on,
+        it is <a href="install-4/index.html"><strong>the current version</strong></a>
+        exactly &mdash; so what the two flows measure is the road in.
+      </p>
+
+      <div class="row-cards two-up">
+
+        <a class="fork-card" href="signup/index.html">
+          <h2>Sign up, then get EAI Setup <span class="badge">New</span></h2>
+          <p>Microsoft sign-in, a workspace, the CLI download inside the app &mdash; then an empty harness and the question: do they type <code>/eai</code>?</p>
+          <ul>
+            <li>Nothing on the website installs anything</li>
+            <li>The harness opens empty &mdash; we can't write in it</li>
+            <li>So the instruction, and a video, come before the hand-off</li>
+            <li>Two variations: a harness installed, or none at all</li>
+            <li>App template, then name, then folder</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run the sign-up flow &rarr;</span></div>
+        </a>
+
+        <a class="fork-card" href="install-4/index.html">
+          <h2>Download first <span class="badge done">Current</span></h2>
+          <p>The flow as it stands: the homepage's one button is <strong>Download the EAI app</strong>, and the account is made inside it.</p>
+          <ul>
+            <li>Straight from the site to the disk image</li>
+            <li>Sign-in is a form, not a confirmation</li>
+            <li>The app asks which workspace you're in</li>
+            <li>Four screens fewer to reach the dmg</li>
+          </ul>
+          <div class="go"><span class="btn btn-ghost">Run the current version &rarr;</span></div>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="row">
+      <h2 class="row-title">Getting to <code>/eai</code></h2>
+
+      <p class="kbd-note rows-note">
+        The same flow, run twice. It ends where we lose control: the AI tool
+        opens as somebody else's window, empty, and <strong>nothing we ship can
+        write a word in it</strong> &mdash; so the instruction and a short video
+        come beforehand, in the web app and again on the setup app's last screen.
+        What's being watched is whether they type <code>/eai</code> unaided, and
+        whether anyone plays the video. The only difference between these two is
+        whether an AI tool is already on the machine.
+      </p>
+
+      <div class="row-cards two-up">
+
+        <a class="fork-card" href="signup/index.html?scenario=installed">
+          <h2>1 &middot; A harness is installed</h2>
+          <p>Claude Code is already on the Mac. The short road &mdash; pick it, open it, and the empty prompt is the only obstacle left.</p>
+          <ul>
+            <li>Setup hands straight over</li>
+            <li>No account to make with anyone else</li>
+            <li>Tests the instruction on its own</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run with a harness &rarr;</span></div>
+        </a>
+
+        <a class="fork-card" href="signup/index.html?scenario=none">
+          <h2>2 &middot; Nothing is installed</h2>
+          <p>Every tool reads <strong>not installed</strong>. The button becomes <strong>Get Claude Code</strong> and sends them to claude.com to install it and sign up, before they come back.</p>
+          <ul>
+            <li>Out to somebody else's site, mid-setup</li>
+            <li>An account with Anthropic, not with us</li>
+            <li>Then back, <em>Check again</em>, and the same empty prompt</li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Run with an empty Mac &rarr;</span></div>
+        </a>
+
+      </div>
+    </section>
+
   </main>
 
 </body>

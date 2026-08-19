@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/signup" />
+<title>Prototype — Create your Enterprise AI account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="site" style="background:#fafafa;">
+
+  <!-- Step 2. Sign-in and sign-up are the same screen: an identity provider
+       knows which one it is, and asking people to pick first is a question
+       nobody can answer wrongly but everybody has to read.
+
+       Microsoft is the primary because that is what EAI's customers are on.
+       The email route exists so the "authenticate your email address" step
+       from the flow board has somewhere to live — Microsoft has already
+       verified the address, so on that path there is nothing to confirm. -->
+  <nav class="nav eai-nav">
+    <a class="brand" href="home.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a><a href="#">Products &#9662;</a><a href="#">About Us &#9662;</a><a href="#">Pricing &#9662;</a><a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="signup.html">Login</a>
+    <a class="btn btn-dark btn-sm" href="signup.html">Get Started</a>
+  </nav>
+
+  <section style="padding:64px 40px 90px;">
+    <div class="auth-card su-card">
+      <h3>Create your account</h3>
+      <p class="sub">Use your work account &mdash; it becomes the owner of your workspace.</p>
+
+      <a class="su-idp primary" href="ms-signin.html">
+        <span class="ms-mark" aria-hidden="true"><i style="background:#f25022"></i><i style="background:#7fba00"></i><i style="background:#00a4ef"></i><i style="background:#ffb900"></i></span>
+        Continue with Microsoft
+      </a>
+
+      <a class="su-idp" href="ms-signin.html" id="idpGoogle">
+        <span class="su-g" aria-hidden="true">G</span>
+        Continue with Google
+      </a>
+
+      <div class="su-or"><span>or</span></div>
+
+      <form class="su-email" id="emailForm" onsubmit="return false;">
+        <label for="suEmail">Work email</label>
+        <input type="email" id="suEmail" placeholder="you@company.com" autocomplete="email" spellcheck="false" />
+        <button class="btn btn-ghost" type="button" id="suGo">Continue with email</button>
+      </form>
+
+      <div class="foot">
+        By continuing you agree to the <u>Terms</u> and <u>Privacy Policy</u>.<br />
+        Already have an account? <a href="ms-signin.html"><u>Sign in</u></a>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // The email route carries the address to the verification screen, so the
+  // code screen can say who it was sent to.
+  const email = document.getElementById('suEmail');
+  const go = document.getElementById('suGo');
+
+  go.addEventListener('click', () => {
+    const value = email.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
+      email.focus();
+      email.classList.add('bad');
+      setTimeout(() => email.classList.remove('bad'), 900);
+      return;
+    }
+    window.location.href = `verify.html?email=${encodeURIComponent(value)}`;
+  });
+
+  email.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
+</script>
+
+</body>
+</html>

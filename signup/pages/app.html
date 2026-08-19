@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/home" />
+<title>Prototype — Home · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="nb">
+
+  <!-- Steps 6 and 7: see the product, then get EAI Setup from inside it.
+
+       Built to the Paper design (file "No Code Builder", page homepage/admin,
+       frame 1GV5-0): the 264px sidebar, the tab group, the composer, templates
+       and recent processes, on Geist and the same shadcn tokens the setup app
+       uses.
+
+       The tab group is the part that matters here. **No code builder | CLI**
+       is what makes the CLI a way to build rather than a banner somebody
+       scrolls past — the same workspace, two ways in, and choosing between
+       them is a two-word decision at the top of the sidebar. Without it the
+       download has nowhere honest to live: a person who wants to build on
+       their own machine has no way to say so.
+
+       In /install-4 the download is a button on the marketing homepage, so
+       the first thing EAI asks of a stranger is to run an installer. Here
+       they have an account, a workspace and a product first, and the
+       installer is what the CLI tab is for. -->
+
+  <div class="nb-shell">
+
+    <!-- ------------------------------------------------ sidebar -->
+    <aside class="nb-side">
+
+      <button class="nb-ws" type="button">
+        <span class="tile" id="wsInitial">N</span>
+        <span class="tx">
+          <b id="wsName">Northwind Group</b>
+          <span>Admin &middot; <span id="wsPlan">Free plan</span></span>
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 15l5 5 5-5M7 9l5-5 5 5" stroke="#9A9AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <!-- The fork, at the top of everything. -->
+      <div class="nb-tabs" role="tablist" aria-label="How you build">
+        <button class="nb-tab" type="button" role="tab" aria-selected="false" data-tab="ncb">No code builder</button>
+        <button class="nb-tab on" type="button" role="tab" aria-selected="true" data-tab="cli">CLI</button>
+      </div>
+
+      <nav class="nb-nav">
+        <a class="nb-item on" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+          <span>All processes</span>
+          <i class="count" id="processCount">0</i>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 21V9" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Templates</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2v6m0 8v6M2 12h6m8 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Integrations</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.3L12 15l-1.8-4.7L5.5 9l4.7-1.3L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M18 16l.9 2.1L21 19l-2.1.9L18 22l-.9-2.1L15 19l2.1-.9L18 16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>Smart blocks</span>
+        </a>
+      </nav>
+
+      <nav class="nb-nav">
+        <div class="nb-group">MANAGE</div>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="2"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" stroke="currentColor" stroke-width="2"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Data</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Users &amp; roles</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Analytics</span>
+          <i class="tag">New</i>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span>Automations</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Audit log</span>
+        </a>
+      </nav>
+
+      <div class="nb-side-ft">
+        <!-- Sign-up stopped asking which plan, so the product has to be
+             where the free one runs out. Quiet, and next to the evidence. -->
+        <a class="nb-plan" id="planCard" href="plans.html">
+          <span class="hd"><b>Builder</b><i>free preview</i></span>
+          <span class="lbl">0 of 2 processes &middot; 1 of 2 users</span>
+          <span class="cta">See plans</span>
+        </a>
+
+        <button class="nb-user" type="button">
+          <span class="av" id="userAv">GC</span>
+          <span class="tx"><b id="userName">Gareth Chainey</b><span>Owner</span></span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="5" r="1" stroke="#9A9AA0" stroke-width="2"/><circle cx="12" cy="12" r="1" stroke="#9A9AA0" stroke-width="2"/><circle cx="12" cy="19" r="1" stroke="#9A9AA0" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- --------------------------------------------------- main -->
+    <main class="nb-main">
+
+      <header class="nb-top">
+        <b id="topTitle">Home</b>
+        <div class="nb-search">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m21 21-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="searchText">Search processes…</span>
+          <kbd>⌘K</kbd>
+        </div>
+        <div class="nb-top-acts">
+          <button class="nb-icon" type="button" data-stub title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="nb-btn primary" type="button" id="topAction" data-stub>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            New process
+          </button>
+        </div>
+      </header>
+
+      <!-- =============== A · the no-code builder =============== -->
+      <div class="nb-page" data-panel="ncb" hidden>
+
+        <h1 class="nb-hero">Improve a process</h1>
+
+        <div class="nb-composer">
+          <div class="field">
+            <input type="text" id="composer" placeholder="Describe the process you want to build…" autocomplete="off" />
+          </div>
+          <div class="tools">
+            <button class="sq" type="button" data-stub title="Attach">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="chip" type="button" data-stub>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 21V9" stroke="currentColor" stroke-width="2"/></svg>
+              Template
+            </button>
+            <button class="chip" type="button" data-stub>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="2"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" stroke="currentColor" stroke-width="2"/></svg>
+              Data
+            </button>
+            <span class="spacer"></span>
+            <button class="go" type="button" id="composerGo" title="Start">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="nb-sec-hd">
+          <b>Start from a template</b>
+          <a href="#" data-stub>Browse all <span aria-hidden="true">›</span></a>
+        </div>
+
+        <div class="nb-templates">
+          <a class="nb-tpl" href="new.html">
+            <span class="art cyan">
+              <span class="form-sk">
+                <span class="fld"><i class="lbl"></i><i class="in"></i></span>
+                <span class="fld"><i class="lbl w2"></i><i class="in"></i></span>
+                <span class="submit"></span>
+              </span>
+            </span>
+            <span class="body">
+              <span class="hd">
+                <i class="ico cyan"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#0891B2" stroke-width="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#0891B2" stroke-width="2" stroke-linecap="round"/></svg></i>
+                <b>Form</b>
+              </span>
+              <span class="desc">Collect clean, structured inputs from anyone &mdash; validated as they type.</span>
+              <span class="tags"><i>Onboarding intake</i><i>Request form</i></span>
+            </span>
+          </a>
+
+          <a class="nb-tpl" href="new.html">
+            <span class="art blue">
+              <span class="doc-sk"><i></i><i></i><i></i><i class="s"></i></span>
+              <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="grid-sk"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            </span>
+            <span class="body">
+              <span class="hd">
+                <i class="ico blue"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h10M4 7l3-3M4 7l3 3" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 17H10M20 17l-3-3M20 17l-3 3" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
+                <b>Input &rarr; Output</b>
+              </span>
+              <span class="desc">Upload raw data &mdash; we turn it into a structured, scored table.</span>
+              <span class="tags"><i>Resumes → shortlist</i><i>Invoices → ledger</i></span>
+            </span>
+          </a>
+
+          <a class="nb-tpl" href="new.html">
+            <span class="art violet">
+              <span class="chain">
+                <i class="node fill"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M8 8l4-4 4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></i>
+                <i class="link"></i>
+                <i class="node"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#7C3AED" stroke-width="2"/><path d="M3 10h18M9 4v16" stroke="#7C3AED" stroke-width="2"/></svg></i>
+                <i class="link"></i>
+                <i class="node"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#7C3AED" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="#7C3AED" stroke-width="2"/></svg></i>
+                <i class="link"></i>
+                <i class="node"><svg viewBox="0 0 24 24" fill="none"><path d="M6 20V10M12 20V4M18 20v-6" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/></svg></i>
+              </span>
+            </span>
+            <span class="body">
+              <span class="hd">
+                <i class="ico violet"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h10" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/></svg></i>
+                <b>Rubric &rarr; Ranking</b>
+              </span>
+              <span class="desc">A 4-step flow: rubric in, scoring table out, applicants ranked.</span>
+              <span class="tags"><i>4-step workflow</i><i>Candidate screening</i></span>
+            </span>
+          </a>
+        </div>
+
+        <div class="nb-sec-hd">
+          <b>Recent processes</b>
+          <a href="#" data-stub>View all <span aria-hidden="true">›</span></a>
+        </div>
+
+        <!-- A workspace made four minutes ago, told the truth about itself. -->
+        <div class="nb-empty">
+          <b>Nothing here yet</b>
+          <span>Describe a process above, start from a template, or build on your machine with the CLI.</span>
+        </div>
+      </div>
+
+      <!-- ===================== B · the CLI =====================
+
+           The tab the app opens on. The experiment is about whether
+           somebody can get from here to typing /eai in a window we don't
+           control, so the builder is one click away rather than in front
+           of them. -->
+      <div class="nb-page" data-panel="cli">
+
+        <h1 class="nb-hero">Build on your machine</h1>
+        <p class="nb-sub">Whole apps in a folder on your Mac &mdash; same workspace, your own editor and AI tool.</p>
+
+        <!-- Built to the Paper frame on page "EAI Setup — card variations
+             + onboarding": one card, two ways in, and no black.
+
+             The four steps came off it. They described the installer's own
+             journey while you were still deciding whether to start it, and
+             the app narrates every one of them once it opens. What's left
+             is the actual question — do you want the app or the command —
+             with the app first, because most people here want the app. -->
+        <!-- Built to the Paper frame on page "EAI Setup — card variations
+             + onboarding", with one thing added: what to do after it's
+             installed lives inside the card now.
+
+             It used to sit in its own section below, which read as a
+             separate topic — and the topic is not separate. Downloading
+             the app and typing /eai in the window it opens are one act
+             with a wait in the middle. So: the download, then the
+             instruction, then the video, in the order they happen. -->
+        <section class="nb-card" id="cliCard">
+          <b class="nb-card-title">Get started building with CLI</b>
+
+          <div class="nb-row">
+            <span class="tx">Download the app</span>
+            <button class="nb-btn primary" id="downloadBtn" type="button">Download EAI setup app &middot; 84 MB</button>
+          </div>
+
+          <!-- Said here because it cannot be said where it is needed. An
+               external harness opens empty and nothing we ship can put a
+               line of text inside one, so the last instruction a person
+               gets is whatever they read before they leave. The same block
+               is on the setup app's last screen, for the same reason.
+
+               The video is the thing being measured: whether anyone plays
+               it tells us if a still instruction was enough. -->
+          <div class="nb-note">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+            </span>
+            <span class="tx">
+              <b>Once it's installed, your app opens in your AI tool. Type <code>/eai</code> there.</b>
+              <span>Setup creates the app, then hands you to Claude Code, Copilot or whichever tool you use. That window opens empty &mdash; type <code>/eai</code> at its prompt and press enter to start building.</span>
+            </span>
+          </div>
+
+          <!-- The video lives only in the setup app now. Here it was a
+               trailer for something two screens away; there it plays on
+               the screen before the hand-off, which is the last moment it
+               can still change what somebody does. -->
+        </section>
+
+        <!-- Outside the card, and after it. This is the other way in, not
+             a step of the first one — and it belongs to people who will
+             find it wherever it is. -->
+        <div class="nb-install">
+          <span class="lbl">Or install it yourself</span>
+          <div class="nb-cmd">
+            <span class="pfx">$</span>
+            <code>npx install eai</code>
+            <button class="copy" id="copyCmd" type="button">COPY</button>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- placeholder feedback, so a dead nav item says so instead of doing
+       nothing (or worse, jumping the page to the top) -->
+  <div class="nb-toast" id="toast" hidden></div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // What sign-up collected, carried through the query string.
+  const q = new URLSearchParams(window.location.search);
+  const ws = (q.get('ws') || 'Northwind Group').trim();
+  const country = q.get('country') || 'Australia';
+  // Only used when somebody jumps straight here from ⌘K; the journey
+  // always carries the address they typed at Microsoft.
+  const email = q.get('email') || 'sam.taylor@company.com';
+
+  /** gareth.chainey@northwind.com → Gareth Chainey. Good enough for a person. */
+  const personName = (address) => address.split('@')[0]
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((part) => part.replace(/^./, (c) => c.toUpperCase()))
+    .join(' ');
+
+  const initials = (words) => words.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+
+  const name = personName(email);
+  document.getElementById('wsName').textContent = ws;
+  document.getElementById('wsInitial').textContent = (ws[0] || 'W').toUpperCase();
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userAv').textContent = initials(name) || 'U';
+
+  // The plan pages need to know who is looking, and how to get back here.
+  const back = window.location.search;
+  if (back) document.getElementById('planCard').href = `plans.html${back}`;
+
+  // And up to the desktop, so the setup app can offer the workspace this
+  // person just made rather than a name they have never seen.
+  tell({ action: 'context', data: { workspace: ws, country, email } });
+
+  /* --- the tab group ---------------------------------------------------
+
+     Two ways to build, one workspace. The tab changes the page and the
+     primary action with it: "New process" belongs to the builder, and
+     nothing in the CLI tab can be done in a browser. */
+
+  const panels = document.querySelectorAll('[data-panel]');
+  const topTitle = document.getElementById('topTitle');
+  const topAction = document.getElementById('topAction');
+  const searchText = document.getElementById('searchText');
+
+  function showTab(which) {
+    document.querySelectorAll('.nb-tab').forEach((t) => {
+      const on = t.dataset.tab === which;
+      t.classList.toggle('on', on);
+      t.setAttribute('aria-selected', String(on));
+    });
+    panels.forEach((p) => { p.hidden = p.dataset.panel !== which; });
+
+    topTitle.textContent = which === 'cli' ? 'CLI' : 'Home';
+    searchText.textContent = which === 'cli' ? 'Search apps…' : 'Search processes…';
+    topAction.hidden = which === 'cli';
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelectorAll('.nb-tab').forEach((tab) => {
+    tab.addEventListener('click', () => showTab(tab.dataset.tab));
+  });
+
+  // The app opens on the CLI, because that is what this round is testing.
+  showTab('cli');
+
+  /* --- the download ----------------------------------------------------
+
+     A real browser behaviour: the file flies into Safari's toolbar and
+     waits in the downloads list. The desktop shell handles both. */
+
+  /* The card does not rewrite itself when you press the button. It had a
+     whole second state — new title, new body, a green tick, the next step
+     lit — and that is a second design nobody drew. What a download looks
+     like on a Mac is Safari's toolbar filling a progress ring, which the
+     shell already does; the button says it heard you and goes back to
+     what it was. */
+
+  const btn = document.getElementById('downloadBtn');
+  const LABEL = btn.textContent;
+
+  btn.addEventListener('click', () => {
+    const r = btn.getBoundingClientRect();
+    tell({
+      action: 'download-app',
+      data: { app: 'EAI Setup', rect: { left: r.left, top: r.top, width: r.width, height: r.height } },
+    });
+
+    btn.textContent = 'Downloading…';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = LABEL; btn.disabled = false; }, 2600);
+  });
+
+  /* The other way in. The shell remembers what was copied, so pasting it
+     into the fake terminal later gives back the same string. */
+  const copy = document.getElementById('copyCmd');
+  const COMMAND = 'npx install eai';
+
+  copy.addEventListener('click', () => {
+    navigator.clipboard?.writeText(COMMAND).catch(() => {});
+    tell({ action: 'copied', data: { text: COMMAND } });
+    copy.textContent = 'COPIED';
+    setTimeout(() => { copy.textContent = 'COPY'; }, 1600);
+  });
+
+  // Typing into the composer is the no-code half; it hands over to /new.
+  const composer = document.getElementById('composer');
+  const start = () => {
+    const value = composer.value.trim();
+    window.location.href = value ? `new.html?q=${encodeURIComponent(value)}` : 'new.html';
+  };
+  document.getElementById('composerGo').addEventListener('click', start);
+  composer.addEventListener('keydown', (e) => { if (e.key === 'Enter') start(); });
+
+  /* --- everything that isn't built ------------------------------------
+
+     These were href="#", which scrolls the page to the top — inside the
+     desktop's browser frame that reads as the UI jumping away from you
+     with no way back. They now say what they are. */
+
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+
+  function say(message) {
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
+  }
+
+  document.querySelectorAll('[data-stub]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const label = (el.textContent || '').trim() || el.title || 'This';
+      say(`${label} isn't part of this prototype.`);
+    });
+  });
+</script>
+
+</body>
+</html>

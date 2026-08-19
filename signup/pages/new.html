@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/new" />
+<title>Prototype — What would you like to build?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="nb">
+
+  <!-- The no-code builder's front door, from src/app/new/new-workflow-chat.tsx.
+
+       It is here so the fork in the logged-in view is a real fork: a tester
+       who would rather describe a workflow than install anything can follow
+       that instinct and be seen doing it. Past this screen the real product
+       takes over, and this prototype does not — so it says so rather than
+       pretending. -->
+
+  <div class="nw">
+    <a class="nw-back" href="app.html">&larr; Workflows</a>
+
+    <div class="nw-head">
+      <span class="nw-spark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" fill="currentColor"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" fill="currentColor"/></svg>
+      </span>
+      <h1>What would you like to build?</h1>
+      <p>Describe your workflow and AI will design it for you</p>
+    </div>
+
+    <div class="nw-box">
+      <div class="nw-field">
+        <input type="text" id="nwInput" placeholder="e.g., KYC onboarding for CommBank" autocomplete="off" />
+        <button class="nw-go" type="button" id="nwGo" title="Start">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="nw-chips">
+        <button type="button">KYC onboarding</button>
+        <button type="button">Invoice processing</button>
+        <button type="button">Leave approval</button>
+        <button type="button">Customer feedback</button>
+        <button type="button">Vendor assessment</button>
+        <button type="button">Compliance review</button>
+      </div>
+
+      <div class="nw-note" id="nwNote" hidden>
+        <b>The builder itself isn&rsquo;t in this prototype.</b>
+        <span>In the product this is where AI designs the workflow with you. This experiment is about everything before that &mdash; go <a href="app.html">back to Workflows</a>, or get the CLI and build an app on your Mac.</span>
+      </div>
+    </div>
+  </div>
+
+<script src="../../assets/page.js"></script>
+<script>
+  const input = document.getElementById('nwInput');
+  const note = document.getElementById('nwNote');
+
+  function start() {
+    if (!input.value.trim()) { input.focus(); return; }
+    note.hidden = false;
+  }
+
+  document.getElementById('nwGo').addEventListener('click', start);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') start(); });
+  document.querySelectorAll('.nw-chips button').forEach((chip) => {
+    chip.addEventListener('click', () => { input.value = chip.textContent; start(); });
+  });
+
+  input.focus();
+</script>
+
+</body>
+</html>

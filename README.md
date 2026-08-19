@@ -36,6 +36,9 @@ later, on a machine where EAI Setup is already installed.
 | **Simpler setup form** | `install-2/` | [/install-2](https://eai-website.github.io/prototypes/install-2) | In progress — `/install` with the prerequisites hidden and one question per screen |
 | **One-page setup form** | `install-3/` | [/install-3](https://eai-website.github.io/prototypes/install-3) | In progress — `/install-2` again, on one page with no Continue |
 | **EAI Setup + external harness** | `install-4/` | [/install-4](https://eai-website.github.io/prototypes/install-4) | **Current** — the fourth pass at this flow |
+| **Sign up, then download** | `signup/` | [/signup](https://eai-website.github.io/prototypes/signup) | New — account first, download from inside the product |
+| ↳ *harness installed* | `signup/` | [/signup?scenario=installed](https://eai-website.github.io/prototypes/signup?scenario=installed) | Same flow, Claude Code already on the Mac |
+| ↳ *nothing installed* | `signup/` | [/signup?scenario=none](https://eai-website.github.io/prototypes/signup?scenario=none) | Same flow, out to claude.com and back first |
 | **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
@@ -317,6 +320,189 @@ rather than taking your word for it.
 **⌘K** has the four states worth designing for: the recommended one missing,
 nothing installed at all, a download required, and npm refusing to write on a
 managed Mac.
+
+## Sign up, then download
+
+`/signup` moves one thing and changes nothing else: **the download is not on the
+marketing site any more.** You make an account, name a workspace, land in the
+product — and the installer is in there, next to the no-code builder, as the
+other way to build. From the disk image onwards it is `/install-4` line for
+line, so the two can be run back to back and the only variable is the road in.
+
+**Sign-up doesn't ask about plans.** Everyone starts on Builder, free while it's
+in preview, said in one line on the workspace form rather than asked as a
+question — pricing a product you haven't seen isn't a decision, it's a toll
+booth, and only one of the four plans could be picked anyway. `plans.html`
+stays, as somewhere you arrive rather than a step: from the plan card in the
+sidebar or the chip beside the page title, with the account and workspace in its
+URL so *back* means back. The plan you're on is marked, not sold.
+
+**The web half** (`signup/pages/`):
+
+1. `home.html` — the same homepage, with **Get started free** where the download
+   button used to be
+2. `signup.html` — one screen for sign-in and sign-up. **Continue with
+   Microsoft** is the primary, because that is what EAI's customers are on
+3. `ms-signin.html` — Microsoft's own pages, built rather than skipped: email,
+   password, number-matching MFA, the consent screen naming EAI, "stay signed
+   in". This is the moment EAI hands someone to their own IT department, and it
+   is where a sign-up either feels like joining a company tool or being stopped
+   by one
+4. `verify.html` — the email-code screen. **Only the email route reaches it**;
+   Microsoft has already asserted the address, so there is nothing to confirm.
+   It is the most expensive screen in the journey — the one where a person
+   leaves for another app — which is the argument for Microsoft leading
+5. `workspace.html` — the last thing between a person and the product, and now
+   the only thing: country, name, captcha, and one line saying the plan is
+   Builder. Carried through the query string
+6. `app.html` — **the logged-in app**, built to the Paper design (file *No Code
+   Builder*, page `homepage/admin`, frame `1GV5-0`): the 264px sidebar, the
+   composer, the template cards and the process list, on Geist and the same
+   shadcn tokens the setup app uses. Recreated rather than sketched, so the
+   proposal is judged against the real product. `new.html` is the no-code
+   builder's front door (`src/app/new/new-workflow-chat.tsx` in
+   `eainocodebuilder`), so the fork is a real fork
+7. The **tab group** — **No code builder | CLI** — is what carries the whole
+   experiment. It makes the CLI a way to build rather than a banner: one
+   workspace, two ways in, and the choice sits above everything else in the
+   sidebar. Without it there is no way for someone to say they'd rather build
+   on their own machine, and the download has nowhere honest to live. The tab
+   changes the page and the primary action with it — *New process* belongs to
+   the builder, and nothing in the CLI tab can be done in a browser
+8. The **CLI tab** holds the download, built to the Paper frame on page *EAI
+   Setup — card variations + onboarding*: **Get started building with CLI**,
+   then *Download the app* with the only dark button on the page, then *Or
+   install yourself* with `npx install eai` in a muted field and a COPY chip.
+   Two ways in, app first, and no black — a terminal-coloured slab reads as an
+   advert and would be the loudest object on a page whose job is a quiet
+   choice. The four steps came off it: they narrated the installer's journey
+   while you were still deciding whether to start it, and the app narrates
+   every one of them once it opens. **The card has one state** — it used to
+   rewrite itself on Download, which is a second design nobody drew; what a
+   download looks like on a Mac is Safari's toolbar filling a progress ring,
+   and the shell already does that. COPY tells the shell what was copied, so
+   pasting it into the fake terminal later gives back the same string
+9. The **plan card** in the sidebar footer is the upgrade path: what you're on,
+   what you've used of it (`0 of 2 processes · 1 of 2 users`), and a way to
+   `plans.html`. Sign-up stopped asking, so the product has to be where the free
+   plan runs out — a card where the evidence is, not a banner
+
+**What it changes in the app**, all of it downstream of signing up first:
+
+- **The workspace stops being a question.** They created one on the way to the
+  download and are in exactly one, so step 1 arrives answered — with the name
+  they typed — and the form opens on "name your app". The list stays: a second
+  workspace makes it a choice again.
+- **Sign-in is a confirmation.** The browser session is live, so `signin.html`
+  asks *which account, and is it you* rather than for a password. The device
+  code stays — it is what says the request came from the app on your own Mac.
+- **The app is told who signed up.** The portal posts workspace, country and
+  email up to the shell (`action: 'context'`), so the native app shows the
+  person's own words back to them.
+
+**What it costs** is four screens and a Microsoft round trip before anyone sees
+a dmg. That is the trade the experiment is for.
+
+### The round this is set up to run
+
+**We cannot write anything into an external harness.** Claude Code, Copilot,
+Codex and the rest are somebody else's window: they open on the folder with an
+empty prompt and no idea EAI exists, and nothing we ship can put a banner, a
+hint or a chip in there. Everything below follows from taking that seriously.
+
+- **The harness opens empty and typeable.** A bare `❯` and a cursor. Anything
+  that isn't `/eai` gets a harness-style *Unknown slash command*; `/eai` prints
+  one line and raises a **congratulations** card over the desktop. Whether
+  somebody gets there unaided is the whole question.
+- **So the guidance moves upstream**, and is said twice in the two places we do
+  control: the web app's CLI tab, and the setup app. Each carries the same
+  alert — *when it opens, type `/eai`* — and the same short animation under it.
+  In the web app both sit **inside the install card**, full width, under the
+  download: getting the app and typing `/eai` in the window it opens are one act
+  with a wait in the middle, not two topics.
+- **The video plays in place, at full size, and only in the setup app.** It was
+  a 116px thumbnail that opened a lightbox — two bets against itself: a small
+  target asks to be skipped, and a modal asks permission to take over the
+  screen. It is now the size it will be while it runs, sitting in the page
+  looking like something you could press, and the whole frame is the target. It
+  came off the web app entirely: there it was a trailer for something two
+  screens away, and on the hand-off screen it plays at the last moment it can
+  still change what somebody does.
+- **In the setup app the hand-off is its own step.** Choosing a tool and being
+  told what to do in it are different questions, and the instruction used to sit
+  at the bottom of a list of six rows and two alerts — the worst place on the
+  screen for the one line that has to survive the trip. So: pick your tool (and
+  install it, if it isn't here), press **Next**, and the next screen is nothing
+  but the instruction, the video, and one button that names both ends of the
+  hand-off — *Open contract-renewals in Claude Code*.
+- **Terminal came off the list.** It's built into macOS, it's always "ready",
+  and it can run `/eai` without anyone going anywhere — which made it a hole in
+  variation 2, where the trip out to a tool's own website is the thing being
+  measured. **Whether anyone plays the video is the measurement**; plays,
+  finishes and closes land in `window.EAI_VIDEO_LOG` and the console
+  (`assets/eai-video.js`). It's drawn rather than recorded, so it survives these
+  tools redesigning their chrome.
+- **The app opens on the CLI tab**, stripped to the install card and that
+  guidance. "What the CLI adds" and "Apps from the CLI" are gone — they were
+  reasons to be interested, and this round is past that.
+- **The browser opens zoomed**, unlike every other flow, and the CLI page is
+  tuned so the card, the instruction and the video all clear the fold at that
+  size. A measurement below the fold measures the fold. The green button still
+  restores the windowed size.
+- **App template is the first field** in setup, before name and folder, as two
+  radio cards: **EAI template** (pre-selected, badged *Recommended*) and **Start
+  from scratch** — an empty project that says outright there's more to configure
+  yourself. It's asked first because it's the only answer that changes what gets
+  built; the choice is repeated back in the init rows.
+- **Nothing is prefilled at Microsoft.** The address they type there is the
+  account for the rest of the journey — workspace owner, device confirmation,
+  the name in the native app — so it has to be theirs. `sam.taylor@company.com`
+  only appears when somebody jumps straight in from ⌘K.
+
+**Two variations.** Each is a URL a tester can be handed on its own —
+`?scenario=installed` and `?scenario=none`, which is what the launch pad's
+*Getting to `/eai`* row links to. The scenario is applied at load, so the
+machine's state is true from the first second rather than arranged behind them
+at the end, and it becomes the baseline that ⌘K's *back to the happy path*
+returns to. Both are still switchable mid-run from ⌘K, which marks whichever
+one is live.
+
+1. **A harness is installed.** Claude Code is on the Mac. Pick it, open it, type
+   the thing.
+2. **Nothing is installed.** Every row reads *not installed*, the button becomes
+   **Get Claude Code**, and it opens the tool's own product page (`harness.html`,
+   one page for all of them via the query string) — which has exactly one button
+   on it, **Download for macOS**, and never mentions us again.
+
+   From there it happens where it really happens, on the machine: the file
+   arrives in Safari's download list above `EAI-Setup.dmg`, opening it mounts a
+   disk image with the app to drag to Applications, and the app then runs its
+   own welcome and its own **Sign In** — Google, or an email address. Nothing in
+   any of it has heard of Enterprise AI.
+
+   **That is the measurement.** An earlier version ended with a button reading
+   *Open EAI Setup*, which is both a lie — Anthropic's installer would never say
+   that — and a way of answering the only question being asked: *do they
+   remember to come back?* EAI Setup sits behind that window the whole time,
+   still waiting, with **I've installed it — check again** ready for whenever
+   they find it.
+
+The administrator-chose-one case came off the screen: these are new users
+signing themselves up, so there is nobody to have chosen. Terminal stays in the
+list because macOS ships it — it is also, deliberately noted, the one way a
+sharp participant can dodge variation 2's trip entirely.
+
+`assets/signup.js` is `/install-4`'s journey with those three changes;
+`assets/signup.css` is the web half only. Two bugs are fixed there and left
+alone elsewhere:
+
+- `#winSetup .eai-acts` sets `display: flex`, which outranks the `hidden`
+  attribute, so **Create app** is on screen from the moment the setup form
+  opens. `/install-4` has been in front of people, so it keeps the behaviour it
+  was tested with — worth fixing before the next round.
+- Placeholder nav items were `href="#"`, which scrolls the page to the top;
+  inside the desktop's browser frame that reads as the UI jumping away from you
+  with no way back. They now say what they are, in a toast.
 
 ## Chat in the app
 
