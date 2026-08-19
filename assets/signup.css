@@ -866,7 +866,7 @@
    saying the same sentence to each other.
 
    What the frame decided is still here: the only dark thing is the
-   button, and the command sits in a muted field rather than a terminal.
+   button, and the command sits in a plain card rather than a terminal.
    A black slab reads as an advert, and would be the loudest object on a
    page whose whole job is a choice between two quiet ones. */
 
@@ -902,13 +902,17 @@
 .nb-install { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 18px; }
 .nb-install .lbl { font-size: 13.5px; font-weight: 600; line-height: 18px; }
 
+/* A plain card, the same as the one above it. The muted fill was meant to
+   say "this is a command, not a control", but next to a white card it read
+   as disabled — and the two ways in should look like two of the same
+   thing, one under the other. */
 .nb-cmd {
   display: flex;
   align-items: center;
   gap: 14px;
   width: 100%;
   padding: 16px 18px;
-  background: var(--muted);
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 10px;
 }

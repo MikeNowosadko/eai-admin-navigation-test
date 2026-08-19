@@ -391,7 +391,7 @@ URL so *back* means back. The plan you're on is marked, not sold.
 8. The **CLI tab** holds the download, built to the Paper frame on page *EAI
    Setup — card variations + onboarding*: **Get started with the EAI Setup
    app**, then *Download the app* with the only dark button on the page, then
-   *Or install yourself* with `npx install eai` in a muted field and a COPY
+   *Or install yourself* with `npx install eai` in a plain card and a COPY
    chip. It took three passes to get to one heading. It was *Get started
    building with CLI* until a read-through caught it promising a command line —
    the one action is a Mac app, and the CLI is the tab it lives on, not what
