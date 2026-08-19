@@ -370,9 +370,15 @@ URL so *back* means back. The plan you're on is marked, not sold.
    changes the page and the primary action with it — *New process* belongs to
    the builder, and nothing in the CLI tab can be done in a browser
 8. The **CLI tab** holds the download, built to the Paper frame on page *EAI
-   Setup — card variations + onboarding*: **Get started building with CLI**,
-   then *Download the app* with the only dark button on the page, then *Or
-   install yourself* with `npx install eai` in a muted field and a COPY chip.
+   Setup — card variations + onboarding*: **Get started with the EAI Setup
+   app**, then *Download the app* with the only dark button on the page, then
+   *Or install yourself* with `npx install eai` in a muted field and a COPY
+   chip. The card was called *Get started building with CLI* until a read-through
+   caught it promising a command line — the one action in it is a Mac app, and
+   the CLI is the tab it lives on, not what you get. The hero lost its
+   standfirst at the same time: *Whole apps in a folder on your Mac* described
+   the experience rather than the choice, and it stood between the heading and
+   the only thing to do on the page.
    Two ways in, app first, and no black — a terminal-coloured slab reads as an
    advert and would be the loudest object on a page whose job is a quiet
    choice. The four steps came off it: they narrated the installer's journey

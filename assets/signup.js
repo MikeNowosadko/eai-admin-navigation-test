@@ -1295,10 +1295,9 @@ function showHandoff(h) {
     `${escapeHtml(h.name)} opens on your app with an empty prompt — it doesn't `
     + 'know about EAI until you say so. Typing <code>/eai</code> is what starts it.';
 
-  document.getElementById('handoffFineTitle').textContent = `${h.name} will ask you to sign in`;
-  document.getElementById('handoffFineBody').innerHTML =
-    `It signs in to <b>${escapeHtml(h.account || h.name)}</b> the first time you open it. `
-    + 'Enterprise AI never sees that account.';
+  // Nothing else is written on this screen. The sign-in alert used to be
+  // filled in here, and it was one more thing to read on the screen that
+  // carries the only instruction we can't repeat later.
 
   handoffGo.textContent = `Open ${project.name || 'your app'} in ${h.name}`;
 
@@ -1392,10 +1391,9 @@ function finish(name, path) {
   setupWin.querySelector('.skin-setup')?.scrollTo({ top: 0 });
 }
 
-document.getElementById('doneFolder').addEventListener('click', () => {
-  coach('The project folder', `${shortPath(project.path)} — the app's files are in there now.`);
-  setTimeout(hideCoach, 3000);
-});
+/* The hand-off screen has one button. "Show me the folder instead" used
+   to sit under it and pointed the coach mark at the project folder — a
+   second exit at the one moment the round is measuring. */
 /* ==================== 8. HAND OVER TO COPILOT ====================== */
 
 let handedOver = false;

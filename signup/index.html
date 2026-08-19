@@ -446,17 +446,17 @@
             <div class="i4-eai-video" id="harnessVideo" data-app="Claude Code" data-project="your app"></div>
           </div>
 
-          <div class="i4-alert" id="handoffFine" role="status">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
-            <div class="tx">
-              <b id="handoffFineTitle">Claude Code will ask you to sign in</b>
-              <span id="handoffFineBody">It signs in to Anthropic the first time you open it. Enterprise AI never sees that account.</span>
-            </div>
-          </div>
+          <!-- The "it will ask you to sign in" alert came off this screen.
+               It answered a question about somebody else's account on the
+               screen whose only job is one instruction, and every line here
+               that isn't "type /eai" is a line competing with it.
 
+               "Show me the folder instead" went with it. It offered a way
+               out of the hand-off at the exact moment we want them to take
+               it — and the trip into the harness is what the round
+               measures, so the screen ends in one door. -->
           <div class="i4-actions">
             <button class="eai-btn primary big" type="button" id="handoffGo">Open in Claude Code</button>
-            <button class="eai-btn ghost-quiet" type="button" id="doneFolder">Show me the folder instead</button>
           </div>
         </div>
 
