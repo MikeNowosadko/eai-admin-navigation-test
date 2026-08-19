@@ -641,7 +641,18 @@
   padding: 24px 24px 80px;
 }
 
-.nb-hero { margin: 0; text-align: center; font-size: 34px; font-weight: 700; letter-spacing: -1.2px; }
+/* Double the air the title had. It sat 24px under the top bar and 26px
+   above the card, which on a page this empty read as the heading being
+   crowded against the chrome rather than sitting over its own content.
+   The padding is on the title itself, so both panels get it. */
+.nb-hero {
+  margin: 0;
+  padding: 24px 0 26px;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1.2px;
+}
 .nb-sub {
   margin: 10px auto 0;
   max-width: 620px;
