@@ -333,12 +333,20 @@ document.querySelectorAll('.dock .item').forEach((item) => {
     } else if (app === 'setup') {
       focusWin(appWindow);
     } else if (app === 'downloads') {
-      const badge = item.querySelector('.badge');
-      coach('Downloads', downloadCount
-        ? `${downloadCount} item${downloadCount > 1 ? 's' : ''} in your Downloads folder.`
-        : 'Nothing downloaded yet.');
-      setTimeout(hideCoach, 2400);
-      badge.hidden = true;
+      item.querySelector('.badge').hidden = true;
+      /* Only the flows that hand us their download rows get the stack. The
+         others fly the file to the dock and put the app there, so there was
+         never anything for a stack to offer — they keep the coach mark they
+         were tested with. */
+      if (downloadedRows.some((r) => !r.hidden)) {
+        hideCoach();
+        openDownloadsStack(item);
+      } else {
+        coach('Downloads', downloadCount
+          ? `${downloadCount} item${downloadCount > 1 ? 's' : ''} in your Downloads folder.`
+          : 'Nothing downloaded yet.');
+        setTimeout(hideCoach, 2400);
+      }
     } else {
       coach(item.querySelector('.tip').textContent, 'Not part of this prototype — the journey runs in Safari and your CLI app.');
       setTimeout(hideCoach, 2400);
@@ -403,15 +411,25 @@ function downloadApp(name, rect) {
   };
 }
 
+/* --- the Downloads stack in the dock --------------------------------
+
+   The other way to reach the file. The flows that draw the download in
+   Safari's toolbar skip the flight to the dock, so the stack used to badge
+   nothing and, when pressed, say "1 item" and go no further. Anyone who
+   went to the dock instead of the toolbar was stuck holding a file they
+   could see the count of and not open.
+
+   `rows` are the same `.dl-row` elements as Safari's list, not copies of
+   them: the stack mirrors whatever is in there and opening an entry clicks
+   the row it came from, so the two can't drift apart. */
+
+const downloadedRows = [];
+
 /**
- * The file lands in the Downloads stack: badge it, and bounce the dock icon.
- *
- * Its own function because the flows that draw the download in Safari's
- * toolbar (`/signup`, `/agent`) skip the flight to the dock entirely — and a
- * real Mac puts the file in both places. Somebody who can't find the toolbar
- * looks in the dock, and until now there was nothing there.
+ * The file lands in the Downloads stack: badge it, bounce the dock icon,
+ * and remember the row so the stack can offer it.
  */
-function landInDownloads() {
+function landInDownloads(row) {
   const dl = dockItem('downloads');
   if (!dl) return;
   downloadCount += 1;
@@ -420,7 +438,65 @@ function landInDownloads() {
   badge.hidden = false;
   dl.classList.add('bump');
   setTimeout(() => dl.classList.remove('bump'), 1200);
+
+  // Newest first, the way a real stack is ordered.
+  if (row && !downloadedRows.includes(row)) downloadedRows.unshift(row);
 }
+
+/** Fan the stack open above the dock icon. */
+function openDownloadsStack(item) {
+  closeDownloadsStack();
+
+  const el = document.createElement('div');
+  el.className = 'dock-stack';
+  el.id = 'dockStack';
+
+  el.innerHTML = '<div class="dock-stack-hd">Downloads</div>';
+
+  downloadedRows.filter((r) => !r.hidden).forEach((row) => {
+    const b = document.createElement('button');
+    b.className = 'dock-stack-row';
+    b.type = 'button';
+    const ico = row.querySelector('.dl-ico');
+    const meta = row.querySelector('.dl-meta');
+    b.innerHTML = '<span class="dock-stack-ico"></span>'
+      + `<span class="dock-stack-meta">${meta ? meta.innerHTML : ''}</span>`
+      + '<span class="dock-stack-open">Open</span>';
+    // The harness marks colour themselves with an inline background, so
+    // copying innerHTML alone leaves a white square.
+    const slot = b.querySelector('.dock-stack-ico');
+    if (ico) {
+      slot.innerHTML = ico.innerHTML;
+      if (ico.style.background) slot.style.background = ico.style.background;
+    }
+    // Opening it here is the same act as opening it in Safari's list.
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeDownloadsStack();
+      row.click();
+    });
+    el.appendChild(b);
+  });
+
+  document.getElementById('desktop').appendChild(el);
+  // Centred over the dock icon it belongs to, and kept on screen.
+  const r = item.getBoundingClientRect();
+  const width = el.getBoundingClientRect().width;
+  const left = Math.min(Math.max(8, r.left + r.width / 2 - width / 2), window.innerWidth - width - 8);
+  el.style.left = `${left}px`;
+  el.style.bottom = `${window.innerHeight - r.top + 10}px`;
+}
+
+function closeDownloadsStack() {
+  document.getElementById('dockStack')?.remove();
+}
+
+// Anywhere else closes it, the same as the browser's own list.
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('dockStack')) return;
+  if (e.target.closest('#dockStack') || e.target.closest('.dock .item[data-app="downloads"]')) return;
+  closeDownloadsStack();
+});
 
 /** Flows can override what a finished download does (see setup.js). */
 let onDownloaded = null;

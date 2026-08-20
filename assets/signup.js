@@ -112,8 +112,9 @@ function startBrowserDownload(rect, harnessApp) {
     setTimeout(() => dlBtn.classList.remove('bounce'), 520);
     // And into the Downloads folder in the dock, because that is the other
     // place a Mac puts it — and the place somebody looks when they haven't
-    // spotted the toolbar.
-    landInDownloads();
+    // spotted the toolbar. The row goes with it, so the stack can open the
+    // same file rather than just counting it.
+    landInDownloads(harnessApp ? document.getElementById('dlHarnessItem') : document.getElementById('dlItem'));
   };
   requestAnimationFrame(tick);
 }

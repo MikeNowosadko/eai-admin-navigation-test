@@ -417,3 +417,69 @@ html, body { height: 100%; overflow: hidden; }
 }
 .coach.on { opacity: 1; transform: translateX(-50%) translateY(0); }
 .coach strong { display: block; margin-bottom: 2px; }
+
+/* --- the Downloads stack, fanned out of the dock ---------------------
+
+   The dock's Downloads folder used to badge a count and, when pressed,
+   say "1 item" and stop. In the flows that put the download in Safari's
+   toolbar, anyone who went to the dock instead was stuck: they could see
+   that the file existed and had no way to open it.
+
+   It lists the same rows as the browser's download list and opens them
+   the same way. Dark, because it belongs to the dock rather than to a
+   window. */
+
+.dock-stack {
+  position: absolute;
+  z-index: 600;
+  min-width: 268px;
+  padding: 6px;
+  background: rgba(40, 46, 60, 0.82);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  animation: dlPopIn 0.16s ease;
+}
+
+.dock-stack-hd {
+  padding: 5px 9px 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+.dock-stack-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 9px;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.dock-stack-row:hover { background: rgba(255, 255, 255, 0.14); }
+
+.dock-stack-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: #ffffff;
+  overflow: hidden;
+}
+.dock-stack-ico img,
+.dock-stack-ico svg { width: 20px; height: 20px; }
+
+.dock-stack-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.dock-stack-meta b { font-size: 12.5px; font-weight: 600; }
+.dock-stack-meta i { font-style: normal; font-size: 11px; color: rgba(255, 255, 255, 0.6); }
+
+.dock-stack-open { flex: none; font-size: 12px; color: #6cb6ff; }

@@ -104,8 +104,9 @@ function startBrowserDownload(rect) {
     dlBtn.classList.add('done', 'bounce');
     setTimeout(() => dlBtn.classList.remove('bounce'), 520);
     // And into the Downloads folder in the dock, the other place a Mac
-    // puts it.
-    landInDownloads();
+    // puts it. The row goes with it, so the stack opens the file rather
+    // than just counting it.
+    landInDownloads(document.getElementById('dlItem'));
   };
   requestAnimationFrame(tick);
 }
