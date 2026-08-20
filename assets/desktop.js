@@ -335,7 +335,7 @@ document.querySelectorAll('.dock .item').forEach((item) => {
     } else if (app === 'downloads') {
       const badge = item.querySelector('.badge');
       coach('Downloads', downloadCount
-        ? `${downloadCount} item${downloadCount > 1 ? 's' : ''} — installed and added to your dock.`
+        ? `${downloadCount} item${downloadCount > 1 ? 's' : ''} in your Downloads folder.`
         : 'Nothing downloaded yet.');
       setTimeout(hideCoach, 2400);
       badge.hidden = true;
@@ -387,13 +387,7 @@ function downloadApp(name, rect) {
   flight.onfinish = () => {
     fly.remove();
 
-    // land in Downloads
-    downloadCount += 1;
-    const badge = dl.querySelector('.badge');
-    badge.textContent = downloadCount;
-    badge.hidden = false;
-    dl.classList.add('bump');
-    setTimeout(() => dl.classList.remove('bump'), 1200);
+    landInDownloads();
 
     // then whatever this flow does with a finished download
     setTimeout(() => {
@@ -407,6 +401,25 @@ function downloadApp(name, rect) {
       syncDock();
     }, 420);
   };
+}
+
+/**
+ * The file lands in the Downloads stack: badge it, and bounce the dock icon.
+ *
+ * Its own function because the flows that draw the download in Safari's
+ * toolbar (`/signup`, `/agent`) skip the flight to the dock entirely — and a
+ * real Mac puts the file in both places. Somebody who can't find the toolbar
+ * looks in the dock, and until now there was nothing there.
+ */
+function landInDownloads() {
+  const dl = dockItem('downloads');
+  if (!dl) return;
+  downloadCount += 1;
+  const badge = dl.querySelector('.badge');
+  badge.textContent = downloadCount;
+  badge.hidden = false;
+  dl.classList.add('bump');
+  setTimeout(() => dl.classList.remove('bump'), 1200);
 }
 
 /** Flows can override what a finished download does (see setup.js). */
@@ -653,9 +666,30 @@ function hostName() {
 /** The journey rail is gone; keep the call sites harmless. */
 function stage() {}
 
-// Nothing outside the desktop should ever scroll — anchors inside the browser
-// frame can otherwise drag the whole shell out of view.
+/* Nothing should ever scroll the shell — anchors inside the browser frame can
+   otherwise drag it out of view.
+
+   The window pin below was only half of it. `.desktop` is `position: fixed`
+   with `overflow: hidden`, and an element with hidden overflow is still
+   scrollable programmatically: a fragment navigation inside the iframe (every
+   `href="#"` in the site nav) makes the browser scroll the iframe into view,
+   which scrolls `.desktop` itself. It went to `scrollTop: 129`, taking the
+   menu bar and the whole of Safari's toolbar above the top edge — including
+   the downloads button, which is the next thing a person needs. Hidden
+   overflow means no scrollbar, so there is no way back. A tester lost a
+   session to this.
+
+   Both are pinned now. `scroll` doesn't bubble, so the desktop needs its own
+   listener rather than relying on the window one. */
 window.addEventListener('scroll', () => window.scrollTo(0, 0), { passive: true });
+
+const desktopEl = document.getElementById('desktop');
+if (desktopEl) {
+  desktopEl.addEventListener('scroll', () => {
+    desktopEl.scrollTop = 0;
+    desktopEl.scrollLeft = 0;
+  }, { passive: true });
+}
 
 /* --- boot ----------------------------------------------------------- */
 

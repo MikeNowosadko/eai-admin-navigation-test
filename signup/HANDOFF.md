@@ -57,6 +57,16 @@ EAI exists. Everything else follows from taking that seriously:
 4. **Focusing a button scrolls its panel.** `finish()` used to focus the primary
    action and the harness screen opened scrolled to the bottom. It resets scroll
    to top instead.
+4b. **`overflow: hidden` does not mean "cannot be scrolled".** `.desktop` is
+   `position: fixed; overflow: hidden`, and a fragment navigation inside the
+   iframe — every `href="#"` in the site nav — makes the browser scroll the
+   iframe into view, dragging the whole shell up with it. It went to
+   `scrollTop: 129`, taking the menu bar and Safari's toolbar (with the
+   downloads button) off the top, and hidden overflow means no scrollbar to get
+   back. **A tester lost a session to this**, and it is almost certainly what an
+   earlier round reported as "the page shifts down and you can't see the top".
+   `desktop.js` now pins `.desktop`'s own scroll as well as the window's, and
+   `page.js` swallows clicks on `a[href="#"]`. Don't remove either.
 5. **The browser caches hard.** When a change doesn't show, it's usually the
    iframe's stylesheet, not your edit. Bust with a query param.
 6. **The setup window must stay above the dock.** `#winSetup` is `top:4%;

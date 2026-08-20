@@ -103,6 +103,9 @@ function startBrowserDownload(rect) {
     if (p < 1) return requestAnimationFrame(tick);
     dlBtn.classList.add('done', 'bounce');
     setTimeout(() => dlBtn.classList.remove('bounce'), 520);
+    // And into the Downloads folder in the dock, the other place a Mac
+    // puts it.
+    landInDownloads();
   };
   requestAnimationFrame(tick);
 }

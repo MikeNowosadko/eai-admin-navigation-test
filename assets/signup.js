@@ -110,6 +110,10 @@ function startBrowserDownload(rect, harnessApp) {
     if (p < 1) return requestAnimationFrame(tick);
     dlBtn.classList.add('done', 'bounce');
     setTimeout(() => dlBtn.classList.remove('bounce'), 520);
+    // And into the Downloads folder in the dock, because that is the other
+    // place a Mac puts it — and the place somebody looks when they haven't
+    // spotted the toolbar.
+    landInDownloads();
   };
   requestAnimationFrame(tick);
 }

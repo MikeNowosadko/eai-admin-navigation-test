@@ -31,6 +31,16 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+/* Dead links stay dead. Every site nav item is `href="#"`, and following one
+   is a fragment navigation — which asks the parent to scroll this iframe into
+   view, and drags the whole fake desktop up with it. The shell pins itself
+   against that too (assets/desktop.js), but the cheaper fix is not to
+   navigate: these links were never going anywhere. */
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href="#"]');
+  if (a) e.preventDefault();
+});
+
 // Any element with data-eai-action reports up when clicked. Optional
 // window.eaiData(el) lets a page attach form values to the message.
 document.addEventListener('click', (e) => {
