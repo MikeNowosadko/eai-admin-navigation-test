@@ -43,8 +43,12 @@
         <option>United States</option>
       </select>
 
+      <!-- No example in the field. "Northwind Group" as ghost text read as
+           a value already entered — and it named a company, which is the
+           one thing on this form we want in the tester's own words. The
+           label is the whole instruction. -->
       <label for="wsName">Workspace name</label>
-      <input type="text" id="wsName" placeholder="Northwind Group" autocomplete="off" />
+      <input type="text" id="wsName" autocomplete="off" />
 
       <div class="captcha">
         <input type="checkbox" id="wsHuman" />
