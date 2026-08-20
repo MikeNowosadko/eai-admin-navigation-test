@@ -40,8 +40,11 @@ EAI exists. Everything else follows from taking that seriously:
 1. **`[hidden]` loses to `display:`.** Every component in `assets/signup.css`
    sets `display: flex` somewhere, which outranks the `hidden` attribute — so a
    "hidden" screen renders anyway. There are scoped `[hidden] { display: none
-   !important }` rules for `#winSetup`, `.nb`, `.hs-page` and `#winHarnessApp`.
-   Add one for any new block.
+   !important }` rules for `#winSetup`, `.nb`, `.hs-page` and `#winHarnessApp`,
+   and a `.dl-row[hidden]` guard in `install.css` beside the one `.dl-pop`
+   already had. Add one for any new block — this has now bitten five times, most
+   recently by offering `ClaudeCode.dmg` in Safari's download list to somebody
+   who had only downloaded EAI Setup.
 2. **`.win` is the desktop shell's class.** `desktop.js` walks every `.win` and
    binds a drag handler to its `[data-drag]` title bar. A decorative element
    called `win` threw and killed the rest of `desktop.js` — which is why a

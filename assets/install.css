@@ -674,6 +674,12 @@
   cursor: pointer;
 }
 .dl-row:hover { background: #f4f4f5; }
+/* The same guard `.dl-pop` has, and for the same reason: `display: flex`
+   above outranks the `hidden` attribute, so a row marked hidden renders
+   anyway. /signup keeps the harness's download hidden until it has
+   actually been fetched, and without this the list offers ClaudeCode.dmg
+   to somebody who has only downloaded EAI Setup. */
+.dl-row[hidden] { display: none; }
 .dl-ico {
   flex: none;
   width: 32px; height: 32px;
