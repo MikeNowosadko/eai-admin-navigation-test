@@ -118,8 +118,9 @@
    THE CHECK
 
    Stated, not listed. One row saying the machine is ready, in the same
-   component the complex form uses for its four — so when a check does
-   fail, the list it expands into is already familiar.
+   component the complex form uses for its four — and when a check does
+   fail, still one row: the thing that failed. Nothing that is working
+   ever gets a line, on either path.
 ================================================================== */
 
 #winSetup.i3 .eai-row .sub {

@@ -8,12 +8,24 @@ service.
 nobody has to think about the website when changing it. It started life inside
 `com.enterpriseaigroup` and was moved out with its history intact.
 
-**Run locally:** any static server pointed at this folder, e.g.
+**Run locally:**
 
 ```bash
-npx serve .                 # then http://localhost:3000/cli
-python3 -m http.server 8899 # then http://localhost:8899/cli
+python3 serve.py 8899       # then http://localhost:8899/cli
+npx serve .                 # also fine
 ```
+
+**Use one of those two, not `python3 -m http.server`.** It sends no
+`Cache-Control` at all, and with no directive a browser invents one — usually
+treating a file as fresh for about 10% of its age. You edit CSS, reload, and the
+markup and JavaScript update while the stylesheet quietly does not, so half your
+change appears and you go hunting for a bug in the half that didn't. `serve.py`
+is the same static server with `no-store` on everything; `npx serve` sends
+`must-revalidate`, which has the same effect.
+
+It bites [`/states`](#states--the-one-that-isnt-a-flow) hardest, because that
+page fetches `signup/index.html` at runtime and drives it by id — a cached copy
+of the app plus current state code isn't a stale page, it's a broken one.
 
 **Edit:** everything is plain HTML, CSS and JS. Open a file, change it, reload.
 The CLI prototype — the one currently being worked on — is `assets/cli.js`, a
@@ -40,6 +52,7 @@ later, on a machine where EAI Setup is already installed.
 | ↳ *harness installed* | `signup/` | [/signup?scenario=installed](https://eai-website.github.io/prototypes/signup?scenario=installed) | Same flow, Claude Code already on the Mac |
 | ↳ *nothing installed* | `signup/` | [/signup?scenario=none](https://eai-website.github.io/prototypes/signup?scenario=none) | Same flow, out to claude.com and back first |
 | **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
+| **EAI Setup — states** | `states/` | [/states](https://eai-website.github.io/prototypes/states) | Not a flow — every state of the setup app on one page, for reviewing |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
 experiment they belong to. Finished experiments carry a Completed badge and
@@ -71,6 +84,120 @@ What that means in practice:
 To start the next iteration, copy the folder — `cli/` → `cli-2/`, plus a journey
 file beside `assets/cli.js` — and add a card to the launch pad. The old URL
 carries on working. `install/` began exactly this way, as a copy of `setup/`.
+
+### `/states` — the one that isn't a flow
+
+Every flow above can only be read forwards, one state at a time, which is right
+for a tester and wrong for a review. [`/states`](https://eai-website.github.io/prototypes/states)
+is the setup app with the journey taken off it: a rail of controls on the left,
+the app on the right, and every screen and every failure one click apart. It
+starts before the app exists, at the disk image.
+
+It answers the questions a flow makes expensive — do the seven error messages
+sound like they were written by one person, does every failure say what to do
+next, does the last screen still make sense on a Mac with nothing installed.
+
+Two rules it follows, both of which are the point:
+
+- **It is not a copy.** `#winSetup` is `fetch`ed out of `signup/index.html` when
+  the page loads, so there is no second sign-in screen in this repo to keep in
+  step. Change `/signup`, reload `/states`, and it is already there. The fetch is
+  `cache: 'no-store'` — a cached response would quietly make it a copy after all,
+  and driving yesterday's markup with today's state code fails as a missing
+  element somewhere far from the cause. The cost is that this one page needs a
+  static server: a browser won't fetch a sibling over `file://`.
+
+**If it won't come up**, the panel names which half broke. *"This page needs a
+static server"* means the app never arrived — no server, wrong folder. *"The app
+loaded, but this page couldn't drive it"* means the opposite: the server is fine
+and `/states` reached for an element `/signup` no longer has, so it names the id.
+Full stack in the console. If you've just changed the setup app and see the
+second one, that element is where to look — and hard-reload once (⇧⌘R) so the
+browser picks up the current `states.js` too.
+- **State is applied in one direction.** `paint()` resets the window and applies
+  the current state from scratch, every time. `⌘K` in the flows has to know how
+  to undo each failure it caused; nothing here does, because nothing is ever
+  half-applied.
+
+**Sign-in's browser hand-off has a failure now.** "Signed in" is the only screen
+reporting on something the app doesn't control — it opens a browser and waits on
+a tab that can be closed, expire, or have its callback eaten by a proxy. It had
+no face for that, so pressing "Sign in with browser" and having nothing happen
+was a real state with no design. It now turns over: the tick goes red, and the
+screen offers **Try again** plus **Copy the sign-in link** — the second for when
+retrying does the same nothing twice, which is why every CLI that borrows your
+browser prints the URL. It's in `/signup` too, under ⌘K.
+
+**Sign-in carries one status, with two faces** — a tick saying the Mac is ready,
+or a row for each thing in the way. Never both. It used to have a second box
+under the tick, which let the screen say "This Mac is ready" in green directly
+above a red "Can't reach api.eai.com": ready and unable to proceed, at once. The
+prerequisite failure was two boxes for one problem. The second box is gone; a
+failure takes the tick's place.
+
+**Failures combine.** Sign-in's two are checkboxes, not a menu of one: the Mac
+that wouldn't let Git install is usually the Mac behind the proxy blocking
+`api.eai.com`, and two problems are two rows in that one list. Where two genuinely can't co-occur the rail shows radios instead — Set
+up's pair, because with no workspace there is no name field for a name to be
+taken in.
+
+**The disk image is in there too**, as the first screen — the downloaded `.dmg`,
+opened. It isn't the app: it's a Finder window with our wordmark in it, and the
+whole design is making one drag obvious. Its *Moment* control holds each beat
+still — opening, ready to drag, over Applications, copied — which is the only way
+to look at a sequence that is over in 1.3 seconds. `/states` lifts both `#winSetup`
+and `#winDmg` and shows one at a time; the frame takes each window's own height
+(900×566 here, 900×720 for the app), because two different windows being two
+different shapes isn't the resizing we removed.
+
+**Setup is four states, not one.** It reveals downwards — answer a question, the
+next appears — so "Set up" means any of four shapes. The rail's *Answered so far*
+steps through them, named as Paper names them (*Workspace only → Template appears
+→ Name appears → Folder appears — ready*), including where it starts: the
+workspace is already answered on arrival, because there's only one and a question
+with one possible answer isn't a question.
+
+**No numerals, no ticks, no wordmark** — from Paper's `1O24-0` and `1MRJ-0`. The
+step badge was doing two jobs and had stopped doing either: as a numeral it
+counted questions you can already see all of, and as a tick it reported
+"answered" on a step whose answer sits directly underneath it in words. It also
+cost a 34px indent, so no heading shared a left edge with anything. The wordmark
+went for the same reason — the window's own title bar already says *Enterprise AI
+Setup*. Both are overridden in `signup.css`, which only `/signup` and `/states`
+load, so `/install-3` and `/install-4` keep the look they were tested with.
+
+**The window is 900 × 720, fixed, for every state.** Measured across the states
+the content runs 270px to 844px — sized to fit, the window would grow and shrink
+by more than half its own height as you step through, which reads as a page
+reflowing rather than an app running. A window is furniture: it's the size it is,
+and the content moves inside it. 720 clears everything except the fully-answered
+form, which scrolls by ~96px — the one screen whose content is genuinely
+accumulating.
+
+Paper's frames are all `height: fit-content`, but that's an artboard convention
+(a design tool crops each frame so they compare side by side), not a claim about
+the shipped window. Reading it as one is what produced the jumping.
+
+The cost is slack: sign-in has ~360px below it. That's what the bottom rail is
+for — action rows are pushed to the far edge, and setup's **Create app** sits
+there greyed from the first question rather than appearing at the end. A primary
+floating mid-window reads as a small screen in a big box; the same primary on the
+rail reads as a frame waiting for you. **Fixed height and anchored actions are one
+decision, not two.** Setup now carries Paper's full footer — `‹ Back` at one end,
+`Create app ›` at the other, both there from question one. Sign-in keeps its
+right-aligned `Retry` / disabled primary, which is what its own frame draws.
+
+Every state has its own URL, so a state can be sent to somebody rather than
+described: `?screen=done&mac=none&standard=claude`. `screen` is one of `signin`,
+`welcome`, `setup`, `running`, `done`, `handoff`, `built`; `fault` is a
+comma-separated list of that screen's failures (`?fault=prereq,network`); `mac`
+is `installed`, `none` or `waiting`; `standard` is `none` or `claude`; `stage`
+is the position within a staged screen — 1–4 on both the disk image and setup.
+
+Adding a state means adding to `SCREENS` in `assets/states.js` — a name, what the
+screen is for, its failures and how each is escaped, and a `paint` for anything
+the markup can't say on its own. Adding a *screen* to the setup app means adding
+it to `signup/index.html` as usual, then one entry here.
 
 ## Hosting
 

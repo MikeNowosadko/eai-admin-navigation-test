@@ -188,27 +188,28 @@
              about to hold the whole of setup and growing a window under
              someone is worse than starting roomy.
 
-             The check is stated rather than listed: one line saying the
-             machine is ready, in the same row component the complex form
-             uses. The list only appears when something in it failed —
-             see FAILURES.prereq in the journey. -->
-        <div class="eai-screen gap-8" data-screen="signin">
-          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
+             **One status, with two faces.** `#checkRows` is the whole of it:
+             either a tick saying the machine is ready, or a row for each
+             thing standing in the way. Never both.
 
+             There used to be a second box under it — an `.eai-note` — and
+             that is what made the contradiction possible. A network
+             failure filled the note while the row above it still read
+             "This Mac is ready" with a green tick, so the screen claimed
+             to be ready and unable to proceed at the same time. The
+             prerequisite failure was worse: two boxes describing one
+             problem, the row naming it and the note explaining it.
+
+             The note is gone. A failure takes the tick's place, says what
+             it is and what to do about it, and two failures are two rows
+             in the same list. -->
+        <div class="eai-screen gap-8" data-screen="signin">
           <div class="eai-head">
             <h3>Sign in to Enterprise AI</h3>
             <p>Use the account you signed up with. Your browser is still signed in, so this takes one click.</p>
           </div>
 
           <div class="eai-rows" id="checkRows"></div>
-
-          <div class="eai-note" id="signinNote" hidden>
-            <i class="mk fail bang">!</i>
-            <div class="tx">
-              <b id="signinNoteTitle">Can't reach api.eai.com</b>
-              <span id="signinNoteBody">Your network blocked the request, or EAI is unreachable from here. Check your connection or VPN, then retry.</span>
-            </div>
-          </div>
 
           <div class="eai-acts gap-2">
             <!-- Not "create an account" any more: in this journey they made
@@ -219,16 +220,50 @@
           </div>
         </div>
 
-        <!-- B · The beat between the browser and the form. Nobody acts on
-             it: it confirms what just happened, then hands its own title
-             over to the next thing. -->
+        <!-- B · Coming back from the browser.
+
+             On the happy path this is a beat and nobody acts on it: it
+             confirms what just happened, then hands its own title over to
+             the next thing.
+
+             It is also the only place the browser hand-off can be
+             reported on, so it has a second face. The app opens a
+             browser and then waits on something it does not control —
+             a tab somebody can close, a link that expires, a callback a
+             corporate proxy can eat — and until now the app had no
+             screen for any of that. Pressing "Sign in with browser" and
+             having nothing happen, forever, was a real state with no
+             design.
+
+             The failed face is this one with the tick turned over: same
+             centred block, same three parts. What it adds is the pair of
+             buttons every desktop app that borrows your browser has to
+             have — try it again, and a way through when trying again is
+             not going to work. -->
         <div class="eai-screen" data-screen="welcome" hidden>
-          <div class="i3-welcome">
-            <span class="i3-tick" aria-hidden="true">
+          <div class="i3-welcome" id="welcomeBlock">
+            <span class="i3-tick" id="welcomeMark" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <h3 id="welcomeTitle">Signed in</h3>
             <p id="welcomeSub">gareth@northwind.com</p>
+
+            <!-- Only when the browser never came back. "Try again" is the
+                 primary because nothing is blocking it — the usual cause
+                 is a closed tab, and one press fixes that.
+
+                 The link is the other half, and it is the half designs
+                 forget. If the browser never opened, or the callback is
+                 being swallowed on the way home, retrying does the same
+                 nothing a second time. Every CLI that does this — gh,
+                 gcloud, docker — prints the URL for exactly that reason. -->
+            <div class="i3-welcome-acts" id="welcomeActs" hidden>
+              <div class="eai-acts gap-2">
+                <button class="eai-btn" type="button" id="welcomeCopy">Copy the sign-in link</button>
+                <button class="eai-btn primary" type="button" id="welcomeRetry">Try again</button>
+              </div>
+              <p class="i3-welcome-fine" id="welcomeFine">If your browser never opened, paste the link into it yourself.</p>
+            </div>
           </div>
         </div>
 
@@ -239,8 +274,6 @@
              I did just answer that" is a click worth deleting. The
              primary appears once the last answer lands. -->
         <div class="eai-screen gap-6" data-screen="setup" hidden>
-          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
-
           <div class="eai-head">
             <h3>Let's get set up</h3>
             <p id="setupSub">Signed in as gareth@northwind.com. Three things, and your app exists.</p>
@@ -316,8 +349,27 @@
 
           </div>
 
-          <div class="eai-acts gap-3 pt-2 i3-reveal" id="setupActs" hidden>
-            <button class="eai-btn primary" type="button" id="createApp">Create app</button>
+          <!-- The anchored footer, from Paper's reveal frames: Back on the
+               left, the primary on the right, both there from question one
+               and the primary greyed until the last answer lands.
+
+               It is what makes a fixed-height window work. The primary
+               used to appear only when the form was complete, which is
+               fine in a window that grows to fit and wrong in one that
+               does not — at question one the bottom of the window was
+               empty, which reads as a screen that failed to load rather
+               than a form waiting for an answer. A rail with Back at one
+               end and where-you-are-going at the other reads as a step in
+               something, which is what this is. -->
+          <div class="i3-foot" id="setupActs">
+            <button class="eai-btn i3-nav" type="button" id="setupBack">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back
+            </button>
+            <button class="eai-btn primary i3-nav" type="button" id="createApp" disabled>
+              Create app
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9.5 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
         </div>
 
@@ -372,7 +424,7 @@
 
           <!-- the standard, when there is one -->
           <div class="i4-standard" id="harnessStandard">
-            <div class="i4-standard-label">YOUR WORKSPACE&rsquo;S STANDARD</div>
+            <div class="i4-standard-label">Your workspace&rsquo;s standard</div>
             <div class="i4-box">
               <span class="i4-box-icon" id="stdIcon"></span>
               <span class="tx">
@@ -652,6 +704,8 @@
     <div class="grp">Error states</div>
     <button class="act" type="button" data-err="prereq">Prereq install failed <span class="sub">Git, behind the scenes</span></button>
     <button class="act" type="button" data-err="signin">Can't reach EAI <span class="sub">at sign-in</span></button>
+    <button class="act" type="button" data-err="signinBoth">Both, at once <span class="sub">Git missing and offline</span></button>
+    <button class="act" type="button" data-err="callback">Browser never came back <span class="sub">the hand-off, unfinished</span></button>
     <button class="act" type="button" data-err="workspace">No workspaces <span class="sub">account not added yet</span></button>
     <button class="act" type="button" data-err="name">Name is taken <span class="sub">folder already exists</span></button>
     <button class="act" type="button" data-err="running">Init fails <span class="sub">403 on Gofer assets</span></button>

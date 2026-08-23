@@ -1969,3 +1969,266 @@
 #winHost.light .tin input::placeholder { color: #a8a6a1; }
 #winHost.light .cursor { background: #34322d; }
 #winHost.light .banner { color: #d97757; }
+
+/* ==================================================================
+   THE BROWSER HAND-OFF, WHEN IT DOESN'T COME BACK
+
+   "Signed in" is the only screen that reports on something the app
+   does not control: it opens a browser and waits. A tab gets closed, a
+   link expires, a proxy eats the callback on the way home — and the
+   app had no face for any of it.
+
+   Same centred block, turned over. Only the mark's colour and glyph
+   change, because the failure is not a different screen — it is the
+   same moment with the other answer. install-3.css owns the happy
+   version and /install-3 is finished, so the failed one lives here.
+================================================================== */
+
+/* The tick's circle in destructive red. install.css's rule for this
+   palette is that red is carried by the icon alone — no tinted panels,
+   no red copy — so this is the only thing on the screen that changes
+   colour. */
+#winSetup.i3 .i3-tick.failed {
+  background: var(--color-destructive);
+  /* No stroke to draw: the glyph is a bang, not a path that writes
+     itself. The circle still lands. */
+  animation: i3TickIn 0.42s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+#winSetup.i3 .i3-tick.failed svg path { animation: none; stroke-dashoffset: 0; }
+
+/* The happy line is an email address; the failed one is three clauses.
+   Held to a readable measure so it doesn't run the full 900px and turn
+   a centred block into a paragraph. */
+#winSetup.i3 .i3-welcome p.wide {
+  max-width: 440px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+#winSetup.i3 .i3-welcome-acts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  /* Further from the sentence it answers than that sentence is from its
+     own title — the block reads as one thing, then what to do about it. */
+  margin-top: 10px;
+}
+#winSetup.i3 .i3-welcome-acts[hidden] { display: none; }
+
+/* Centred, unlike every other action row in the app, because this screen
+   is centred. A right-aligned pair under a centred block is two
+   different layouts arguing. */
+#winSetup.i3 .i3-welcome-acts .eai-acts { justify-content: center; }
+
+#winSetup.i3 .i3-welcome-fine {
+  margin: 0;
+  max-width: 380px;
+  font-size: 12.5px;
+  line-height: 18px;
+  color: var(--color-muted-foreground);
+}
+
+/* ==================================================================
+   A FIXED WINDOW NEEDS A BOTTOM RAIL
+
+   The window is one size for the whole journey — a real Mac app does
+   not resize itself between steps, and this one must also stay clear of
+   the dock. That means every screen shorter than the window has slack
+   underneath it, and sign-in has about 360px of it.
+
+   Slack is only a problem if the actions float in the middle of it. A
+   primary sitting halfway down a tall window reads as a small screen in
+   a big box; the same primary on the bottom rail reads as a frame
+   waiting for you, which is what every installer and wizard has always
+   looked like. Paper's frames call this the "anchored nav" and put Back
+   on the left with the primary on the right.
+
+   So: the visible screen fills the window, and its action row is pushed
+   to the far edge. Content that outgrows the window scrolls between the
+   two, which is the behaviour we want — the frame holds still and the
+   contents move, rather than the other way round.
+================================================================== */
+
+/* The body has to be at least as tall as the window before anything
+   inside it can be pushed to the bottom of it. */
+#winSetup.i3 .skin-setup.eai { display: flex; flex-direction: column; }
+#winSetup.i3 .eai-body {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Only one screen is ever displayed, so only one ever fills. */
+#winSetup.i3 .eai-screen { flex: 1 1 auto; }
+
+/* The action rows, on the rail. `margin-top: auto` inside a flex column
+   takes all the leftover height above the row — the screen's own gap
+   still applies as the minimum, so a full screen looks untouched and
+   only a short one moves. */
+#winSetup.i3 .eai-screen > .eai-acts,
+#winSetup.i3 .eai-screen > .i4-actions {
+  margin-top: auto;
+}
+
+/* The signed-in beat is centred rather than stacked — its buttons belong
+   with the sentence they answer, not on a rail 300px below it. Centring
+   the whole block in the window is what that screen wants. */
+#winSetup.i3 .eai-screen[data-screen="welcome"] {
+  justify-content: center;
+}
+
+/* ==================================================================
+   SET UP, AS THE DESIGN DRAWS IT
+
+   Two changes from /install-3, both from Paper's "Get set up ·
+   progressive reveal" frames. Scoped here rather than in install-3.css
+   because that file is /install-3's and /install-3 is finished — only
+   /signup and /states load this one.
+================================================================== */
+
+/* --- no numeral, no tick ---------------------------------------------
+
+   The badge was carrying two jobs and had stopped doing either. As a
+   numeral it counted questions you could already see all of; as a tick
+   it reported "answered" on a step whose answer is sitting directly
+   underneath it, in words. A workspace row that says Northwind Group
+   does not need a tick beside the heading to say a workspace was
+   chosen — the answer is the evidence.
+
+   What it cost was a 34px indent on every heading, so nothing in the
+   form shared a left edge with anything else. Without it the headings,
+   their descriptions and the controls all start in the same column. */
+#winSetup.i3 .i3-num { display: none; }
+#winSetup.i3 .i3-step-head { gap: 0; }
+
+/* The recede-when-answered rule went with the tick. Every step that is
+   visible has been answered — the next one only appears because this one
+   landed — so greying them all is a distinction that distinguishes
+   nothing. */
+#winSetup.i3 .i3-step.answered .i3-step-head span { color: var(--color-muted-foreground); }
+
+/* --- the footer rail -------------------------------------------------
+
+   Back at one end, where you are going at the other, pinned to the
+   bottom of a window that does not resize. `margin-top: auto` is what
+   pins it: it takes the leftover height above the row, so a short screen
+   pushes it down and a full one leaves it where it falls. */
+#winSetup.i3 .i3-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Smaller than the app's standard 44px button: this is a step rail, not
+   a call to action, and the design draws it at 32. */
+#winSetup.i3 .eai-btn.i3-nav {
+  height: 32px;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+#winSetup.i3 .eai-btn.i3-nav svg { width: 14px; height: 14px; flex: none; }
+/* The chevron sits closer to the edge than the word does. */
+#winSetup.i3 .eai-btn.i3-nav:first-child { padding-left: 9px; }
+#winSetup.i3 .eai-btn.i3-nav:last-child { padding-right: 9px; }
+
+/* The failed row is a note wearing a row's clothes, so it aligns like a
+   note: mark to the top, level with the first line of the title. Centred
+   was fine while these rows were one line of text each; now that each
+   carries a title and an explanation, a centred mark floats against the
+   middle of a paragraph. Paper's note frame is flex-start with a 10px
+   gap, and this is that. */
+#winSetup.i3 .eai-row.failed {
+  align-items: flex-start;
+  gap: 10px;
+}
+#winSetup.i3 .eai-row.failed .mk { margin-top: 1px; }
+
+/* ==================================================================
+   THE TWO MISSING WEIGHT TOKENS
+
+   install.css defines --font-weight-medium and stops there, but this
+   file has been asking for --font-weight-semibold in four places since
+   it was written. An undefined custom property makes `var()` invalid at
+   computed-value time, which does not fall back to anything sensible —
+   it drops the declaration entirely and the element inherits instead.
+
+   So three labels that were specified semibold have been rendering at
+   400 the whole time: the template card's title, its Recommended badge,
+   and — worst of the three — "When it opens, type /eai and press enter",
+   which is the one instruction the hand-off screen exists to deliver.
+
+   Defining them here fixes all four at once. Only /signup and /states
+   load this file, so /install-3 and /install-4 keep rendering exactly as
+   they were tested, undefined token and all.
+================================================================== */
+
+#winSetup.i3 {
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+}
+
+/* ==================================================================
+   HEADINGS IN SENTENCE CASE
+
+   The list's group headers and the standard's label were set as small
+   caps — 10.5px, letterspaced, shouted. That treatment is a way of
+   making a label recede while still being findable, and it works right
+   up until the label is something you actually want read. "NOT
+   INSTALLED" above five rows that each say "not installed" is a label
+   being shouted and skipped at the same time.
+
+   Paper sets them at 12/16, weight 600, in grey: the same recession,
+   carried by size and colour rather than by shape, and legible at a
+   glance because the word shapes are the ones you already know. Caps
+   strip the ascenders and descenders that make a word recognisable
+   before it is read.
+
+   /install-4 keeps the small caps it was tested with — this file is
+   only loaded by /signup and /states.
+================================================================== */
+
+#winSetup.i3 .i4-group b,
+#winSetup.i3 .i4-standard-label {
+  font-size: 12px;
+  line-height: 16px;
+  /* Literal, not var(--font-weight-semibold): that token is used in four
+     places in this file and defined in none of them, so every one of
+     them is an invalid var() that drops the declaration. See the fix
+     below — this rule is not going to be the fifth. */
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #737373;
+}
+
+/* The aside beside the group name — same size, lighter, a shade paler,
+   so the pair reads as one line with one emphasis in it. */
+#winSetup.i3 .i4-group span {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #8f8f8f;
+}
+
+/* ==================================================================
+   THE COPIED FILE THAT NEVER LEFT
+
+   install() sets `dmgApp.hidden = true` the moment the drag lands, which
+   is the whole point of the gesture: the file goes from the disk image
+   into Applications, and the disk image no longer has it.
+
+   It never disappeared. desktop.css sets `.skin-dmg .dmg-item { display:
+   flex }`, and any author rule that sets `display` beats the UA
+   stylesheet's `[hidden] { display: none }` — the attribute is set, the
+   property is overridden, and the icon sits there while the line under
+   it reads "Copied to Applications". The one moment the screen exists to
+   confirm was contradicting itself.
+
+   Scoped here rather than fixed in desktop.css, which every flow loads:
+   /setup, /install, /install-2, /install-3 and /install-4 have the same
+   bug and are finished. Worth fixing there if any of them is reopened.
+================================================================== */
+
+#winDmg .dmg-item[hidden] { display: none; }

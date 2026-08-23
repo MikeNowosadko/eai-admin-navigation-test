@@ -305,6 +305,18 @@ function installPrereqsQuietly() {
   prereqsReady = true;
 }
 
+/* One status, and it is a fork rather than a stack.
+ *
+ * "This Mac is ready" is a claim that sign-in can proceed. Anything that
+ * stops sign-in proceeding contradicts it, so nothing that stops sign-in
+ * proceeding may appear next to it — not underneath it in another box,
+ * not anywhere. It is the tick, or it is the problems.
+ *
+ * The failure face is a list because failures do not arrive one at a
+ * time. Two rows for two problems; the same component either way, so the
+ * screen keeps its shape while its answer changes.
+ */
+
 /** The happy path: one row, and nothing to do about it. */
 function renderCheck() {
   checkRows.replaceChildren();
@@ -317,19 +329,43 @@ function renderCheck() {
   checkRows.appendChild(row);
 }
 
-/** The unhappy path: the list, with the one that broke marked. */
-function renderCheckFailure(failed) {
+/**
+ * The unhappy path: what is in the way, and nothing that isn't.
+ *
+ * `problems` is a list of [title, what to do about it]. Each takes the
+ * tick's place and its lane — same 16px mark, same label column — so two
+ * problems read as one answer rather than two interruptions.
+ *
+ * Nothing that is working gets a row. An earlier version listed all four
+ * prerequisites with the broken one marked, which put back the question
+ * the single line exists to remove: which of these do I have to look at?
+ */
+function renderCheckFailure(problems) {
   checkRows.replaceChildren();
-  PREREQS.forEach(([name, version]) => {
-    const bad = name === failed;
+  [].concat(problems).forEach(([title, body]) => {
     const row = document.createElement('div');
-    row.className = `eai-row${bad ? ' failed' : ''}`;
-    row.innerHTML = `<i class="mk ${bad ? 'fail' : 'done'}">${bad ? '&#10005;' : '&#10003;'}</i>`
-      + `<span class="lbl">${escapeHtml(name)}</span>`
-      + `<span class="val">${bad ? 'not installed' : escapeHtml(version)}</span>`;
+    row.className = 'eai-row failed';
+    row.innerHTML = '<i class="mk fail bang">!</i>'
+      + `<span class="lbl">${escapeHtml(title)}`
+      + `<span class="sub">${escapeHtml(body)}</span>`
+      + '</span>';
     checkRows.appendChild(row);
   });
 }
+
+/* The two things that can stand in the way of signing in. Declared once,
+   here, so the app and /states cannot drift apart on the wording. */
+const SIGNIN_PROBLEMS = {
+  prereq: [
+    'Apple needs your approval to install Git',
+    'macOS blocked the Command Line Tools install, so Git is missing. Approve it from the prompt macOS showed, '
+      + 'or run xcode-select --install in Terminal, then choose Retry. Nothing else is waiting on it.',
+  ],
+  network: [
+    "Can't reach api.eai.com",
+    'Your network blocked the request, or EAI is unreachable from here. Check your connection or VPN, then Retry.',
+  ],
+};
 
 renderCheck();
 
@@ -617,7 +653,7 @@ function labelProject() {
 function folderChosen() {
   clearFieldError('folder');
   markAnswered('folder');
-  reveal(setupActs);
+  document.getElementById('createApp').disabled = false;
 }
 /* ====================== 3. NAME IT, PICK A FOLDER ================== */
 
@@ -853,6 +889,11 @@ document.getElementById('createApp').addEventListener('click', async () => {
   finish(name, path);
 });
 
+/* Back, from the footer rail. Setup is reached from sign-in, so that is
+   where back goes — the one thing somebody might want to change at this
+   point is which account they came in on. */
+document.getElementById('setupBack').addEventListener('click', () => showScreen('signin'));
+
 document.getElementById('runBack').addEventListener('click', () => showScreen('setup'));
 document.getElementById('runRetry').addEventListener('click', () => document.getElementById('createApp').click());
 
@@ -1051,8 +1092,8 @@ function renderHarnesses() {
 
   const shown = harnessOrder().filter((h) => !(standard() && h.id === ORG_PREFERS));
   const groups = [
-    ['READY ON THIS MAC', '', shown.filter((h) => h.installed)],
-    ['NOT INSTALLED', 'you get these from their makers', shown.filter((h) => !h.installed)],
+    ['Ready on this Mac', '', shown.filter((h) => h.installed)],
+    ['Not installed', 'you get these from their makers', shown.filter((h) => !h.installed)],
   ];
 
   groups.forEach(([label, note, items]) => {
@@ -1579,33 +1620,112 @@ function congratulations() {
 /* ========================= 9. ERROR STATES ========================= */
 
 /* The check is a single confident line right up until it isn't. When a
-   prerequisite fails, that line becomes the list — the same rows the
-   complex form shows — with the one that broke marked, and the note
-   says the one thing that fixes it. */
+   prerequisite fails, that line is replaced by the thing that failed —
+   one row, not the list it lives in — and the note under it says the one
+   thing that fixes it. Nothing that is working gets a row. */
+
+/* --- the two faces of the return screen ------------------------------
+
+   `sayHandoffFailed` turns "Signed in" over: the tick goes red and
+   becomes a bang, the title says what did not happen, the line under it
+   says why and that nothing was left behind, and the buttons appear.
+
+   The wording is doing a specific job. Somebody arriving here has
+   already done the work once — clicked through a browser, maybe typed a
+   password — and being told to do it again reads as being blamed for it.
+   "Nothing was saved either way" is the sentence that makes retrying
+   feel free rather than punitive. */
+
+const SIGNIN_LINK = 'https://app.enterpriseaigroup.com/device/AF41-9KQD';
+
+function sayHandoffFailed() {
+  const mark = document.getElementById('welcomeMark');
+  mark.classList.add('failed');
+  mark.innerHTML = '<svg viewBox="0 0 24 24" fill="none">'
+    + '<path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'
+    + '<circle cx="12" cy="17.6" r="1.45" fill="currentColor"/></svg>';
+
+  document.getElementById('welcomeTitle').textContent = "Sign-in didn't finish";
+  document.getElementById('welcomeSub').textContent =
+    'Your browser opened, but nothing came back. The tab was probably closed before it finished, '
+    + 'or the link expired. Nothing was saved either way, so trying again is safe.';
+  document.getElementById('welcomeSub').classList.add('wide');
+  document.getElementById('welcomeActs').hidden = false;
+}
+
+function sayHandoffOk() {
+  const mark = document.getElementById('welcomeMark');
+  mark.classList.remove('failed');
+  mark.innerHTML = '<svg viewBox="0 0 24 24" fill="none">'
+    + '<path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  document.getElementById('welcomeTitle').textContent = 'Signed in';
+  document.getElementById('welcomeSub').classList.remove('wide');
+  document.getElementById('welcomeActs').hidden = true;
+  document.getElementById('welcomeCopy').textContent = 'Copy the sign-in link';
+  sayAccount();
+}
+
+/* Trying again is trying the same thing again — the real hand-off, from
+   the top, browser and all. Anything less is a button that pretends.
+
+   Back to the sign-in screen first. The hand-off starts there, and it is
+   what the app should be showing while the browser is open: leaving
+   "Signed in" and its tick on screen during a retry would be the app
+   claiming the thing it is currently trying to do. */
+document.getElementById('welcomeRetry').addEventListener('click', () => {
+  sayHandoffOk();
+  showScreen('signin');
+  signIn();
+});
+
+document.getElementById('welcomeCopy').addEventListener('click', (e) => {
+  navigator.clipboard?.writeText(SIGNIN_LINK).catch(() => {});
+  // Confirmation in the button itself: a toast for a copy is a second
+  // thing to look at for an action nobody doubted worked.
+  e.currentTarget.textContent = 'Link copied';
+  setTimeout(() => { e.currentTarget.textContent = 'Copy the sign-in link'; }, 1600);
+});
+
+/* Every way sign-in can be blocked wears the same shape: the status
+   becomes the problems, the line under the title counts them, and the
+   primary goes quiet because pressing it cannot work yet. */
+function blockSignin(head, problems) {
+  renderCheckFailure(problems);
+  showScreen('signin');
+  document.querySelector('[data-screen="signin"] .eai-head p').textContent = head;
+  document.getElementById('setupCreate').textContent = 'Retry';
+  document.getElementById('setupSignin').classList.add('off');
+}
 
 const FAILURES = {
   prereq() {
     prereqsReady = false;
-    renderCheckFailure('Git');
-    showScreen('signin');
-    document.querySelector('[data-screen="signin"] .eai-head p').textContent =
-      'One thing EAI needs could not be installed.';
-    document.getElementById('signinNoteTitle').textContent = 'Apple needs your approval to install Git';
-    document.getElementById('signinNoteBody').textContent =
-      'macOS blocked the Command Line Tools install, so Git is missing. Approve it from the prompt macOS showed, '
-      + 'or run xcode-select --install in Terminal, then choose Retry. Nothing else is waiting on it.';
-    document.getElementById('signinNote').hidden = false;
-    document.getElementById('setupCreate').textContent = 'Retry';
-    document.getElementById('setupSignin').classList.add('off');
+    blockSignin('One thing EAI needs could not be installed.', [SIGNIN_PROBLEMS.prereq]);
   },
 
   signin() {
-    showScreen('signin');
-    document.querySelector('[data-screen="signin"] .eai-head p').textContent =
-      "Sign-in needs a connection to EAI, and this Mac can't reach it.";
-    document.getElementById('signinNote').hidden = false;
-    document.getElementById('setupCreate').textContent = 'Retry';
-    document.getElementById('setupSignin').classList.add('off');
+    blockSignin("Sign-in needs a connection to EAI, and this Mac can't reach it.", [SIGNIN_PROBLEMS.network]);
+  },
+
+  /* Both, which is the combination the machine makes likely rather than
+     rare: the locked-down laptop that would not let Git install is the
+     one behind the proxy eating api.eai.com. */
+  signinBoth() {
+    prereqsReady = false;
+    blockSignin('Two things are in the way.', [SIGNIN_PROBLEMS.prereq, SIGNIN_PROBLEMS.network]);
+  },
+
+  /* The hand-off that never came home.
+
+     Different from `signin` above, and worth both: that one is the Mac
+     failing to reach us before anything opens, and it belongs on the
+     sign-in screen because sign-in never started. This one is the
+     browser having been opened, used or abandoned, and not reporting
+     back — so it belongs on the screen that exists to report back. */
+  callback() {
+    sayHandoffFailed();
+    showScreen('welcome');
   },
 
   workspace() {
@@ -1615,7 +1735,7 @@ const FAILURES = {
     steps.template.hidden = true;
     steps.name.hidden = true;
     steps.folder.hidden = true;
-    setupActs.hidden = true;
+    document.getElementById('createApp').disabled = true;
     document.getElementById('setupSub').textContent =
       `Signed in as ${account}. One thing is in the way.`;
     document.getElementById('wsNote').hidden = false;
@@ -1660,13 +1780,10 @@ function clearFailures() {
 
   document.querySelector('[data-screen="signin"] .eai-head p').textContent =
     'Use the account you signed up with. Your browser is still signed in, so this takes one click.';
-  document.getElementById('signinNote').hidden = true;
-  document.getElementById('signinNoteTitle').textContent = "Can't reach api.eai.com";
-  document.getElementById('signinNoteBody').textContent =
-    'Your network blocked the request, or EAI is unreachable from here. Check your connection or VPN, then retry.';
   document.getElementById('setupCreate').textContent = 'Use a different account';
   document.getElementById('setupSignin').classList.remove('off');
 
+  sayHandoffOk();
   sayAccount();
   document.getElementById('wsNote').hidden = true;
   chosenWorkspace = null;
@@ -1676,7 +1793,7 @@ function clearFailures() {
   steps.template.hidden = true;
   steps.name.hidden = true;
   steps.folder.hidden = true;
-  setupActs.hidden = true;
+  document.getElementById('createApp').disabled = true;
   Object.keys(steps).forEach((k) => markAnswered(k, false));
 
   clearAllFieldErrors();
