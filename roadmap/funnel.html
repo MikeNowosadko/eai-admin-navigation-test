@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="../assets/funnel.css" />
 </head>
 <body class="fn">
-  <script>try{if(localStorage.getItem("eai-roadmap-theme")==="day")document.body.classList.add("day")}catch(e){}</script>
+  <script>try{var t=localStorage;if(t.getItem("eai-roadmap-theme")==="day")document.body.classList.add("day");if(t.getItem("eai-roadmap-nav")==="closed")document.body.classList.add("nav-closed")}catch(e){}</script>
 
   <header class="fn-bar">
     <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></a>
@@ -34,6 +34,12 @@
   </header>
 
   <nav class="fn-side">
+    <button class="fn-nav-btn" id="nav" aria-expanded="true" aria-label="Hide the roadmap list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <path d="M9.5 4v16" />
+      </svg>
+    </button>
     <p class="grp">Roadmap</p>
     <a href="timetable.html">General roadmap</a>
     <a class="on" href="funnel.html">Usability &middot; CLI</a>
@@ -45,11 +51,7 @@
 
   <main class="fn-body">
     <aside class="fn-rail">
-      <p class="fn-rail-label">The funnel &middot; pick a band</p>
       <div id="rail"></div>
-      <p class="fn-print-hint" style="margin-top:16px; font-size:12px; line-height:18px; color:#626b7a;">
-        PDF prints all four bands, one per page.
-      </p>
     </aside>
 
     <div id="panel"></div>
@@ -59,6 +61,7 @@
   <script src="../assets/funnel.js"></script>
 
   <script src="../assets/daymode.js"></script>
+  <script src="../assets/nav.js"></script>
 
 </body>
 </html>

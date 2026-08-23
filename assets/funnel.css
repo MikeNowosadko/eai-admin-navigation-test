@@ -99,8 +99,8 @@
 }
 .fn-side .grp {
   margin: 0 0 10px 10px;
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.02em; color: var(--mute-2);
 }
 .fn-side a {
   display: block; padding: 9px 11px; margin-bottom: 3px;
@@ -111,22 +111,38 @@
 .fn-side a.on {
   background: var(--raised); border-color: var(--line); color: var(--ink); font-weight: 500;
 }
-.fn-side a span {
-  display: block; margin-top: 3px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--mute-2);
-}
+/* Everything to the right of the rail shifts over to make room. */
+.fn-head, .fn-body, .tt-wrap { margin-left: 216px; }
 
-/* Everything to the right of the sidebar shifts over to make room. */
-.fn-head, .fn-body { margin-left: 216px; }
+.fn-side { transition: width 0.22s ease; }
+.fn-head, .fn-body, .tt-wrap { transition: margin-left 0.22s ease; }
+
+/* Collapsed to a stub, not slid away: the toggle lives inside the rail,
+   so if the rail leaves there is no way to get it back. */
+.fn.nav-closed .fn-side { width: 56px; padding-left: 12px; padding-right: 12px; }
+.fn.nav-closed .fn-side .grp,
+.fn.nav-closed .fn-side a { display: none; }
+.fn.nav-closed .fn-head,
+.fn.nav-closed .fn-body,
+.fn.nav-closed .tt-wrap { margin-left: 56px; }
+
+.fn-nav-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; flex: none;
+  margin: 0 0 14px; padding: 0;
+  border: 1px solid transparent; border-radius: 8px;
+  background: none; color: var(--mute); cursor: pointer;
+}
+.fn-nav-btn:hover { background: var(--raised); color: var(--ink); }
+.fn-nav-btn svg { width: 17px; height: 17px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fn-side, .fn-head, .fn-body, .tt-wrap { transition: none; }
+}
 
 /* --- masthead ------------------------------------------------------ */
 
 .fn-head { padding: 46px 34px 0; max-width: 1440px; }
-.fn-eyebrow {
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
-}
 .fn-head h1 {
   margin: 0; max-width: 680px;
   font-size: 42px; line-height: 48px; font-weight: 600; letter-spacing: -0.035em;
@@ -138,12 +154,6 @@
   display: grid; grid-template-columns: 404px minmax(0, 1fr);
   gap: 56px; align-items: start;
   max-width: 1440px; padding: 40px 34px 90px;
-}
-
-.fn-rail-label {
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
-  margin-bottom: 12px;
 }
 
 /* --- the funnel ----------------------------------------------------- */
@@ -173,32 +183,18 @@
   padding-bottom: 6px;
 }
 .fn-panel-head h2 { margin: 0; font-size: 30px; font-weight: 600; letter-spacing: -0.035em; white-space: nowrap; }
-.fn-chip {
-  padding: 4px 10px; border-radius: 4px; background: var(--band-on);
-  font-family: var(--mono); font-size: 9px; font-weight: 600;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--band-on-ink); white-space: nowrap;
-}
-.fn-panel-head .reach {
-  margin-left: auto;
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
-}
-.fn-question { margin: 0 0 26px; font-size: 15px; line-height: 22px; color: var(--mute); }
 
 .fn-sect { margin-bottom: 22px; }
 .fn-sect-head { padding-bottom: 9px; }
 .fn-sect-head b {
-  font-family: var(--mono); font-size: 10px; font-weight: 600;
-  letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap;
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em; white-space: nowrap;
 }
 
 /* Colour lives in the header and the row outline. Nothing is filled. */
 .fn-sect.problem  .fn-sect-head b { color: var(--problem); }
 .fn-sect.outcome  .fn-sect-head b { color: var(--outcome); }
 .fn-sect.solution .fn-sect-head b { color: var(--solution); }
-.fn-sect.problem  .fn-sect-head .rule { background: rgba(255, 107, 114, 0.25); }
-.fn-sect.outcome  .fn-sect-head .rule { background: rgba(111, 227, 176, 0.25); }
-.fn-sect.solution .fn-sect-head .rule { background: rgba(56, 182, 255, 0.25); }
 
 .fn-row {
   display: flex; align-items: center; gap: 12px;
@@ -211,11 +207,6 @@
 .fn-sect.solution .fn-row { border: 1px solid color-mix(in srgb, var(--solution) 45%, transparent); }
 
 .fn-row .txt { flex: 1; }
-.fn-row .when {
-  width: 68px; flex: none;
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
-}
 .fn-row .score {
   width: 92px; flex: none;
   display: flex; align-items: center; justify-content: flex-end; gap: 7px;
@@ -224,23 +215,46 @@
 .fn-row .score .now { color: var(--mute); }
 .fn-row .score .arrow { color: var(--mute-2); }
 .fn-row .score .target { color: var(--outcome); font-weight: 600; }
-.fn-row .score .tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute-2);
-}
 .fn-row.passing .score .now { color: var(--outcome); font-weight: 600; }
 
 /* ------------------------------------------------------------------
    Timetable — three lanes against the clock
 ------------------------------------------------------------------- */
 
-.tt-wrap { max-width: 1440px; margin-left: 216px; padding: 34px 34px 90px; }
+.tt-wrap { position: relative; max-width: 1440px; padding: 34px 34px 90px; }
 
-.tt-head-row { display: flex; align-items: flex-end; gap: 0; padding-left: 210px; }
+/* The board has a floor width, so on anything narrower it scrolls
+   sideways rather than crushing four quarters into the viewport. */
+.tt-scroll { overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; }
+.tt-canvas { min-width: 1180px; }
+
+.tt-scroll-btns {
+  position: absolute; right: 34px; top: 0;
+  display: flex; gap: 6px;
+}
+.tt-scroll-btns button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--raised); color: var(--mute); cursor: pointer;
+}
+.tt-scroll-btns button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--line) 55%, var(--ink)); }
+.tt-scroll-btns button[disabled] { opacity: 0.35; cursor: default; }
+.tt-scroll-btns button[disabled]:hover { color: var(--mute); border-color: var(--line); }
+.tt-scroll-btns svg { width: 15px; height: 15px; }
+
+@media (prefers-reduced-motion: reduce) { .tt-scroll { scroll-behavior: auto; } }
+
+.tt-head-row { display: flex; align-items: flex-end; gap: 0; }
+.tt-head-row .tt-corner {
+  position: sticky; left: 0; z-index: 4;
+  width: 210px; flex: none; background: var(--bg);
+}
 .tt-col {
   flex: 1; padding: 8px 0 10px 12px;
   border-left: 1px solid var(--line);
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--mute-2);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em;
+  color: var(--mute-2);
 }
 .tt-col.now { color: var(--mute); }
 
@@ -261,8 +275,8 @@
 .tt-link-note { position: absolute; left: 16px; top: 16px; width: 290px; }
 .tt-link-note .when {
   display: block;
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.02em; color: var(--ink);
 }
 .tt-link-note .txt {
   display: block; margin-top: 4px;
@@ -270,9 +284,13 @@
 }
 
 .tt-lane { position: relative; display: flex; align-items: center; padding: 56px 0; }
+/* Sticky, because scrolling sideways must not take the answer to
+   "which lane is this?" off the left-hand edge with it. */
 .tt-lane-head {
+  position: sticky; left: 0; z-index: 4;
   width: 210px; flex: none;
   display: flex; align-items: center; gap: 12px;
+  background: var(--bg);
   font-size: 15px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink);
 }
 .tt-swatch { width: 30px; height: 6px; border-radius: 999px; flex: none; }
@@ -311,8 +329,8 @@
 .tt-lbl .nm { display: block; font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; }
 .tt-lbl .st {
   display: block; margin-top: 3px;
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.02em;
+  color: var(--mute-2); white-space: nowrap;
 }
 .tt-lane.p-product .tt-stn:not(.interlock) .st { color: var(--outcome); }
 .tt-lane.p-infra   .tt-stn:not(.interlock) .st { color: var(--infra); }
@@ -334,10 +352,12 @@
     /* 100vh of viewport height becomes a blank trailing page on paper. */
     min-height: 0;
   }
-  .fn-bar, .fn-rail, .fn-print-hint, .fn-side { display: none !important; }
+  .fn-bar, .fn-rail, .fn-side, .fn-nav-btn, .tt-scroll-btns { display: none !important; }
   .fn-body { display: block; padding: 0; margin-left: 0; }
   .fn-head { padding: 0 0 8mm; max-width: none; margin-left: 0; }
   .tt-wrap { margin-left: 0; padding: 0; }
+  .tt-scroll { overflow: visible !important; }
+  .tt-canvas { min-width: 0 !important; }
   .tt-link-note .txt, .tt-lbl .nm { color: #0e1116; }
   .tt-stn.interlock .tt-dot { background: #0e1116 !important; }
   .tt-link-line { border-left-color: #0e1116; }

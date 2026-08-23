@@ -18,7 +18,7 @@ const edge = (c) => ((c + 1) / N) * 100;       // right-hand edge of column c
 /* --- the header row of quarters ------------------------------------ */
 
 function buildColumns() {
-  $('#tt-cols').innerHTML = D.columns.map((c, i) => `
+  $('#tt-cols').innerHTML = '<div class="tt-corner"></div>' + D.columns.map((c, i) => `
     <div class="tt-col${i === 0 ? ' now' : ''}">${c}</div>`).join('');
 
   $('#tt-rules').innerHTML = D.columns.slice(0, -1).map((_, i) =>
@@ -88,6 +88,30 @@ drawInterlocks();
 
 window.addEventListener('resize', drawInterlocks);
 window.addEventListener('beforeprint', drawInterlocks);
+
+/* --- scrolling sideways --------------------------------------------- */
+
+/* One press moves one column, so the board lands on a quarter boundary
+   rather than halfway through one. */
+const scroller = $('#tt-scroll');
+const left = $('#tt-left');
+const right = $('#tt-right');
+
+function step() {
+  return $('.tt-canvas').getBoundingClientRect().width / N;
+}
+
+function syncButtons() {
+  const max = scroller.scrollWidth - scroller.clientWidth;
+  left.disabled = scroller.scrollLeft <= 1;
+  right.disabled = scroller.scrollLeft >= max - 1;
+}
+
+left.addEventListener('click', () => scroller.scrollBy({ left: -step() }));
+right.addEventListener('click', () => scroller.scrollBy({ left: step() }));
+scroller.addEventListener('scroll', syncButtons);
+window.addEventListener('resize', syncButtons);
+syncButtons();
 
 $('#print').addEventListener('click', () => window.print());
 
