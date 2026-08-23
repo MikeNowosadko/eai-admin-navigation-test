@@ -15,7 +15,9 @@
   <nav class="nav">
     <a class="brand" href="index.html"><img src="assets/logos/eai-wordmark.svg" alt="Enterprise AI" style="height:15px;" /></a>
     <div class="spacer"></div>
-    <span style="font-size:13px; color:#4d4d4d;">Onboarding prototypes</span>
+    <a href="roadmap/funnel.html" style="display:inline-flex; align-items:center; gap:8px; padding:8px 15px; border-radius:8px; background:#171717; color:#ffffff; font-size:13px; font-weight:600;">
+      Roadmap &rarr;
+    </a>
   </nav>
 
   <main class="rows">
@@ -25,6 +27,44 @@
     <p class="kbd-note rows-note">
       Inside a prototype, press <kbd>⌘</kbd><kbd>K</kbd> for controls
     </p>
+
+    <!-- First on the pad on purpose: it is the one thing here meant to be
+         opened in front of somebody outside the team. -->
+    <section class="row">
+      <h2 class="row-title">Roadmap <span class="badge done">In use</span></h2>
+
+      <p class="kbd-note rows-note">
+        The two we are running on. A sidebar moves between them, and both
+        have a <strong>Save as PDF</strong> button.
+      </p>
+
+      <div class="row-cards two-up" style="margin-bottom:14px;">
+
+        <a class="fork-card" href="roadmap/funnel.html">
+          <h2>Usability &middot; CLI <span class="badge done">Current</span></h2>
+          <p>Click a band &mdash; Knowledge, Setup, Build, Deploy &mdash; and get the <strong>problem</strong>, the <strong>outcomes</strong>, and the <strong>solution</strong> for that cycle.</p>
+          <ul>
+            <li>Every outcome scored against 8/10 of our ICP</li>
+            <li>Scores shown moving: <code>4/10 &rarr; 8/10</code></li>
+            <li>PDF prints all four bands, one per page</li>
+            <li>Content in <code>assets/funnel-data.js</code></li>
+          </ul>
+          <div class="go"><span class="btn btn-dark">Open the funnel &rarr;</span></div>
+        </a>
+
+        <a class="fork-card" href="roadmap/timetable.html">
+          <h2>General roadmap <span class="badge">New</span></h2>
+          <p>Three teams as three lanes, four quarters left to right. The couplings mark where two teams <strong>have to land together</strong>.</p>
+          <ul>
+            <li>Product / Discovery, Scale / Infra, DAISY</li>
+            <li>Solid track is laid; dashed is not</li>
+            <li>Interlocks carry the reason, in one line</li>
+            <li>Content in <code>assets/timetable-data.js</code></li>
+          </ul>
+          <div class="go"><span class="btn btn-ghost">Open the timetable &rarr;</span></div>
+        </a>
+
+      </div>
 
     <section class="row">
       <a class="row-title" href="https://app.notion.com/p/3bbcd7477dd5818ab477c911387da562">

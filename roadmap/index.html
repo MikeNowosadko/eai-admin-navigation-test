@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Enterprise AI — the roadmap tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/roadmap.css" />
+</head>
+<body class="rm">
+
+  <header class="rm-bar">
+    <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></a>
+    <span class="sep"></span>
+    <span class="where">Roadmap</span>
+    <div class="spacer"></div>
+    <nav class="rm-views">
+      <a class="on" href="index.html">Tree</a>
+      <a href="story-map.html">Story map</a>
+    </nav>
+    <button class="rm-ghost" id="reopen-intro">What is this?</button>
+  </header>
+
+  <div class="rm-filters" id="filters"></div>
+
+  <div class="rm-stage" id="stage">
+    <div class="rm-canvas" id="canvas">
+      <svg class="rm-links" id="links" aria-hidden="true"></svg>
+    </div>
+
+    <div class="rm-key">
+      <h4>How to read a node</h4>
+      <div class="k"><span class="swatch full"></span> Working today</div>
+      <div class="k"><span class="swatch thick"></span> Being built</div>
+      <div class="k"><span class="swatch"></span> Next up</div>
+      <div class="k"><span class="swatch dash"></span> Exploring</div>
+      <div class="k" style="margin-top:12px">Colour is the product. Height is what it stands on.</div>
+    </div>
+
+    <div class="rm-jump" id="jump"></div>
+
+    <div class="rm-zoom">
+      <button id="zoom-out" title="Zoom out">−</button>
+      <span class="lvl" id="zoomlvl">80%</span>
+      <button id="zoom-in" title="Zoom in">+</button>
+      <button class="wide" id="zoom-fit" title="Fit the whole tree">Fit</button>
+    </div>
+
+    <aside class="rm-panel" id="panel"></aside>
+  </div>
+
+  <div class="rm-intro" id="intro">
+    <div class="sheet">
+      <h2>The Enterprise AI roadmap</h2>
+      <p>
+        It is a tree because that is what the work is. Nothing near the bottom
+        is possible until the thing above it exists, and the fastest way to
+        explain a plan is to show <b>what it is standing on</b>.
+      </p>
+      <p>
+        The trunk splits three ways — <b>Plan</b>, <b>Build</b>, <b>Deploy</b> —
+        on top of the foundations both products share. Colour says which
+        product a node belongs to: the <b>CLI</b>, the <b>no-code builder</b>,
+        or the platform underneath both.
+      </p>
+      <p>
+        A filled circle is already working. Everything else is what we intend
+        to do about it.
+      </p>
+      <div class="counts" data-counts></div>
+      <p class="warn">
+        The items in here are placeholder content, written to make the shape
+        legible. Replace them in <b>assets/roadmap-data.js</b>.
+      </p>
+      <p class="go">Click anywhere to open the tree. Drag to move, scroll to zoom.</p>
+    </div>
+  </div>
+
+  <script src="../assets/roadmap-data.js"></script>
+  <script src="../assets/roadmap.js"></script>
+  <script>
+    document.getElementById('reopen-intro').addEventListener('click', () => {
+      document.getElementById('intro').hidden = false;
+    });
+  </script>
+
+</body>
+</html>

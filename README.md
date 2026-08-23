@@ -53,6 +53,10 @@ later, on a machine where EAI Setup is already installed.
 | ↳ *nothing installed* | `signup/` | [/signup?scenario=none](https://eai-website.github.io/prototypes/signup?scenario=none) | Same flow, out to claude.com and back first |
 | **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
 | **EAI Setup — states** | `states/` | [/states](https://eai-website.github.io/prototypes/states) | Not a flow — every state of the setup app on one page, for reviewing |
+| **Roadmap — general** | `roadmap/timetable.html` | [/roadmap/timetable.html](https://eai-website.github.io/prototypes/roadmap/timetable.html) | **In use** — three teams, four quarters, interlocks |
+| **Roadmap — usability / CLI** | `roadmap/funnel.html` | [/roadmap/funnel.html](https://eai-website.github.io/prototypes/roadmap/funnel.html) | **In use** — a funnel band's problem, outcome, solution |
+| ↳ *tree* | `roadmap/index.html` | [/roadmap](https://eai-website.github.io/prototypes/roadmap) | Earlier pass — what stands on what |
+| ↳ *story map* | `roadmap/story-map.html` | [/roadmap/story-map.html](https://eai-website.github.io/prototypes/roadmap/story-map.html) | Earlier pass — sliced by release |
 
 `index.html` at the root is an internal launch pad, grouping the flows by the
 experiment they belong to. Finished experiments carry a Completed badge and
@@ -411,6 +415,51 @@ Screens live in `assets/history/`. They're element screenshots of `#winSetup`
 rather than the whole desktop, so the versions can be compared without the
 wallpaper and dock getting in the way. Re-take them the same way if a version
 changes: drive the flow to the screen, hide `.dock`, screenshot the window.
+
+## Roadmap
+
+`/roadmap/funnel.html` and `/roadmap/timetable.html` are the two we are actually
+running on. They are not onboarding flows — they are what goes on a screen when
+somebody asks where Enterprise AI is going, and both are built to be handed over
+as a PDF.
+
+**The general roadmap** is three teams as three lanes against four quarters.
+Solid track is laid, dashed is not, and the black couplings are *interlocks* —
+two pieces of work that have to land in the same quarter or neither counts.
+
+**The usability roadmap** is the discovery funnel: Knowledge, Setup, Build,
+Deploy. Click a band and you get three lists — **problem**, **outcome**,
+**solution**. Outcomes carry a score against the bar that applies to everything
+on both boards: *8 out of 10 of our ICP complete it unaided*. Scores are shown
+moving, `4/10 → 8/10`, so a row states its claim rather than its status.
+
+**Editing is one file per view** — `assets/funnel-data.js` and
+`assets/timetable-data.js`. Nothing else needs touching to change the content,
+and both carry the copy rule at the top: one line per item, two at the outside.
+If a line needs a third it is two items pretending to be one.
+
+**Colour means one thing.** Red is the problem, mint the outcome, blue the
+solution — and mint doubles as "clears the bar" wherever a score appears. Nothing
+is filled: the hue lives in the section header and the row's outline.
+
+**Day and night.** The whole theme is CSS variables, so `assets/daymode.js`
+switches it with one class on `<body>` and remembers the choice. The three
+accents are *darkened* for day rather than reused, because the night values fail
+contrast on white. An inline script applies the saved theme before first paint,
+or you get a flash of the wrong one every time you move between the two views.
+
+**Print is a real output, not an afterthought.** Save as PDF always produces the
+day palette regardless of what is on screen, so somebody working at night still
+hands over a light document. The funnel prints all four bands, one per page —
+`break-before` plus `break-inside: avoid`, and tighter type, so a six-outcome
+band clears a single page. The timetable prints as one landscape page.
+
+### Earlier passes
+
+`roadmap/index.html` (the tree) and `roadmap/story-map.html` came first and are
+off the launch pad, per *One prototype, one URL* above. The tree answers what
+stands on what; the story map slices by release. Both still work, both still
+read from `assets/roadmap-data.js`, and neither is being maintained.
 
 ## Harness picker
 

@@ -1,0 +1,367 @@
+/* ------------------------------------------------------------------
+   Discovery funnel — the roadmap we are actually using.
+
+   Click a band on the left, read the three things that matter on the
+   right: what is wrong, what we expect to see, what we will do.
+
+   Printing is a first-class output here, not an afterthought: the
+   screen shows one band at a time, the PDF shows all four, one per
+   page. See the @media print block at the bottom.
+------------------------------------------------------------------- */
+
+/* Night is the default. Day is the same design with a different set of
+   values — every colour below is a variable precisely so the two modes
+   never drift apart. Print always uses day; see the bottom of the file. */
+.fn {
+  --bg: #0c0e12;
+  --surface: #14171d;
+  --raised: #191d25;
+  --line: #262b35;
+  --ink: #e9ebef;
+  --mute: #8b93a1;
+  --mute-2: #626b7a;
+
+  --problem: #ff6b72;
+  --outcome: #6fe3b0;
+  --solution: #38b6ff;
+  --infra: #ffc24d;
+
+  --band: #1e242d;          /* a funnel band at rest */
+  --band-on: #6fe3b0;       /* the one you have picked */
+  --band-on-ink: #0c0e12;   /* its label, which must sit on mint */
+
+  --bar: rgba(12, 14, 18, 0.94);
+  --logo: brightness(0) invert(1);
+
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.fn.day {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --raised: #f5f7f9;
+  --line: #e2e6ec;
+  --ink: #0e1116;
+  --mute: #5a6373;
+  --mute-2: #8a93a3;
+
+  /* Darkened for white: the night values fail contrast on paper-white. */
+  --problem: #d1434b;
+  --outcome: #0e9b63;
+  --solution: #0a6bb0;
+  --infra: #c98a06;
+
+  --band: #edf0f4;
+  --band-on: #6fe3b0;
+  --band-on-ink: #0e1116;
+
+  --bar: rgba(255, 255, 255, 0.94);
+  --logo: none;
+}
+
+/* --- chrome -------------------------------------------------------- */
+
+.fn-bar {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 18px;
+  height: 58px; padding: 0 34px;
+  background: var(--bar);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.fn-bar .brand img { height: 14px; filter: var(--logo); opacity: 0.92; display: block; }
+.fn-bar .sep { width: 1px; height: 22px; background: var(--line); }
+.fn-bar .where { font-size: 13px; color: var(--mute); }
+.fn-bar .spacer { flex: 1; }
+
+.fn-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--raised);
+  font-family: inherit; font-size: 12.5px; font-weight: 500; color: var(--ink);
+}
+.fn-btn:hover { border-color: color-mix(in srgb, var(--line) 55%, var(--ink)); }
+.fn-btn svg { width: 14px; height: 14px; }
+
+/* --- sidebar ------------------------------------------------------- */
+
+/* Fixed rather than sticky: the two views are different heights, and a
+   nav that moves when you switch reads as a different nav. */
+.fn-side {
+  position: fixed; left: 0; top: 58px; bottom: 0; z-index: 30;
+  width: 216px; padding: 22px 14px;
+  border-right: 1px solid var(--line);
+  background: var(--bg);
+}
+.fn-side .grp {
+  margin: 0 0 10px 10px;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
+}
+.fn-side a {
+  display: block; padding: 9px 11px; margin-bottom: 3px;
+  border-radius: 8px; border: 1px solid transparent;
+  font-size: 13px; line-height: 17px; color: var(--mute);
+}
+.fn-side a:hover { background: var(--raised); color: var(--ink); }
+.fn-side a.on {
+  background: var(--raised); border-color: var(--line); color: var(--ink); font-weight: 500;
+}
+.fn-side a span {
+  display: block; margin-top: 3px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mute-2);
+}
+
+/* Everything to the right of the sidebar shifts over to make room. */
+.fn-head, .fn-body { margin-left: 216px; }
+
+/* --- masthead ------------------------------------------------------ */
+
+.fn-head { padding: 46px 34px 0; max-width: 1440px; }
+.fn-eyebrow {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
+}
+.fn-head h1 {
+  margin: 0; max-width: 680px;
+  font-size: 42px; line-height: 48px; font-weight: 600; letter-spacing: -0.035em;
+}
+
+/* --- the two columns ----------------------------------------------- */
+
+.fn-body {
+  display: grid; grid-template-columns: 404px minmax(0, 1fr);
+  gap: 56px; align-items: start;
+  max-width: 1440px; padding: 40px 34px 90px;
+}
+
+.fn-rail-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute-2);
+  margin-bottom: 12px;
+}
+
+/* --- the funnel ----------------------------------------------------- */
+
+.fn-band {
+  position: relative; display: block; width: 100%; height: 104px;
+  margin-bottom: 6px; padding: 0; border: none; background: none;
+  cursor: pointer; font-family: inherit;
+}
+.fn-band svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fn-band svg path { fill: var(--band); transition: fill 0.15s ease; }
+.fn-band:hover svg path { fill: color-mix(in srgb, var(--band) 88%, var(--ink)); }
+.fn-band.on svg path { fill: var(--band-on); }
+
+.fn-band .txt {
+  position: absolute; left: 0; right: 0; top: 40px;
+  display: flex; justify-content: center;
+  pointer-events: none;
+}
+.fn-band .nm { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--mute); }
+.fn-band.on .nm { color: var(--band-on-ink); }
+
+/* --- the panel ------------------------------------------------------ */
+
+.fn-panel-head {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding-bottom: 6px;
+}
+.fn-panel-head h2 { margin: 0; font-size: 30px; font-weight: 600; letter-spacing: -0.035em; white-space: nowrap; }
+.fn-chip {
+  padding: 4px 10px; border-radius: 4px; background: var(--band-on);
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--band-on-ink); white-space: nowrap;
+}
+.fn-panel-head .reach {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
+}
+.fn-question { margin: 0 0 26px; font-size: 15px; line-height: 22px; color: var(--mute); }
+
+.fn-sect { margin-bottom: 22px; }
+.fn-sect-head { padding-bottom: 9px; }
+.fn-sect-head b {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap;
+}
+
+/* Colour lives in the header and the row outline. Nothing is filled. */
+.fn-sect.problem  .fn-sect-head b { color: var(--problem); }
+.fn-sect.outcome  .fn-sect-head b { color: var(--outcome); }
+.fn-sect.solution .fn-sect-head b { color: var(--solution); }
+.fn-sect.problem  .fn-sect-head .rule { background: rgba(255, 107, 114, 0.25); }
+.fn-sect.outcome  .fn-sect-head .rule { background: rgba(111, 227, 176, 0.25); }
+.fn-sect.solution .fn-sect-head .rule { background: rgba(56, 182, 255, 0.25); }
+
+.fn-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; margin-bottom: 6px;
+  border-radius: 6px; background: var(--surface);
+  font-size: 13px; line-height: 18px;
+}
+.fn-sect.problem  .fn-row { border: 1px solid color-mix(in srgb, var(--problem) 48%, transparent); }
+.fn-sect.outcome  .fn-row { border: 1px solid color-mix(in srgb, var(--outcome) 48%, transparent); }
+.fn-sect.solution .fn-row { border: 1px solid color-mix(in srgb, var(--solution) 45%, transparent); }
+
+.fn-row .txt { flex: 1; }
+.fn-row .when {
+  width: 68px; flex: none;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
+}
+.fn-row .score {
+  width: 92px; flex: none;
+  display: flex; align-items: center; justify-content: flex-end; gap: 7px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+}
+.fn-row .score .now { color: var(--mute); }
+.fn-row .score .arrow { color: var(--mute-2); }
+.fn-row .score .target { color: var(--outcome); font-weight: 600; }
+.fn-row .score .tag {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute-2);
+}
+.fn-row.passing .score .now { color: var(--outcome); font-weight: 600; }
+
+/* ------------------------------------------------------------------
+   Timetable — three lanes against the clock
+------------------------------------------------------------------- */
+
+.tt-wrap { max-width: 1440px; margin-left: 216px; padding: 34px 34px 90px; }
+
+.tt-head-row { display: flex; align-items: flex-end; gap: 0; padding-left: 210px; }
+.tt-col {
+  flex: 1; padding: 8px 0 10px 12px;
+  border-left: 1px solid var(--line);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--mute-2);
+}
+.tt-col.now { color: var(--mute); }
+
+#tt-plot { position: relative; }
+
+/* Column rules run the height of the plot, behind everything. */
+#tt-rules { position: absolute; inset: 0; pointer-events: none; }
+.tt-rule { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); }
+
+#tt-links { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.tt-link { position: absolute; width: 0; }
+.tt-link-line {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  border-left: 2px dashed var(--ink);
+}
+/* Sits just under the upper lane's track, not centred on the coupling —
+   centred puts it straight through the lower lane's station labels. */
+.tt-link-note { position: absolute; left: 16px; top: 16px; width: 290px; }
+.tt-link-note .when {
+  display: block;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
+}
+.tt-link-note .txt {
+  display: block; margin-top: 4px;
+  font-size: 12.5px; line-height: 17px; color: var(--mute);
+}
+
+.tt-lane { position: relative; display: flex; align-items: center; padding: 56px 0; }
+.tt-lane-head {
+  width: 210px; flex: none;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink);
+}
+.tt-swatch { width: 30px; height: 6px; border-radius: 999px; flex: none; }
+.tt-lane.p-product .tt-swatch { background: var(--outcome); }
+.tt-lane.p-infra   .tt-swatch { background: var(--infra); }
+.tt-lane.p-daisy   .tt-swatch { background: var(--solution); }
+
+.tt-track { position: relative; flex: 1; height: 6px; }
+.tt-laid, .tt-unlaid { position: absolute; top: 0; height: 6px; border-radius: 999px; }
+.tt-unlaid { opacity: 0.45; }
+.tt-lane.p-product .tt-laid { background: var(--outcome); }
+.tt-lane.p-infra   .tt-laid { background: var(--infra); }
+.tt-lane.p-daisy   .tt-laid { background: var(--solution); }
+.tt-lane.p-product .tt-unlaid { background: repeating-linear-gradient(90deg, var(--outcome) 0 22px, transparent 22px 38px); }
+.tt-lane.p-infra   .tt-unlaid { background: repeating-linear-gradient(90deg, var(--infra) 0 22px, transparent 22px 38px); }
+.tt-lane.p-daisy   .tt-unlaid { background: repeating-linear-gradient(90deg, var(--solution) 0 22px, transparent 22px 38px); }
+
+.tt-stn { position: absolute; top: 3px; transform: translate(-50%, -50%); z-index: 2; }
+.tt-dot {
+  display: block; width: 20px; height: 20px; border-radius: 999px;
+  border: 3px solid var(--bg);
+  transform: translate(-50%, -50%); margin-left: 50%;
+}
+.tt-lane.p-product .tt-dot { background: var(--outcome); }
+.tt-lane.p-infra   .tt-dot { background: var(--infra); }
+.tt-lane.p-daisy   .tt-dot { background: var(--solution); }
+.tt-dot.future { opacity: 0.45; }
+.tt-stn.interlock .tt-dot {
+  width: 26px; height: 26px; background: var(--ink) !important; opacity: 1;
+}
+
+.tt-lbl {
+  position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+  width: 190px; text-align: center;
+}
+.tt-lbl .nm { display: block; font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; }
+.tt-lbl .st {
+  display: block; margin-top: 3px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--mute-2); white-space: nowrap;
+}
+.tt-lane.p-product .tt-stn:not(.interlock) .st { color: var(--outcome); }
+.tt-lane.p-infra   .tt-stn:not(.interlock) .st { color: var(--infra); }
+.tt-lane.p-daisy   .tt-stn:not(.interlock) .st { color: var(--solution); }
+
+/* The interlock dot is bigger, so its label needs more clearance. */
+.tt-stn.interlock .tt-lbl { bottom: 36px; }
+
+/* --- print: every band, one per page -------------------------------- */
+
+@media print {
+  @page { size: A4 landscape; margin: 14mm; }
+
+  .fn {
+    --bg: #ffffff; --surface: #ffffff; --raised: #ffffff;
+    --line: #d8dde4; --ink: #0e1116; --mute: #4d5666; --mute-2: #79828f;
+    --problem: #d1434b; --outcome: #0e9b63; --solution: #0a6bb0;
+    background: #ffffff;
+    /* 100vh of viewport height becomes a blank trailing page on paper. */
+    min-height: 0;
+  }
+  .fn-bar, .fn-rail, .fn-print-hint, .fn-side { display: none !important; }
+  .fn-body { display: block; padding: 0; margin-left: 0; }
+  .fn-head { padding: 0 0 8mm; max-width: none; margin-left: 0; }
+  .tt-wrap { margin-left: 0; padding: 0; }
+  .tt-link-note .txt, .tt-lbl .nm { color: #0e1116; }
+  .tt-stn.interlock .tt-dot { background: #0e1116 !important; }
+  .tt-link-line { border-left-color: #0e1116; }
+  .fn-head h1 { font-size: 24px; line-height: 28px; max-width: none; }
+  .fn-head .lede { font-size: 12px; line-height: 17px; max-width: 150mm; }
+  .fn-head .dod { margin-top: 14px; padding: 7px 12px; }
+
+  /* On paper there is no "selected" band — print them all, one per page.
+     break-before rather than break-after, so the last page isn't blank. */
+  .fn-step { display: block !important; break-before: page; break-inside: avoid; }
+  .fn-step:first-of-type { break-before: auto; }
+
+  /* A band has to survive as one piece, so nothing inside it may split. */
+  .fn-sect, .fn-row, .fn-panel-head { break-inside: avoid; }
+
+  /* Tighter than the screen: a 6-outcome band has to clear one page. */
+  .fn-panel-head h2 { font-size: 22px; }
+  .fn-question { margin-bottom: 14px; font-size: 12.5px; line-height: 17px; }
+  .fn-sect { margin-bottom: 13px; }
+  .fn-sect-head { padding-bottom: 5px; }
+  .fn-row {
+    padding: 6px 11px; margin-bottom: 4px;
+    font-size: 11.5px; line-height: 15px;
+    background: #ffffff;
+  }
+  .fn-chip { background: #0e9b63; color: #ffffff; }
+}

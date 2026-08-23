@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Enterprise AI — the roadmap as a story map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/roadmap.css" />
+</head>
+<body class="rm">
+
+  <header class="rm-bar">
+    <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></a>
+    <span class="sep"></span>
+    <span class="where">Roadmap</span>
+    <div class="spacer"></div>
+    <nav class="rm-views">
+      <a href="index.html">Tree</a>
+      <a class="on" href="story-map.html">Story map</a>
+    </nav>
+  </header>
+
+  <div class="rm-filters" id="filters"></div>
+
+  <div class="map-wrap">
+
+    <section class="map-intro">
+      <h1>The same roadmap, along the journey somebody actually takes</h1>
+      <p>
+        Across the top is what a person does with Enterprise AI, in the order
+        they do it. Down the side are <b>slices</b>. The top slice is
+        everything that works today — read that row on its own and you have
+        the product as it exists. Each slice below it is a release that makes
+        the same journey better, not a new pile of features.
+      </p>
+      <p>
+        Use <b>Show</b> to walk it: start on today, then add a slice at a time
+        and watch which part of the journey the next release is actually
+        aimed at.
+      </p>
+    </section>
+
+    <div class="slice-walk" id="walk"></div>
+
+    <div class="map-grid" id="map"></div>
+
+    <p class="rm-foot">
+      Every card is the same item as the circle on the <a href="index.html">tree</a> —
+      one list, two ways of cutting it. The tree answers <b>what does this
+      depend on</b>; the map answers <b>who is it for and when do they get
+      it</b>. Items are placeholder content: edit
+      <b>assets/roadmap-data.js</b> and both views change together.
+    </p>
+
+  </div>
+
+  <aside class="rm-panel floats" id="panel"></aside>
+
+  <script src="../assets/roadmap-data.js"></script>
+  <script src="../assets/roadmap.js"></script>
+
+</body>
+</html>

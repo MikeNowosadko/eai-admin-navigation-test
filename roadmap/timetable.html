@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Enterprise AI — three lines, against the clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/funnel.css" />
+</head>
+<body class="fn">
+  <script>try{if(localStorage.getItem("eai-roadmap-theme")==="day")document.body.classList.add("day")}catch(e){}</script>
+
+  <header class="fn-bar">
+    <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></a>
+    <span class="sep"></span>
+    <span class="where">Roadmap</span>
+    <div class="spacer"></div>
+    <button class="fn-btn" id="theme" aria-label="Switch to day mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg>
+      <span class="lbl">Day</span>
+    </button>
+    <button class="fn-btn" id="print">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 9V3h10v6" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" />
+        <path d="M7 14h10v7H7z" />
+      </svg>
+      Save as PDF
+    </button>
+  </header>
+
+  <nav class="fn-side">
+    <p class="grp">Roadmap</p>
+    <a class="on" href="timetable.html">General roadmap</a>
+    <a href="funnel.html">Usability &middot; CLI</a>
+  </nav>
+
+  <div class="fn-head">
+    <h1 id="title"></h1>
+  </div>
+
+  <main class="tt-wrap">
+    <div class="tt-head-row" id="tt-cols"></div>
+    <div id="tt-plot">
+      <div id="tt-rules"></div>
+      <div id="tt-lanes"></div>
+      <div id="tt-links"></div>
+    </div>
+  </main>
+
+  <script src="../assets/timetable-data.js"></script>
+  <script src="../assets/timetable.js"></script>
+
+  <script src="../assets/daymode.js"></script>
+
+</body>
+</html>
