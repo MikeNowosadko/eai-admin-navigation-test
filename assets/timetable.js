@@ -18,8 +18,14 @@ const edge = (c) => ((c + 1) / N) * 100;       // right-hand edge of column c
 /* --- the header row of quarters ------------------------------------ */
 
 function buildColumns() {
+  /* Months band over the sprints — eight fortnights in a row is hard to
+     read without something coarser above it. Each band is sized by how
+     many sprints fall in it, so the two rows always line up. */
+  $('#tt-months').innerHTML = '<div class="tt-corner"></div>' + D.months.map((m) => `
+    <div class="tt-month" style="flex:${m.span}">${m.label}</div>`).join('');
+
   $('#tt-cols').innerHTML = '<div class="tt-corner"></div>' + D.columns.map((c, i) => `
-    <div class="tt-col${i === 0 ? ' now' : ''}">${c}</div>`).join('');
+    <div class="tt-col${i === D.now ? ' now' : ''}">${c}</div>`).join('');
 
   $('#tt-rules').innerHTML = D.columns.slice(0, -1).map((_, i) =>
     `<span class="tt-rule" style="left:${edge(i)}%"></span>`).join('');
