@@ -2,76 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="noindex, nofollow" />
-<title>EAI Setup — states</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-<!-- The same stylesheets /signup loads, in the same order, because the
-     app on this page IS /signup's app — lifted out of it at load rather
-     than copied into a file that would start drifting the same afternoon.
-     states.css comes last and only draws the room around it. -->
-<link rel="stylesheet" href="../assets/proto.css" />
-<link rel="stylesheet" href="../assets/desktop.css" />
-<link rel="stylesheet" href="../assets/install.css" />
-<link rel="stylesheet" href="../assets/install-3.css" />
-<link rel="stylesheet" href="../assets/install-4.css" />
-<link rel="stylesheet" href="../assets/signup.css" />
-<link rel="stylesheet" href="../assets/states.css" />
+<meta http-equiv="refresh" content="0; url=../statemachine/" />
+<link rel="canonical" href="../statemachine/" />
+<title>Redirecting to statemachine</title>
 </head>
-<body class="st">
-
-  <!-- Every state EAI Setup can be in, on one page.
-
-       The flows are for handing to a tester: one URL, one journey, no way
-       to see the ninth state without playing the first eight. This is the
-       other half of that — for the people making it, who need to look at
-       the failure on the sign-in screen next to the one on the last
-       screen and ask whether they are written by the same person.
-
-       Two things it is not:
-
-       · **Not a copy.** #winSetup is fetched out of /signup at load. There
-         is no second sign-in screen in this repo to update.
-       · **Not the flow.** Nothing here is clickable inside the app. Every
-         state comes from the rail, so no state can be reached by accident
-         and every one of them can be linked to. -->
-
-  <!-- the rail --------------------------------------------------- -->
-  <aside class="st-rail">
-    <div class="st-title">
-      <b>EAI Setup — states</b>
-      <span>Eight screens, seven ways to break, and the two facts about the Mac that change the last one.</span>
-      <a href="../signup/">Play the flow instead &rarr;</a>
-    </div>
-
-    <!-- built by states.js, because every group is a question about the
-         state and the state is the only thing that decides them -->
-    <div id="rail"></div>
-  </aside>
-
-  <!-- the stage -------------------------------------------------- -->
-  <main class="st-stage" id="stage">
-
-    <div class="st-cap">
-      <b id="capName">Sign in</b>
-      <span id="capNote"></span>
-    </div>
-
-    <!-- The app, and nothing under it. There was a bar here with previous
-         and next and a sentence narrating how you arrive and leave; it was
-         navigation for a rail that already navigates, and the app above it
-         said the same thing better. Left and right still step through the
-         screens, they just no longer need announcing. -->
-    <div class="st-frame"><!-- the real app lands here --></div>
-
-  </main>
-
-<script src="../assets/icons.js"></script>
-<script src="../assets/eai-video.js"></script>
-<script src="../assets/states.js"></script>
+<body>
+<p>Moved to <a href="../statemachine/">statemachine</a>.</p>
 </body>
 </html>

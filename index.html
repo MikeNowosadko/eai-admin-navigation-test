@@ -4,10 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>EAI onboarding prototypes — launch pad</title>
+<title>EAI prototypes — launch pad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/proto.css" />
 </head>
 <body class="site">
@@ -15,270 +15,130 @@
   <nav class="nav">
     <a class="brand" href="index.html"><img src="assets/logos/eai-wordmark.svg" alt="Enterprise AI" style="height:15px;" /></a>
     <div class="spacer"></div>
-    <a href="roadmap/funnel.html" style="display:inline-flex; align-items:center; gap:8px; padding:8px 15px; border-radius:8px; background:#171717; color:#ffffff; font-size:13px; font-weight:600;">
-      Roadmap &rarr;
-    </a>
+    <a class="nav-pad-btn" href="roadmap/funnel.html">Roadmap</a>
   </nav>
 
-  <main class="rows">
+  <main class="rows pad">
 
-    <h1>Experiment prototypes</h1>
+    <header class="pad-intro">
+      <h1>Launch pad</h1>
+    </header>
 
-    <p class="kbd-note rows-note">
-      Inside a prototype, press <kbd>⌘</kbd><kbd>K</kbd> for controls
-    </p>
+    <ul class="pad-list">
 
-    <!-- First on the pad on purpose: it is the one thing here meant to be
-         opened in front of somebody outside the team. -->
-    <section class="row">
-      <h2 class="row-title">Roadmap <span class="badge done">In use</span></h2>
-
-      <p class="kbd-note rows-note">
-        The two we are running on. A sidebar moves between them, and both
-        have a <strong>Save as PDF</strong> button.
-      </p>
-
-      <div class="row-cards two-up" style="margin-bottom:14px;">
-
-        <a class="fork-card" href="roadmap/funnel.html">
-          <h2>Usability &middot; CLI <span class="badge done">Current</span></h2>
-          <p>Click a band &mdash; Knowledge, Setup, Build, Deploy &mdash; and get the <strong>problem</strong>, the <strong>outcomes</strong>, and the <strong>solution</strong> for that cycle.</p>
-          <ul>
-            <li>Every outcome scored against 8/10 of our ICP</li>
-            <li>Scores shown moving: <code>4/10 &rarr; 8/10</code></li>
-            <li>PDF prints all four bands, one per page</li>
-            <li>Content in <code>assets/funnel-data.js</code></li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-roadmap">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Roadmap</span>
+            <span class="pad-badge pad-badge--green">In use</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-roadmap" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="roadmap/funnel.html">Open roadmap</a></li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Open the funnel &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-        <a class="fork-card" href="roadmap/timetable.html">
-          <h2>General roadmap <span class="badge">New</span></h2>
-          <p>Three teams as three lanes, four quarters left to right. The couplings mark where two teams <strong>have to land together</strong>.</p>
-          <ul>
-            <li>Product / Discovery, Scale / Infra, DAISY</li>
-            <li>Solid track is laid; dashed is not</li>
-            <li>Interlocks carry the reason, in one line</li>
-            <li>Content in <code>assets/timetable-data.js</code></li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-build">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Better experience: future state</span>
+            <span class="pad-badge pad-badge--green">Current</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-build" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="build/index.html">Future state</a></li>
           </ul>
-          <div class="go"><span class="btn btn-ghost">Open the timetable &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-      </div>
-
-    <section class="row">
-      <a class="row-title" href="https://app.notion.com/p/3bbcd7477dd5818ab477c911387da562">
-        Onboarding: current vs npx vs setup app
-        <span class="badge done">Completed</span>
-        <span class="arrow">&rarr;</span>
-      </a>
-
-      <div class="row-cards">
-
-        <a class="fork-card" href="npx/index.html">
-          <h2>npx flow</h2>
-          <p>Search, <code>npx install eai</code>, sign in from the terminal, then build and deploy.</p>
-          <ul>
-            <li>Fake desktop: browser + terminal</li>
-            <li>Starts at a mocked Google search</li>
-            <li>Type, choose and approve in-terminal</li>
-            <li>Browser only for sign-in and plan</li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-download">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Account first vs download first</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-download" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="signup/index.html">Sign up first</a></li>
+            <li><a class="pad-entry" href="install-4/index.html">Download first</a></li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run the npx flow &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-        <a class="fork-card" href="setup/index.html">
-          <h2>eai setup app flow</h2>
-          <p>Same start, but a native <strong>EAI Setup</strong> app does the work: download, install, sign in.</p>
-          <ul>
-            <li>Download flies into the dock</li>
-            <li>Drag to Applications to install</li>
-            <li>Opens on "Sign in to EAI"</li>
-            <li>Prerequisites already green</li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-eai">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title"><code>/eai</code> hand-off</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-eai" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="signup/index.html?scenario=installed">Harness installed</a></li>
+            <li><a class="pad-entry" href="signup/index.html?scenario=none">Empty Mac</a></li>
           </ul>
-          <div class="go"><span class="btn btn-ghost">Run the setup app flow &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-      </div>
-    </section>
-
-    <section class="row">
-      <h2 class="row-title">Setup form vs harness</h2>
-
-      <p class="kbd-note rows-note">
-        The two to put in front of people. One keeps a setup form and hands you
-        to your own AI app; the other has no form at all and does the setup
-        inside the chat. Everything that led here is still live &mdash;
-        <a href="history/index.html"><strong>see how the form got here</strong></a>.
-      </p>
-
-      <div class="row-cards two-up">
-
-        <a class="fork-card" href="install-4/index.html">
-          <h2>EAI Setup and external harness <span class="badge done">Current</span></h2>
-          <p>The latest of four passes. The workspace's standard is chosen for you; not having it installed is <strong>handled</strong>.</p>
-          <ul>
-            <li>The workspace standard in its own box</li>
-            <li>Installs the npm ones for you</li>
-            <li>VS Code sends you to the download, then waits</li>
-            <li>No standard set? It says so, and opens the list</li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-setup-harness">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Setup: form vs agent</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-setup-harness" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="install-4/index.html">Setup form</a></li>
+            <li><a class="pad-entry" href="agent/index.html">Agent setup</a></li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run the current version &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-        <a class="fork-card" href="agent/index.html">
-          <h2>EAI harness as setup</h2>
-          <p>No form. Install, sign in, and the <strong>harness does the setup</strong> in the chat before you type anything. Stops at &ldquo;ready&rdquo;.</p>
-          <ul>
-            <li>One screen before the chat: sign in</li>
-            <li>&ldquo;Set it up for me&rdquo; &mdash; or choose it yourself</li>
-            <li>Nothing installed on the Mac at all&hellip;</li>
-            <li>&hellip;until you ask for your own editor</li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-onboarding">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Archive: npx vs installer</span>
+            <span class="pad-badge pad-badge--gray">Completed</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-onboarding" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="npx/index.html"><code>npx install eai</code></a></li>
+            <li><a class="pad-entry" href="setup/index.html">EAI Setup app</a></li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run harness-as-setup &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-      </div>
-    </section>
-
-    <section class="row">
-      <h2 class="row-title">Where the download comes from</h2>
-
-      <p class="kbd-note rows-note">
-        Everything above starts by downloading an installer from the marketing
-        site. This moves it: you make an account first, and the download waits
-        inside the product next to the no-code builder. From the disk image on,
-        it is <a href="install-4/index.html"><strong>the current version</strong></a>
-        exactly &mdash; so what the two flows measure is the road in.
-      </p>
-
-      <div class="row-cards two-up">
-
-        <a class="fork-card" href="signup/index.html">
-          <h2>Sign up, then get EAI Setup <span class="badge">New</span></h2>
-          <p>Microsoft sign-in, a workspace, the CLI download inside the app &mdash; then an empty harness and the question: do they type <code>/eai</code>?</p>
-          <ul>
-            <li>Nothing on the website installs anything</li>
-            <li>The harness opens empty &mdash; we can't write in it</li>
-            <li>So the instruction, and a video, come before the hand-off</li>
-            <li>Two variations: a harness installed, or none at all</li>
-            <li>App template, then name, then folder</li>
+      <li class="pad-section">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-review">
+          <span class="pad-toggle-text">
+            <span class="pad-toggle-title">Reviewing, not playing</span>
+            <span class="pad-badge pad-badge--gray">Internal</span>
+          </span>
+          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pad-panel" id="pad-review" hidden>
+          <ul class="pad-entries">
+            <li><a class="pad-entry" href="states/index.html">EAI Setup — states</a></li>
+            <li><a class="pad-entry" href="build-states/index.html">Build stage — states</a></li>
+            <li><a class="pad-entry" href="mcp/index.html">Who draws the box?</a></li>
+            <li><a class="pad-entry" href="statemachine/index.html">State machine (earlier)</a></li>
           </ul>
-          <div class="go"><span class="btn btn-dark">Run the sign-up flow &rarr;</span></div>
-        </a>
+        </div>
+      </li>
 
-        <a class="fork-card" href="install-4/index.html">
-          <h2>Download first <span class="badge done">Current</span></h2>
-          <p>The flow as it stands: the homepage's one button is <strong>Download the EAI app</strong>, and the account is made inside it.</p>
-          <ul>
-            <li>Straight from the site to the disk image</li>
-            <li>Sign-in is a form, not a confirmation</li>
-            <li>The app asks which workspace you're in</li>
-            <li>Four screens fewer to reach the dmg</li>
-          </ul>
-          <div class="go"><span class="btn btn-ghost">Run the current version &rarr;</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <section class="row">
-      <h2 class="row-title">Getting to <code>/eai</code></h2>
-
-      <p class="kbd-note rows-note">
-        The same flow, run twice. It ends where we lose control: the AI tool
-        opens as somebody else's window, empty, and <strong>nothing we ship can
-        write a word in it</strong> &mdash; so the instruction and a short video
-        come beforehand, in the web app and again on the setup app's last screen.
-        What's being watched is whether they type <code>/eai</code> unaided, and
-        whether anyone plays the video. The only difference between these two is
-        whether an AI tool is already on the machine.
-      </p>
-
-      <div class="row-cards two-up">
-
-        <a class="fork-card" href="signup/index.html?scenario=installed">
-          <h2>1 &middot; A harness is installed</h2>
-          <p>Claude Code is already on the Mac. The short road &mdash; pick it, open it, and the empty prompt is the only obstacle left.</p>
-          <ul>
-            <li>Setup hands straight over</li>
-            <li>No account to make with anyone else</li>
-            <li>Tests the instruction on its own</li>
-          </ul>
-          <div class="go"><span class="btn btn-dark">Run with a harness &rarr;</span></div>
-        </a>
-
-        <a class="fork-card" href="signup/index.html?scenario=none">
-          <h2>2 &middot; Nothing is installed</h2>
-          <p>Every tool reads <strong>not installed</strong>. The button becomes <strong>Get Claude Code</strong> and sends them to claude.com to install it and sign up, before they come back.</p>
-          <ul>
-            <li>Out to somebody else's site, mid-setup</li>
-            <li>An account with Anthropic, not with us</li>
-            <li>Then back, <em>Check again</em>, and the same empty prompt</li>
-          </ul>
-          <div class="go"><span class="btn btn-dark">Run with an empty Mac &rarr;</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- Not a flow, and deliberately last. Everything above is something to
-         hand a tester; this is for the people making it. -->
-    <section class="row">
-      <h2 class="row-title">Reviewing it, rather than playing it</h2>
-
-      <p class="kbd-note rows-note">
-        A flow can only be read forwards, one state at a time, and the ninth
-        state is eight clicks away. This is the same app with the journey taken
-        off it &mdash; every screen and every failure on one page, side by side,
-        so the error message on the first screen can be read next to the one on
-        the last. It isn't a copy: the app is lifted out of
-        <a href="signup/index.html"><strong>the sign-up flow</strong></a> when
-        the page loads, so it can't fall behind what testers are given.
-      </p>
-
-      <div class="row-cards">
-
-        <a class="fork-card" href="states/index.html">
-          <h2>EAI Setup &mdash; states <span class="badge">New</span></h2>
-          <p>Eight screens, seven ways to break, and the two facts about the Mac that change what the last screen even looks like.</p>
-          <ul>
-            <li>Working, broken, or two things broken at once</li>
-            <li>A harness installed, none at all, or setup still waiting</li>
-            <li>With and without a standard an administrator chose</li>
-            <li>Each state has its own URL, so a state can be sent to someone</li>
-          </ul>
-          <div class="go"><span class="btn btn-dark">Open the state machine &rarr;</span></div>
-        </a>
-
-        <a class="fork-card" href="build-states/index.html">
-          <h2>The build stage &mdash; states <span class="badge">New</span></h2>
-          <p>The other half of the journey, drawn twice &mdash; in a window we don&rsquo;t own, and in one we do.</p>
-          <ul>
-            <li>Nine stages, five gates, twenty ways to break, side by side</li>
-            <li>Eight of them can&rsquo;t happen in our harness at all, which is the argument</li>
-            <li>The CLI side is rung 2 only &mdash; the constraint, accepted and drawn</li>
-            <li>Each state has its own URL, so a state can be sent to someone</li>
-          </ul>
-          <div class="go"><span class="btn btn-dark">Open the state machine &rarr;</span></div>
-        </a>
-
-        <a class="fork-card" href="mcp/index.html">
-          <h2>Who draws the box? <span class="badge">New</span></h2>
-          <p>The build stage happens inside somebody else&rsquo;s app. Pictures, few words, and the one decision underneath it.</p>
-          <ul>
-            <li>Rung 2: we order a box, they build it &mdash; three tools, three looks</li>
-            <li>Rung 3: we build the box, they hand us the paint</li>
-            <li>The six things rung 2 can show, and the four it can&rsquo;t</li>
-            <li>Black screens and windows, and why the split decides the day</li>
-          </ul>
-          <div class="go"><span class="btn btn-dark">Look at the pictures &rarr;</span></div>
-        </a>
-
-      </div>
-    </section>
+    </ul>
 
   </main>
 
+<script src="assets/pad.js"></script>
 </body>
 </html>

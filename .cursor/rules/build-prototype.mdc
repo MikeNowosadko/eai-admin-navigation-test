@@ -1,0 +1,19 @@
+---
+description: Design rules for the /build onboarding prototype (Geist, credits fork, wizard)
+globs: build/**,assets/build*.css,assets/builder.js,assets/build-prompt.js
+alwaysApply: false
+---
+
+# /build prototype rules
+
+## Fork and choice cards
+
+When offering two paths (e.g. top up vs build on your machine), **do not auto-select either option**. Neither path is the default preference — no highlighted border, no `lead` class, no pre-selected state. Both cards use the same neutral styling until the user chooses.
+
+## Credits dialog onward journey
+
+The credits upgrade dialog is **multi-step**. Choosing the external harness does not navigate to `app.html` — step two of the same dialog shows both install paths: download the EAI Setup app, or `npx install eai`. Do not include the `/eai` instruction here; that belongs in the install app. Show a single alert that the project name comes with them into their harness. Dialog chrome follows shadcn defaults: **× close** top-right, **Back** anchored bottom-left on the install step.
+
+## Labels
+
+**Labels must not be in capitals.** Use sentence case in copy and CSS. Do not use `text-transform: uppercase` on labels, eyebrows, or option headings in this flow.

@@ -192,6 +192,174 @@ button, input, textarea { font-family: inherit; }
 .rows h1 { margin: 0 0 12px; font-size: 52px; line-height: 1.05; font-weight: 800; letter-spacing: -2px; }
 .rows .rows-note { max-width: none; margin: 0 0 48px; text-align: left; }
 
+.site .nav-pad-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ds-gray-400, #e5e5e5);
+  border-radius: 6px;
+  background: #ffffff;
+  font-family: 'Geist', var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--ds-gray-1000, #171717);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.site .nav-pad-btn:hover {
+  background: #fafafa;
+  border-color: #d4d4d4;
+}
+
+/* Launch pad — Geist materials + typography; progressive disclosure (.rows.pad) */
+.rows.pad {
+  --ds-background-100: #ffffff;
+  --ds-background-200: #fafafa;
+  --ds-gray-100: #fafafa;
+  --ds-gray-200: #f5f5f5;
+  --ds-gray-300: #eaeaea;
+  --ds-gray-400: #e5e5e5;
+  --ds-gray-500: #d4d4d4;
+  --ds-gray-900: #666666;
+  --ds-gray-1000: #171717;
+  --ds-green-100: #effbf3;
+  --ds-green-900: #067a41;
+  --ds-blue-100: #f0f7ff;
+  --ds-blue-900: #0070f3;
+  padding-top: 40px;
+  padding-bottom: 80px;
+  font-family: 'Geist', var(--font);
+  color: var(--ds-gray-1000);
+}
+
+.pad-intro { margin: 0 0 20px; }
+.rows.pad .pad-intro h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+}
+
+.pad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pad-section {
+  border: 1px solid var(--ds-gray-400);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ds-background-100);
+}
+
+.pad-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  margin: 0;
+  background: var(--ds-background-100);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.pad-toggle:hover { background: var(--ds-gray-100); }
+.pad-toggle[aria-expanded="true"] {
+  background: var(--ds-background-100);
+  border-bottom: 1px solid var(--ds-gray-400);
+}
+.pad-toggle-text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.pad-toggle-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+}
+.pad-toggle-title code {
+  font-family: 'Geist Mono', var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+.pad-chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--ds-gray-900);
+  transition: transform 0.15s ease;
+}
+.pad-chevron svg { display: block; width: 16px; height: 16px; }
+.pad-toggle[aria-expanded="true"] .pad-chevron { transform: rotate(180deg); }
+
+.pad-panel { padding: 4px; }
+.pad-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pad-entry {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+  color: var(--ds-gray-1000);
+  transition: background 0.15s ease;
+}
+.pad-entry:hover { background: var(--ds-gray-200); }
+.pad-entry code {
+  font-family: 'Geist Mono', var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pad-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.pad-badge--green {
+  background: var(--ds-green-100);
+  color: var(--ds-green-900);
+}
+.pad-badge--gray {
+  background: var(--ds-gray-200);
+  color: var(--ds-gray-900);
+}
+.pad-badge--blue {
+  background: var(--ds-blue-100);
+  color: var(--ds-blue-900);
+}
+
 /* Scoped to the launch pad on purpose. `row` is a common enough class name
    that the app skins use it too — the Finder sidebar, the Claude/Codex/Gemini
    session lists, the "Open in…" menu — and an unscoped 52px margin here put

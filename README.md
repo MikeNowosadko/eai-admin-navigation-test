@@ -23,7 +23,7 @@ change appears and you go hunting for a bug in the half that didn't. `serve.py`
 is the same static server with `no-store` on everything; `npx serve` sends
 `must-revalidate`, which has the same effect.
 
-It bites [`/states`](#states--the-one-that-isnt-a-flow) hardest, because that
+It bites [`/statemachine`](#statemachine--the-one-that-isnt-a-flow) hardest, because that
 page fetches `signup/index.html` at runtime and drives it by id — a cached copy
 of the app plus current state code isn't a stale page, it's a broken one.
 
@@ -51,7 +51,11 @@ later, on a machine where EAI Setup is already installed.
 | **Sign up, then download** | `signup/` | [/signup](https://eai-website.github.io/prototypes/signup) | New — account first, download from inside the product |
 | ↳ *harness installed* | `signup/` | [/signup?scenario=installed](https://eai-website.github.io/prototypes/signup?scenario=installed) | Same flow, Claude Code already on the Mac |
 | ↳ *nothing installed* | `signup/` | [/signup?scenario=none](https://eai-website.github.io/prototypes/signup?scenario=none) | Same flow, out to claude.com and back first |
+| **One prompt, our harness** | `build/` | [/build](https://eai-website.github.io/prototypes/build) | **Current** — prompt on the homepage, build in the product, credits and forks, then CLI |
+| ↳ *harness installed* | `build/` | [/build?scenario=installed](https://eai-website.github.io/prototypes/build?scenario=installed) | Same flow, Claude Code already on the Mac |
+| ↳ *nothing installed* | `build/` | [/build?scenario=none](https://eai-website.github.io/prototypes/build?scenario=none) | Same flow, out to the tool's site, then back |
 | **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
+| **EAI Setup — statemachine** | `statemachine/` | [/statemachine](https://eai-website.github.io/prototypes/statemachine) | Not a flow — every state of the setup app on one page, for reviewing |
 | **EAI Setup — states** | `states/` | [/states](https://eai-website.github.io/prototypes/states) | Not a flow — every state of the setup app on one page, for reviewing |
 | **The build stage — states** | `build-states/` | [/build-states](https://eai-website.github.io/prototypes/build-states) | Not a flow — every state of the build stage, drawn in a CLI and in our own app, side by side |
 | **Who draws the box?** | `mcp/` | [/mcp](https://eai-website.github.io/prototypes/mcp) | Not a flow — how much UI we can get into somebody else's tool, in pictures |
@@ -92,10 +96,10 @@ To start the next iteration, copy the folder — `cli/` → `cli-2/`, plus a jou
 file beside `assets/cli.js` — and add a card to the launch pad. The old URL
 carries on working. `install/` began exactly this way, as a copy of `setup/`.
 
-### `/states` — the one that isn't a flow
+### `/statemachine` — the one that isn't a flow
 
 Every flow above can only be read forwards, one state at a time, which is right
-for a tester and wrong for a review. [`/states`](https://eai-website.github.io/prototypes/states)
+for a tester and wrong for a review. [`/statemachine`](https://eai-website.github.io/prototypes/statemachine)
 is the setup app with the journey taken off it: a rail of controls on the left,
 the app on the right, and every screen and every failure one click apart. It
 starts before the app exists, at the disk image.
@@ -108,7 +112,7 @@ Two rules it follows, both of which are the point:
 
 - **It is not a copy.** `#winSetup` is `fetch`ed out of `signup/index.html` when
   the page loads, so there is no second sign-in screen in this repo to keep in
-  step. Change `/signup`, reload `/states`, and it is already there. The fetch is
+  step. Change `/signup`, reload `/statemachine`, and it is already there. The fetch is
   `cache: 'no-store'` — a cached response would quietly make it a copy after all,
   and driving yesterday's markup with today's state code fails as a missing
   element somewhere far from the cause. The cost is that this one page needs a
@@ -117,7 +121,7 @@ Two rules it follows, both of which are the point:
 **If it won't come up**, the panel names which half broke. *"This page needs a
 static server"* means the app never arrived — no server, wrong folder. *"The app
 loaded, but this page couldn't drive it"* means the opposite: the server is fine
-and `/states` reached for an element `/signup` no longer has, so it names the id.
+and `/statemachine` reached for an element `/signup` no longer has, so it names the id.
 Full stack in the console. If you've just changed the setup app and see the
 second one, that element is where to look — and hard-reload once (⇧⌘R) so the
 browser picks up the current `states.js` too.
@@ -152,7 +156,7 @@ taken in.
 opened. It isn't the app: it's a Finder window with our wordmark in it, and the
 whole design is making one drag obvious. Its *Moment* control holds each beat
 still — opening, ready to drag, over Applications, copied — which is the only way
-to look at a sequence that is over in 1.3 seconds. `/states` lifts both `#winSetup`
+to look at a sequence that is over in 1.3 seconds. `/statemachine` lifts both `#winSetup`
 and `#winDmg` and shows one at a time; the frame takes each window's own height
 (900×566 here, 900×720 for the app), because two different windows being two
 different shapes isn't the resizing we removed.
@@ -170,7 +174,7 @@ counted questions you can already see all of, and as a tick it reported
 "answered" on a step whose answer sits directly underneath it in words. It also
 cost a 34px indent, so no heading shared a left edge with anything. The wordmark
 went for the same reason — the window's own title bar already says *Enterprise AI
-Setup*. Both are overridden in `signup.css`, which only `/signup` and `/states`
+Setup*. Both are overridden in `signup.css`, which only `/signup` and `/statemachine`
 load, so `/install-3` and `/install-4` keep the look they were tested with.
 
 **The window is 900 × 720, fixed, for every state.** Measured across the states
@@ -817,6 +821,28 @@ alone elsewhere:
 - Placeholder nav items were `href="#"`, which scrolls the page to the top;
   inside the desktop's browser frame that reads as the UI jumping away from you
   with no way back. They now say what they are, in a toast.
+
+## One prompt, our harness
+
+`/build` is what `/signup` would look like if the homepage asked **what do you want to build?** instead of offering a download. You still make an account first (Microsoft, workspace, then the product), but you land in **our** no-code builder with the prompt already sent — and a credit meter in the sidebar from the first second. When you are halfway through the free credits, or when what you typed is bigger than a four-step form, two inline cards offer top-up or building on your machine; they never fire on the same turn. From the disk image onwards it is `/signup` line for line, including the empty harness and the `/eai` hand-off.
+
+**Decisions taken for this sketch** (invented figures, plausible shape):
+
+- **Credits**, not tokens — 100 on sign-up, per-turn prices on billable controls, 500 for $49 top-up (`plans.html`).
+- **The work travels** — EAI Setup opens with the app name and brief already in it; the hand-off screen names what crossed.
+- **Account first**, prompt carried on every screen we own (`assets/build-prompt.js`); quiet on Microsoft's pages.
+- **The box takes anything** on the homepage; the harness answers in product vocabulary, and an app-shaped prompt is what fires the fit fork.
+- **Marketing is designed here**, not mirrored — `home.html` is the stand-in hero with the composer as the only primary action.
+
+**The web half** (`build/pages/`):
+
+1. `home.html` — **What do you want to build?** composer, six chips from `new-workflow-chat.tsx`, **Start** into sign-up with `?prompt=`
+2. `signup.html` → `ms-signin.html` → `verify.html` (email route only) → `workspace.html` — account, with the strip *Building: …* on every owned screen
+3. `builder.html` — the harness (`assets/builder.js`): scripted transcript, ledger, business process card, clarification stepper, preview panel, cost fork at 50%, fit fork when `APP_WORDS` match
+4. `app.html` — logged-in product on the **CLI** tab (download + `/eai` instruction), same as `/signup` from step 6
+5. `plans.html` — top-up arrived at, not sold mid-journey
+
+⌘K jumps to the marketing site, sign-up, product, error states, and the two harness variations (`?scenario=installed|none`).
 
 ## Chat in the app
 
