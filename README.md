@@ -53,6 +53,9 @@ later, on a machine where EAI Setup is already installed.
 | ↳ *nothing installed* | `signup/` | [/signup?scenario=none](https://eai-website.github.io/prototypes/signup?scenario=none) | Same flow, out to claude.com and back first |
 | **Version history** | `history/` | [/history](https://eai-website.github.io/prototypes/history) | The four passes side by side, with what each one changed |
 | **EAI Setup — states** | `states/` | [/states](https://eai-website.github.io/prototypes/states) | Not a flow — every state of the setup app on one page, for reviewing |
+| **The build stage — states** | `build-states/` | [/build-states](https://eai-website.github.io/prototypes/build-states) | Not a flow — every state of the build stage, drawn in a CLI and in our own app, side by side |
+| **Who draws the box?** | `mcp/` | [/mcp](https://eai-website.github.io/prototypes/mcp) | Not a flow — how much UI we can get into somebody else's tool, in pictures |
+| ↳ *the long version* | `mcp/reference.html` | [/mcp/reference.html](https://eai-website.github.io/prototypes/mcp/reference.html) | The same thing with the code, the support table and the sources |
 | **Roadmap — general** | `roadmap/timetable.html` | [/roadmap/timetable.html](https://eai-website.github.io/prototypes/roadmap/timetable.html) | **In use** — three teams, four quarters, interlocks |
 | **Roadmap — usability / CLI** | `roadmap/funnel.html` | [/roadmap/funnel.html](https://eai-website.github.io/prototypes/roadmap/funnel.html) | **In use** — a funnel band's problem, outcome, solution |
 | ↳ *tree* | `roadmap/index.html` | [/roadmap](https://eai-website.github.io/prototypes/roadmap) | Earlier pass — what stands on what |
@@ -202,6 +205,85 @@ Adding a state means adding to `SCREENS` in `assets/states.js` — a name, what 
 screen is for, its failures and how each is escaped, and a `paint` for anything
 the markup can't say on its own. Adding a *screen* to the setup app means adding
 it to `signup/index.html` as usual, then one entry here.
+
+## The build stage
+
+`/states` covers the setup app. This is the other half of the journey: what
+happens after setup hands over, when somebody is in Claude Code, Codex, Copilot,
+Gemini or VS Code and types `/eai`.
+
+It could not be built the way `/states` was. That page lifts the real app out of
+`/signup` so it can never drift; this one has nothing to lift, because the build
+stage happens in **somebody else's window**. So `/build-states` draws the harness,
+and every claim on it about a tool we don't own was checked rather than
+remembered — against the shipped Claude Code binary (v2.1.101) and the MCP
+extension client matrix.
+
+**Nine stages, five gates, twenty faults.** The gates are the moments the
+pipeline stops for a person — the proposal approval, the protected file, the
+unfinished checklist — and they are not failures, they are the design. Today
+they are said in seven different shapes. Every fault carries who has to fix it
+(you, the machine, Gofer, the model) and a way out; **three of them have no way
+out at all**, and the page says so rather than inventing one.
+
+**The single worst property of the build stage** is that in a text stream
+*working*, *waiting for you* and *dead* all render identically — as an absence
+of new text. So every state on the page ends with the same three-shape line, and
+that line is the proposal:
+
+```
+▸ working   · Validate  · 12 agents out · 5 back · 4m 12s
+◆ your turn · Implement · type approve, avoid or stop
+■ stopped   · Entry     · no way forward from here
+```
+
+**There is no explanatory prose on the page**, on purpose. An earlier pass
+explained itself in the rail and above every window and was unusable for the one
+job it has — putting two drawings of the same state next to each other. The
+reasoning is here instead.
+
+### What we can actually draw in their window
+
+`/mcp` is the explainer, in pictures; `/mcp/reference.html` is the same thing
+with the code and the sources. The short version is that there are four rungs,
+and they differ only in **who draws the box**:
+
+| Rung | We author | Whose design |
+| --- | --- | --- |
+| 1 · Text | words | theirs, no control |
+| 2 · Form | a JSON Schema (`elicitation/create`) | **theirs, our content** |
+| 2b · Link | a URL | ours, in the browser |
+| 3 · App | HTML (`ui://`, MCP Apps) | **ours, wearing their tokens** |
+
+Rung 3 is the interesting one: the host passes `--color-background-primary`,
+`--color-text-primary`, `--font-sans`, `--border-radius-md`, light or dark and
+its own fonts, so one HTML file is repainted by each tool. It is closer to
+"their UI library" than importing components would be, and safer — neither side
+takes a dependency on the other.
+
+**Rung 3 does not run in a single command-line tool.** It works in VS Code,
+Cursor, Claude Desktop and ChatGPT. Our pipeline lives in the terminals. So
+`/build-states` **accepts the constraint and uses rung 2 only** — two of the five
+tools cannot even do that and fall to plain text, which the page shows rather
+than hides, because it is the price of the choice.
+
+**None of rungs 2, 2b or 3 are available today.** All three are things an MCP
+server does, and Gofer is currently markdown command files the harness's own
+agent reads — it can print text and that is the end of its powers. Shipping an
+MCP server alongside the plugin is the one decision that opens all of them.
+
+### CLI versus our own app
+
+The page draws both, and the comparison is the point. Some states are handled
+better in our app; the ones worth arguing from are the ones that **stop
+existing** — no command to discover, no version to drift, no folder to be wrong
+about, and no context cliff, because owning the session means checkpointing
+underneath instead of asking somebody to quit and retype a resume command.
+
+Adding a state means adding to `STAGES` in `assets/build-states.js`: a name of
+three words or fewer, what a person sees, who owns it, the way out, and an
+`ours` entry saying what our own app does differently — or `gone: true` if the
+state cannot happen there at all.
 
 ## Hosting
 

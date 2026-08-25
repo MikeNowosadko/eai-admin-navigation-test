@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Reference — four ways to ask a question</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/mcp.css" />
+</head>
+<body class="mcp">
+
+<!-- A teaching page, not a prototype. It exists because "rung 2" and
+     "rung 3" are the two options that decide what the build stage can
+     feel like, and the difference between them is one sentence that is
+     very hard to hold on to from prose alone: on rung 2 they draw it,
+     on rung 3 we draw it and they paint it.
+
+     Everything here is one question — the approval gate — asked four
+     ways, because a page that used a different example per rung would
+     be teaching the examples. -->
+
+<div class="wrap wide">
+
+  <header class="mast">
+    <div class="kicker">EAI · the build stage</div>
+    <h1>Four ways to ask somebody a question<br />inside a tool we don't own.</h1>
+    <p class="stand">The agent has finished researching and must not build anything until a human
+      says yes. That's the question. The four rungs differ in exactly one way —
+      <b>who draws the box it appears in</b> — and everything else follows from that.</p>
+  </header>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>The one idea</h2>
+    <h3>It's a dial, from “they draw it” to “we draw it”.</h3>
+    <p>Not four unrelated technologies. One dial with four notches. As you turn it to the right
+      you get more control over what a person sees, and fewer tools that will do it for you.
+      That trade is the whole subject.</p>
+
+    <div class="dial">
+      <div class="dial-ends"><span>They draw it</span><span>We draw it</span></div>
+      <div class="dial-track"></div>
+      <div class="dial-marks">
+        <div><b>1 · Text</b><span>We send words. They print them. Nobody drew anything.</span></div>
+        <div><b>2 · Form</b><span>We send a <i>description</i> of the question. They build the box out of their own parts.</span></div>
+        <div><b>2b · Link</b><span>We send a URL. They ask “open this?”. Our page opens in the browser.</span></div>
+        <div><b>3 · App</b><span>We send real HTML. It renders inside their window — and they hand us their colours.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>See it</h2>
+    <h3>The same question, four ways, three tools.</h3>
+    <p>Left is <b>what we author</b>. Right is <b>what a person sees</b>. The point of the
+      playground is that the left side barely changes and the right side changes completely.
+      Rungs a tool can't do are struck through.</p>
+
+    <div class="play">
+      <div class="play-bar">
+        <div class="grp">
+          <span>Harness</span>
+          <div class="seg" id="segHarness">
+            <button data-v="claude">Claude Code</button>
+            <button data-v="codex">Codex</button>
+            <button data-v="vscode">VS Code</button>
+          </div>
+        </div>
+        <div class="grp">
+          <span>Rung</span>
+          <div class="seg" id="segRung">
+            <button data-v="text">1 · Text</button>
+            <button data-v="form">2 · Form</button>
+            <button data-v="url">2b · Link</button>
+            <button data-v="app">3 · App</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="play-cols">
+        <div class="play-col">
+          <h4>What we write &nbsp;·&nbsp; <em id="srcRung"></em></h4>
+          <pre class="play-src" id="src"></pre>
+        </div>
+        <div class="play-col">
+          <h4>What they see &nbsp;·&nbsp; <em id="outHarness"></em></h4>
+          <div class="play-out" id="out"></div>
+        </div>
+      </div>
+
+      <div class="play-note" id="note"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>The bit that matters</h2>
+    <h3>Rung 2 and rung 3 are opposites, not neighbours.</h3>
+    <p>They look adjacent because both produce a nice-looking card instead of a wall of text.
+      But they are built the opposite way round, and that decides what you can and cannot ask for.</p>
+
+    <div class="vs">
+      <div class="vs-card two">
+        <span class="tag">Rung 2 · Form</span>
+        <h4>We send the <i>question</i>.<br />They build the UI.</h4>
+        <p>Like ordering a form from a print shop. You say “I need one question with three
+          options.” They print it — on their letterhead, in their typeface, at their size.
+          Every shop prints it differently and you never see the press.</p>
+        <dl>
+          <dt>We control</dt>
+          <dd>The wording. The options. Which fields exist.</dd>
+          <dt>They control</dt>
+          <dd>Every pixel. Layout, colour, type, buttons, keyboard behaviour.</dd>
+          <dt>The hard limit</dt>
+          <dd>You may only order from their catalogue, which is <b>six controls</b>: text box,
+            number, checkbox, pick one, pick one with labels, pick several. That's it. No image,
+            no table, no diff, no chart, no preview, no link that isn't text.</dd>
+          <dt>Costs us</dt>
+          <dd>An afternoon. It's a JSON schema.</dd>
+          <dt>Works in</dt>
+          <dd>Claude Code, Codex, VS Code, Cursor. <b>Not</b> Copilot CLI or Gemini CLI.</dd>
+        </dl>
+      </div>
+
+      <div class="vs-card three">
+        <span class="tag">Rung 3 · App</span>
+        <h4>We build the UI.<br />They lend us the paint.</h4>
+        <p>Like hanging your own picture in someone's gallery. You paint it; they frame it, hang
+          it, and hand you their paint tin first so it matches the room. If they redecorate, your
+          picture changes with it.</p>
+        <dl>
+          <dt>We control</dt>
+          <dd>Everything inside the frame. It is a real web page — anything HTML can do.</dd>
+          <dt>They control</dt>
+          <dd>The frame, the sandbox, and <b>the palette</b>. They pass us CSS variables:
+            <code>--color-background-primary</code>, <code>--color-text-primary</code>,
+            <code>--font-sans</code>, <code>--border-radius-md</code>, light or dark, their fonts.</dd>
+          <dt>The hard limit</dt>
+          <dd>Almost none, on what you can draw. The limit is <b>where it runs</b>.</dd>
+          <dt>Costs us</dt>
+          <dd>Building and maintaining a real interface, plus a message channel to talk to the host.</dd>
+          <dt>Works in</dt>
+          <dd>VS Code, Cursor, Claude Desktop, ChatGPT. <b>None of the command-line tools</b> —
+            and the command line is where our pipeline lives.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="oneline">
+      <b>Rung 2 is their design carrying our content. Rung 3 is our design wearing their skin.</b>
+      If you remember one line from this page, that's the one.
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>Why rung 3 is the interesting one</h2>
+    <h3>One file. Two tools. We changed nothing.</h3>
+    <p>This is the part that sounds too good to be true, so it's worth seeing. Below is the
+      <i>same</i> card — same HTML, same markup, byte for byte. The only difference is which
+      tool it landed in, because each one handed it a different set of CSS variables on the way in.
+      We didn't write a VS Code version and a Claude version. We wrote one, and asked for
+      <code>var(--color-background-primary)</code> instead of picking a colour.</p>
+
+    <div class="vs" style="margin-top:22px">
+      <div>
+        <h4 style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#86868f;margin:0 0 11px">Painted by VS Code</h4>
+        <div class="vsc">
+          <div class="vsc-top"><i></i> Chat — eai</div>
+          <div class="vsc-body">
+            <div class="ours skin-vscode">
+              <h5>Approve before building?</h5>
+              <p class="o-sub">contract-renewals · research finished 4 minutes ago</p>
+              <div class="o-rows">
+                <div class="o-row"><b>Scope</b><span>3 screens, 2 integrations</span></div>
+                <div class="o-row"><b>Touches</b><span>~40 files</span><span class="o-chip risk">1 protected</span></div>
+                <div class="o-row"><b>Rollback</b><span>checkpoint at every phase</span></div>
+              </div>
+              <div class="o-acts">
+                <a class="o-btn">Approve</a><a class="o-btn ghost">Give feedback</a><a class="o-btn ghost">Stop</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#86868f;margin:0 0 11px">Painted by Claude Desktop</h4>
+        <div class="cld">
+          <div class="cld-top"><i></i> Claude</div>
+          <div class="cld-body">
+          <div class="ours skin-claude">
+            <h5>Approve before building?</h5>
+            <p class="o-sub">contract-renewals · research finished 4 minutes ago</p>
+            <div class="o-rows">
+              <div class="o-row"><b>Scope</b><span>3 screens, 2 integrations</span></div>
+              <div class="o-row"><b>Touches</b><span>~40 files</span><span class="o-chip risk">1 protected</span></div>
+              <div class="o-row"><b>Rollback</b><span>checkpoint at every phase</span></div>
+            </div>
+            <div class="o-acts">
+              <a class="o-btn">Approve</a><a class="o-btn ghost">Give feedback</a><a class="o-btn ghost">Stop</a>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:22px">This is what you meant by “pull from their UI library”, and it's better than
+      importing their components: we never take a dependency on their code, they never take one on ours,
+      and neither of us can break the other. <b>They send the paint, not the furniture.</b></p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>Choosing</h2>
+    <h3>One test: can the question be answered by picking from a list?</h3>
+    <p>If yes, rung 2 is enough and far cheaper. If a person needs to <i>look at something</i>
+      before they can answer, rung 2 physically cannot carry it and you're on rung 3 or the browser.</p>
+
+    <div class="test">
+      <div class="test-row"><span>“Proceed anyway? yes / no”</span><span class="ans r2">Rung 2</span></div>
+      <div class="test-row"><span>“Which of these three architectures?”</span><span class="ans r2">Rung 2</span></div>
+      <div class="test-row"><span>“Which of these files may I touch?” <i>(pick several)</i></span><span class="ans r2">Rung 2</span></div>
+      <div class="test-row"><span>“Here are the 40 files I'd change — is that right?”</span><span class="ans r3">Rung 3</span></div>
+      <div class="test-row"><span>“Here's the screen I built. Approve it?”</span><span class="ans r3">Rung 3</span></div>
+      <div class="test-row"><span>“Tests are failing. Here's the diff and the log.”</span><span class="ans r3">Rung 3</span></div>
+      <div class="test-row"><span>“Working… 6 of 11 tasks done.”</span><span class="ans r1">Rung 1</span></div>
+    </div>
+
+    <p style="margin-top:22px">Which produces an uncomfortable finding: <b>most of our interesting gates are
+      rung 3 gates</b>, and rung 3 doesn't run in the command-line tools our pipeline lives in. That's
+      what rung 2b — the link out to the browser — is for. It's the only way to show somebody a picture
+      inside Claude Code, and the price is that they leave the window.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>Where each one works</h2>
+    <h3>The split isn't random: it's terminals versus windows.</h3>
+
+    <table class="mx">
+      <thead>
+        <tr><th>Harness</th><th>1 · Text</th><th>2 · Form</th><th>2b · Link</th><th>3 · App</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Claude Code <small style="color:#86868f">CLI</small></td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="n">—</td></tr>
+        <tr><td>Codex <small style="color:#86868f">CLI</small></td><td class="y">✓</td><td class="y">✓</td><td class="n">—</td><td class="n">—</td></tr>
+        <tr><td>Copilot CLI</td><td class="y">✓</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+        <tr><td>Gemini CLI</td><td class="y">✓</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+        <tr class="gui"><td>VS Code / Copilot</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+        <tr class="gui"><td>Cursor</td><td class="y">✓</td><td class="y">✓</td><td class="n">—</td><td class="y">✓</td></tr>
+        <tr class="gui"><td>Claude Desktop</td><td class="y">✓</td><td class="n">—</td><td class="n">—</td><td class="y">✓</td></tr>
+      </tbody>
+      <caption>Claude Code checked against the shipped binary (v2.1.101), which declares
+        <code>elicitation</code> and has the dialog, the queue and the hooks to prove it. The rest from
+        the official MCP extension client matrix. Blue rows are windows; the others are terminals.</caption>
+    </table>
+
+    <p style="margin-top:24px">Read down the last column and the product decision appears on its own:
+      <b>the harness somebody picks in EAI Setup decides how good their build stage can be.</b>
+      Today that picker is presented as a matter of taste.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>The catch</h2>
+    <div class="catch">
+      <h4>None of rungs 2, 2b or 3 are available to us today.</h4>
+      <p>All three are things an <b>MCP server</b> does. Gofer right now is a set of markdown
+        command files that the harness's own agent reads and follows — it can print text, and
+        that is the end of its powers. Rung 1 is all we have.</p>
+      <pre>  gate reached in /5_gofer_implement
+       ↓
+  call a tool on our own MCP server
+       ↓
+  server asks the harness for input
+       ↓
+  harness draws its own card   ← rungs 2, 2b, 3 live here
+       ↓
+  accept / decline comes back as data, not as typing</pre>
+      <p>So it's one decision, and it's binary: <b>do we ship an MCP server alongside the plugin?</b>
+        If no, the build stage is text forever and the state machine is a much smaller study.
+        If yes, all four rungs open at once and the fallback ladder becomes the design problem.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="sec">
+    <h2>The rule that follows</h2>
+    <h3>Text isn't the fallback. Text is the source of truth.</h3>
+    <p>Every gate gets written as words first and must be answerable by typing. The richer rungs
+      are <i>affordances over the same decision</i> — never a different decision, never an extra one.
+      Otherwise the Copilot CLI user is playing a different game from the VS Code user, and we'd be
+      maintaining four products.</p>
+    <p>Which also means the ladder degrades in one direction only, and never loses the question:</p>
+    <pre style="font-family:var(--mono);font-size:13px;line-height:1.9;color:#5c5c66;background:#fafafa;border:1px solid #efeff2;border-radius:12px;padding:18px 20px;margin-top:8px">one gate, authored once
+  ├─ 3 · App     VS Code, Cursor, Claude Desktop   our card, their paint
+  ├─ 2b · Link   Claude Code, VS Code              our card, in the browser
+  ├─ 2 · Form    Claude Code, Codex, VS Code       their card, our question
+  └─ 1 · Text    everything, always                the words, and what to type</pre>
+  </section>
+
+  <p class="foot">
+    Sources —
+    <a href="https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx">MCP Apps spec (SEP-1865)</a> ·
+    <a href="https://modelcontextprotocol.io/extensions/apps/overview">MCP Apps overview</a> ·
+    <a href="https://modelcontextprotocol.io/extensions/client-matrix">extension client matrix</a> ·
+    <a href="https://canimcp.dev/">canimcp.dev</a> ·
+    Claude Code v2.1.101, read locally.
+    Reasoning in the repo README.
+  </p>
+
+</div>
+
+<script src="../assets/mcp.js"></script>
+</body>
+</html>

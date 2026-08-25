@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Who draws the box?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/mcp-eli5.css" />
+</head>
+<body class="e5">
+
+<!-- The picture version, made with the eli5 skill: big pictures, few
+     words. The one it replaced is still at reference.html and is linked
+     at the bottom — it has the matrix, the sources and the code, which
+     are for checking a fact later, not for understanding the idea once.
+
+     Everything obeys one rule: BLUE is ours, GREY is theirs. Both
+     rungs can then be read straight off the picture. -->
+
+<div class="w">
+
+  <!-- ============================================================ -->
+  <section class="slide first hero">
+    <h1>Who draws<br />the box?</h1>
+    <p>Our robot works inside somebody else's app. Sometimes it has to stop and ask you
+      something. That question has to appear in a box — and the box is the whole problem.</p>
+
+    <div class="key">
+      <div><i class="b"></i> Blue = ours</div>
+      <div><i class="g"></i> Grey = theirs</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <div class="app">
+      <div class="app-top"><i></i><i></i><i></i><b>Somebody else's app</b></div>
+      <div class="app-body">
+        <div class="bot">
+          <div class="face"><span class="eye"></span><span class="eye"></span></div>
+          <div class="said">“Shall I start building?”<span>Our robot. It can't build until you say yes.</span></div>
+        </div>
+        <div class="qbox">
+          <div class="qm">?</div>
+          <div class="lbl">who draws this box</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">1</span>
+    <h2>There are four answers.</h2>
+    <p class="say">Go right and the box looks more like <b>ours</b>. Go right and <b>fewer apps</b>
+      will do it. That's the whole trade.</p>
+
+    <div class="stairs-ends"><span>They draw it</span><span>We draw it</span></div>
+    <div class="stairs">
+      <div class="stair">
+        <div class="bar"><b>1</b></div>
+        <div class="cap">Words<span>Just text. Nobody drew anything.</span></div>
+      </div>
+      <div class="stair">
+        <div class="bar"><b>2</b></div>
+        <div class="cap">Form<span>We order a box. They build it.</span></div>
+      </div>
+      <div class="stair">
+        <div class="bar"><b>2b</b></div>
+        <div class="cap">Link<span>Our box, but in a browser tab.</span></div>
+      </div>
+      <div class="stair">
+        <div class="bar"><b>3</b></div>
+        <div class="cap">App<span>Our box, inside their app.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">2</span>
+    <h2>Rung 2: we <span class="blue">order</span> a box.<br />They <span class="grey">build</span> it.</h2>
+    <p class="say">Like posting a note to a sign shop. You say what it should <b>say</b>.
+      They decide what it <b>looks like</b>. You never see the press.</p>
+
+    <div class="strip wide3">
+      <div class="cell">
+        <div class="tag us">We post this</div>
+        <div class="note">
+          <h4>One question, please</h4>
+          <ul>
+            <li>Ask: <b>Shall I build?</b></li>
+            <li>Answer 1: <b>Yes</b></li>
+            <li>Answer 2: <b>Change something</b></li>
+            <li>Answer 3: <b>Stop</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arrow">
+        <svg viewBox="0 0 52 34" fill="none"><path d="M2 17h44M34 6l12 11-12 11" stroke="#14141a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="cell">
+        <div class="tag them">They build this</div>
+        <div class="threes">
+          <div class="tbox2 claude">
+            <div class="who">Claude Code</div>
+            <div class="q">Shall I build?</div>
+            <div class="a on">❯ 1. Yes</div>
+            <div class="a">&nbsp; 2. Change something</div>
+          </div>
+          <div class="tbox2 codex">
+            <div class="who">Codex</div>
+            <div class="q">Shall I build?</div>
+            <div class="a on">&gt; Yes</div>
+            <div class="a">&nbsp; Change something</div>
+          </div>
+          <div class="tbox2 vsc">
+            <div class="who">VS Code</div>
+            <div class="q">Shall I build?</div>
+            <div class="a on">● Yes</div>
+            <div class="a">○ Change something</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="punch">Same note. <span class="grey">Three different boxes.</span><br />
+      We picked the words. We picked <em>none</em> of the pixels.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">3</span>
+    <h2>Rung 3: we <span class="blue">build</span> the box.<br />They hand us the <span class="grey">paint</span>.</h2>
+    <p class="say">Like hanging your own picture in someone's gallery. You paint it.
+      They frame it — and give you their paint first, so it matches the room.</p>
+
+    <div class="strip">
+      <div class="cell">
+        <div class="tag us">We build this</div>
+        <div class="mycard plain">
+          <h4>Shall I build?</h4>
+          <div class="bar-row"><i style="width:38%"></i><i style="width:26%"></i></div>
+          <div class="bar-row"><i style="width:30%"></i><i style="width:44%"></i></div>
+          <div class="bar-row"><i style="width:46%"></i><i style="width:22%"></i></div>
+          <div class="btns"><u>Yes</u><u class="o">Change</u><u class="o">Stop</u></div>
+        </div>
+      </div>
+
+      <div class="arrow">
+        <div class="paint">
+          <div class="tins"><span class="tin a"></span><span class="tin b"></span><span class="tin c"></span></div>
+          <svg viewBox="0 0 52 34" fill="none"><path d="M2 17h44M34 6l12 11-12 11" stroke="#14141a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="tag them">They paint it</div>
+        <div class="painted">
+          <div class="skin vsc">
+            <div class="sk-top">VS Code</div>
+            <div class="sk-body">
+              <div class="mycard wear v">
+                <h4>Shall I build?</h4>
+                <div class="bar-row"><i style="width:38%"></i><i style="width:26%"></i></div>
+                <div class="bar-row"><i style="width:30%"></i><i style="width:44%"></i></div>
+                <div class="bar-row"><i style="width:46%"></i><i style="width:22%"></i></div>
+                <div class="btns"><u>Yes</u><u class="o">Change</u></div>
+              </div>
+            </div>
+          </div>
+          <div class="skin cld">
+            <div class="sk-top">Claude</div>
+            <div class="sk-body">
+              <div class="mycard wear c">
+                <h4>Shall I build?</h4>
+                <div class="bar-row"><i style="width:38%"></i><i style="width:26%"></i></div>
+                <div class="bar-row"><i style="width:30%"></i><i style="width:44%"></i></div>
+                <div class="bar-row"><i style="width:46%"></i><i style="width:22%"></i></div>
+                <div class="btns"><u>Yes</u><u class="o">Change</u></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="punch">Same box, painted twice. <span class="blue">We wrote it once.</span><br />
+      We never picked a colour — we asked for <em>“their background colour”</em>.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">4</span>
+    <h2>So they're opposites.</h2>
+    <p class="say">This is the bit worth keeping. Rung 2 and rung 3 are built the
+      <b>other way round</b> from each other.</p>
+
+    <div class="flip">
+      <div class="r2">
+        <h3>Rung 2 · Form</h3>
+        <div class="line">
+          <svg viewBox="0 0 34 22" fill="none"><path d="M32 11H4M12 3L2 11l10 8" stroke="#7b7b85" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          They send the <em>shape</em>
+        </div>
+        <div class="line">
+          <svg viewBox="0 0 34 22" fill="none"><path d="M2 11h28M24 3l8 8-8 8" stroke="#0099ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          We send the <em>words</em>
+        </div>
+      </div>
+      <div class="r3">
+        <h3>Rung 3 · App</h3>
+        <div class="line">
+          <svg viewBox="0 0 34 22" fill="none"><path d="M32 11H4M12 3L2 11l10 8" stroke="#7b7b85" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          They send the <em>colours</em>
+        </div>
+        <div class="line">
+          <svg viewBox="0 0 34 22" fill="none"><path d="M2 11h28M24 3l8 8-8 8" stroke="#0099ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          We send the <em>shape</em>
+        </div>
+      </div>
+    </div>
+
+    <p class="punch">Rung 2 is <span class="grey">their box</span> holding our words.<br />
+      Rung 3 is <span class="blue">our box</span> wearing their paint.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">5</span>
+    <h2>Rung 2 has a small toy box.</h2>
+    <p class="say">You can only order these six things. That's the entire catalogue.</p>
+
+    <div class="toys">
+      <div class="toy"><div class="art"><span class="fld"></span></div><b>A text box</b></div>
+      <div class="toy"><div class="art"><span class="numf">42</span></div><b>A number</b></div>
+      <div class="toy"><div class="art"><span class="chk"></span></div><b>A tick box</b></div>
+      <div class="toy"><div class="art"><span class="rad"><i class="on"></i><i></i><i></i></span></div><b>Pick one</b></div>
+      <div class="toy"><div class="art"><span class="rad"><i class="on"></i><i></i></span></div><b>Pick one, with labels</b></div>
+      <div class="toy"><div class="art"><span class="sqs"><i class="on"></i><i class="on"></i><i></i></span></div><b>Pick several</b></div>
+    </div>
+
+    <p class="say" style="margin:36px 0 0">Which means rung 2 <b>cannot</b> show you any of this:</p>
+
+    <div class="cant">
+      <div class="cantx"><div class="big">🖼</div><b>A picture</b></div>
+      <div class="cantx"><div class="big">📊</div><b>A chart</b></div>
+      <div class="cantx"><div class="big">📄</div><b>A list of changes</b></div>
+      <div class="cantx"><div class="big">👀</div><b>A preview</b></div>
+    </div>
+
+    <p class="punch" style="margin-top:34px">Ask yourself one thing:<br />
+      <span class="blue">does someone have to <em>look</em> at something to answer?</span><br />
+      If yes, rung 2 can't carry it.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">6</span>
+    <h2>Now the bad news.</h2>
+    <p class="say">Rung 3 only works in apps with <b>windows</b>. Our robot lives in
+      apps that are <b>black screens</b>.</p>
+
+    <div class="buckets">
+      <div class="bucket cli">
+        <div class="bt"><b>Black screens</b><span>Where our pipeline actually runs</span></div>
+        <ul>
+          <li>Claude Code</li>
+          <li>Codex</li>
+          <li>Copilot CLI <small>words only</small></li>
+          <li>Gemini CLI <small>words only</small></li>
+        </ul>
+        <div class="verdict">No rung 3. Ever.</div>
+      </div>
+      <div class="bucket gui">
+        <div class="bt"><b>Windows</b><span>Where the pretty boxes work</span></div>
+        <ul>
+          <li>VS Code</li>
+          <li>Cursor</li>
+          <li>Claude Desktop</li>
+          <li>ChatGPT</li>
+        </ul>
+        <div class="verdict">Rung 3 works here.</div>
+      </div>
+    </div>
+
+    <p class="punch">So the tool somebody picks at setup<br />
+      quietly decides <span class="blue">how good their building day is.</span></p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">7</span>
+    <h2>And we can't do <em>any</em> of it yet.</h2>
+    <p class="say">Right now our robot is a <b>list of instructions</b> the app reads.
+      A list can shout. It can't knock on a door and wait.</p>
+
+    <div class="catch2">
+      <div class="now">
+        <h3>Today</h3>
+        <p class="big2">A list of instructions</p>
+        <div class="can"><span class="yes">✓</span> Print words</div>
+        <div class="can"><span class="no">✕</span> Show a box</div>
+        <div class="can"><span class="no">✕</span> Wait for an answer</div>
+        <div class="can"><span class="no">✕</span> Get an answer back as data</div>
+      </div>
+      <div class="then">
+        <h3>If we build one thing</h3>
+        <p class="big2">A little server of our own</p>
+        <div class="can"><span class="yes">✓</span> Print words</div>
+        <div class="can"><span class="yes">✓</span> Show a box</div>
+        <div class="can"><span class="yes">✓</span> Wait for an answer</div>
+        <div class="can"><span class="yes">✓</span> Get an answer back as data</div>
+      </div>
+    </div>
+
+    <div class="ask">
+      <b>Do we build the little server?</b>
+      <span>Yes, and rungs 2, 2b and 3 all open at once. No, and it's words forever.</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="slide">
+    <span class="num">8</span>
+    <h2>One rule, whatever we pick.</h2>
+    <p class="say">Every question gets written as <b>words</b> first, and must be answerable by
+      typing. The nice boxes are a <b>kinder way to answer the same question</b> — never a
+      different one, never an extra one.</p>
+    <p class="punch">Otherwise the person on a black screen<br />is playing a different game
+      from the person in a window — <span class="blue">and we'd be building two products.</span></p>
+  </section>
+
+  <div class="more">
+    <a href="reference.html">Want the real detail? The long version &rarr;</a>
+    <span>Code, the full support table, and where every claim came from.</span>
+  </div>
+
+</div>
+
+</body>
+</html>

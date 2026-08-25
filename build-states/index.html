@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>The build stage — states</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/mcp.css" />
+<link rel="stylesheet" href="../assets/build-states.css" />
+</head>
+<body class="bs">
+
+  <!-- Every state the build stage can be in, drawn twice: in a window
+       we don't own, and in one we do.
+
+       There is no explanatory text on this page, on purpose. It is a
+       thing to look at, not a thing to read, and the version that
+       explained itself in the rail and above every window was unusable
+       for the one job it has — putting two drawings of the same state
+       next to each other. The reasoning lives in the header comment of
+       assets/build-states.js and in the README.
+
+       Two things it is not:
+       · Not a flow. Every state comes from the rail, so none can be
+         reached by accident and all of them can be linked to.
+       · Not invented. What each CLI tool will draw was checked against
+         the shipped Claude Code binary and the MCP extension matrix.
+         /mcp is the explainer; this is the machine. -->
+
+  <aside class="bs-rail">
+    <div class="bs-title">
+      <b>The build stage</b>
+      <a href="../mcp/">Rungs</a>
+      <a href="../states/">Setup app</a>
+    </div>
+
+    <div class="bs-grp"><h3>View</h3><div class="bs-seg" id="railView"></div></div>
+    <div class="bs-grp"><h3>Stage</h3><div class="bs-seg" id="railStage"></div></div>
+    <div class="bs-grp" id="grpGate"><h3>Gate</h3><div id="railGate"></div></div>
+    <div class="bs-grp" id="grpFault"><h3>Fault</h3><div id="railFault"></div></div>
+    <div class="bs-grp"><h3>Session</h3><div class="bs-seg" id="railSession"></div></div>
+    <div class="bs-grp" id="grpHarness"><h3>Harness</h3><div class="bs-seg" id="railHarness"></div></div>
+  </aside>
+
+  <main class="bs-stage">
+    <div class="bs-cap">
+      <b id="capName"></b>
+      <i class="bs-tag" id="capTag"></i>
+    </div>
+
+    <div class="bs-panes" id="panes"></div>
+  </main>
+
+<script src="../assets/build-states.js"></script>
+</body>
+</html>

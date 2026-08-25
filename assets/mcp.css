@@ -1,0 +1,414 @@
+/* ------------------------------------------------------------------
+   Four ways to ask a question — the teaching page at /mcp.
+
+   Explains the difference between an elicitation form (rung 2) and an
+   MCP App (rung 3) by showing the same question drawn both ways, side
+   by side, with the thing we authored next to the thing you'd see.
+
+   The mocks are drawn, not screenshotted, for the same reason the
+   hand-off video in /signup is: these tools redraw their chrome every
+   few months and a screenshot rots. What has to be accurate is the
+   *shape* of each one — who owns the border, whose fonts, how many
+   controls are on offer — and that is what is drawn here.
+------------------------------------------------------------------- */
+
+:root {
+  --paper: #ffffff;
+  --ink: #171717;
+  --dim: #5c5c66;
+  --faint: #86868f;
+  --line: #e4e4e7;
+  --line-soft: #efeff2;
+  --wash: #fafafa;
+  --brand: #0099ff;
+  --warn: #b8560f;
+  --good: #167a43;
+}
+
+body.mcp {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.55;
+}
+
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 28px 140px; }
+.wrap.wide { max-width: 1180px; }
+
+/* --- masthead ---------------------------------------------------- */
+
+.mast { padding: 84px 0 8px; }
+.mast .kicker {
+  font-size: 12px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--faint); margin-bottom: 18px;
+}
+.mast h1 {
+  font-size: 46px; line-height: 1.1; letter-spacing: -.025em;
+  font-weight: 700; margin: 0 0 20px;
+}
+.mast .stand {
+  font-size: 20px; line-height: 1.5; color: var(--dim);
+  max-width: 660px; margin: 0;
+}
+.mast .stand b { color: var(--ink); font-weight: 600; }
+
+/* --- section rhythm ---------------------------------------------- */
+
+.sec { padding-top: 76px; }
+.sec > h2 {
+  font-size: 13px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--faint);
+  margin: 0 0 10px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
+}
+.sec > h3 {
+  font-size: 30px; line-height: 1.2; letter-spacing: -.02em;
+  font-weight: 700; margin: 22px 0 14px; max-width: 720px;
+}
+.sec > p { font-size: 17px; color: var(--dim); max-width: 660px; margin: 0 0 16px; }
+.sec > p b, .sec li b { color: var(--ink); font-weight: 600; }
+.sec > p.lead { font-size: 19px; color: var(--ink); }
+
+code {
+  font-family: var(--mono); font-size: .88em;
+  background: var(--wash); border: 1px solid var(--line-soft);
+  border-radius: 5px; padding: 1px 5px;
+}
+
+/* --- the dial ---------------------------------------------------- */
+
+.dial { margin: 34px 0 0; }
+.dial-track {
+  position: relative; height: 5px; border-radius: 999px;
+  background: linear-gradient(90deg, #d9d9de 0%, #b9dcff 50%, var(--brand) 100%);
+}
+.dial-marks {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-top: 16px;
+}
+.dial-marks div { position: relative; padding-top: 16px; }
+.dial-marks div::before {
+  content: ''; position: absolute; top: -26px; left: 0;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--paper); border: 3px solid #c9c9d0;
+}
+.dial-marks div:nth-child(3)::before { border-color: #7fc4ff; }
+.dial-marks div:nth-child(4)::before { border-color: var(--brand); }
+.dial-marks b { display: block; font-size: 15px; font-weight: 650; }
+.dial-marks span { display: block; font-size: 13.5px; color: var(--dim); margin-top: 3px; }
+.dial-ends {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--faint); margin-bottom: 12px;
+}
+
+/* --- the playground ---------------------------------------------- */
+
+.play {
+  margin-top: 26px; border: 1px solid var(--line);
+  border-radius: 16px; overflow: hidden; background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+
+.play-bar {
+  display: flex; flex-wrap: wrap; gap: 26px; align-items: center;
+  padding: 14px 18px; border-bottom: 1px solid var(--line);
+  background: var(--wash);
+}
+.play-bar .grp { display: flex; align-items: center; gap: 9px; }
+.play-bar .grp > span {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--faint);
+}
+.seg { display: flex; gap: 3px; background: #ececf0; padding: 3px; border-radius: 9px; }
+.seg button {
+  border: 0; background: transparent; cursor: pointer;
+  font-size: 13px; font-weight: 550; color: var(--dim);
+  padding: 5px 11px; border-radius: 7px; white-space: nowrap;
+}
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed='true'] {
+  background: var(--paper); color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+.seg button[disabled] {
+  cursor: not-allowed; color: #b6b6bd;
+  text-decoration: line-through; text-decoration-thickness: 1px;
+}
+.seg button[disabled]:hover { color: #b6b6bd; }
+
+.play-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.play-col { min-width: 0; }
+.play-col + .play-col { border-left: 1px solid var(--line); }
+.play-col > h4 {
+  margin: 0; padding: 12px 18px 11px;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--faint);
+  border-bottom: 1px solid var(--line-soft);
+}
+.play-col > h4 em { font-style: normal; color: var(--ink); }
+
+.play-src {
+  margin: 0; padding: 16px 18px 20px; min-height: 268px;
+  font-family: var(--mono); font-size: 12px; line-height: 1.65;
+  color: #3a3a42; white-space: pre; overflow-x: auto;
+}
+.play-src .k { color: #7a3ea3; }
+.play-src .s { color: #0a6b3d; }
+.play-src .c { color: #9a9aa2; }
+.play-src .t { color: var(--warn); }
+
+.play-out {
+  padding: 20px 18px 26px; min-height: 268px;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+
+.play-note {
+  padding: 13px 18px 15px; border-top: 1px solid var(--line);
+  background: var(--wash); font-size: 14.5px; color: var(--dim);
+}
+.play-note b { color: var(--ink); font-weight: 600; }
+.play-note .miss { color: var(--warn); font-weight: 600; }
+
+/* --- drawn harness chrome ---------------------------------------- */
+
+.term {
+  width: 100%; border-radius: 8px; padding: 14px 16px 16px;
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.7;
+}
+.term.claude { background: #ffffff; border: 1px solid #e6e0dc; color: #2b2724; }
+.term.codex  { background: #0b0b0d; border: 1px solid #26262b; color: #d8d8de; }
+
+.term .muted { opacity: .5; }
+.term .prompt { color: #d97757; }
+.term.codex .prompt { color: #8f8f99; }
+
+/* a boxed dialog the way a terminal agent draws one */
+.tbox {
+  border: 1px solid #d97757; border-radius: 7px;
+  padding: 11px 13px 12px; margin: 8px 0 6px;
+}
+.term.codex .tbox { border-color: #4a4a55; border-radius: 3px; }
+.tbox .tb-title { font-weight: 600; margin-bottom: 2px; }
+.tbox .tb-msg { opacity: .75; margin-bottom: 9px; }
+.tbox .opt { padding: 1px 0; }
+.tbox .opt.on { color: #d97757; font-weight: 600; }
+.term.codex .tbox .opt.on { color: #ffffff; font-weight: 600; }
+.tbox .tb-foot { margin-top: 9px; opacity: .45; font-size: 11.5px; }
+
+/* VS Code chat pane */
+.vsc {
+  width: 100%; background: #1f1f1f; border: 1px solid #2d2d2d;
+  border-radius: 6px; overflow: hidden; color: #cccccc;
+  font-family: var(--font); font-size: 13px;
+}
+.vsc-top {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; background: #181818; border-bottom: 1px solid #2d2d2d;
+  font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: #8b8b8b;
+}
+.vsc-top i { width: 7px; height: 7px; border-radius: 50%; background: #0078d4; }
+.vsc-body { padding: 12px; }
+.vsc-card {
+  background: #252526; border: 1px solid #3c3c3c; border-radius: 4px; padding: 12px;
+}
+.vsc-card h5 { margin: 0 0 3px; font-size: 13px; font-weight: 600; color: #ffffff; }
+.vsc-card p { margin: 0 0 11px; font-size: 12.5px; color: #9d9d9d; line-height: 1.5; }
+.vsc-radio { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12.5px; }
+.vsc-radio i {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1px solid #6e6e6e; flex: 0 0 auto;
+}
+.vsc-radio.on i { border-color: #0078d4; box-shadow: inset 0 0 0 3px #0078d4; }
+.vsc-acts { display: flex; gap: 7px; margin-top: 12px; }
+.vsc-btn {
+  font-size: 12px; padding: 4px 12px; border-radius: 2px;
+  background: #0078d4; color: #ffffff; font-weight: 500;
+}
+.vsc-btn.ghost { background: #313131; color: #cccccc; border: 1px solid #3c3c3c; }
+
+/* Safari, for the URL rung */
+.saf {
+  width: 100%; border: 1px solid var(--line); border-radius: 9px;
+  overflow: hidden; background: var(--paper); box-shadow: var(--shadow-sm);
+}
+.saf-top {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; background: #f1f1f4; border-bottom: 1px solid var(--line);
+}
+.saf-top i { width: 9px; height: 9px; border-radius: 50%; background: #d8d8de; }
+.saf-url {
+  flex: 1; margin-left: 6px; background: var(--paper); border-radius: 5px;
+  padding: 3px 9px; font-family: var(--mono); font-size: 11px; color: var(--dim);
+}
+
+/* --- OUR card, the one that gets repainted (rung 3) --------------- */
+
+.ours {
+  --o-bg: #ffffff;
+  --o-fg: #171717;
+  --o-dim: #6a6a72;
+  --o-line: #e4e4e7;
+  --o-accent: #0099ff;
+  --o-accent-fg: #ffffff;
+  --o-radius: 12px;
+  --o-font: 'Inter', sans-serif;
+
+  width: 100%;
+  background: var(--o-bg); color: var(--o-fg);
+  border: 1px solid var(--o-line); border-radius: var(--o-radius);
+  font-family: var(--o-font); padding: 15px 16px 16px;
+}
+.ours h5 { margin: 0 0 4px; font-size: 14.5px; font-weight: 650; }
+.ours .o-sub { margin: 0 0 12px; font-size: 12.5px; color: var(--o-dim); line-height: 1.5; }
+.ours .o-rows { border-top: 1px solid var(--o-line); margin-bottom: 12px; }
+.ours .o-row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid var(--o-line); font-size: 12.5px;
+}
+.ours .o-row b { font-weight: 600; min-width: 92px; flex: 0 0 auto; }
+.ours .o-row span { color: var(--o-dim); }
+.ours .o-chip {
+  margin-left: auto; font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; padding: 2px 7px;
+  border-radius: calc(var(--o-radius) / 2); border: 1px solid var(--o-line);
+  color: var(--o-dim);
+}
+.ours .o-chip.risk { color: #b8560f; border-color: #f0d7c0; background: #fdf5ee; }
+.ours .o-acts { display: flex; gap: 7px; }
+.ours .o-btn {
+  font-size: 12.5px; font-weight: 550; padding: 6px 13px;
+  border-radius: calc(var(--o-radius) / 2);
+  background: var(--o-accent); color: var(--o-accent-fg);
+}
+.ours .o-btn.ghost {
+  background: transparent; color: var(--o-fg); border: 1px solid var(--o-line);
+}
+
+/* the two skins the host hands us */
+.ours.skin-vscode {
+  --o-bg: #252526; --o-fg: #ffffff; --o-dim: #9d9d9d; --o-line: #3c3c3c;
+  --o-accent: #0078d4; --o-radius: 4px;
+  --o-font: -apple-system, 'Segoe UI', sans-serif;
+}
+.ours.skin-vscode .o-chip.risk { color: #e8a33d; border-color: #5a4520; background: #33280f; }
+.ours.skin-claude {
+  --o-bg: #ffffff; --o-fg: #2b2724; --o-dim: #77706b; --o-line: #ece5e0;
+  --o-accent: #d97757; --o-radius: 12px;
+  --o-font: 'Inter', sans-serif;
+}
+
+/* --- head to head ------------------------------------------------ */
+
+.vs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 26px;
+}
+.vs-card {
+  border: 1px solid var(--line); border-radius: 14px; padding: 20px 20px 22px;
+}
+.vs-card.two { background: #fbfbfd; }
+.vs-card.three { background: #f6fbff; border-color: #cfe8ff; }
+.vs-card .tag {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; margin-bottom: 12px;
+  background: #ececf0; color: var(--dim);
+}
+.vs-card.three .tag { background: #d9edff; color: #0a5f9e; }
+.vs-card h4 { margin: 0 0 8px; font-size: 21px; letter-spacing: -.015em; font-weight: 700; }
+.vs-card > p { margin: 0 0 14px; font-size: 15px; color: var(--dim); }
+.vs-card dl { margin: 0; font-size: 14.5px; }
+.vs-card dt {
+  font-weight: 600; font-size: 11px; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--faint);
+  margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line);
+}
+.vs-card dd { margin: 4px 0 0; color: var(--dim); }
+.vs-card dd b { color: var(--ink); font-weight: 600; }
+
+.oneline {
+  margin: 30px 0 0; padding: 22px 24px;
+  border: 1px solid var(--line); border-left: 3px solid var(--brand);
+  border-radius: 0 12px 12px 0; background: var(--wash);
+  font-size: 19px; line-height: 1.5;
+}
+.oneline b { font-weight: 650; }
+
+/* --- decision test ----------------------------------------------- */
+
+.test { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.test-row {
+  display: grid; grid-template-columns: 1fr 132px;
+  gap: 18px; align-items: center;
+  padding: 14px 20px; border-bottom: 1px solid var(--line-soft); font-size: 15px;
+}
+.test-row:last-child { border-bottom: 0; }
+.test-row .ans {
+  font-size: 12px; font-weight: 650; letter-spacing: .05em; text-transform: uppercase;
+  text-align: right;
+}
+.test-row .ans.r2 { color: var(--dim); }
+.test-row .ans.r3 { color: #0a5f9e; }
+.test-row .ans.r1 { color: var(--faint); }
+
+/* --- the matrix -------------------------------------------------- */
+
+table.mx { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 14.5px; }
+table.mx th, table.mx td {
+  text-align: center; padding: 11px 8px; border-bottom: 1px solid var(--line-soft);
+}
+table.mx th:first-child, table.mx td:first-child { text-align: left; padding-left: 4px; }
+table.mx thead th {
+  font-size: 11px; font-weight: 600; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--line);
+}
+table.mx tbody td:first-child { font-weight: 550; }
+table.mx .y { color: var(--good); font-weight: 650; }
+table.mx .n { color: #c9c9d0; }
+table.mx tbody tr.gui td { background: #f6fbff; }
+table.mx caption {
+  caption-side: bottom; text-align: left; padding-top: 14px;
+  font-size: 13.5px; color: var(--faint); line-height: 1.5;
+}
+
+/* --- catch ------------------------------------------------------- */
+
+.catch {
+  margin-top: 26px; padding: 22px 24px;
+  border: 1px solid #f0d7c0; background: #fdf8f3; border-radius: 14px;
+}
+.catch h4 { margin: 0 0 8px; font-size: 18px; font-weight: 700; }
+.catch p { margin: 0 0 12px; font-size: 15.5px; color: #6a5a4c; }
+.catch p:last-child { margin-bottom: 0; }
+.catch pre {
+  margin: 0 0 12px; font-family: var(--mono); font-size: 12.5px;
+  line-height: 1.7; color: #6a5a4c; white-space: pre-wrap;
+}
+
+.foot {
+  margin-top: 76px; padding-top: 22px; border-top: 1px solid var(--line);
+  font-size: 13.5px; color: var(--faint);
+}
+.foot a { color: var(--dim); text-decoration: underline; text-underline-offset: 2px; }
+.foot a:hover { color: var(--ink); }
+
+@media (max-width: 900px) {
+  .play-cols, .vs, .dial-marks { grid-template-columns: 1fr; }
+  .play-col + .play-col { border-left: 0; border-top: 1px solid var(--line); }
+  .mast h1 { font-size: 34px; }
+}
+
+/* Claude Desktop, for the repaint comparison. It has to be the desktop
+   app and not Claude Code: rung 3 does not run in a terminal, and
+   drawing it in one would be the page contradicting its own matrix. */
+.cld {
+  width: 100%; background: #faf9f7; border: 1px solid #ece5e0;
+  border-radius: 10px; overflow: hidden; color: #2b2724;
+  font-family: var(--font); font-size: 13px;
+}
+.cld-top {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; background: #f4f1ed; border-bottom: 1px solid #ece5e0;
+  font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: #8a817a;
+}
+.cld-top i { width: 7px; height: 7px; border-radius: 50%; background: #d97757; }
+.cld-body { padding: 12px; }

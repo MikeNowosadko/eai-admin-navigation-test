@@ -1,0 +1,312 @@
+/* ------------------------------------------------------------------
+   The build state machine's own chrome — and nothing else.
+
+   Same job as states.css: draw the room, not the thing in it. One
+   accent, no colour on anything that is not a state, and the harness
+   window is the only object on the page with a shadow.
+
+   The difference from states.css is that the thing in the middle is
+   not our app. It is a *drawing* of somebody else's window, borrowed
+   from assets/mcp.css, which is loaded before this file. Nothing here
+   restyles those drawings; it only gives them a room and a size.
+------------------------------------------------------------------- */
+
+html, body { height: 100%; overflow: hidden; }
+
+body.bs {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  background: #ffffff;
+  color: #18181b;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===================== the rail ================================== */
+
+.bs-rail {
+  display: flex; flex-direction: column; gap: 26px;
+  height: 100vh; padding: 34px 24px 40px 34px;
+  overflow-y: auto; overscroll-behavior: contain;
+  border-right: 1px solid #ececf0;
+}
+.bs-rail::-webkit-scrollbar { width: 0; }
+
+.bs-title { display: flex; flex-direction: column; gap: 6px; }
+.bs-title b { font-size: 15px; font-weight: 650; letter-spacing: -.2px; }
+.bs-title span { font-size: 12.5px; line-height: 18px; color: #6f6f78; }
+.bs-title a { font-size: 12.5px; color: #0099ff; margin-top: 4px; }
+.bs-title a:hover { text-decoration: underline; }
+
+.bs-grp > h3 {
+  margin: 0 0 9px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: #a0a0aa;
+}
+
+
+/* segmented lists that wrap — the pipeline is nine long */
+.bs-seg { display: flex; flex-wrap: wrap; gap: 5px; }
+.bs-seg button {
+  border: 1px solid #e4e4e9; background: #ffffff; cursor: pointer;
+  font-size: 12.5px; font-weight: 500; color: #55555f;
+  padding: 5px 10px; border-radius: 8px; font-family: inherit;
+}
+.bs-seg button:hover { border-color: #c9c9d2; color: #18181b; }
+.bs-seg button[aria-pressed='true'] {
+  background: #18181b; border-color: #18181b; color: #ffffff; font-weight: 600;
+}
+.bs-seg button[disabled] {
+  cursor: not-allowed; color: #c2c2ca; background: #fafafa; border-color: #efeff2;
+  text-decoration: line-through; text-decoration-thickness: 1px;
+}
+.bs-seg button[disabled]:hover { color: #c2c2ca; border-color: #efeff2; }
+
+/* radios and checkboxes */
+.bs-opt {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 5px 0; font-size: 13px; line-height: 1.4; cursor: pointer; color: #3a3a44;
+}
+.bs-opt:hover { color: #18181b; }
+.bs-opt input { margin: 2px 0 0; accent-color: #18181b; flex: 0 0 auto; }
+.bs-opt span { display: block; }
+.bs-opt i.own {
+  display: inline-block; font-style: normal; margin-left: 7px;
+  font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 4px; vertical-align: 1px;
+}
+.own-you     { background: #eaf4ff; color: #0a5f9e; }
+.own-machine { background: #f1f1f4; color: #62626c; }
+.own-us      { background: #fdf0e8; color: #b8560f; }
+.own-model   { background: #f3eefb; color: #6b3fa0; }
+
+
+
+
+/* ===================== the stage ================================= */
+
+.bs-stage {
+  height: 100vh; overflow-y: auto;
+  padding: 34px 44px 44px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.bs-stage::-webkit-scrollbar { width: 0; }
+
+.bs-cap { max-width: 620px; }
+.bs-cap b { display: block; font-size: 20px; font-weight: 650; letter-spacing: -.3px; }
+.bs-cap span { display: block; margin-top: 5px; font-size: 13.5px; line-height: 1.55; color: #6f6f78; }
+
+
+
+
+/* the drawn window */
+.bs-win { box-shadow: 0 14px 40px rgba(0,0,0,.10); }
+.term.bs-win { padding: 16px 18px 20px; font-size: 13px; line-height: 1.75; min-height: 300px; }
+.vsc.bs-win { min-height: 300px; }
+
+.bs-t { white-space: pre-wrap; }
+.bs-t.dim { opacity: .5; }
+.term.claude .bs-t.ask { color: #b8560f; font-weight: 600; }
+.term.claude .bs-t.stopped, .term.claude .bs-t.bad { color: #b03030; font-weight: 600; }
+.term.codex .bs-t.ask { color: #e0b070; font-weight: 600; }
+.term.codex .bs-t.stopped, .term.codex .bs-t.bad { color: #e08080; font-weight: 600; }
+.bs-t.ok { color: #167a43; font-weight: 600; }
+.term.codex .bs-t.ok { color: #62d69a; }
+
+.bs-log { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; opacity: .5; margin-bottom: 10px; }
+.bs-gap { height: 10px; }
+.bs-then {
+  text-align: center; font-size: 10.5px; letter-spacing: .09em;
+  text-transform: uppercase; opacity: .45; padding: 12px 0 10px;
+}
+
+/* the spinner, because "working" has to look alive */
+.bs-spin {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: bs-turn .8s linear infinite; vertical-align: -1px; opacity: .7;
+}
+@keyframes bs-turn { to { transform: rotate(360deg); } }
+
+/* ===================== the output contract ====================== */
+
+/* The proposal, made visible. Three shapes, always the last thing on
+   screen, always saying whose turn it is. */
+.bs-contract {
+  display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 13px;
+  padding: 12px 16px; border-radius: 10px; border: 1px solid;
+}
+.bs-contract b { font-weight: 600; }
+.bs-contract .sep { opacity: .35; }
+.bs-contract .what { opacity: .8; }
+.bs-contract.is-working { background: #f7f7f9; border-color: #e6e6ec; color: #55555f; }
+.bs-contract.is-you     { background: #fff8f1; border-color: #f2ddc9; color: #b8560f; }
+.bs-contract.is-stopped { background: #fdf3f3; border-color: #f2cfcf; color: #a83232; }
+
+
+.bs-legend b { color: #55555f; font-weight: 600; }
+
+@media (max-width: 1000px) {
+  body.bs { grid-template-columns: 1fr; height: auto; }
+  html, body { overflow: auto; }
+  .bs-rail, .bs-stage { height: auto; }
+}
+
+/* Advice, where there is no button to press. Three of the failures on
+   this page end here, and that is the finding — not the styling. */
+.ours .o-foot, .vsc-foot {
+  margin: 10px 0 0; font-size: 12px; line-height: 1.5;
+  color: var(--o-dim, #6a6a72); font-style: italic;
+}
+.vsc-foot { color: #9d9d9d; }
+
+
+/* ===================== two panes ================================
+   The comparison is the page, so the panes are equal width and the
+   windows are the same height whatever is in them — a taller box on
+   one side would read as the richer product before anybody had read
+   a word of it. */
+
+.bs-panes { display: grid; gap: 22px; align-items: start; }
+.bs-panes.one { grid-template-columns: minmax(0, 700px); }
+.bs-panes.two { grid-template-columns: 1fr 1fr; }
+
+.bs-pane { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.bs-phead { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.bs-phead b { font-size: 13.5px; font-weight: 650; }
+.bs-phead span { font-size: 12px; color: #9a9aa4; }
+
+.bs-win { min-height: 320px; }
+.term.bs-win { padding: 15px 17px 18px; font-size: 12.5px; line-height: 1.75; }
+.vsc.bs-win { display: flex; flex-direction: column; }
+.vsc.bs-win .vsc-body { flex: 1; }
+
+.bs-fellback {
+  font-size: 12.5px; line-height: 1.5; color: #b8560f;
+  background: #fdf8f3; border: 1px solid #f2ddc9;
+  border-radius: 9px; padding: 9px 11px;
+}
+.bs-fellback b { font-weight: 650; }
+
+
+
+
+.own-gone { background: #eaf6ee; color: #167a43; }
+
+/* ===================== our app ==================================
+   Drawn, like the others — but this is the one we would actually be
+   designing, so it is drawn as an app and not as a transcript. The
+   rail down the left is the whole argument in one object: the shape
+   of the job, on screen the entire time, carrying the turn on the row
+   it belongs to. */
+
+.eai {
+  border: 1px solid #e6e6ec; border-radius: 12px; overflow: hidden;
+  background: #ffffff; display: flex; flex-direction: column;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.eai-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: #fafafb; border-bottom: 1px solid #ececf0;
+  font-size: 12px; font-weight: 600; color: #55555f;
+}
+.eai-top i { width: 7px; height: 7px; border-radius: 50%; background: #0099ff; }
+.eai-gauge {
+  margin-left: auto; font-size: 11px; font-weight: 500; color: #8b8b95;
+  background: #f1f1f4; border-radius: 999px; padding: 2px 9px;
+}
+
+.eai-main { display: grid; grid-template-columns: 138px 1fr; flex: 1; min-height: 0; }
+
+.eai-rail { border-right: 1px solid #ececf0; padding: 10px 0; background: #fcfcfd; }
+.eai-step {
+  display: flex; align-items: baseline; gap: 7px;
+  padding: 5px 12px; font-size: 12px; color: #9a9aa4;
+}
+.eai-step b { width: 11px; flex: 0 0 auto; font-weight: 700; font-size: 11px; }
+.eai-step.done { color: #6f6f78; }
+.eai-step.done b { color: #167a43; }
+.eai-step.todo { color: #c2c2ca; }
+.eai-step.now { color: #18181b; font-weight: 650; background: #f4f4f6; }
+.eai-step.now.is-working b { color: #55555f; }
+.eai-step.now.is-you     { background: #fff6ec; color: #b8560f; }
+.eai-step.now.is-you b   { color: #b8560f; }
+.eai-step.now.is-stopped { background: #fdf3f3; color: #a83232; }
+.eai-step.now.is-stopped b { color: #a83232; }
+
+.eai-body { padding: 16px; display: flex; align-items: flex-start; }
+
+.eai-card {
+  width: 100%; border: 1px solid #e4e4e9; border-radius: 11px;
+  padding: 14px 15px 15px; background: #ffffff;
+}
+.eai-card h5 { margin: 0 0 4px; font-size: 14.5px; font-weight: 650; letter-spacing: -.2px; }
+.eai-card .eai-sub { margin: 0 0 12px; font-size: 12.5px; color: #6f6f78; line-height: 1.5; }
+.eai-preview {
+  height: 84px; border: 1px dashed #d8d8de; border-radius: 8px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: #fafafb;
+}
+.eai-preview span { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #b0b0b8; }
+.eai-acts { display: flex; flex-wrap: wrap; gap: 7px; }
+.eai-btn {
+  font-size: 12.5px; font-weight: 550; padding: 6px 12px; border-radius: 8px;
+  background: #18181b; color: #ffffff;
+}
+.eai-btn.ghost { background: #ffffff; color: #18181b; border: 1px solid #e4e4e9; }
+
+.eai-work { width: 100%; }
+.eai-work b { display: block; font-size: 14.5px; font-weight: 650; }
+.eai-work span { display: block; font-size: 12.5px; color: #6f6f78; margin: 3px 0 11px; }
+.eai-bar { height: 4px; border-radius: 999px; background: #ececf0; overflow: hidden; }
+.eai-bar i { display: block; height: 100%; width: 46%; background: #0099ff; border-radius: 999px;
+  animation: eai-slide 1.9s ease-in-out infinite; }
+@keyframes eai-slide { 0%,100% { margin-left: 0; } 50% { margin-left: 54%; } }
+
+/* "this cannot happen here" — a stronger claim than handling it well,
+   so it gets its own drawing rather than an empty card. */
+.eai-gone { flex-direction: column; justify-content: center; text-align: center; padding: 28px 22px; }
+
+.eai-gone b { display: block; font-size: 15px; font-weight: 650; color: #167a43; margin-bottom: 6px; }
+
+
+@media (max-width: 1240px) { .bs-panes.two { grid-template-columns: 1fr; } }
+
+/* Evidence sits above the answers, because it is what you read before
+   you can give one. It is also the whole of what rung 2 cannot carry. */
+.eai-ev { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; }
+.eai-link {
+  font-size: 12.5px; font-weight: 550; color: #0099ff;
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: #b9dcff;
+}
+
+/* display: block outranks the hidden attribute — the same bug the
+   README already records against #winSetup .eai-acts. Said once here
+   so it cannot happen again on this page. */
+.bs-grp[hidden] { display: none; }
+
+/* ===================== labels, not sentences ====================
+   Everything this page used to say in prose is now either drawn or
+   not said. What is left is a name and one chip. */
+
+.bs-title { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.bs-title b { font-size: 14px; }
+.bs-title a { margin: 0; font-size: 12px; }
+
+.bs-cap { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; }
+.bs-cap b { font-size: 20px; font-weight: 650; letter-spacing: -.3px; }
+
+.bs-tag {
+  font-style: normal; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 5px;
+}
+.bs-tag.is-gate { background: #fff2e4; color: #b8560f; }
+.bs-tag[hidden] { display: none; }
+
+.eai-gone { flex-direction: column; justify-content: center; align-items: center; }
+.eai-gone b { font-size: 15px; font-weight: 650; color: #167a43; }
+.bs-contract.is-gone { background: #f3faf5; border-color: #cfe9d9; color: #167a43; }

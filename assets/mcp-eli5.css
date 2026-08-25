@@ -1,0 +1,380 @@
+/* ------------------------------------------------------------------
+   /mcp — the picture version.
+
+   Made with the eli5 skill's rule: big pictures, very few words. The
+   dense version is still there at /mcp/reference.html, and this page
+   links to it at the bottom, because the two jobs are different —
+   this one is for understanding the idea once, that one is for
+   checking a fact later.
+
+   THE ONE VISUAL RULE, stated on the page and obeyed everywhere:
+
+     BLUE  = us. Anything we made.
+     GREY  = them. Anything the tool made.
+
+   Once that holds, both rungs can be read off the picture without
+   reading the words: rung 2 is blue words inside a grey box, rung 3
+   is a blue shape wearing grey paint. Every panel below is built to
+   keep that true, which is why nothing here is decoratively coloured.
+------------------------------------------------------------------- */
+
+:root {
+  --us: #0099ff;
+  --us-soft: #e8f5ff;
+  --us-line: #b9dcff;
+  --them: #7b7b85;
+  --them-soft: #f2f2f4;
+  --them-line: #d8d8de;
+  --ink: #14141a;
+  --mid: #5c5c66;
+  --pale: #9a9aa4;
+  --no: #d64545;
+}
+
+body.e5 {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.35;
+}
+
+.w { max-width: 1060px; margin: 0 auto; padding: 0 32px 120px; }
+
+/* --- slides ------------------------------------------------------ */
+
+.slide { padding: 96px 0 0; }
+.slide.first { padding-top: 72px; }
+
+.num {
+  display: inline-block; width: 40px; height: 40px; line-height: 38px;
+  text-align: center; border-radius: 50%; border: 2px solid var(--ink);
+  font-size: 17px; font-weight: 700; margin-bottom: 22px;
+}
+
+.slide h2 {
+  font-size: 52px; line-height: 1.08; letter-spacing: -.03em;
+  font-weight: 800; margin: 0 0 14px; max-width: 800px;
+}
+.slide h2 .blue { color: var(--us); }
+.slide h2 .grey { color: var(--them); }
+
+.slide .say {
+  font-size: 22px; line-height: 1.45; color: var(--mid);
+  max-width: 620px; margin: 0 0 40px;
+}
+.slide .say b { color: var(--ink); font-weight: 650; }
+
+/* --- hero -------------------------------------------------------- */
+
+.hero h1 {
+  font-size: 76px; line-height: 1.02; letter-spacing: -.04em;
+  font-weight: 800; margin: 0 0 22px;
+}
+.hero p { font-size: 25px; line-height: 1.4; color: var(--mid); max-width: 640px; margin: 0; }
+
+.key {
+  display: flex; gap: 30px; margin-top: 44px; padding: 20px 24px;
+  border: 2px solid var(--ink); border-radius: 18px; width: fit-content;
+}
+.key div { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 600; }
+.key i { width: 26px; height: 26px; border-radius: 8px; display: block; }
+.key i.b { background: var(--us); }
+.key i.g { background: var(--them); }
+
+/* --- the app window, drawn ---------------------------------------- */
+
+.app {
+  border: 3px solid var(--them-line); border-radius: 20px;
+  background: var(--them-soft); overflow: hidden;
+}
+.app-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 13px 18px; background: #e7e7eb; border-bottom: 3px solid var(--them-line);
+}
+.app-top i { width: 11px; height: 11px; border-radius: 50%; background: #c8c8d0; }
+.app-top b {
+  margin-left: 10px; font-size: 13px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--them); font-weight: 700;
+}
+.app-body { padding: 26px; }
+
+/* the robot */
+.bot { display: flex; align-items: center; gap: 20px; }
+.bot .face {
+  width: 74px; height: 66px; border-radius: 16px; flex: 0 0 auto;
+  border: 3px solid var(--ink); background: #ffffff;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  position: relative;
+}
+.bot .face::before {
+  content: ''; position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  width: 3px; height: 10px; background: var(--ink);
+}
+.bot .face::after {
+  content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+  width: 11px; height: 11px; border-radius: 50%; background: var(--ink);
+}
+.bot .eye { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }
+.bot .said { font-size: 21px; font-weight: 650; }
+.bot .said span { display: block; font-size: 16px; font-weight: 500; color: var(--mid); margin-top: 3px; }
+
+.qbox {
+  margin-top: 22px; border: 3px dashed #b9b9c2; border-radius: 16px;
+  padding: 34px; text-align: center; background: #ffffff;
+}
+.qbox .qm { font-size: 54px; font-weight: 800; color: #c2c2cb; line-height: 1; }
+.qbox .lbl {
+  margin-top: 10px; font-size: 15px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--pale);
+}
+
+/* --- the staircase ------------------------------------------------ */
+
+.stairs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: end; }
+.stair { text-align: center; }
+.stair .bar {
+  border: 3px solid var(--ink); border-bottom: 0;
+  border-radius: 14px 14px 0 0; background: #ffffff;
+}
+.stair:nth-child(1) .bar { height: 62px; background: var(--them-soft); }
+.stair:nth-child(2) .bar { height: 104px; background: #e4e4e9; }
+.stair:nth-child(3) .bar { height: 146px; background: var(--us-soft); }
+.stair:nth-child(4) .bar { height: 190px; background: #bfe3ff; }
+.stair .bar b {
+  display: block; padding-top: 14px; font-size: 26px; font-weight: 800;
+}
+.stair .cap {
+  border-top: 3px solid var(--ink); padding-top: 14px;
+  font-size: 17px; font-weight: 700;
+}
+.stair .cap span {
+  display: block; font-size: 15px; font-weight: 500;
+  color: var(--mid); margin-top: 5px; line-height: 1.35;
+}
+.stairs-ends {
+  display: flex; justify-content: space-between; margin-bottom: 14px;
+  font-size: 14px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--pale);
+}
+
+/* --- comic strips ------------------------------------------------- */
+
+.strip { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; gap: 0; }
+.strip.wide3 { grid-template-columns: 1fr 96px 1.15fr; }
+
+.cell { }
+.cell > .tag {
+  font-size: 14px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.cell > .tag.us { color: var(--us); }
+.cell > .tag.them { color: var(--them); }
+
+.arrow { display: flex; align-items: center; justify-content: center; }
+.arrow svg { width: 52px; height: 34px; }
+
+/* the note we post (rung 2) */
+.note {
+  border: 3px solid var(--us); border-radius: 16px; background: var(--us-soft);
+  padding: 22px 24px;
+}
+.note h4 { margin: 0 0 14px; font-size: 20px; font-weight: 800; color: #045b99; }
+.note ul { margin: 0; padding-left: 20px; font-size: 18px; line-height: 1.9; color: #0b5c93; }
+.note ul b { font-weight: 700; }
+
+/* the finished card we drew (rung 3) */
+.mycard {
+  border: 3px solid var(--us); border-radius: 16px; background: #ffffff; padding: 18px 20px;
+}
+.mycard.plain { border-color: var(--us); }
+.mycard h4 { margin: 0 0 12px; font-size: 19px; font-weight: 800; }
+.mycard .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.mycard .bar-row i { height: 11px; border-radius: 999px; background: #cfe8fb; display: block; }
+.mycard .btns { display: flex; gap: 8px; margin-top: 14px; }
+.mycard .btns u {
+  text-decoration: none; font-size: 14px; font-weight: 700; padding: 7px 15px;
+  border-radius: 9px; background: var(--us); color: #ffffff;
+}
+.mycard .btns u.o { background: #ffffff; color: var(--us); border: 2px solid var(--us-line); }
+
+/* three drawn-by-them boxes, same words, different looks */
+.threes { display: grid; gap: 12px; }
+.tbox2 { border: 2px solid var(--them-line); background: #ffffff; padding: 12px 14px; }
+.tbox2 .who {
+  font-size: 12px; font-weight: 800; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--pale); margin-bottom: 7px;
+}
+.tbox2 .q { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.tbox2 .a { font-size: 14px; color: var(--mid); }
+/* each tool's own idea of a box */
+.tbox2.claude { border-radius: 12px; border-color: #e6ccc0; font-family: var(--mono); }
+.tbox2.claude .a.on { color: #d97757; font-weight: 700; }
+.tbox2.codex { border-radius: 2px; background: #16161a; border-color: #35353d; color: #e2e2e8; font-family: var(--mono); }
+.tbox2.codex .q { color: #ffffff; }
+.tbox2.codex .a { color: #9d9da8; }
+.tbox2.codex .a.on { color: #ffffff; font-weight: 700; }
+.tbox2.vsc { border-radius: 4px; background: #252526; border-color: #3c3c3c; color: #cccccc; }
+.tbox2.vsc .q { color: #ffffff; }
+.tbox2.vsc .a.on { color: #4daafc; font-weight: 700; }
+
+/* paint tins */
+.paint { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.tins { display: flex; gap: 10px; }
+.tin {
+  width: 42px; height: 46px; border: 3px solid var(--ink); border-radius: 5px 5px 8px 8px;
+  position: relative;
+}
+.tin::before {
+  content: ''; position: absolute; top: -7px; left: -3px; right: -3px;
+  height: 7px; border: 3px solid var(--ink); border-bottom: 0; border-radius: 4px 4px 0 0;
+  background: #ffffff;
+}
+.tin.a { background: #252526; }
+.tin.b { background: #0078d4; }
+.tin.c { background: #d97757; }
+
+/* the two painted results */
+.painted { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.skin { border: 3px solid var(--them-line); border-radius: 12px; overflow: hidden; }
+.skin .sk-top {
+  padding: 8px 12px; font-size: 11px; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+.skin .sk-body { padding: 12px; }
+.skin.vsc { border-color: #3c3c3c; }
+.skin.vsc .sk-top { background: #181818; color: #8b8b8b; }
+.skin.vsc .sk-body { background: #1f1f1f; }
+.skin.cld { border-color: #ece5e0; }
+.skin.cld .sk-top { background: #f4f1ed; color: #8a817a; }
+.skin.cld .sk-body { background: #faf9f7; }
+
+.mycard.wear { border-width: 3px; }
+.mycard.wear.v {
+  background: #252526; border-color: #0078d4; border-radius: 4px; color: #ffffff;
+}
+.mycard.wear.v .bar-row i { background: #3c3c3c; }
+.mycard.wear.v .btns u { background: #0078d4; border-radius: 2px; }
+.mycard.wear.v .btns u.o { background: transparent; color: #cccccc; border-color: #3c3c3c; }
+.mycard.wear.c {
+  background: #ffffff; border-color: #d97757; border-radius: 14px; color: #2b2724;
+}
+.mycard.wear.c .bar-row i { background: #f0e2da; }
+.mycard.wear.c .btns u { background: #d97757; border-radius: 8px; }
+.mycard.wear.c .btns u.o { background: transparent; color: #d97757; border-color: #eeddd4; }
+
+.punch {
+  margin-top: 34px; font-size: 30px; line-height: 1.3; font-weight: 800;
+  letter-spacing: -.02em; max-width: 760px;
+}
+.punch .blue { color: var(--us); }
+.punch .grey { color: var(--them); }
+
+/* --- the flip ----------------------------------------------------- */
+
+.flip { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 12px; }
+.flip > div {
+  border: 3px solid var(--ink); border-radius: 20px; padding: 28px 26px 30px;
+}
+.flip .r2 { background: var(--them-soft); }
+.flip .r3 { background: var(--us-soft); border-color: var(--us); }
+.flip h3 { margin: 0 0 20px; font-size: 15px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.flip .r3 h3 { color: #045b99; }
+.flip .line { display: flex; align-items: center; gap: 14px; font-size: 21px; font-weight: 700; margin-bottom: 12px; }
+.flip .line:last-child { margin-bottom: 0; }
+.flip .line svg { width: 34px; height: 22px; flex: 0 0 auto; }
+.flip .line em { font-style: normal; font-weight: 500; color: var(--mid); font-size: 19px; }
+
+/* --- toy box ------------------------------------------------------ */
+
+.toys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.toy {
+  border: 3px solid var(--them-line); border-radius: 14px;
+  background: #ffffff; padding: 18px 18px 20px;
+}
+.toy .art { height: 46px; display: flex; align-items: center; margin-bottom: 12px; }
+.toy b { display: block; font-size: 17px; font-weight: 700; }
+.toy .fld { border: 2px solid #c4c4cd; border-radius: 6px; height: 30px; width: 100%; }
+.toy .chk { width: 26px; height: 26px; border: 3px solid #c4c4cd; border-radius: 6px; }
+.toy .rad { display: flex; gap: 9px; }
+.toy .rad i { width: 20px; height: 20px; border-radius: 50%; border: 3px solid #c4c4cd; display: block; }
+.toy .rad i.on { border-color: var(--them); box-shadow: inset 0 0 0 4px var(--them); }
+.toy .sqs { display: flex; gap: 9px; }
+.toy .sqs i { width: 20px; height: 20px; border-radius: 5px; border: 3px solid #c4c4cd; display: block; }
+.toy .sqs i.on { border-color: var(--them); background: var(--them); }
+.toy .numf { border: 2px solid #c4c4cd; border-radius: 6px; height: 30px; width: 76px;
+  font-family: var(--mono); font-size: 15px; color: var(--them);
+  display: flex; align-items: center; padding-left: 9px; }
+
+.cant { margin-top: 30px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.cantx {
+  border: 3px solid #f0cfcf; border-radius: 14px; background: #fdf4f4;
+  padding: 16px 16px 18px; position: relative; text-align: center;
+}
+.cantx .big { font-size: 30px; line-height: 1; margin-bottom: 9px; }
+.cantx b { font-size: 15.5px; font-weight: 700; color: #8f3535; }
+.cantx::after {
+  content: '✕'; position: absolute; top: 9px; right: 11px;
+  font-size: 17px; font-weight: 800; color: var(--no);
+}
+
+/* --- buckets ------------------------------------------------------ */
+
+.buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.bucket { border: 3px solid var(--ink); border-radius: 20px; overflow: hidden; }
+.bucket .bt { padding: 18px 22px; border-bottom: 3px solid var(--ink); }
+.bucket .bt b { display: block; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.bucket .bt span { font-size: 16px; color: var(--mid); }
+.bucket.cli .bt { background: var(--them-soft); }
+.bucket.gui .bt { background: #bfe3ff; }
+.bucket ul { margin: 0; padding: 16px 22px 20px; list-style: none; font-size: 19px; font-weight: 650; }
+.bucket ul li { padding: 7px 0; display: flex; align-items: center; gap: 11px; }
+.bucket ul li small { font-weight: 500; color: var(--pale); font-size: 15px; }
+.bucket .verdict {
+  padding: 15px 22px 18px; border-top: 3px solid var(--ink);
+  font-size: 19px; font-weight: 800;
+}
+.bucket.cli .verdict { background: #fdf4f4; color: #8f3535; }
+.bucket.gui .verdict { background: var(--us-soft); color: #045b99; }
+
+/* --- catch -------------------------------------------------------- */
+
+.catch2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.catch2 > div { border: 3px solid var(--ink); border-radius: 20px; padding: 26px 26px 28px; }
+.catch2 .now { background: var(--them-soft); }
+.catch2 .then { background: var(--us-soft); border-color: var(--us); }
+.catch2 h3 { margin: 0 0 6px; font-size: 15px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--pale); }
+.catch2 .then h3 { color: #4aa8e8; }
+.catch2 p.big2 { margin: 0 0 16px; font-size: 27px; line-height: 1.22; font-weight: 800; letter-spacing: -.02em; }
+.catch2 .then p.big2 { color: #045b99; }
+.catch2 .can { font-size: 19px; font-weight: 650; padding: 7px 0; display: flex; gap: 11px; align-items: center; }
+.catch2 .can .no { color: var(--no); font-weight: 800; }
+.catch2 .can .yes { color: #167a43; font-weight: 800; }
+
+.ask {
+  margin-top: 34px; border: 3px solid var(--ink); border-radius: 20px;
+  padding: 30px 32px; text-align: center;
+}
+.ask b { display: block; font-size: 34px; font-weight: 800; letter-spacing: -.025em; }
+.ask span { display: block; margin-top: 10px; font-size: 19px; color: var(--mid); }
+
+/* --- foot --------------------------------------------------------- */
+
+.more {
+  margin-top: 96px; padding-top: 26px; border-top: 3px solid var(--ink);
+  display: flex; flex-wrap: wrap; gap: 18px; align-items: baseline;
+  justify-content: space-between;
+}
+.more a {
+  font-size: 19px; font-weight: 700; color: var(--us);
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px;
+}
+.more span { font-size: 16px; color: var(--pale); }
+
+@media (max-width: 900px) {
+  .strip, .strip.wide3, .flip, .buckets, .catch2, .painted { grid-template-columns: 1fr; }
+  .stairs, .toys { grid-template-columns: 1fr 1fr; }
+  .cant { grid-template-columns: 1fr 1fr; }
+  .arrow { padding: 18px 0; transform: rotate(90deg); }
+  .hero h1 { font-size: 46px; }
+  .slide h2 { font-size: 36px; }
+}
