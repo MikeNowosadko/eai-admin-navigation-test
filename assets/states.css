@@ -55,6 +55,15 @@ body.st {
   font-weight: 600;
   letter-spacing: -0.2px;
 }
+.st-flows {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #71717a;
+}
+.st-flows a { color: #18181b; }
+
 .st-title span {
   font-size: 12.5px;
   line-height: 18px;

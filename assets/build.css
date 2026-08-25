@@ -1255,3 +1255,86 @@ body.bd-gate-leaving .bd-gate-shell .bd-main {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* -------------------------------- setup — location field */
+
+/* Before a location is picked, only the button shows — no grey readonly
+   field pretending to be editable. After, the path and Change location
+   sit on one row. */
+#winSetup.i3 .eai-loc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+#winSetup.i3 .eai-loc.picked {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 3px 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+#winSetup.i3 .eai-loc-path {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--color-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#winSetup.i3 .eai-loc-path[hidden] { display: none; }
+#winSetup.i3 .eai-loc-btn {
+  flex: none;
+  height: 44px;
+  padding: 0 20px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 18px;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+#winSetup.i3 .eai-loc:not(.picked) .eai-loc-btn { width: 100%; }
+#winSetup.i3 .eai-loc.picked .eai-loc-btn {
+  height: auto;
+  padding: 9px var(--spacing-4);
+  font-size: var(--text-xs);
+  line-height: 16px;
+}
+#winSetup.i3 .eai-loc-btn:hover { background: var(--color-accent); }
+
+/* --------------------------- harness — alert in the pick */
+
+/* The radio mark is the only selected-state signal — no heavy border
+   around the whole row, which read as a focus ring in testing. */
+#winSetup.i3 .i4-pick { display: block; }
+#winSetup.i3 .i4-pick + .i4-pick,
+#winSetup.i3 .i4-group + .i4-pick { margin-top: 0; }
+#winSetup.i3 .i4-pick .i4-box {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+#winSetup.i3 .i4-pick .i4-row {
+  border-bottom: none;
+  border-radius: 0;
+}
+#winSetup.i3 .i4-pick .i4-row:focus-visible { outline: none; }
+#winSetup.i3 .i4-pick .i4-pick-alert {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0;
+  margin: 0 16px 12px;
+  width: calc(100% - 32px);
+}
+#winSetup.i3 .i4-pick:not(.on) .i4-pick-alert { display: none; }
+#winSetup.i3 .i4-list .i4-pick .i4-row { border-bottom: 1px solid var(--color-border); }
+#winSetup.i3 .i4-list .i4-pick:last-child .i4-row { border-bottom: none; }
+#winSetup.i3 .i4-list .i4-pick.on .i4-row { border-bottom: none; }

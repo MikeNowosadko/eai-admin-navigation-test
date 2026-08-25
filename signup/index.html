@@ -276,7 +276,7 @@
         <div class="eai-screen gap-6" data-screen="setup" hidden>
           <div class="eai-head">
             <h3>Let's get set up</h3>
-            <p id="setupSub">Signed in as gareth@northwind.com. Three things, and your app exists.</p>
+            <p id="setupSub">Signed in as gareth@northwind.com. Two things, and your app exists.</p>
           </div>
 
           <div class="i3-steps">
@@ -299,49 +299,33 @@
               </div>
             </section>
 
-            <!-- The first thing asked, because it is the only one that
-                 changes what gets built. A name is a label and a folder is
-                 a location; a template is the app. Radio cards rather than
-                 a select, so each option can say what it gives you — the
-                 difference between "Approvals" and "Nothing" is a
-                 sentence, not a word. -->
-            <section class="i3-step" data-step="template" hidden>
+            <section class="i3-step" data-step="name" hidden>
               <div class="i3-step-head">
                 <span class="i3-num">2</span>
                 <div class="tx">
-                  <b>Start from a template</b>
-                  <span>What we put in the folder. Everything here is yours to change afterwards.</span>
-                </div>
-              </div>
-              <div class="i3-cards" id="tplCards" role="radiogroup" aria-label="App template"></div>
-            </section>
-
-            <section class="i3-step" data-step="name" hidden>
-              <div class="i3-step-head">
-                <span class="i3-num">3</span>
-                <div class="tx">
                   <b>Name your app</b>
-                  <span>The name your team will see, and the folder we create. Lowercase words with hyphens work best.</span>
+                  <span>Kebab case only. Example: workflow-name-here</span>
                 </div>
               </div>
               <div class="eai-field" data-field="name">
-                <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
+                <input class="eai-input" type="text" id="projName" placeholder="workflow-name-here" autocomplete="off" spellcheck="false" />
                 <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
               </div>
             </section>
 
             <section class="i3-step" data-step="folder" hidden>
               <div class="i3-step-head">
-                <span class="i3-num">4</span>
+                <span class="i3-num">3</span>
                 <div class="tx">
-                  <b>Choose a folder</b>
-                  <span>We recommend making a new folder for the project &mdash; it keeps the app's files together, and away from whatever is already there. The chooser has a New Folder button.</span>
+                  <b>Choose a location</b>
+                  <span>Where on this Mac the app is saved. We recommend a new folder &mdash; the chooser has a New Folder button.</span>
                 </div>
               </div>
               <div class="eai-field" data-field="folder">
-                <div class="eai-combo">
-                  <input type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
-                  <button class="eai-inner" type="button" id="chooseFolder">Choose folder</button>
+                <button class="eai-btn loc-start" type="button" id="chooseFolderStart">Choose location</button>
+                <div class="eai-combo" id="locCombo" hidden>
+                  <input type="text" id="projFolder" readonly />
+                  <button class="eai-inner" type="button" id="chooseFolder">Change folder</button>
                 </div>
                 <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
               </div>
@@ -419,54 +403,43 @@
 
           <div class="eai-head">
             <h3>Choose how to work with AI</h3>
-            <p id="harnessSub">Northwind Group has a standard for this, so it's already chosen.</p>
+            <p id="harnessSub" hidden></p>
           </div>
 
-          <!-- the standard, when there is one -->
-          <div class="i4-standard" id="harnessStandard">
+          <!-- Workspace standard: future scope (/install-4 explores it).
+               Self-serve signup has no administrator, so everyone picks
+               from the list below. -->
+          <div class="i4-standard" id="harnessStandard" hidden>
             <div class="i4-standard-label">Your workspace&rsquo;s standard</div>
-            <div class="i4-box">
-              <span class="i4-box-icon" id="stdIcon"></span>
-              <span class="tx">
-                <b id="stdName">Claude Code</b>
-                <span id="stdWhy">Set as the standard for Northwind Group by an administrator.</span>
-              </span>
-              <span class="i4-box-state" id="stdState"></span>
+            <div class="i4-pick" id="stdPick">
+              <div class="i4-box">
+                <span class="i4-box-icon" id="stdIcon"></span>
+                <span class="tx">
+                  <b id="stdName">Claude Code</b>
+                </span>
+                <span class="i4-box-state" id="stdState"></span>
+              </div>
+              <div class="i4-alert i4-pick-alert" id="stdAlert" hidden>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+                <div class="tx"><b></b><span></span></div>
+              </div>
             </div>
           </div>
 
-          <!-- The "your workspace hasn't set a standard" alert lived here.
-               It described a feature this world doesn't have — there is no
-               administrator in a self-serve signup, so there is nothing to
-               apologise for the absence of. -->
-
-          <!-- everything else, behind a disclosure when there is a standard -->
-          <button class="i4-disclosure" type="button" id="harnessMore" aria-expanded="false">
+          <!-- Also future scope: collapses the list when a standard is set. -->
+          <button class="i4-disclosure" type="button" id="harnessMore" aria-expanded="false" hidden>
             <span class="lbl">Use something else</span>
             <span class="count" id="harnessMoreCount">5 other options</span>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9.5l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
 
-          <div class="eai-rows i4-list" id="harnessRows" hidden></div>
+          <div class="eai-rows i4-list" id="harnessRows"></div>
 
           <div class="eai-note" id="harnessNote" hidden>
             <i class="mk fail bang">!</i>
             <div class="tx">
               <b id="harnessNoteTitle">Couldn't install Claude Code</b>
               <span id="harnessNoteBody">npm refused to write to its global folder on this Mac. Your app is finished either way — open the folder and install the tool yourself, or ask IT for permission and try again.</span>
-            </div>
-          </div>
-
-          <!-- What the button is about to do. It was a centred grey
-               paragraph under the button, which is the hardest shape of
-               text to read and the easiest to skip; as an alert it sits
-               above the action it explains, left-aligned, with the point
-               in the title. -->
-          <div class="i4-alert" id="harnessFine" role="status">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
-            <div class="tx">
-              <b id="harnessFineTitle">Claude Code will ask you to sign in</b>
-              <span id="harnessFineBody">It signs in to Anthropic the first time you open it. Enterprise AI never sees that account.</span>
             </div>
           </div>
 
@@ -531,7 +504,7 @@
   <div class="win hidden" id="winFinder" style="left:24%; top:16%; width:56%; height:60%;">
     <div class="win-bar" data-drag>
       <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
-      <span class="wt">Choose the app folder</span>
+      <span class="wt">Choose a location</span>
     </div>
     <div class="skin-finder">
       <div class="fnd-side">
@@ -853,6 +826,6 @@
 <script src="../assets/icons.js"></script>
 <script src="../assets/desktop.js"></script>
 <script src="../assets/eai-video.js"></script>
-<script src="../assets/signup.js"></script>
+<script src="../assets/signup.js?v=6"></script>
 </body>
 </html>

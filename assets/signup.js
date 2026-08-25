@@ -417,7 +417,6 @@ document.getElementById('setupCreate').addEventListener('click', signIn);
 
 const steps = {
   workspace: setupWin.querySelector('[data-step="workspace"]'),
-  template: setupWin.querySelector('[data-step="template"]'),
   name: setupWin.querySelector('[data-step="name"]'),
   folder: setupWin.querySelector('[data-step="folder"]'),
 };
@@ -437,7 +436,7 @@ function reveal(el) {
 
 /* An answered step swaps its numeral for a tick. The number is only
    useful while it's telling you where you are. */
-const STEP_NUMBERS = { workspace: '1', template: '2', name: '3', folder: '4' };
+const STEP_NUMBERS = { workspace: '1', name: '2', folder: '3' };
 
 function markAnswered(step, yes = true) {
   const el = steps[step];
@@ -474,7 +473,8 @@ function chooseWorkspace(id, { focusNext = true } = {}) {
   chosenWorkspace = id;
   renderWorkspaces();
   markAnswered('workspace');
-  reveal(steps.template);
+  reveal(steps.name);
+  if (focusNext) setTimeout(() => projName.focus(), 220);
 }
 
 function renderWorkspaces() {
@@ -486,8 +486,7 @@ function renderWorkspaces() {
     row.dataset.ws = ws.id;
     const on = ws.id === chosenWorkspace;
     row.innerHTML = `<i class="mk ${on ? 'done' : 'pending'}">${on ? '&#10003;' : ''}</i>`
-      + `<span class="lbl">${escapeHtml(ws.name)}</span>`
-      + `<span class="val">${escapeHtml(ws.meta)}</span>`;
+      + `<span class="lbl">${escapeHtml(ws.name)}</span>`;
     row.addEventListener('click', () => chooseWorkspace(ws.id));
     wsRows.appendChild(row);
   });
@@ -547,72 +546,24 @@ function workspaceName() {
   return (WORKSPACES.find((w) => w.id === chosenWorkspace) || WORKSPACES[0]).name;
 }
 
-/* --- 2 · template -----------------------------------------------------
-
-   Asked before the name, because it is the only answer that changes what
-   gets built — a name is a label, a folder is a location, a template is
-   the app. One is pre-selected: most people want the common shape, and
-   an unanswered first question is a wall.
-
-   "Nothing" is last and says what it costs. An empty project is the
-   right answer for someone who knows exactly what they want, and the
-   wrong one for everybody else, so it is offered rather than defaulted. */
-
-const TEMPLATES = [
-  {
-    id: 'eai',
-    name: 'EAI template',
-    desc: 'A working app to start from: intake, an approval chain, an audit trail and screens. Change any of it.',
-    meta: 'Recommended',
-  },
-  {
-    id: 'scratch',
-    name: 'Start from scratch',
-    desc: "An empty project with your workspace connected. Nothing is set up, so there's more to configure yourself.",
-  },
-];
-
-const tplCards = document.getElementById('tplCards');
+/* Template is chosen earlier in the product — the setup app always uses
+   the EAI template and does not ask again. */
 let chosenTemplate = 'eai';
 
-function renderTemplates() {
-  tplCards.replaceChildren();
-  TEMPLATES.forEach((t) => {
-    const on = t.id === chosenTemplate;
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.className = `i3-card${on ? ' on' : ''}`;
-    card.setAttribute('role', 'radio');
-    card.setAttribute('aria-checked', String(on));
-    card.dataset.template = t.id;
-    card.innerHTML = '<span class="dot"></span>'
-      + '<span class="tx">'
-      + `<b>${escapeHtml(t.name)}${t.meta ? `<i>${escapeHtml(t.meta)}</i>` : ''}</b>`
-      + `<span>${escapeHtml(t.desc)}</span>`
-      + '</span>';
-    card.addEventListener('click', () => chooseTemplate(t.id));
-    tplCards.appendChild(card);
-  });
-}
+const TEMPLATES = [{ id: 'eai', name: 'EAI template' }];
 
 function templateName() {
-  return (TEMPLATES.find((t) => t.id === chosenTemplate) || TEMPLATES[0]).name;
+  return TEMPLATES[0].name;
 }
 
-function chooseTemplate(id, { focusNext = true } = {}) {
-  chosenTemplate = id;
-  renderTemplates();
-  markAnswered('template');
-  reveal(steps.name);
-  if (focusNext) setTimeout(() => projName.focus(), 220);
-}
-
-renderTemplates();
-
-/* --- 3 · name ---------------------------------------------------------- */
+/* --- 2 · name ---------------------------------------------------------- */
 
 const projName = document.getElementById('projName');
 const projFolder = document.getElementById('projFolder');
+const locCombo = document.getElementById('locCombo');
+const locStart = document.getElementById('chooseFolderStart');
+const chooseFolderBtn = document.getElementById('chooseFolder');
+let pickedLocation = '';
 
 /* A name is "answered" when they stop typing, not when they press a
    button — but a pause is a guess, so Enter and Tab settle it too. Once
@@ -638,7 +589,7 @@ projName.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter') return;
   clearTimeout(nameTimer);
   nameSettled();
-  document.getElementById('chooseFolder').focus();
+  (locCombo.hidden ? locStart : chooseFolderBtn).focus();
 });
 
 /** The name appears in the done screen and the dock label. */
@@ -647,17 +598,23 @@ function labelProject() {
   document.querySelectorAll('#winSetup [data-project-name]').forEach((n) => { n.textContent = name; });
 }
 
-/* --- 3 · folder ------------------------------------------------------- */
+/* --- 3 · location ---------------------------------------------------- */
 
-/** Called by the chooser (section 5) once a folder is picked. */
+function setLocation(path) {
+  pickedLocation = path;
+  projFolder.value = path;
+  locStart.hidden = true;
+  locCombo.hidden = false;
+  folderChosen();
+}
+
+/** Called by the chooser once a location is picked. */
 function folderChosen() {
   clearFieldError('folder');
   markAnswered('folder');
   document.getElementById('createApp').disabled = false;
 }
-/* ====================== 3. NAME IT, PICK A FOLDER ================== */
 
-// projName and projFolder are declared with the screens that own them.
 const fndList = document.getElementById('fndList');
 const fndCrumb = document.getElementById('fndCrumb');
 const fndOpen = document.getElementById('fndOpen');
@@ -735,17 +692,19 @@ function chooseFolder() {
   if (!selected) return;
   clearFieldError('folder');
   const base = currentDir === 'gareth' ? '/Users/gareth' : `/Users/gareth/${currentDir}`;
-  projFolder.value = `${base}/${selected}`;
+  setLocation(`${base}/${selected}`);
   hideWin('finder');
   focusWin('setup');
   syncDock();
-  folderChosen();
 }
 
-document.getElementById('chooseFolder').addEventListener('click', () => {
+function openFolderChooser() {
   renderFolder(currentDir);
   focusWin('finder');
-});
+}
+
+locStart.addEventListener('click', openFolderChooser);
+chooseFolderBtn.addEventListener('click', openFolderChooser);
 document.getElementById('fndCancel').addEventListener('click', () => { hideWin('finder'); focusWin('setup'); });
 fndOpen.addEventListener('click', chooseFolder);
 
@@ -782,7 +741,7 @@ function runSteps(path) {
     ['Folder created', shortPath(path)],
     // The template they chose, said back to them, because it is the one
     // answer that changed what is being written into the folder.
-    [chosenTemplate === 'scratch' ? 'Empty project created' : 'Template downloaded', templateName()],
+    ['Template downloaded', templateName()],
     ['Dependencies installed', 'in progress'],
   ];
 }
@@ -858,10 +817,10 @@ let project = { name: '', path: '' };
 
 document.getElementById('createApp').addEventListener('click', async () => {
   const name = projName.value.trim() || 'customer-portal';
-  const folder = projFolder.value.trim();
+  const folder = pickedLocation.trim();
 
   if (!folder) {
-    setFieldError('folder', 'Pick where the app should live before we create it.');
+    setFieldError('folder', 'Choose where on this Mac to save the app before we create it.');
     return;
   }
   clearAllFieldErrors();
@@ -1001,28 +960,64 @@ const HARNESS_ICONS = {
 
 const harnessRows = document.getElementById('harnessRows');
 const harnessGo = document.getElementById('harnessGo');
-const harnessFineTitle = document.getElementById('harnessFineTitle');
-const harnessFineBody = document.getElementById('harnessFineBody');
 
-/**
- * The alert above the button: the point in the title, the detail under.
- *
- * The detail is built from nodes rather than an HTML string. Some of what
- * goes into it has been read back out of the DOM — the folder the user
- * picked — and concatenating that into innerHTML is how a path stops
- * being a path. A text node cannot be re-read as markup.
- *
- * Parts are plain strings, {b} for emphasis, or {code} for a command.
- */
-function sayNext(title, parts) {
-  document.getElementById('harnessFine').hidden = false;
-  harnessFineTitle.textContent = title;
-  harnessFineBody.replaceChildren(...[].concat(parts).map((part) => {
+const ALERT_ICON = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+  + '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/>'
+  + '<path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+  + '<circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>';
+
+function makeHarnessAlert() {
+  const alert = document.createElement('div');
+  alert.className = 'i4-alert i4-pick-alert';
+  alert.hidden = true;
+  alert.innerHTML = `${ALERT_ICON}<div class="tx"><b></b><span></span></div>`;
+  return alert;
+}
+
+function fillHarnessAlert(alert, title, parts) {
+  if (!alert) return;
+  alert.hidden = false;
+  alert.querySelector('b').textContent = title;
+  alert.querySelector('span').replaceChildren(...[].concat(parts).map((part) => {
     if (typeof part === 'string') return document.createTextNode(part);
     const el = document.createElement(part.code === undefined ? 'b' : 'code');
     el.textContent = part.code === undefined ? part.b : part.code;
     return el;
   }));
+}
+
+function hideHarnessAlerts() {
+  document.querySelectorAll('#winSetup .i4-pick-alert').forEach((el) => {
+    el.hidden = true;
+  });
+}
+
+function harnessMessage(h) {
+  if (h.installed) return null;
+  return {
+    title: `${h.name} comes from ${h.site.split('/')[0]}`,
+    parts: ["We'll open their site. Install it and make a ", { b: h.account },
+      ' account there, then come back here — your app is already created either way.'],
+  };
+}
+
+function applyHarnessAlert(alert, h) {
+  if (!alert) return;
+  const msg = harnessMessage(h);
+  if (!msg) {
+    alert.hidden = true;
+    return;
+  }
+  fillHarnessAlert(alert, msg.title, msg.parts);
+}
+
+/**
+ * The alert inside the selected option — the point in the title, the
+ * detail under. Parts are plain strings, {b} for emphasis, or {code}. */
+function sayNext(title, parts) {
+  hideHarnessAlerts();
+  const pick = document.querySelector('#winSetup .i4-pick.on');
+  fillHarnessAlert(pick?.querySelector('.i4-pick-alert'), title, parts);
 }
 const harnessMore = document.getElementById('harnessMore');
 const harnessStandard = document.getElementById('harnessStandard');
@@ -1058,28 +1053,7 @@ const TICK_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L
    button — never the shape of the screen. */
 
 function renderStandard() {
-  const h = standard();
-  harnessStandard.hidden = !h;
-  if (!h) return;
-
-  const icon = document.getElementById('stdIcon');
-  icon.style.background = HARNESS_ICONS[h.id].bg;
-  icon.innerHTML = HARNESS_ICONS[h.id].svg;
-
-  document.getElementById('stdName').textContent = h.name;
-  document.getElementById('stdWhy').textContent = h.installed
-    ? `Set as the standard for ${WORKSPACES.find((w) => w.id === chosenWorkspace)?.name || 'your workspace'} by an administrator.`
-    : `Set as the standard by an administrator. Setup can install it — npm is already here.`;
-
-  const state = document.getElementById('stdState');
-  state.className = `i4-box-state${h.installed ? ' ready' : ''}`;
-  state.innerHTML = h.installed
-    ? `<span class="dot">${TICK_SVG}</span>installed · ${escapeHtml(h.version || '')}`
-    : '<span class="glyph"><svg viewBox="0 0 24 24" fill="none">'
-      + '<path d="M12 4v11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
-      + '<path d="M7.5 10.5L12 15l4.5-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
-      + '<path d="M5 19h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
-      + '</svg></span>not on this Mac';
+  harnessStandard.hidden = true;
 }
 
 /* ---------------------------------------------------------------------
@@ -1104,6 +1078,9 @@ function renderHarnesses() {
     harnessRows.appendChild(head);
 
     items.forEach((h) => {
+      const pick = document.createElement('div');
+      pick.className = 'i4-pick' + (h.id === chosenHarness ? ' on' : '');
+
       const row = document.createElement('button');
       row.type = 'button';
       row.className = 'eai-row i4-row'
@@ -1115,13 +1092,18 @@ function renderHarnesses() {
         + `<span class="nm">${escapeHtml(h.name)}</span>`
         + `<span class="state">${escapeHtml(stateLabel(h))}</span>`;
       row.addEventListener('click', () => selectHarness(h.id));
-      harnessRows.appendChild(row);
+
+      pick.appendChild(row);
+      const alert = makeHarnessAlert();
+      if (h.id === chosenHarness) applyHarnessAlert(alert, h);
+      pick.appendChild(alert);
+      harnessRows.appendChild(pick);
     });
   });
 
-  harnessMore.hidden = !standard();
+  harnessMore.hidden = true;
   document.getElementById('harnessMoreCount').textContent = `${shown.length} other options`;
-  harnessRows.hidden = !!standard() && !listOpen;
+  harnessRows.hidden = false;
 }
 
 /* The disclosure. With a standard set, most people never open this. */
@@ -1158,8 +1140,7 @@ function selectHarness(id) {
   if (h.installed) {
     // Installed: nothing left to fetch, so the button moves them on.
     harnessGo.textContent = 'Next';
-    sayNext(`${h.name} is ready`,
-      ['Next: what to do the moment it opens on ', { b: project.name || 'your app' }, '.']);
+    hideHarnessAlerts();
     return;
   }
 
@@ -1410,7 +1391,7 @@ function showWaiting(h) {
   // No fine print while waiting: the waiting box above says everything,
   // and a second panel repeating "nothing else is needed" underneath it
   // was answering a question nobody had asked yet.
-  document.getElementById('harnessFine').hidden = true;
+  hideHarnessAlerts();
 }
 
 /**
@@ -1447,7 +1428,9 @@ function finish(name, path) {
   // variation has already replaced it with its own.
   if (!harnessSubCustom) {
     const anyReady = HARNESSES.some((h) => h.installed);
-    document.getElementById('harnessSub').textContent = anyReady ? SUB_INSTALLED : SUB_EMPTY;
+    const sub = document.getElementById('harnessSub');
+    sub.hidden = true;
+    sub.textContent = anyReady ? SUB_INSTALLED : SUB_EMPTY;
   }
   renderStandard();
   renderHarnesses();
@@ -1505,7 +1488,7 @@ function openInCopilot(name, path, app = 'copilotProject', label = 'GitHub Copil
 /** Whichever one they picked, opened on the project. */
 function openInHarness(h) {
   const app = HOST_FOR[h.id] || 'terminal';
-  openInCopilot(projName.value.trim() || 'customer-portal', projFolder.value || '', app, h.name);
+  openInCopilot(projName.value.trim() || 'customer-portal', pickedLocation || '', app, h.name);
 }
 
 /* The desktop's app skins, by harness. Copilot has a skin already set up
@@ -1732,7 +1715,6 @@ const FAILURES = {
     renderWorkspaces();
     wsRows.replaceChildren();
     showScreen('setup');
-    steps.template.hidden = true;
     steps.name.hidden = true;
     steps.folder.hidden = true;
     document.getElementById('createApp').disabled = true;
@@ -1745,10 +1727,10 @@ const FAILURES = {
     renderWorkspaces();
     showScreen('setup');
     steps.name.hidden = false;
-    if (!projName.value) projName.value = 'contract-renewals';
+    if (!projName.value) projName.value = 'workflow-name-here';
     setFieldError('name',
       `A folder called ${projName.value} already exists there. `
-      + 'Pick another name, or choose a different folder below.');
+      + 'Pick another name, or choose a different location below.');
   },
 
   running() {
@@ -1789,10 +1771,12 @@ function clearFailures() {
   chosenWorkspace = null;
   renderWorkspaces();
   chosenTemplate = 'eai';
-  renderTemplates();
-  steps.template.hidden = true;
   steps.name.hidden = true;
   steps.folder.hidden = true;
+  pickedLocation = '';
+  projFolder.value = '';
+  locCombo.hidden = true;
+  locStart.hidden = false;
   document.getElementById('createApp').disabled = true;
   Object.keys(steps).forEach((k) => markAnswered(k, false));
 
@@ -1864,14 +1848,18 @@ function resetHarnesses() {
   HARNESSES.find((h) => h.id === 'claude').version = 'v2.1.4';
   document.getElementById('harnessWait')?.setAttribute('hidden', '');
   document.getElementById('harnessNote').hidden = true;
-  document.getElementById('harnessSub').textContent = SUB_INSTALLED;
+  const sub = document.getElementById('harnessSub');
+  sub.hidden = true;
+  sub.textContent = SUB_INSTALLED;
   chosenHarness = null;
 }
 
 const HARNESS_STATES = {
   /* Variation 1 — the short road. */
   installed: () => {
-    document.getElementById('harnessSub').textContent = SUB_INSTALLED;
+    const sub = document.getElementById('harnessSub');
+    sub.hidden = true;
+    sub.textContent = SUB_INSTALLED;
   },
 
   /* Variation 2 — the long one. An empty Mac, and the only way forward
@@ -1881,7 +1869,9 @@ const HARNESS_STATES = {
       h.installed = false;
       delete h.version;
     });
-    document.getElementById('harnessSub').textContent = SUB_EMPTY;
+    const sub = document.getElementById('harnessSub');
+    sub.hidden = true;
+    sub.textContent = SUB_EMPTY;
   },
 };
 
@@ -1929,9 +1919,10 @@ document.querySelectorAll('button[data-harness]').forEach((btn) => {
 
     // Land on the finished screen with a project, however you got here.
     if (!project.name) {
-      projName.value = projName.value || 'contract-renewals';
-      projFolder.value = projFolder.value || '/Users/gareth/eai';
-      project = { name: projName.value, path: `${projFolder.value}/${projName.value}` };
+      projName.value = projName.value || 'workflow-name-here';
+      pickedLocation = pickedLocation || '/Users/gareth/eai';
+      setLocation(pickedLocation);
+      project = { name: projName.value, path: `${pickedLocation}/${projName.value}` };
     }
     // Terminal is always here and can always run /eai, but it is not what
     // this round is about — lead with a real harness either way.

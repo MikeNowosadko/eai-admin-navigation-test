@@ -19,18 +19,20 @@
    mutates a running flow and has to remember how to put it back, and
    the list of things it has to remember is the list of bugs.
 
-   The rail is four questions, and only the first one is about screens:
+   The rail is three questions, and only the first one is about screens:
 
      Screen      · which of the seven
      State       · working, or the specific thing that broke
      This Mac    · is there a harness on it — the question the last
                    screen exists to answer
-     Workspace   · did an administrator choose one already
 
-   The last two only reach the harness screens, so the rail offers them
-   only there. State is a list rather than one answer: two things can be
-   wrong at once, and the screen that has to hold both is a different
-   screen from either on its own.
+   "This Mac" only reaches the harness screens, so the rail offers it
+   only there. Workspace standard is out of scope — /install-4 explores
+   it; self-serve signup shows the full list and everyone picks.
+
+   State is a list rather than one answer: two things can be wrong at
+   once, and the screen that has to hold both is a different screen from
+   either on its own.
 ------------------------------------------------------------------- */
 
 /* ===================== 1. WHAT THE APP KNOWS ======================
@@ -125,7 +127,7 @@ const state = {
   screen: 'signin',
   faults: [],       // empty = working; otherwise fault ids owned by the screen
   mac: 'installed', // installed · none · waiting
-  standard: 'none', // none · claude
+  harnessPick: 'claude',
   stage: 99,        // how far through a screen that has stages; clamped on read
 };
 
@@ -254,9 +256,9 @@ const SCREENS = [
     // has been done. It is the reveal that is being reviewed.
     stages: [
       ['Workspace only', 'workspace'],
-      ['Template appears', 'template'],
       ['Name appears', 'name'],
-      ['Folder appears — ready', 'folder'],
+      ['Location — choose', 'folder-choose'],
+      ['Location — chosen', 'folder-chosen'],
     ],
 
     /* These two genuinely cannot co-occur. With no workspace, questions
@@ -296,8 +298,14 @@ const SCREENS = [
   {
     id: 'done',
     name: 'Choose a harness',
-    note: 'The question this round exists to ask. What it looks like is decided by the two controls the rail adds here — whether anything is on the Mac, and whether an administrator already chose.',
-    uses: ['mac', 'standard'],
+    note: 'Everyone picks for themselves — there is no workspace standard in self-serve signup (/install-4 explores that separately). What changes is whether Claude Code is already on the Mac.',
+    uses: ['mac', 'stage'],
+    stageLabel: 'Selection',
+    stages: [
+      ['Claude · installed (no alert)', 'installed'],
+      ['Claude · not on Mac (alert)', 'missing'],
+      ['Copilot · not installed (alert)', 'other'],
+    ],
     faults: [
       {
         id: 'install',
@@ -352,6 +360,20 @@ function stage() {
   const stages = screen().stages;
   if (!stages) return 0;
   return Math.min(Math.max(1, state.stage), stages.length);
+}
+
+/** On the harness screen, stage presets map to mac + selection. */
+function syncHarnessFromStage() {
+  const view = screen().stages?.[stage() - 1]?.[1];
+  const presets = {
+    installed: { mac: 'installed', pick: 'claude' },
+    missing: { mac: 'none', pick: 'claude' },
+    other: { mac: 'none', pick: 'copilot' },
+  };
+  const p = presets[view];
+  if (!p) return;
+  state.mac = p.mac;
+  state.harnessPick = p.pick;
 }
 
 /** Which harnesses are on the Mac, per the control rather than per a flag. */
@@ -491,13 +513,13 @@ function renderWorkspaces(chosen) {
   const row = document.createElement('div');
   row.className = 'eai-row pick';
   row.innerHTML = '<i class="mk done">&#10003;</i>'
-    + `<span class="lbl">${escapeHtml(WORKSPACE.name)}</span>`
-    + `<span class="val">${escapeHtml(WORKSPACE.meta)}</span>`;
+    + `<span class="lbl">${escapeHtml(WORKSPACE.name)}</span>`;
   rows.appendChild(row);
 }
 
 function renderTemplates(chosen) {
-  const cards = el('tplCards');
+  const cards = maybe('tplCards');
+  if (!cards) return;
   cards.replaceChildren();
   TEMPLATES.forEach((t) => {
     const on = t.id === chosen;
@@ -513,7 +535,7 @@ function renderTemplates(chosen) {
 }
 
 /** A step is answered when its numeral becomes a tick. */
-const STEP_NUMBERS = { workspace: '1', template: '2', name: '3', folder: '4' };
+const STEP_NUMBERS = { workspace: '1', name: '2', folder: '3' };
 
 function setStep(name, { shown = true, answered = false } = {}) {
   const s = step(name);
@@ -554,39 +576,46 @@ function addRunRow(label, value, mark) {
    alert above the button is what the button is about to do. */
 
 function renderStandard() {
-  const box = el('harnessStandard');
-  const h = state.standard === 'claude' ? subject() : null;
-  box.hidden = !h;
-  if (!h) return;
+  el('harnessStandard').hidden = true;
+}
 
-  const here = isInstalled(h);
-  const icon = el('stdIcon');
-  icon.style.background = HARNESS_ICONS[h.id].bg;
-  icon.innerHTML = HARNESS_ICONS[h.id].svg;
+const ALERT_ICON = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+  + '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/>'
+  + '<path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+  + '<circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>';
 
-  el('stdName').textContent = h.name;
-  el('stdWhy').textContent = here
-    ? `Set as the standard for ${WORKSPACE.name} by an administrator.`
-    : 'Set as the standard by an administrator. Setup can install it — npm is already here.';
+function makeHarnessAlert() {
+  const alert = document.createElement('div');
+  alert.className = 'i4-alert i4-pick-alert';
+  alert.hidden = true;
+  alert.innerHTML = `${ALERT_ICON}<div class="tx"><b></b><span></span></div>`;
+  return alert;
+}
 
-  const st = el('stdState');
-  st.className = `i4-box-state${here ? ' ready' : ''}`;
-  st.innerHTML = here
-    ? `<span class="dot">${TICK_SVG}</span>installed · ${escapeHtml(h.version)}`
-    : '<span class="glyph"><svg viewBox="0 0 24 24" fill="none">'
-      + '<path d="M12 4v11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
-      + '<path d="M7.5 10.5L12 15l4.5-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
-      + '<path d="M5 19h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
-      + '</svg></span>not on this Mac';
+function fillHarnessAlert(alert, title, parts) {
+  if (!alert) return;
+  alert.hidden = false;
+  alert.querySelector('b').textContent = title;
+  alert.querySelector('span').replaceChildren(...[].concat(parts).map((part) => {
+    if (typeof part === 'string') return document.createTextNode(part);
+    const node = document.createElement(part.code === undefined ? 'b' : 'code');
+    node.textContent = part.code === undefined ? part.b : part.code;
+    return node;
+  }));
+}
+
+function hideHarnessAlerts() {
+  win.querySelectorAll('.i4-pick-alert').forEach((a) => { a.hidden = true; });
 }
 
 function renderHarnesses(chosen) {
   const rows = el('harnessRows');
   rows.replaceChildren();
 
-  const hasStandard = state.standard === 'claude';
+  el('harnessStandard').hidden = true;
+  el('harnessMore').hidden = true;
+
   const shown = [...HARNESSES]
-    .filter((h) => !(hasStandard && h.id === 'claude'))
     .sort((a, b) => Number(isInstalled(b)) - Number(isInstalled(a)));
 
   [
@@ -600,32 +629,36 @@ function renderHarnesses(chosen) {
     rows.appendChild(head);
 
     items.forEach((h) => {
+      const pick = document.createElement('div');
+      pick.className = 'i4-pick' + (h.id === chosen ? ' on' : '');
+
       const row = document.createElement('div');
       row.className = `eai-row i4-row${isInstalled(h) ? ' ready' : ' missing'}${h.id === chosen ? ' on' : ''}`;
       row.innerHTML = `<span class="mark">${TICK_SVG}</span>`
         + `<span class="tile" style="background:${HARNESS_ICONS[h.id].bg}">${HARNESS_ICONS[h.id].svg}</span>`
         + `<span class="nm">${escapeHtml(h.name)}</span>`
         + `<span class="state">${isInstalled(h) ? h.version || 'installed' : 'not installed'}</span>`;
-      rows.appendChild(row);
+      pick.appendChild(row);
+
+      const alert = makeHarnessAlert();
+      if (h.id === chosen && !isInstalled(h)) {
+        fillHarnessAlert(alert, `${h.name} comes from ${h.site.split('/')[0]}`,
+          ["We'll open their site. Install it and make a ", { b: h.account },
+            ' account there, then come back here — your app is already created either way.']);
+      }
+      pick.appendChild(alert);
+      rows.appendChild(pick);
     });
   });
 
-  // With a standard set, most people never open the list.
-  el('harnessMore').hidden = !hasStandard;
-  el('harnessMoreCount').textContent = `${shown.length} other options`;
-  rows.hidden = hasStandard;
+  rows.hidden = false;
 }
 
-/** The alert above the button: the point in the title, the detail under. */
+/** The alert inside the selected option. */
 function sayNext(title, parts) {
-  el('harnessFine').hidden = false;
-  el('harnessFineTitle').textContent = title;
-  el('harnessFineBody').replaceChildren(...[].concat(parts).map((part) => {
-    if (typeof part === 'string') return document.createTextNode(part);
-    const node = document.createElement(part.code === undefined ? 'b' : 'code');
-    node.textContent = part.code === undefined ? part.b : part.code;
-    return node;
-  }));
+  hideHarnessAlerts();
+  const pick = win.querySelector('.i4-pick.on');
+  fillHarnessAlert(pick?.querySelector('.i4-pick-alert'), title, parts);
 }
 
 /** The state the app cannot resolve on its own — yet. */
@@ -648,7 +681,7 @@ function showWaiting(h) {
 
   el('harnessGo').disabled = true;
   el('harnessGo').textContent = `Waiting for ${h.name}…`;
-  el('harnessFine').hidden = true;
+  hideHarnessAlerts();
 }
 
 /* ======================== 6. THE RESET ===========================
@@ -695,12 +728,19 @@ function reset() {
     `${ACCOUNT} isn't a member of a company workspace yet. An EAI admin can add you, then sign in again.`;
   renderTemplates('eai');
   el('projName').value = PROJECT.name;
-  el('projFolder').value = '/Users/gareth/Downloads';
+  const projFolder = maybe('projFolder');
+  const locCombo = maybe('locCombo');
+  const locStart = maybe('chooseFolderStart');
+  if (projFolder && locCombo && locStart) {
+    projFolder.value = '';
+    locCombo.hidden = true;
+    locStart.hidden = false;
+  }
   win.querySelectorAll('.eai-field').forEach((f) => {
     f.querySelector('.eai-err').hidden = true;
     f.classList.remove('invalid', 'shake');
   });
-  ['workspace', 'template', 'name', 'folder'].forEach((n) => setStep(n, { shown: false }));
+  ['workspace', 'name', 'folder'].forEach((n) => setStep(n, { shown: false }));
   el('createApp').disabled = true;
 
   el('runTitle').textContent = `Creating ${PROJECT.name}`;
@@ -712,7 +752,9 @@ function reset() {
   el('harnessNote').hidden = true;
   maybe('harnessWait')?.setAttribute('hidden', '');
   el('harnessGo').disabled = false;
-  el('harnessFine').hidden = false;
+  el('harnessStandard').hidden = true;
+  el('harnessMore').hidden = true;
+  hideHarnessAlerts();
 
   el('handoffTitle').textContent = 'One last thing';
 }
@@ -810,30 +852,43 @@ const PAINT = {
     }
 
     if (f?.id === 'name') {
-      // The name is being typed, so everything above it is answered and
-      // the folder below has not been reached.
       setStep('workspace', { shown: true, answered: true });
-      setStep('template', { shown: true, answered: true });
       setStep('name', { shown: true });
+      setStep('folder', { shown: true, answered: false });
+      const projFolder = maybe('projFolder');
+      const locCombo = maybe('locCombo');
+      const locStart = maybe('chooseFolderStart');
+      if (projFolder && locCombo && locStart) {
+        projFolder.value = '/Users/gareth/Downloads';
+        locCombo.hidden = false;
+        locStart.hidden = true;
+      }
       setFieldError('name',
         `A folder called ${PROJECT.name} already exists there. `
-        + 'Pick another name, or choose a different folder below.');
+        + 'Pick another name, or choose a different location below.');
       return;
     }
 
-    /* Reveal as far as they have got, and no further. A step that is
-       shown is answered — the reveal happens because the one above it
-       landed, so there is never a visible unanswered question except the
-       one being typed into. */
     const upto = stage();
-    screen().stages.forEach(([, id], i) => {
-      setStep(id, { shown: i < upto, answered: i < upto });
-    });
+    setStep('workspace', { shown: upto >= 1, answered: upto >= 1 });
+    setStep('name', { shown: upto >= 2, answered: upto >= 3 });
+    setStep('folder', { shown: upto >= 3, answered: upto >= 4 });
 
-    /* The primary is on the rail from the first question — greyed until
-       there is something to create. A button that appears out of nowhere
-       is fine in a window that grows with it; in a fixed one it leaves
-       the bottom of the screen empty until the very end. */
+    const projFolder = maybe('projFolder');
+    const locCombo = maybe('locCombo');
+    const locStart = maybe('chooseFolderStart');
+    if (projFolder && locCombo && locStart) {
+      if (upto >= 4) {
+        projFolder.value = '/Users/gareth/Downloads';
+        locCombo.hidden = false;
+        locStart.hidden = true;
+      } else {
+        projFolder.value = '';
+        locCombo.hidden = true;
+        locStart.hidden = false;
+      }
+    }
+
     el('createApp').disabled = upto < screen().stages.length;
   },
 
@@ -857,17 +912,14 @@ const PAINT = {
 
   done(fs) {
     const f = fs[0] || null;
-    const h = subject();
+    if (state.mac !== 'waiting') syncHarnessFromStage();
+    const h = harness(state.harnessPick) || subject();
     const here = isInstalled(h);
 
-    /* With a standard set the list is behind a disclosure, so the line
-       under the title has to be about the box rather than about a list
-       nobody can see. */
-    el('harnessSub').textContent = state.standard === 'claude'
-      ? `${WORKSPACE.name} has a standard for this, so it's already chosen.`
-      : here ? SUB_INSTALLED : SUB_EMPTY;
+    /* Everyone picks from the list — no workspace standard in this flow. */
+    el('harnessSub').hidden = true;
     renderStandard();
-    renderHarnesses(h.id);
+    renderHarnesses(state.harnessPick);
 
     if (f?.id === 'install') {
       el('harnessNote').hidden = false;
@@ -882,8 +934,7 @@ const PAINT = {
 
     if (here) {
       el('harnessGo').textContent = 'Next';
-      sayNext(`${h.name} is ready`,
-        ['Next: what to do the moment it opens on ', { b: PROJECT.name }, '.']);
+      hideHarnessAlerts();
       return;
     }
 
@@ -1035,7 +1086,14 @@ function renderRail() {
   });
   sel.addEventListener('change', () => {
     state.screen = sel.value;
-    state.faults = [];   // a fault belongs to its screen and nowhere else
+    state.faults = [];
+    const sc = screen();
+    if (sc.stages) {
+      state.stage = sc.id === 'done' ? 1 : sc.stages.length;
+      if (sc.id === 'done') syncHarnessFromStage();
+    } else {
+      state.stage = 99;
+    }
     paint();
   });
   g1.appendChild(sel);
@@ -1138,24 +1196,11 @@ function renderRail() {
     s.stages.forEach(([label], i) => {
       g.appendChild(option(label, stage() === i + 1, () => {
         state.stage = i + 1;
+        if (s.id === 'done') syncHarnessFromStage();
         paint();
       }));
     });
     rail.appendChild(g);
-  }
-
-  if ((s.uses || []).includes('standard')) {
-    const g4 = group("Workspace's standard");
-    [
-      ['Nobody set one', 'none'],
-      ['An admin chose Claude Code', 'claude'],
-    ].forEach(([text, value]) => {
-      g4.appendChild(option(text, state.standard === value, () => {
-        state.standard = value;
-        paint();
-      }));
-    });
-    rail.appendChild(g4);
   }
 }
 
@@ -1213,7 +1258,6 @@ function writeUrl() {
   // Comma-separated, so ?fault=prereq still means what it always did.
   if (state.faults.length) q.set('fault', faults().map((f) => f.id).join(','));
   if (state.mac !== 'installed') q.set('mac', state.mac);
-  if (state.standard !== 'none') q.set('standard', state.standard);
   if (screen().stages && stage() !== screen().stages.length) q.set('stage', stage());
   history.replaceState(null, '', `?${q}`);
 }
@@ -1229,10 +1273,15 @@ function readUrl() {
   state.faults = screen().exclusive ? known.slice(0, 1) : known;
 
   if (['installed', 'none', 'waiting'].includes(q.get('mac'))) state.mac = q.get('mac');
-  if (['none', 'claude'].includes(q.get('standard'))) state.standard = q.get('standard');
 
   const wantStage = Number(q.get('stage'));
-  state.stage = wantStage >= 1 ? wantStage : 99;
+  if (wantStage >= 1) {
+    state.stage = wantStage;
+  } else {
+    state.stage = screen().id === 'done' ? 1 : 99;
+  }
+
+  if (screen().id === 'done') syncHarnessFromStage();
 }
 
 /* ========================= 12. GO ================================
@@ -1247,6 +1296,13 @@ function stepBy(n) {
   if (i < 0 || i >= SCREENS.length) return;
   state.screen = SCREENS[i].id;
   state.faults = [];
+  const sc = screen();
+  if (sc.stages) {
+    state.stage = sc.id === 'done' ? 1 : sc.stages.length;
+    if (sc.id === 'done') syncHarnessFromStage();
+  } else {
+    state.stage = 99;
+  }
   paint();
 }
 
