@@ -24,6 +24,15 @@
       <h1>Launch pad</h1>
     </header>
 
+    <!-- Four things, and nothing else.
+
+         The pad had grown to seven sections of finished A-vs-B experiments,
+         which made the three live ones hard to find. Everything whose
+         question has been answered is written up in Notion and comes off
+         here; the files stay in the repo and stay linkable, they just
+         aren't surfaced. Dropped: npx vs installer, /eai hand-off, setup
+         form vs agent, account-first vs download-first, and the earlier
+         install-* iterations. -->
     <ul class="pad-list">
 
       <li class="pad-section">
@@ -42,95 +51,46 @@
       </li>
 
       <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-build">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-install">
           <span class="pad-toggle-text">
-            <span class="pad-toggle-title">Better experience: future state</span>
-            <span class="pad-badge pad-badge--green">Current</span>
+            <span class="pad-toggle-title">App install</span>
           </span>
           <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
-        <div class="pad-panel" id="pad-build" hidden>
+        <div class="pad-panel" id="pad-install" hidden>
           <ul class="pad-entries">
-            <li><a class="pad-entry" href="build/index.html">Future state</a></li>
+            <li><a class="pad-entry" href="statemachine/index.html">State machine</a></li>
+            <li><a class="pad-entry" href="signup/index.html?scenario=none">Prototype: no harness</a></li>
+            <li><a class="pad-entry" href="signup/index.html?scenario=installed">Prototype: with an external harness</a></li>
           </ul>
         </div>
       </li>
 
       <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-download">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-cli">
           <span class="pad-toggle-text">
-            <span class="pad-toggle-title">Account first vs download first</span>
+            <span class="pad-toggle-title">CLI experience</span>
           </span>
           <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
-        <div class="pad-panel" id="pad-download" hidden>
+        <div class="pad-panel" id="pad-cli" hidden>
           <ul class="pad-entries">
-            <li><a class="pad-entry" href="signup/index.html">Sign up first</a></li>
-            <li><a class="pad-entry" href="install-4/index.html">Download first</a></li>
+            <li><a class="pad-entry" href="build-states/index.html">CLI state machine</a></li>
           </ul>
         </div>
       </li>
 
       <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-eai">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-better">
           <span class="pad-toggle-text">
-            <span class="pad-toggle-title"><code>/eai</code> hand-off</span>
+            <span class="pad-toggle-title">Better experience</span>
           </span>
           <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
-        <div class="pad-panel" id="pad-eai" hidden>
+        <div class="pad-panel" id="pad-better" hidden>
           <ul class="pad-entries">
-            <li><a class="pad-entry" href="signup/index.html?scenario=installed">Harness installed</a></li>
-            <li><a class="pad-entry" href="signup/index.html?scenario=none">Empty Mac</a></li>
-          </ul>
-        </div>
-      </li>
-
-      <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-setup-harness">
-          <span class="pad-toggle-text">
-            <span class="pad-toggle-title">Setup: form vs agent</span>
-          </span>
-          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </button>
-        <div class="pad-panel" id="pad-setup-harness" hidden>
-          <ul class="pad-entries">
-            <li><a class="pad-entry" href="install-4/index.html">Setup form</a></li>
-            <li><a class="pad-entry" href="agent/index.html">Agent setup</a></li>
-          </ul>
-        </div>
-      </li>
-
-      <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-onboarding">
-          <span class="pad-toggle-text">
-            <span class="pad-toggle-title">Archive: npx vs installer</span>
-            <span class="pad-badge pad-badge--gray">Completed</span>
-          </span>
-          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </button>
-        <div class="pad-panel" id="pad-onboarding" hidden>
-          <ul class="pad-entries">
-            <li><a class="pad-entry" href="npx/index.html"><code>npx install eai</code></a></li>
-            <li><a class="pad-entry" href="setup/index.html">EAI Setup app</a></li>
-          </ul>
-        </div>
-      </li>
-
-      <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-review">
-          <span class="pad-toggle-text">
-            <span class="pad-toggle-title">Reviewing, not playing</span>
-            <span class="pad-badge pad-badge--gray">Internal</span>
-          </span>
-          <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </button>
-        <div class="pad-panel" id="pad-review" hidden>
-          <ul class="pad-entries">
-            <li><a class="pad-entry" href="states/index.html">EAI Setup — states</a></li>
-            <li><a class="pad-entry" href="build-states/index.html">Build stage — states</a></li>
-            <li><a class="pad-entry" href="mcp/index.html">Who draws the box?</a></li>
-            <li><a class="pad-entry" href="statemachine/index.html">State machine (earlier)</a></li>
+            <li><a class="pad-entry" href="build/index.html">Marketing site, login, and our own harness</a></li>
+            <li><a class="pad-entry" href="install-5/index.html">EAI Setup app &mdash; design variant</a></li>
           </ul>
         </div>
       </li>

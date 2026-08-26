@@ -1,0 +1,430 @@
+/* ------------------------------------------------------------------
+   Two-column setup — styles owned by /install-5.
+
+   Left: the flow (sign in, form, harness). Right: one of two Paper
+   shaders from the design file, with the Enterprise AI wordmark centred
+   and the EAI mark sitting bare in the bottom-right corner. Which shader
+   is running is on the panel as data-art; setup-shader.js sets it.
+------------------------------------------------------------------- */
+
+#winSetup.split {
+  max-height: 88vh;
+}
+
+#winSetup.split .skin-setup.eai {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+#winSetup.split .setup-split {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --- left column ---------------------------------------------------- */
+
+#winSetup.split .setup-split-main {
+  /* Even halves. The action bar carries a label with the project name in it
+     ("Open contract-renewals in Claude Code"), so the form column has to be
+     wide enough to lay that row out left-to-right; at 40% it wasn't, and
+     everything in here had to shrink to compensate. */
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #ffffff;
+  border-right: 1px solid oklch(94% 0 0);
+}
+
+#winSetup.split .setup-split-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 34px 0;
+  flex: none;
+}
+
+#winSetup.split .setup-split-bars {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+#winSetup.split .setup-split-bars i {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: oklch(92% 0 0);
+}
+
+#winSetup.split .setup-split-bars i.on {
+  background: oklch(20.5% 0 0);
+}
+
+#winSetup.split .setup-split-count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+
+#winSetup.split .eai-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 36px 34px 24px;
+  justify-content: center;
+}
+
+#winSetup.split .setup-split-foot {
+  flex: none;
+  padding: 14px 34px 20px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: oklch(70% 0 0);
+}
+
+#winSetup.split .setup-split-foot a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#winSetup.split .setup-split-foot a:hover {
+  color: var(--color-foreground);
+}
+
+#winSetup.split .setup-split-foot span {
+  margin: 0 10px;
+  opacity: 0.45;
+}
+
+/* Sign-in reads like the onboarding reference: one headline, one beat. */
+#winSetup.split .eai-screen[data-screen="signin"] .eai-head h3 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+#winSetup.split .eai-screen[data-screen="signin"] .eai-head p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: oklch(52% 0 0);
+  max-width: 34ch;
+}
+
+#winSetup.split .eai-screen[data-screen="signin"] .eai-btn.primary {
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  background: oklch(20.5% 0 0);
+  border-color: oklch(20.5% 0 0);
+}
+
+#winSetup.split .eai-screen[data-screen="signin"] .eai-btn.primary:hover {
+  background: oklch(28% 0 0);
+  border-color: oklch(28% 0 0);
+}
+
+/* Outlined, as in the design file — a real second option, not a footnote. */
+#winSetup.split .eai-screen[data-screen="signin"] .eai-btn:not(.primary) {
+  height: 48px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+#winSetup.split .i3-brand {
+  display: none;
+}
+
+/* --- the door --------------------------------------------------------
+
+   The wordmark sits at the top of the column rather than beside the copy:
+   this screen is the app introducing itself, and everything after it is
+   the app asking for something. The stepper is hidden rather than removed,
+   so nothing shifts down when it arrives on the next screen. */
+
+#winSetup.split.at-start .setup-split-progress {
+  visibility: hidden;
+}
+
+#winSetup.split .eai-screen[data-screen="start"] {
+  justify-content: flex-start;
+}
+
+#winSetup.split .setup-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+#winSetup.split .setup-start-mark {
+  display: block;
+  width: 168px;
+  max-width: 62%;
+  height: auto;
+  filter: saturate(0) brightness(0.45);
+}
+
+#winSetup.split .setup-start-tx {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 40ch;
+}
+
+#winSetup.split .setup-start-tx h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--color-foreground);
+}
+
+#winSetup.split .setup-start-tx p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  color: oklch(52% 0 0);
+}
+
+/* The one button on the screen gets the same pill the sign-in primary has —
+   they are the same gesture, one screen apart. */
+#winSetup.split .eai-screen[data-screen="start"] .eai-btn.primary {
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  background: oklch(20.5% 0 0);
+  border-color: oklch(20.5% 0 0);
+}
+
+#winSetup.split .eai-screen[data-screen="start"] .eai-btn.primary:hover {
+  background: oklch(28% 0 0);
+  border-color: oklch(28% 0 0);
+}
+
+
+/* --- the actions, on the floor ---------------------------------------
+
+   Every screen's buttons sit in the same place: a single row along the
+   bottom of the column, back on the left, the way forward on the right.
+   They are still each screen's own markup — the screen simply grows to
+   fill the column and its action row is pushed down to the floor, so
+   nothing had to be lifted into a shared footer and rewired.
+
+   Left-to-right, not stacked. A full-width column of buttons is a phone
+   habit; there is a whole second column of room here. */
+
+#winSetup.split .eai-screen {
+  flex: 1;
+  min-height: 0;
+}
+
+#winSetup.split .eai-acts,
+#winSetup.split .i4-actions {
+  margin-top: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding-top: 28px;
+  flex-wrap: wrap;
+}
+
+/* The anchored nav from the design file: back pinned to the left end of the
+   row, everything else pinned to the right, secondary before primary. When
+   there is no back — sign-in, the opening screen — the pair just sits right,
+   which is what those frames show. */
+#winSetup.split .eai-acts > .i4-back,
+#winSetup.split .i4-actions > .i4-back,
+#winSetup.split .eai-acts > #runBack,
+#winSetup.split .i4-actions > #runBack {
+  order: 0;
+  margin-right: auto;
+  align-self: center;
+}
+
+#winSetup.split .eai-acts > .eai-btn:not(.primary),
+#winSetup.split .i4-actions > .eai-btn:not(.primary) {
+  order: 1;
+}
+
+#winSetup.split .eai-acts > .eai-btn.primary,
+#winSetup.split .i4-actions > .eai-btn.primary {
+  order: 2;
+}
+
+/* The nav's primary carries a trailing chevron in the design file — but only
+   on the screens that have a back button, where the pair reads as one nav.
+   Sign-in's primary is plain there, so it stays plain here. */
+#winSetup.split .eai-acts:has(> #runBack) > .eai-btn.primary::after,
+#winSetup.split .i4-actions:has(> .i4-back) > .eai-btn.primary::after {
+  content: '\203A';
+  margin-left: 10px;
+  font-size: 1.15em;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+/* Buttons size to their label in a row; stretching them was only ever
+   the column layout's doing. */
+#winSetup.split .eai-acts .eai-btn,
+#winSetup.split .i4-actions .eai-btn {
+  flex: none;
+}
+
+/* The end of the journey still gets the bigger target, but 52px next to a
+   36px Back reads as a mistake rather than emphasis. */
+#winSetup.split .i4-actions .eai-btn.big {
+  height: 42px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+/* --- the way out, above the bar --------------------------------------
+
+   "Show me the folder instead" is an alternative route, not a peer of the
+   primary, and it cannot share the bar with it: the primary's label carries
+   the project name — "Open contract-renewals in Claude Code" — so the three
+   of them need 56% of the window for a fourteen-character name, and more
+   for a longer one. No fixed column width survives that. It sits above the
+   bar instead, right-aligned over the button it is an alternative to, as a
+   link rather than a button so it reads as the quieter offer. */
+
+#winSetup.split .setup-alt {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+
+#winSetup.split .setup-alt + .i4-actions {
+  margin-top: 0;
+  padding-top: 10px;
+}
+
+#winSetup.split .setup-alt .eai-btn.ghost-quiet {
+  height: auto;
+  padding: 0 2px;
+  border: none;
+  background: none;
+  font-size: 13px;
+}
+
+#winSetup.split .setup-alt .eai-btn.ghost-quiet:hover {
+  background: none;
+  color: var(--color-foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Labels are written, not shouted — no small caps, no wide tracking.
+   setup-split.js rewrites the harness group headers' text to match. */
+#winSetup.split .i4-standard-label,
+#winSetup.split .i4-group b {
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 16px;
+}
+
+/* --- right column: shader + branding -------------------------------- */
+
+#winSetup.split .setup-split-art {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  /* The shader's own darkest colour, so the panel never flashes a lighter
+     ground before WebGL paints. For the dithered one it is more than that:
+     that shader draws with a transparent back, so this plum IS its ground. */
+  background: #0A180D;
+}
+
+#winSetup.split .setup-split-art[data-art="dither"] {
+  background: #301C2A;
+}
+
+#winSetup.split .setup-shader {
+  position: absolute;
+  inset: 0;
+}
+
+/* One layer per shader, both mounted, the inactive one parked at speed 0.
+   Crossfading beats swapping because a rebuilt canvas starts blank. */
+#winSetup.split .setup-shader > div {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#winSetup.split .setup-shader > div.on {
+  opacity: 1;
+}
+
+#winSetup.split .setup-art-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#winSetup.split .setup-art-center img {
+  display: block;
+  width: min(300px, 62%);
+  height: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.88;
+}
+
+/* No container. Both shaders stay dark enough at the corner that a white
+   mark reads on its own, and a pill here only announced that we didn't
+   trust it to. */
+#winSetup.split .setup-art-mark {
+  position: absolute;
+  right: 30px;
+  bottom: 28px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+#winSetup.split .setup-art-mark img {
+  display: block;
+  width: 40px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+/* Reduced motion keeps the shader — setup-shader.js sets its speed to 0,
+   so it paints the design file's frame once and then stops. The gradient
+   below is only what shows if WebGL isn't available at all. */
+@media (prefers-reduced-motion: reduce) {
+  #winSetup.split .setup-split-art {
+    background: linear-gradient(168deg, #0D3856 0%, #0E3755 46%, #0A180D 100%);
+  }
+  #winSetup.split .setup-split-art[data-art="dither"] {
+    background: linear-gradient(168deg, #301C2A 0%, #2A2036 52%, #145788 100%);
+  }
+}
