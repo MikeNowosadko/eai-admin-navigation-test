@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/builder" />
+<title>Prototype — Enterprise AI Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+<link rel="stylesheet" href="../../assets/build.css" />
+</head>
+<!-- No carried-prompt strip here: the prompt is the first message in the
+     transcript, and saying it twice on the same screen is one reassurance
+     too many. -->
+<body class="nb bd-builder" data-bd-strip="off">
+
+  <!-- THE HARNESS.
+
+       Our own agent, in our own product, doing the building — recreated
+       from the shipped no-code builder rather than sketched, so what a
+       tester reacts to is the thing we actually have:
+
+         configurator-shell.tsx    chat left, preview sliding in right
+         progress-breadcrumb.tsx   Describe → Generate → Improve → Publish
+         chat-message.tsx          the AI avatar, the bubbles, the caret
+         business-understanding-card.tsx   Goal / Audience / Outcome
+         clarification-card.tsx    the 3-question stepper above the input
+         workflow-summary-card.tsx / workflow-preview.tsx
+
+       Two things here are not in that codebase, because they do not exist
+       yet anywhere: the credit meter in the sidebar footer, and the
+       dialog that offers a way out of this window. Everything else is a
+       redrawing. -->
+
+  <div class="nb-shell">
+
+    <!-- ------------------------------------------------ sidebar -->
+    <aside class="nb-side">
+
+      <button class="nb-ws" type="button">
+        <span class="tile" id="wsInitial">?</span>
+        <span class="tx">
+          <b id="wsName">Preview</b>
+          <span>Guest &middot; <span id="wsPlan">No account yet</span></span>
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 15l5 5 5-5M7 9l5-5 5 5" stroke="#9A9AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <!-- The fork, at the top of everything, exactly as /signup put it.
+           It is what makes the CLI a way to build rather than a banner. -->
+      <div class="nb-tabs" role="tablist" aria-label="How you build">
+        <button class="nb-tab on" type="button" role="tab" aria-selected="true" data-tab="ncb">No code builder</button>
+        <button class="nb-tab" type="button" role="tab" aria-selected="false" data-tab="cli" id="tabCli">CLI</button>
+      </div>
+
+      <nav class="nb-nav">
+        <a class="nb-item" href="app.html" data-keep>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </a>
+        <a class="nb-item on" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+          <span>All processes</span>
+          <i class="count" id="processCount">1</i>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 21V9" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Templates</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2v6m0 8v6M2 12h6m8 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Integrations</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.3L12 15l-1.8-4.7L5.5 9l4.7-1.3L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M18 16l.9 2.1L21 19l-2.1.9L18 22l-.9-2.1L15 19l2.1-.9L18 16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>Smart blocks</span>
+        </a>
+      </nav>
+
+      <nav class="nb-nav">
+        <div class="nb-group">MANAGE</div>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="2"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" stroke="currentColor" stroke-width="2"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Data</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Analytics</span>
+        </a>
+        <a class="nb-item" href="#" data-stub>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Audit log</span>
+        </a>
+      </nav>
+
+      <div class="nb-side-ft">
+
+        <!-- THE METER.
+
+             In the slot /signup gave the plan card, because it is the same
+             job: the product has to be where the free tier runs out. It is
+             here from the first second and it is quiet — a meter whose
+             first appearance is the warning reads as a paywall that just
+             materialised. -->
+        <a class="bd-credits" id="creditCard" href="plans.html">
+          <span class="hd">
+            <b>Credits</b>
+            <i><span id="crLeft">100</span> of 100 left</i>
+          </span>
+          <span class="bar"><i id="crBar" style="width:100%"></i></span>
+          <span class="lbl" id="crLbl">100 free &middot; sign in to save</span>
+        </a>
+
+        <button class="nb-user" type="button">
+          <span class="av" id="userAv">?</span>
+          <span class="tx"><b id="userName">Guest</b><span>Sign in to save</span></span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="5" r="1" stroke="#9A9AA0" stroke-width="2"/><circle cx="12" cy="12" r="1" stroke="#9A9AA0" stroke-width="2"/><circle cx="12" cy="19" r="1" stroke="#9A9AA0" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- --------------------------------------------------- main -->
+    <main class="nb-main bd-main">
+
+      <header class="bd-top">
+        <div class="bd-crumbs">
+          <a href="app.html" data-keep>Processes</a>
+          <span class="sep">/</span>
+          <b id="bdProjectName">New process</b>
+        </div>
+
+        <!-- progress-breadcrumb.tsx, verbatim: four steps, the current one
+             filled, the finished ones ticked. -->
+        <nav class="bd-steps" id="bdSteps" aria-label="Progress">
+          <span class="st on" data-step="describe">Describe</span>
+          <span class="ln"></span>
+          <span class="st" data-step="generate">Generate</span>
+          <span class="ln"></span>
+          <span class="st" data-step="improve">Improve</span>
+          <span class="ln"></span>
+          <span class="st" data-step="publish">Publish</span>
+        </nav>
+
+        <div class="bd-top-acts">
+          <button class="nb-btn" type="button" id="bdSuggest" hidden>Suggest improvements <i class="bd-cost">15</i></button>
+          <button class="nb-btn primary" type="button" id="bdPublish" disabled>Publish <i class="bd-cost">10</i></button>
+        </div>
+      </header>
+
+      <div class="bd-body">
+
+        <!-- ------------------------------------------- chat panel -->
+        <section class="bd-chat" id="bdChat">
+          <div class="bd-log" id="bdLog"></div>
+
+          <!-- The clarification stepper is anchored above the input, not
+               dropped into the transcript — clarification-card.tsx's own
+               decision, and the reason people answer it. -->
+          <div class="bd-anchor" id="bdAnchor"></div>
+
+          <div class="bd-composer-row">
+            <input type="text" id="bdSay" placeholder="Describe a change&hellip;" autocomplete="off" disabled />
+            <button class="nb-btn primary" type="button" id="bdSend" disabled>Send <i class="bd-cost">10</i></button>
+          </div>
+        </section>
+
+        <!-- ---------------------------------------- preview panel -->
+        <aside class="bd-preview" id="bdPreview">
+          <div class="bd-pv-bar">
+            <div class="bd-seg" id="bdMode">
+              <button type="button" class="on" data-mode="editor">Editor</button>
+              <button type="button" data-mode="preview">Preview</button>
+            </div>
+            <div class="bd-seg" id="bdDevice">
+              <button type="button" class="on" data-device="desktop" title="Desktop">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+              <button type="button" data-device="tablet" title="Tablet">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button type="button" data-device="mobile" title="Mobile">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="bd-pv-scroll"><div class="bd-pv-frame" id="bdFrame"></div></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- Late auth gate — appears after the business process card lands,
+       when somebody presses "Looks good — continue". Reuses the same
+       wizard as /build's signup gate; here the builder is real behind it. -->
+  <div class="bd-gate-overlay" id="authGate" hidden role="dialog" aria-modal="true" aria-labelledby="gateLede">
+    <div class="bd-gate-card bd-gate-auth bd-wizard-gate">
+      <div class="bd-wizard-rail" id="wizardRail" aria-hidden="true">
+        <span class="on" data-step="1"></span>
+        <span data-step="2"></span>
+      </div>
+
+      <div class="bd-wizard-panel bd-wizard-panel--signup" id="wizardStep1">
+        <p class="bd-wizard-lede" id="gateLede">Sign up to keep building</p>
+
+        <div class="bd-wizard-field">
+          <label for="gateEmail">Work email</label>
+          <input type="email" id="gateEmail" autocomplete="email" inputmode="email" />
+        </div>
+
+        <div class="bd-wizard-or"><span>or</span></div>
+
+        <div class="bd-oauth-stack">
+          <button type="button" class="bd-oauth-btn" data-provider="google">Sign up with Google</button>
+          <button type="button" class="bd-oauth-btn" data-provider="github">Sign up with GitHub</button>
+          <button type="button" class="bd-oauth-btn" data-provider="microsoft">Sign up with Microsoft</button>
+        </div>
+
+        <button class="bd-gate-go bd-wizard-submit bd-wizard-submit--foot" type="button" id="gateGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStepOAuth" hidden>
+        <button type="button" class="bd-wizard-back" id="oauthBack">Back</button>
+        <p class="bd-wizard-lede" id="oauthTitle">Sign in with Google</p>
+        <div class="bd-wizard-field">
+          <label for="oauthEmail">Email</label>
+          <input type="email" id="oauthEmail" autocomplete="email" inputmode="email" />
+        </div>
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="oauthGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStep2" hidden>
+        <p class="bd-wizard-lede">Workspace</p>
+
+        <div class="bd-wizard-field">
+          <label for="wsCountry">Country</label>
+          <select id="wsCountry" autocomplete="country-name">
+            <option value="Australia">Australia</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Singapore">Singapore</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Japan">Japan</option>
+            <option value="India">India</option>
+          </select>
+        </div>
+
+        <div class="bd-wizard-field bd-ws-name-field">
+          <label for="wsNameInput">Workspace name</label>
+          <div class="bd-ws-name-row">
+            <div class="bd-ws-logo" aria-label="Workspace logo"></div>
+            <input type="text" id="wsNameInput" autocomplete="organization" />
+          </div>
+        </div>
+
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="wsGo" disabled>Continue building</button>
+      </div>
+    </div>
+  </div>
+
+<script src="../../assets/build-prompt.js"></script>
+<script src="../../assets/page.js"></script>
+<script src="../../assets/build-sugar-builder.js"></script>
+</body>
+</html>
