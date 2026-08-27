@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/developers" />
+<title>Prototype — EAI CLI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/marketing.css" />
+<link rel="stylesheet" href="../assets/controls.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container-custom">
+    <a href="home.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="nav-links">
+      <a href="#">Products &#9662;</a>
+      <a href="#">Pricing</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="nav-actions">
+      <a class="nav-login" href="#">Login</a>
+      <a class="btn-get-started" href="#start">Get Started</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main-content">
+  <section class="hero-block" data-block-type="hero">
+    <div class="container-custom hero-inner">
+      <span class="hero-badge">Developers</span>
+      <h1>Build in TypeScript. Ship to production.</h1>
+      <p class="hero-sub">EAI CLI scaffolds, composes, and deploys workflows with platform governance out of the box.</p>
+      <div class="build-start" id="start" data-build-root>
+        <p class="build-label">What do you want to build today?</p>
+        <form class="build-composer" data-build-form autocomplete="off">
+          <label class="sr-only" for="buildPrompt">What do you want to build today?</label>
+          <input type="text" id="buildPrompt" data-build-input name="prompt"
+                 placeholder="e.g. vendor assessment workflow with SAP integration" />
+          <button class="build-submit" type="submit">
+            Start building
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <div class="build-chips">
+          <button type="button" data-build-chip>API integration</button>
+          <button type="button" data-build-chip>Document pipeline</button>
+          <button type="button" data-build-chip>Approval workflow</button>
+          <button type="button" data-build-chip>Data extraction</button>
+        </div>
+        <p class="build-note">Free to start — <strong>100 credits</strong>, no credit card.</p>
+      </div>
+      <div class="hero-alt" data-copy-root>
+        <p class="hero-alt-k">Install the CLI</p>
+        <div class="cmd-row">
+          <button class="cmd-field" type="button" data-copy-field>
+            <span class="pfx">$</span><span> npx install eai</span>
+            <span class="hint" data-copy-hint>click to copy</span>
+          </button>
+          <button class="btn-primary" type="button" data-copy-btn style="height:52px">npx install</button>
+        </div>
+        <p class="cmd-note" data-copy-note>Node 24+. Works in Terminal, iTerm, VS Code, Claude Code, GitHub Copilot and Cursor.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cli-block" data-block-type="extendWithCLI">
+    <div class="container-custom">
+      <div class="feature-card">
+        <div class="cli-grid">
+          <div>
+            <h2>Git-native workflows</h2>
+            <p>Compose blocks in TypeScript, review in PRs, deploy to the same runtime as Configurator Builder.</p>
+          </div>
+          <div class="term">
+            <div class="term-bar">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <span class="title">Terminal</span>
+            </div>
+            <div class="term-body">
+              <div><span class="pfx">$ </span>eai workflow init vendor-assessment</div>
+              <div class="ok">Created workflow with 4 blocks</div>
+              <div><span class="pfx">$ </span>eai deploy --env prod</div>
+              <div class="ok">Deployed to Northwind Group / prod</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container-custom">
+    <img src="../assets/logos/eai-mark-dark.svg" alt="Enterprise AI" class="footer-mark" />
+  </div>
+</footer>
+
+<div class="proto-bar">
+  <strong>Marketing</strong>
+  <a href="home.html">Home</a>
+  <a href="configurator.html">Configurator</a>
+  <a class="on" href="cli.html">CLI</a>
+  <a href="../../index.html">Launch pad</a>
+</div>
+
+<script src="../assets/marketing.js"></script>
+<script src="../assets/controls.js"></script>
+</body>
+</html>

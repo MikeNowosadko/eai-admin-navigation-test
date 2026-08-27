@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Prototype — Marketing ICP (macOS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/desktop.css" />
+</head>
+<body>
+
+<div class="desktop" id="desktop">
+
+  <div class="menubar">
+    <span class="apple" id="appleBtn">&#63743;</span>
+    <span class="app" id="menuApp">Safari</span>
+    <span class="mi">File</span><span class="mi">Edit</span><span class="mi">View</span>
+    <span class="mi">Window</span><span class="mi">Help</span>
+    <span class="spacer"></span>
+    <span class="right">
+      <svg width="15" height="12" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+        <rect x="0.7" y="0.7" width="18.6" height="14.6" rx="4" stroke="currentColor" stroke-width="1.3" />
+        <circle cx="6.5" cy="5.5" r="2" fill="currentColor" /><circle cx="13.5" cy="10.5" r="2" fill="currentColor" />
+      </svg>
+      <svg width="15" height="12" viewBox="0 0 18 13" fill="none" aria-hidden="true">
+        <path d="M1 4.2a12 12 0 0 1 16 0M3.6 7a8.4 8.4 0 0 1 10.8 0M6.2 9.8a4.6 4.6 0 0 1 5.6 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+        <circle cx="9" cy="12" r="1.1" fill="currentColor" />
+      </svg>
+      <svg width="22" height="12" viewBox="0 0 26 13" fill="none" aria-hidden="true">
+        <rect x="0.7" y="0.7" width="21" height="11.6" rx="3.4" stroke="currentColor" stroke-width="1.2" opacity="0.7" />
+        <rect x="2.4" y="2.4" width="14" height="8.2" rx="2" fill="currentColor" />
+        <path d="M23.4 4.4v4.2c1.1-.4 1.6-1 1.6-2.1s-.5-1.7-1.6-2.1z" fill="currentColor" opacity="0.7" />
+      </svg>
+      <span>Wed 12 Aug&nbsp; 4:44 pm</span>
+    </span>
+  </div>
+
+  <div class="apple-menu" id="appleMenu">
+    <a href="#">About This Mac</a>
+    <div class="sep"></div>
+    <a href="os.html">Restart…</a>
+    <div class="sep"></div>
+    <a href="#">Lock Screen</a>
+  </div>
+
+  <div class="win" id="winBrowser" style="left:2%; top:5.5%; width:68%; height:81%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="browserTitle">Safari</span>
+    </div>
+    <div class="brow-chrome">
+      <button class="navbtn" id="browBack" type="button" title="Back">&#8249;</button>
+      <button class="navbtn" id="browFwd" type="button" title="Forward">&#8250;</button>
+      <button class="navbtn" id="browReload" type="button" title="Reload">&#8635;</button>
+      <div class="addr"><span class="lock">&#128274;</span><span id="browUrl">google.com</span></div>
+    </div>
+    <iframe class="brow-frame" id="browFrame" src="index.html" title="Browser"></iframe>
+  </div>
+
+  <div class="coach" id="coach"></div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <aside class="sheet" id="sheet" aria-hidden="true">
+    <button class="close" id="sheetClose" type="button" title="Close">&#10005;</button>
+    <h3>Marketing ICP</h3>
+    <p class="sub">Google search → pick a landing page → start building.</p>
+
+    <div class="grp">Landing pages</div>
+    <a class="act" href="index.html" data-os-nav="index.html">Google search results</a>
+    <a class="act" href="pages/home.html" data-os-nav="pages/home.html">Homepage — Enterprise AI</a>
+    <a class="act" href="pages/configurator.html" data-os-nav="pages/configurator.html">Configurator landing</a>
+    <a class="act" href="pages/cli.html" data-os-nav="pages/cli.html">CLI landing</a>
+
+    <div class="grp">Go</div>
+    <a class="act primary" href="../index.html">&#9776;&nbsp; Back to launch pad</a>
+    <a class="act" href="os.html?page=index.html">&#8635;&nbsp; Restart (Google search)</a>
+
+    <div class="foot">
+      <kbd>⌘</kbd> <kbd>K</kbd> toggles this panel · <kbd>esc</kbd> closes it.
+    </div>
+  </aside>
+
+  <div class="dock">
+    <div class="item" data-app="finder">
+      <span class="tip">Finder</span>
+      <span class="ico" data-icon="finder"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item open" data-app="browser">
+      <span class="tip">Safari</span>
+      <span class="ico" data-icon="safari"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item" data-app="settings">
+      <span class="tip">System Settings</span>
+      <span class="ico" data-icon="settings"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="sep"></div>
+    <div class="item" data-app="trash">
+      <span class="tip">Trash</span>
+      <span class="ico" data-icon="trash"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const page = params.get('page') || 'index.html';
+    const frame = document.getElementById('browFrame');
+    frame.src = page;
+    document.querySelectorAll('[data-os-nav]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        frame.src = a.dataset.osNav;
+        history.replaceState(null, '', `os.html?page=${encodeURIComponent(a.dataset.osNav)}`);
+      });
+    });
+  })();
+</script>
+<script src="../assets/icons.js"></script>
+<script src="../assets/desktop.js"></script>
+<script src="assets/controls.js"></script>
+</body>
+</html>

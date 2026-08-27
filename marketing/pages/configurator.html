@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Prototype — Configurator</title>
+<meta name="eai-url" content="enterpriseaigroup.com/configurator" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/marketing.css" />
+<link rel="stylesheet" href="../assets/controls.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container-custom">
+    <a href="home.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="nav-links">
+      <a href="#">Business types &#9662;</a>
+      <a href="#">Products &#9662;</a>
+      <a href="#">About Us &#9662;</a>
+      <a href="#">Pricing &#9662;</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="nav-actions">
+      <a class="nav-login" href="#">Login</a>
+      <a class="btn-get-started" href="#start">Get Started</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main-content">
+
+  <!-- Hero — seed-configurator-overview.mjs / HeroBlock.tsx -->
+  <section class="hero-block" data-block-type="hero">
+    <div class="container-custom hero-inner">
+      <span class="hero-badge">Coming Soon</span>
+      <h1>Ship enterprise AI workflows</h1>
+      <p class="hero-sub">with or without code</p>
+      <div class="build-start" id="start" data-build-root>
+        <p class="build-label">What do you want to build today?</p>
+        <form class="build-composer" data-build-form autocomplete="off">
+          <label class="sr-only" for="buildPrompt">What do you want to build today?</label>
+          <input type="text" id="buildPrompt" data-build-input name="prompt"
+                 placeholder="e.g. document validation for council planning" />
+          <button class="build-submit" type="submit">
+            Start building
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <div class="build-chips">
+          <button type="button" data-build-chip>Document validation</button>
+          <button type="button" data-build-chip>Approval workflow</button>
+          <button type="button" data-build-chip>Data extraction</button>
+          <button type="button" data-build-chip>Compliance review</button>
+          <button type="button" data-build-chip>Customer onboarding</button>
+        </div>
+        <p class="build-note">Free to start — <strong>100 credits</strong>, no credit card. <a href="#book-a-consult">Book a demo</a> instead.</p>
+      </div>
+    </div>
+    <div class="container-custom hero-media-wrap">
+      <div class="hero-frame">
+        <div class="hero-frame-inner">
+          <img src="../assets/images/configurator-hero.avif" alt="Configurator product screenshot" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem grid — seed block 2 -->
+  <section data-block-type="featureCards">
+    <div class="container-custom">
+      <div class="section-head"><h2>Shipping enterprise AI is broken.</h2></div>
+      <div class="cards-grid cols-3">
+        <article class="feature-card card-cell">
+          <h3>Pilots stall out</h3>
+          <p>Teams build impressive demos that never reach production because governance, data, and integration work was never planned for.</p>
+        </article>
+        <article class="feature-card card-cell">
+          <h3>Every workflow is bespoke</h3>
+          <p>Prompt logic, guardrails, and audit trails get rewritten per use case. Nothing compounds across teams.</p>
+        </article>
+        <article class="feature-card card-cell">
+          <h3>Business users wait on engineering</h3>
+          <p>Operators who know the process best can't change a step without a ticket and a sprint.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How we fix it — carousel, warm stone gradient on media -->
+  <section class="carousel-section tinted" data-block-type="featureCards" data-carousel
+    data-carousel-id="fix">
+    <div class="container-custom">
+      <div class="section-head"><h2>How we fix it</h2></div>
+      <div class="content-card carousel-panel">
+        <div class="carousel-mobile">
+          <h3 data-carousel-title-mobile>No code</h3>
+          <p data-carousel-desc-mobile>Business users build and adapt AI workflows without writing code.</p>
+          <div class="media-frame" style="margin:16px 0">
+            <div class="media-frame-inner">
+              <div class="media-slide active" data-slide data-slide-index="0" data-title="No code" data-desc="Business users build and adapt AI workflows without writing code.">
+                <video src="../assets/videos/implement-improve-iterate.mp4" muted loop playsinline autoplay></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="1" data-title="Smart blocks" data-desc="AI primitives for document analysis, ID verification, extraction, and validation.">
+                <div class="media-placeholder">Smart blocks component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="2" data-title="Enterprise security, built in" data-desc="SSO, role based access, encryption, and audit logs ship by default.">
+                <div class="media-placeholder">Enterprise security component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="3" data-title="Measure" data-desc="Every run emits metrics, traces, and outcome data.">
+                <video src="../assets/videos/metrics.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="4" data-title="Improve" data-desc="A design agent reads the metrics, finds what is failing, and proposes a change.">
+                <video src="../assets/videos/design-thinking-specialist.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="5" data-title="Extend with EAI CLI" data-desc="Developers scaffold, compose, and ship workflows in TypeScript.">
+                <div class="media-placeholder">CLI terminals component</div>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-dots">
+            <button class="carousel-dot active" type="button" data-carousel-dot data-slide-index="0" aria-label="Slide 1"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="1" aria-label="Slide 2"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="2" aria-label="Slide 3"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="3" aria-label="Slide 4"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="4" aria-label="Slide 5"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="5" aria-label="Slide 6"><span></span></button>
+          </div>
+        </div>
+        <div class="carousel-layout">
+          <div class="carousel-copy">
+            <h3 data-carousel-title>No code</h3>
+            <p data-carousel-desc>Business users build and adapt AI workflows without writing code.</p>
+            <div class="carousel-dots">
+              <button class="carousel-dot active" type="button" data-carousel-dot data-slide-index="0" aria-label="Slide 1"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="1" aria-label="Slide 2"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="2" aria-label="Slide 3"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="3" aria-label="Slide 4"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="4" aria-label="Slide 5"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="5" aria-label="Slide 6"><span></span></button>
+            </div>
+          </div>
+          <div class="media-frame">
+            <div class="media-frame-inner">
+              <div class="media-slide active" data-slide data-slide-index="0" data-title="No code" data-desc="Business users build and adapt AI workflows without writing code.">
+                <video src="../assets/videos/implement-improve-iterate.mp4" muted loop playsinline autoplay></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="1" data-title="Smart blocks" data-desc="AI primitives for document analysis, ID verification, extraction, and validation.">
+                <div class="media-placeholder">Smart blocks component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="2" data-title="Enterprise security, built in" data-desc="SSO, role based access, encryption, and audit logs ship by default.">
+                <div class="media-placeholder">Enterprise security component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="3" data-title="Measure" data-desc="Every run emits metrics, traces, and outcome data.">
+                <video src="../assets/videos/metrics.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="4" data-title="Improve" data-desc="A design agent reads the metrics, finds what is failing, and proposes a change.">
+                <video src="../assets/videos/design-thinking-specialist.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="5" data-title="Extend with EAI CLI" data-desc="Developers scaffold, compose, and ship workflows in TypeScript.">
+                <div class="media-placeholder">CLI terminals component</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works — sage gradient variant from seed -->
+  <section class="carousel-section" data-block-type="featureCards" data-carousel
+    style="--theme-video-frame-gradient: linear-gradient(150deg, #b7c3bb 0%, #d8ddd6 50%, #c3cbc4 100%)">
+    <div class="container-custom">
+      <div class="section-head"><h2>How it works</h2></div>
+      <div class="content-card carousel-panel">
+        <div class="carousel-mobile">
+          <h3 data-carousel-title-mobile>Import existing processes</h3>
+          <p data-carousel-desc-mobile>Start from the workflows you already run. Configurator ingests your process and turns it into editable blocks.</p>
+          <div class="media-frame" style="margin:16px 0">
+            <div class="media-frame-inner">
+              <div class="media-slide active" data-slide data-slide-index="0" data-title="Import existing processes" data-desc="Start from the workflows you already run. Configurator ingests your process and turns it into editable blocks.">
+                <div class="media-placeholder">Import processes component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="1" data-title="Confirm understanding of process" data-desc="Configurator plays back the process it has understood so your team can review, correct, and sign off before anything goes live.">
+                <video src="../assets/videos/confirm-understanding-of-process.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="2" data-title="Implement, improve and iterate" data-desc="Ship the workflow, watch it run, and let Configurator surface suggested improvements you can accept or tune.">
+                <video src="../assets/videos/implement-improve-iterate.mp4" muted loop playsinline></video>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-dots">
+            <button class="carousel-dot active" type="button" data-carousel-dot data-slide-index="0" aria-label="Slide 1"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="1" aria-label="Slide 2"><span></span></button>
+            <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="2" aria-label="Slide 3"><span></span></button>
+          </div>
+        </div>
+        <div class="carousel-layout">
+          <div class="carousel-copy">
+            <h3 data-carousel-title>Import existing processes</h3>
+            <p data-carousel-desc>Start from the workflows you already run. Configurator ingests your process and turns it into editable blocks.</p>
+            <div class="carousel-dots">
+              <button class="carousel-dot active" type="button" data-carousel-dot data-slide-index="0" aria-label="Slide 1"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="1" aria-label="Slide 2"><span></span></button>
+              <button class="carousel-dot" type="button" data-carousel-dot data-slide-index="2" aria-label="Slide 3"><span></span></button>
+            </div>
+          </div>
+          <div class="media-frame">
+            <div class="media-frame-inner">
+              <div class="media-slide active" data-slide data-slide-index="0" data-title="Import existing processes" data-desc="Start from the workflows you already run. Configurator ingests your process and turns it into editable blocks.">
+                <div class="media-placeholder">Import processes component</div>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="1" data-title="Confirm understanding of process" data-desc="Configurator plays back the process it has understood so your team can review, correct, and sign off before anything goes live.">
+                <video src="../assets/videos/confirm-understanding-of-process.mp4" muted loop playsinline></video>
+              </div>
+              <div class="media-slide" data-slide data-slide-index="2" data-title="Implement, improve and iterate" data-desc="Ship the workflow, watch it run, and let Configurator surface suggested improvements you can accept or tune.">
+                <video src="../assets/videos/implement-improve-iterate.mp4" muted loop playsinline></video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ExtendWithCLIBlock -->
+  <section class="cli-block" data-block-type="extendWithCLI">
+    <div class="container-custom">
+      <div class="feature-card">
+        <div class="cli-grid">
+          <div>
+            <h2>Extend capability with CLI</h2>
+            <p>Every workflow you build is code. Version it, script it, plug it into your pipeline.</p>
+            <a class="text-link" href="configurator.html">Read the CLI docs <span aria-hidden="true">&rarr;</span></a>
+          </div>
+          <div class="term">
+            <div class="term-bar">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <span class="title">Terminal</span>
+            </div>
+            <div class="term-body">
+              <div><span class="pfx">$ </span>eai types seed</div>
+              <div class="ok">Synced Workflow, Document, Submission to platform</div>
+              <div><span class="pfx">$ </span>eai chat stream "summarize policy.pdf"</div>
+              <div class="ok">This policy outlines refund eligibility for orders...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERP integration — seed block -->
+  <section data-block-type="featureCards">
+    <div class="container-custom">
+      <div class="section-head">
+        <h2>Bring your ERP with you</h2>
+        <p class="sub">Configurator connects to SAP, NetSuite, Dynamics, Oracle, Salesforce, and the rest of your stack. Your data stays where it lives — we query it in place, no rip-and-replace, no lift-and-shift.</p>
+      </div>
+      <div class="feature-card card-cell">
+        <div class="media-placeholder" style="min-height:200px;border-radius:8px">ERP integration flow component</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison — productComparison seed -->
+  <section data-block-type="featureCards">
+    <div class="container-custom">
+      <div class="section-head">
+        <h2>With Configurator vs going it alone</h2>
+        <p class="sub">What changes when you build AI workflows on a governed platform instead of assembling one yourself.</p>
+      </div>
+      <div class="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="hl">Configurator</th>
+              <th>Build it yourself</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>Time to first production workflow</th><td>Weeks</td><td class="muted">Months</td></tr>
+            <tr><th>Governance &amp; audit trail</th><td>Built in</td><td class="muted">You build it</td></tr>
+            <tr><th>Reusable blocks across teams</th><td>Yes</td><td class="muted">No</td></tr>
+            <tr><th>Business users can ship changes</th><td>Yes</td><td class="muted">No</td></tr>
+            <tr><th>Unified observability &amp; cost tracking</th><td>Yes</td><td class="muted">No</td></tr>
+            <tr><th>ERP / data integration layer</th><td>Managed</td><td class="muted">DIY per system</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section data-block-type="featureCards">
+    <div class="container-custom">
+      <div class="section-head" style="text-align:center"><h2>Trusted by leading organisations</h2></div>
+      <div class="partners-row">
+        <img src="../assets/logos/microsoft.svg" alt="Microsoft" />
+        <img src="../assets/logos/adaptovate.svg" alt="Adaptovate" />
+        <img src="../assets/logos/gadali.webp" alt="Gadali" />
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ + demo -->
+  <section id="book-a-consult" data-block-type="featureCards" style="background:rgb(var(--theme-card-bg))">
+    <div class="container-custom">
+      <div class="section-head"><h2>Sign up for a demo</h2><p class="sub">Grab a slot and we&rsquo;ll walk you through Configurator live, tailored to your use case.</p></div>
+      <div class="feature-card card-cell">
+        <div class="media-placeholder" style="min-height:420px;border-radius:8px">Calendly embed</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-block-type="featureCards">
+    <div class="container-custom">
+      <div class="section-head"><h2>Frequently asked questions</h2></div>
+      <div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">Do I need to pick one or can I use both?<span>+</span></button>
+          <div class="faq-a">Both. Teams commonly use Builder for rapid prototyping and CLI for production deployment — they share the same underlying primitives.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">When will self-serve signup be available?<span>+</span></button>
+          <div class="faq-a">Not yet. Subscribe for updates and we&rsquo;ll email you when it ships. In the meantime, book a demo and we&rsquo;ll get you provisioned manually.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">What data sources are supported?<span>+</span></button>
+          <div class="faq-a">Configurator connects to REST APIs, SQL databases, object storage, and major SaaS platforms. Custom connectors can be added via CLI.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">Is this hosted or self-managed?<span>+</span></button>
+          <div class="faq-a">Managed by default on EAI cloud. Self-hosted and hybrid options available for regulated industries — ask us in the demo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-block-type="featureCards" style="background:rgb(var(--theme-card-bg))">
+    <div class="container-custom">
+      <div class="section-head"><h2>Stay up to date</h2><p class="sub">Launch news and product updates from EAI — straight to your inbox.</p></div>
+      <div class="feature-card card-cell">
+        <div class="media-placeholder" style="min-height:120px;border-radius:8px">Waitlist form</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container-custom">
+    <img src="../assets/logos/eai-mark-dark.svg" alt="Enterprise AI" class="footer-mark" />
+    <div class="footer-grid">
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#">Configurator</a></li>
+          <li><a href="#">Configurator Builder</a></li>
+          <li><a href="#">Configurator CLI</a></li>
+          <li><a href="#">DAISY Platform</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About EnterpriseAI</a></li>
+          <li><a href="#book">Book a Consult</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Prototype</h4>
+        <ul>
+          <li><a href="../../index.html">Launch pad</a></li>
+          <li><a href="../../signup/index.html">Sign up flow</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="proto-bar">
+  <strong>Marketing</strong>
+  <a href="home.html">Home</a>
+  <a class="on" href="configurator.html">Configurator</a>
+  <a href="cli.html">CLI</a>
+  <a href="../../index.html">Launch pad</a>
+</div>
+
+<script src="../assets/marketing.js"></script>
+<script src="../assets/controls.js"></script>
+</body>
+</html>
