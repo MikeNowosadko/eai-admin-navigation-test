@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Prototype — Signing you in</title>
+<script src="../../assets/build-prompt.js"></script>
+<script>
+  /* Legacy URL — the build flow no longer walks Microsoft. Send people
+     straight to workspace with the prompt they already carried. */
+  const q = new URLSearchParams(location.search);
+  const email = q.get('email') || 'usertesting@gmail.com';
+  location.replace(window.bdCarry('signup.html', { step: '2', email }));
+</script>
+</head>
+<body></body>
+</html>

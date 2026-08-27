@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Prototype — Workspace</title>
+<script src="../../assets/build-prompt.js"></script>
+<script>
+  const q = new URLSearchParams(location.search);
+  const extra = { step: '2' };
+  if (q.get('email')) extra.email = q.get('email');
+  location.replace(window.bdCarry('signup.html', extra));
+</script>
+</head>
+<body></body>
+</html>

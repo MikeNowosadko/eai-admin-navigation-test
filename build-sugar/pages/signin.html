@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com/device?code=HJ4-QP92" />
+<title>Prototype — Sign in Enterprise AI Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="site" style="background:#fafafa;">
+
+  <!-- Step 9, and the reason this journey is worth building.
+
+       In /install-4 the app opens a sign-in form, because the browser has
+       never met this person. Here they signed in twenty minutes ago and the
+       session is still live, so the same round trip is a confirmation:
+       which account, and is it really you asking. No password, no Microsoft
+       redirect, no second identity to remember.
+
+       The device code stays. It is what tells someone that the request came
+       from the app on their own Mac rather than from somebody else's. -->
+
+  <nav class="nav eai-nav">
+    <a class="brand" href="app.html"><img src="../../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Business types &#9662;</a><a href="#">Products &#9662;</a><a href="#">About Us &#9662;</a><a href="#">Pricing &#9662;</a><a href="#">Support</a>
+    </div>
+    <div class="spacer"></div>
+    <span class="su-who">sam.taylor@company.com</span>
+  </nav>
+
+  <section style="padding:70px 40px 90px;">
+    <div class="auth-card su-card">
+      <h3>Sign in to Enterprise AI Setup</h3>
+      <p class="sub">The app on your Mac is asking to use your account.</p>
+
+      <button class="su-acct" type="button" data-eai-action="signin">
+        <span class="av" id="av">ST</span>
+        <span class="tx"><b id="name">Sam Taylor</b><span id="who">sam.taylor@company.com</span></span>
+        <span class="go" aria-hidden="true">&rarr;</span>
+      </button>
+
+      <div class="foot">
+        <u>Use a different account</u>
+      </div>
+
+      <div class="su-device">
+        Requested by <strong>Enterprise AI Setup</strong> on this Mac &middot; code <strong>HJ4-QP92</strong>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // The app passes the account it is signing in, so this names the person
+  // who signed up rather than a stock one.
+  const email = new URLSearchParams(window.location.search).get('email');
+  if (email) {
+    const name = email.split('@')[0].split(/[._-]+/).filter(Boolean)
+      .map((part) => part.replace(/^./, (c) => c.toUpperCase())).join(' ');
+    document.getElementById('who').textContent = email;
+    document.getElementById('name').textContent = name;
+    document.getElementById('av').textContent =
+      name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+    document.querySelector('.nav .su-who').textContent = email;
+  }
+</script>
+</body>
+</html>

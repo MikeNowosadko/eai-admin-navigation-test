@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/builder" />
+<title>Prototype — Sign up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+<link rel="stylesheet" href="../../assets/build.css" />
+</head>
+<body class="nb bd-builder bd-gate bd-has-preview" data-bd-strip="off">
+
+  <div class="nb-shell bd-gate-shell">
+
+    <aside class="nb-side">
+      <button class="nb-ws" type="button" tabindex="-1" aria-hidden="true">
+        <span class="tile" id="wsInitial">?</span>
+        <span class="tx">
+          <b id="wsName">Your workspace</b>
+          <span>Waiting for you</span>
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 15l5 5 5-5M7 9l5-5 5 5" stroke="#9A9AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="nb-tabs" role="presentation">
+        <span class="nb-tab on">No code builder</span>
+        <span class="nb-tab muted">CLI</span>
+      </div>
+
+      <nav class="nb-nav" aria-hidden="true">
+        <span class="nb-item on"><span>All processes</span><i class="count">1</i></span>
+        <span class="nb-item"><span>Templates</span></span>
+      </nav>
+
+      <div class="nb-side-ft">
+        <div class="bd-credits locked" id="creditCard">
+          <span class="hd"><b>Credits</b><i>100 waiting</i></span>
+          <span class="bar"><i id="crBar" style="width:100%"></i></span>
+          <span class="lbl" id="crLbl">Sign in to start building</span>
+        </div>
+        <button class="nb-user" type="button" tabindex="-1" aria-hidden="true">
+          <span class="av" id="userAv">?</span>
+          <span class="tx"><b id="userName">Sign in</b><span>&mdash;</span></span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="nb-main bd-main">
+
+      <header class="bd-top">
+        <div class="bd-crumbs">
+          <span class="muted">Processes</span>
+          <span class="sep">/</span>
+          <b id="bdProjectName">New process</b>
+        </div>
+        <nav class="bd-steps" id="bdSteps" aria-label="Progress">
+          <span class="st on" data-step="describe">Describe</span>
+          <span class="ln"></span>
+          <span class="st" data-step="generate">Generate</span>
+          <span class="ln"></span>
+          <span class="st" data-step="improve">Improve</span>
+          <span class="ln"></span>
+          <span class="st" data-step="publish">Publish</span>
+        </nav>
+        <div class="bd-top-acts">
+          <button class="nb-btn primary" type="button" disabled>Publish</button>
+        </div>
+      </header>
+
+      <div class="bd-body">
+
+        <section class="bd-chat" id="bdChat" aria-hidden="true">
+          <div class="bd-log" id="bdLog">
+            <div class="bd-msg user">
+              <div class="bd-bub" id="gateUserLine"></div>
+            </div>
+            <div class="bd-msg ai">
+              <div class="bd-av">AI</div>
+              <div class="bd-card bd-bu gate-ghost">
+                <div class="hd"><b>Business process card</b><span>Ready once you&rsquo;re in</span></div>
+                <div class="quote" id="gateQuote"></div>
+                <div class="kv">
+                  <span class="i goal">◎</span><div><b>Goal</b><span>Get to a decision without anybody chasing the paperwork.</span></div>
+                </div>
+                <div class="kv">
+                  <span class="i aud">◍</span><div><b>Audience</b><span>The person submitting, and the one or two people who review it.</span></div>
+                </div>
+                <div class="kv">
+                  <span class="i out">✓</span><div><b>Outcome</b><span>A decision on record, with everything it was based on attached to it.</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bd-composer-row">
+            <input type="text" value="" placeholder="Sign in to describe changes&hellip;" disabled />
+            <button class="nb-btn primary" type="button" disabled>Send</button>
+          </div>
+        </section>
+
+        <aside class="bd-preview" id="bdPreview" aria-hidden="true">
+          <div class="bd-pv-bar">
+            <div class="bd-seg"><button type="button" class="on" disabled>Editor</button><button type="button" disabled>Preview</button></div>
+            <div class="bd-seg"><button type="button" class="on" disabled aria-label="Desktop">&#9632;</button></div>
+          </div>
+          <div class="bd-pv-scroll">
+            <div class="bd-pv-frame" id="bdFrame">
+              <div class="bd-pv-doc bd-pv-ghost">
+                <div class="bd-pv-hd">
+                  <b id="gatePreviewTitle">Your process</b>
+                  <span>Draft &middot; unlocks when you sign in</span>
+                </div>
+                <section class="bd-pv-step">
+                  <header><span class="n">1</span><b>Submit</b></header>
+                  <div class="bd-fld"><label>Contact name</label><div class="ctl shimmer"></div></div>
+                  <div class="bd-fld"><label>Work email<i>*</i></label><div class="ctl shimmer"></div></div>
+                  <div class="bd-fld"><label>What do you need?</label><div class="ctl shimmer"></div></div>
+                </section>
+                <section class="bd-pv-step muted">
+                  <header><span class="n">2</span><b>Automated checks</b></header>
+                  <div class="bd-fld block"><label>Document validation</label><div class="ctl blk"><span class="spark">◆</span>Smart block</div></div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="bd-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="gateLede">
+    <div class="bd-gate-card bd-gate-auth bd-wizard-gate">
+      <div class="bd-wizard-rail" id="wizardRail" aria-hidden="true">
+        <span class="on" data-step="1"></span>
+        <span data-step="2"></span>
+      </div>
+
+      <div class="bd-wizard-panel bd-wizard-panel--signup" id="wizardStep1">
+        <p class="bd-wizard-lede" id="gateLede">Sign up to start building with EnterpriseAI</p>
+
+        <div class="bd-wizard-field">
+          <label for="gateEmail">Work email</label>
+          <input type="email" id="gateEmail" autocomplete="email" inputmode="email" />
+        </div>
+
+        <div class="bd-wizard-or"><span>or</span></div>
+
+        <div class="bd-oauth-stack">
+          <button type="button" class="bd-oauth-btn" data-provider="google">Sign up with Google</button>
+          <button type="button" class="bd-oauth-btn" data-provider="github">Sign up with GitHub</button>
+          <button type="button" class="bd-oauth-btn" data-provider="microsoft">Sign up with Microsoft</button>
+        </div>
+
+        <button class="bd-gate-go bd-wizard-submit bd-wizard-submit--foot" type="button" id="gateGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStepOAuth" hidden>
+        <button type="button" class="bd-wizard-back" id="oauthBack">Back</button>
+        <p class="bd-wizard-lede" id="oauthTitle">Sign in with Google</p>
+        <div class="bd-wizard-field">
+          <label for="oauthEmail">Email</label>
+          <input type="email" id="oauthEmail" autocomplete="email" inputmode="email" />
+        </div>
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="oauthGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStep2" hidden>
+        <p class="bd-wizard-lede">Workspace</p>
+
+        <div class="bd-wizard-field">
+          <label for="wsCountry">Country</label>
+          <select id="wsCountry" autocomplete="country-name">
+            <option value="Australia">Australia</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Singapore">Singapore</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Japan">Japan</option>
+            <option value="India">India</option>
+          </select>
+        </div>
+
+        <div class="bd-wizard-field bd-ws-name-field">
+          <label for="wsNameInput">Workspace name</label>
+          <div class="bd-ws-name-row">
+            <div class="bd-ws-logo" aria-label="Workspace logo"></div>
+            <input type="text" id="wsNameInput" autocomplete="organization" />
+          </div>
+        </div>
+
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="wsGo" disabled>Continue</button>
+      </div>
+    </div>
+  </div>
+
+<script src="../../assets/build-prompt.js"></script>
+<script src="../../assets/page.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const prompt = (params.get('prompt') || 'a new business process').trim();
+  const projectName = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+  const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'new-process';
+
+  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+  setText('gateUserLine', prompt);
+  setText('gateQuote', projectName + ' — today this runs on email and a shared inbox, with the same details re-keyed at least twice.');
+  setText('bdProjectName', slug);
+  setText('gatePreviewTitle', projectName);
+  setText('wsInitial', projectName.charAt(0).toUpperCase());
+
+  const COUNTRY_BY_REGION = {
+    AU: 'Australia', NZ: 'New Zealand', SG: 'Singapore', GB: 'United Kingdom',
+    US: 'United States', CA: 'Canada', DE: 'Germany', FR: 'France', JP: 'Japan', IN: 'India',
+  };
+  const FREE_MAIL_DOMAINS = new Set([
+    'gmail.com', 'googlemail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+    'icloud.com', 'me.com', 'live.com', 'proton.me', 'protonmail.com',
+    'users.noreply.github.com',
+  ]);
+
+  function guessCountry() {
+    try {
+      const region = new Intl.Locale(navigator.language || 'en-AU').maximize().region;
+      if (region && COUNTRY_BY_REGION[region]) return COUNTRY_BY_REGION[region];
+    } catch (_) {}
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (tz.startsWith('Australia/')) return 'Australia';
+    if (tz.startsWith('Pacific/Auckland')) return 'New Zealand';
+    if (tz.startsWith('Asia/Singapore')) return 'Singapore';
+    if (tz.startsWith('Europe/London')) return 'United Kingdom';
+    if (tz.startsWith('America/')) return 'United States';
+    return 'Australia';
+  }
+
+  function workspaceFromEmail(email) {
+    const domain = (email || '').split('@')[1]?.toLowerCase();
+    if (!domain || FREE_MAIL_DOMAINS.has(domain)) return '';
+    const part = domain.split('.')[0];
+    if (!part || part.length < 2) return '';
+    return part.charAt(0).toUpperCase() + part.slice(1);
+  }
+
+  const OAUTH_LABELS = {
+    google: 'Sign in with Google',
+    github: 'Sign in with GitHub',
+    microsoft: 'Sign in with Microsoft',
+  };
+
+  const wizardRail = document.getElementById('wizardRail');
+  const wizardStep1 = document.getElementById('wizardStep1');
+  const wizardStepOAuth = document.getElementById('wizardStepOAuth');
+  const wizardStep2 = document.getElementById('wizardStep2');
+  const emailInput = document.getElementById('gateEmail');
+  const gateGo = document.getElementById('gateGo');
+  const oauthTitle = document.getElementById('oauthTitle');
+  const oauthEmail = document.getElementById('oauthEmail');
+  const oauthGo = document.getElementById('oauthGo');
+  const oauthBack = document.getElementById('oauthBack');
+  const wsCountry = document.getElementById('wsCountry');
+  const wsNameInput = document.getElementById('wsNameInput');
+  const wsGo = document.getElementById('wsGo');
+
+  let signedUpEmail = '';
+
+  function showSignUpPanel() {
+    wizardStep1.hidden = false;
+    wizardStepOAuth.hidden = true;
+    wizardStep2.hidden = true;
+    wizardRail.querySelector('[data-step="1"]').classList.add('on');
+    wizardRail.querySelector('[data-step="2"]').classList.remove('on');
+  }
+
+  function showOAuthPanel(provider) {
+    oauthTitle.textContent = OAUTH_LABELS[provider] || 'Sign in';
+    oauthEmail.value = emailInput.value.trim();
+    syncOAuth();
+    wizardStep1.hidden = true;
+    wizardStepOAuth.hidden = false;
+    wizardStep2.hidden = true;
+    oauthEmail.focus();
+  }
+
+  function setWizardStep(step) {
+    wizardRail.querySelector('[data-step="1"]').classList.toggle('on', step === 1);
+    wizardRail.querySelector('[data-step="2"]').classList.toggle('on', step === 2);
+    wizardStep1.hidden = step !== 1;
+    wizardStepOAuth.hidden = true;
+    wizardStep2.hidden = step !== 2;
+  }
+
+  function prepareWorkspaceStep(email) {
+    signedUpEmail = email.trim();
+    wsCountry.value = guessCountry();
+    const suggested = workspaceFromEmail(signedUpEmail);
+    wsNameInput.value = suggested;
+    syncWorkspace();
+    if (suggested) setText('wsName', suggested);
+  }
+
+  function goToWorkspaceStep(email) {
+    prepareWorkspaceStep(email);
+    setWizardStep(2);
+    wsNameInput.focus();
+  }
+
+  function finishToBuilder() {
+    document.body.classList.add('bd-gate-leaving');
+    setTimeout(() => {
+      window.location.href = window.bdCarry('builder.html', {
+        email: signedUpEmail,
+        ws: wsNameInput.value.trim(),
+        country: wsCountry.value,
+      });
+    }, 420);
+  }
+
+  const validEmail = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim());
+  const syncGate = () => { gateGo.disabled = !validEmail(emailInput.value); };
+  const syncOAuth = () => { oauthGo.disabled = !validEmail(oauthEmail.value); };
+  const syncWorkspace = () => {
+    wsGo.disabled = !(wsNameInput.value.trim() && wsCountry.value);
+    const name = wsNameInput.value.trim();
+    if (name) setText('wsName', name);
+  };
+
+  emailInput.addEventListener('input', syncGate);
+  oauthEmail.addEventListener('input', syncOAuth);
+  wsNameInput.addEventListener('input', syncWorkspace);
+  wsCountry.addEventListener('change', syncWorkspace);
+
+  gateGo.addEventListener('click', () => {
+    if (validEmail(emailInput.value)) goToWorkspaceStep(emailInput.value);
+  });
+  emailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && validEmail(emailInput.value)) goToWorkspaceStep(emailInput.value);
+  });
+
+  document.querySelectorAll('.bd-oauth-btn').forEach((btn) => {
+    btn.addEventListener('click', () => showOAuthPanel(btn.dataset.provider));
+  });
+
+  oauthBack.addEventListener('click', showSignUpPanel);
+  oauthGo.addEventListener('click', () => {
+    if (validEmail(oauthEmail.value)) {
+      emailInput.value = oauthEmail.value.trim();
+      syncGate();
+      goToWorkspaceStep(oauthEmail.value);
+    }
+  });
+  oauthEmail.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && validEmail(oauthEmail.value)) oauthGo.click();
+  });
+
+  wsGo.addEventListener('click', finishToBuilder);
+  wsNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !wsGo.disabled) finishToBuilder();
+  });
+
+  wsCountry.value = guessCountry();
+
+  const jumpEmail = params.get('email');
+  if (params.get('step') === '2' && jumpEmail && validEmail(jumpEmail)) {
+    goToWorkspaceStep(jumpEmail);
+  }
+</script>
+
+</body>
+</html>

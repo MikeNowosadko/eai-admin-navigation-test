@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="claude.com/product/claude-code" />
+<title>Prototype — Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/proto.css" />
+<link rel="stylesheet" href="../../assets/signup.css" />
+</head>
+<body class="site hs-page">
+
+  <!-- Somebody else's product page, and nothing more than that.
+
+       An earlier version walked people through installing, signing up and
+       going back to EAI Setup, with a button for each. All three were
+       cheats. Anthropic's website does not know EAI exists and would
+       never send anyone back to it — and that last button removed the
+       whole thing this round measures: **whether they remember to come
+       back on their own.**
+
+       So this page has one button. Download it, and the rest happens
+       where it really happens — the browser's download list, the
+       installer in Downloads, the app's own sign-in. Nothing here
+       mentions us again. -->
+
+  <section class="hs">
+    <div class="hs-brand">
+      <span class="hs-mark" id="mark">CC</span>
+      <b id="name">Claude Code</b>
+    </div>
+
+    <h1 id="head">Claude Code</h1>
+    <p class="hs-lede" id="lede">Work with Claude directly in your codebase. Build, debug and ship from your terminal, IDE, Slack, web and more.</p>
+
+    <div class="hs-acts">
+      <button class="btn btn-dark btn-lg" type="button" id="download">
+        <span class="apple" aria-hidden="true">&#63743;</span>
+        <span id="downloadLabel">Download for macOS</span>
+      </button>
+      <span class="btn btn-ghost btn-lg">Read documentation</span>
+    </div>
+
+    <p class="hs-meta">Available for macOS, Linux, and Windows.</p>
+
+    <div class="hs-other">
+      <span class="lbl" id="otherLabel">Other ways to use Claude Code:</span>
+      <div class="row">
+        <span class="tile"><b>&gt;_</b>Terminal</span>
+        <span class="tile"><b>&#9679;</b>Web</span>
+        <span class="tile"><b>&#63743;</b>iOS</span>
+        <span class="tile"><b>&#9670;</b>GitHub</span>
+        <span class="tile"><b>&#10096;&#10097;</b>VS Code</span>
+        <span class="tile"><b>&#9632;</b>JetBrains</span>
+      </div>
+    </div>
+  </section>
+
+<script src="../../assets/page.js"></script>
+<script>
+  // One page, whichever harness sent you here.
+  const q = new URLSearchParams(window.location.search);
+  const app = q.get('app') || 'Claude Code';
+  const site = q.get('site') || 'claude.com/product/claude-code';
+
+  const LEDE = {
+    'Claude Code': 'Work with Claude directly in your codebase. Build, debug and ship from your terminal, IDE, Slack, web and more.',
+    'GitHub Copilot': 'Your AI pair programmer. Chat, edit and refactor across the whole repository.',
+    'Codex': 'A coding agent that plans, edits and runs your tests while you watch.',
+    'Gemini CLI': 'Bring Gemini to your terminal — read files, run commands, build things.',
+    'VS Code': 'Free. Built on open source. Runs everywhere.',
+  };
+
+  document.title = `Prototype — ${app}`;
+  document.getElementById('mark').textContent =
+    app.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  document.getElementById('name').textContent = app;
+  document.getElementById('head').textContent = app;
+  document.getElementById('lede').textContent = LEDE[app] || `Install ${app} and sign in to start using it.`;
+  document.getElementById('otherLabel').textContent = `Other ways to use ${app}:`;
+
+  /* The address bar is the shell's, and page.js reports it from this meta
+     tag on DOMContentLoaded — which fires after this script. Changing the
+     tag is how you tell it, rather than racing it with a message. */
+  document.querySelector('meta[name="eai-url"]').content = site;
+
+  /* Download, the way a download actually goes: the file arcs into the
+     browser's toolbar and waits in the list. Everything after this
+     happens on the machine, not on this page. */
+  document.getElementById('download').addEventListener('click', (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    tell({
+      action: 'download-app',
+      data: {
+        app,
+        installer: `${app.replace(/\s+/g, '')}.dmg`,
+        rect: { left: r.left, top: r.top, width: r.width, height: r.height },
+      },
+    });
+    const label = document.getElementById('downloadLabel');
+    label.textContent = 'Downloading…';
+    setTimeout(() => { label.textContent = 'Download for macOS'; }, 2400);
+  });
+</script>
+
+</body>
+</html>
