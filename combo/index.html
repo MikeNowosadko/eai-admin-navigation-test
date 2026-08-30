@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com" />
+<title>Prototype — Smart block combo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/combo.css" />
+</head>
+<body class="site cb-site">
+
+  <nav class="nav eai-nav">
+    <a class="brand" href="../index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <a class="lnk-login" href="../index.html">← Launch pad</a>
+  </nav>
+
+  <div class="cb-wrap">
+
+    <section class="cb-hero cb-ask-panel" id="cbAsk">
+      <p class="cb-eyebrow">Smart block combo</p>
+      <h1>Describe your process</h1>
+      <p class="cb-lede">
+        Tell us how work runs today. We distill it into steps and show the smart blocks
+        that combo together — then you refine it before connecting your data.
+      </p>
+
+      <div class="cb-input-wrap">
+        <textarea id="processInput" placeholder="e.g. Suppliers email invoices to accounts. Sarah matches each one to a PO, finance signs off anything over $10,000, then payment is scheduled."></textarea>
+        <div class="cb-input-foot">
+          <div class="cb-chips" id="cbChips">
+            <button type="button">Invoice approval when POs don't match</button>
+            <button type="button">RFI screener for procurement</button>
+            <button type="button">KYC onboarding</button>
+            <button type="button">Leave approval through HR</button>
+          </div>
+          <button class="cb-btn cb-btn-primary" type="button" id="configureBtn">Configure</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cb-config cb-hidden" id="cbConfig" aria-live="polite">
+      <div class="cb-spinner">
+        <div class="cb-spinner-ring"></div>
+        <div class="cb-blocks-orbit">
+          <span class="cb-block-pill">Captured once</span>
+          <span class="cb-block-pill">Matched on-platform</span>
+          <span class="cb-block-pill">Manual → automated</span>
+          <span class="cb-block-pill">Routed by rules</span>
+        </div>
+      </div>
+      <h2>Configuring your workflow</h2>
+      <p class="cb-config-status" id="configStatus">Reading your process…</p>
+    </section>
+
+    <section class="cb-refine cb-hidden" id="cbRefine">
+      <div class="cb-chat">
+        <p class="cb-eyebrow">Refine the combo</p>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:600;letter-spacing:-0.02em;">Talk it through</h1>
+        <p class="cb-lede" style="margin-bottom:16px;">Adjust steps, thresholds, or routing. The smart blocks update as you go.</p>
+
+        <div class="cb-chat-thread" id="chatThread"></div>
+
+        <form class="cb-chat-compose" id="chatForm">
+          <input type="text" id="chatInput" placeholder="e.g. Finance should approve anything over $10k" autocomplete="off" />
+          <button class="cb-btn cb-btn-primary" type="submit">Send</button>
+        </form>
+
+        <div class="cb-refine-actions">
+          <button class="cb-btn cb-btn-primary" type="button" id="connectBtn">Looks good — connect data</button>
+          <button class="cb-btn cb-btn-ghost" type="button" id="startOverBtn">Start over</button>
+        </div>
+      </div>
+
+      <div class="cb-workflow-panel" id="workflowPanel">
+        <p class="cb-eyebrow">Your combo</p>
+        <h2 id="workflowTitle">Invoice approval</h2>
+        <p class="cb-summary" id="workflowSummary"></p>
+        <div class="cb-steps" id="workflowSteps"></div>
+        <div class="cb-blocks-row">
+          <p class="cb-label">Smart blocks in this combo</p>
+          <div id="workflowBlocks"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cb-connect cb-hidden" id="cbConnect">
+      <p class="cb-eyebrow">Connect</p>
+      <h1 style="margin:0 0 12px;font-size:32px;font-weight:600;">Wire it to your data</h1>
+      <p class="cb-lede">Your combo is ready. Connect the systems this process touches — we'll map fields and keep the smart blocks.</p>
+
+      <div class="cb-connect-card">
+        <h2>What to connect</h2>
+        <p>Select what this workflow should talk to. You can add more after you start building.</p>
+        <div class="cb-connect-options">
+          <label class="cb-connect-opt"><input type="checkbox" checked /> Microsoft Entra ID (SSO &amp; people)</label>
+          <label class="cb-connect-opt"><input type="checkbox" checked /> Email / shared inbox (invoice intake)</label>
+          <label class="cb-connect-opt"><input type="checkbox" /> ERP / finance system (PO matching)</label>
+          <label class="cb-connect-opt"><input type="checkbox" /> Document store (attachments)</label>
+        </div>
+      </div>
+
+      <div class="cb-refine-actions">
+        <button class="cb-btn cb-btn-primary" type="button">Apply to you &amp; start building</button>
+        <button class="cb-btn cb-btn-ghost" type="button" id="backRefineBtn">Back to refine</button>
+      </div>
+    </section>
+
+  </div>
+
+<script src="../assets/combo.js"></script>
+</body>
+</html>

@@ -24,15 +24,8 @@
       <h1>Launch pad</h1>
     </header>
 
-    <!-- Four things, and nothing else.
-
-         The pad had grown to seven sections of finished A-vs-B experiments,
-         which made the three live ones hard to find. Everything whose
-         question has been answered is written up in Notion and comes off
-         here; the files stay in the repo and stay linkable, they just
-         aren't surfaced. Dropped: npx vs installer, /eai hand-off, setup
-         form vs agent, account-first vs download-first, and the earlier
-         install-* iterations. -->
+    <!-- Marketing site + no-code builder: MVP tab (no smart blocks) and Smart
+         blocks tab. Two links each — marketing site and app. -->
     <ul class="pad-list">
 
       <li class="pad-section">
@@ -60,6 +53,7 @@
         <div class="pad-panel" id="pad-install" hidden>
           <ul class="pad-entries">
             <li><a class="pad-entry" href="statemachine/index.html">State machine</a></li>
+            <li><a class="pad-entry" href="build-states/index.html">CLI state machine</a></li>
             <li><a class="pad-entry" href="signup/index.html?scenario=none">Prototype: no harness</a></li>
             <li><a class="pad-entry" href="signup/index.html?scenario=installed">Prototype: with an external harness</a></li>
           </ul>
@@ -67,16 +61,34 @@
       </li>
 
       <li class="pad-section">
-        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-cli">
+        <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-marketing-builder">
           <span class="pad-toggle-text">
-            <span class="pad-toggle-title">CLI experience</span>
+            <span class="pad-toggle-title">Marketing site &amp; no-code builder</span>
+            <span class="pad-badge pad-badge--green">Current</span>
           </span>
           <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
-        <div class="pad-panel" id="pad-cli" hidden>
-          <ul class="pad-entries">
-            <li><a class="pad-entry" href="build-states/index.html">CLI state machine</a></li>
-          </ul>
+        <div class="pad-panel" id="pad-marketing-builder" hidden>
+          <div class="pad-tabs" role="tablist">
+            <button class="pad-tab on" type="button" role="tab" aria-selected="true" data-pad-tab="mvp">MVP</button>
+            <button class="pad-tab" type="button" role="tab" aria-selected="false" data-pad-tab="smart-blocks">Smart blocks</button>
+          </div>
+
+          <div class="pad-tab-panel" data-pad-panel="mvp">
+            <ul class="pad-entries">
+              <li><a class="pad-entry" href="build-sugar/index.html">Marketing site</a></li>
+              <li><a class="pad-entry" href="build-sugar/pages/builder.html">App</a></li>
+            </ul>
+            <p class="pad-empty">Nothing here yet.</p>
+          </div>
+
+          <div class="pad-tab-panel" data-pad-panel="smart-blocks" hidden>
+            <ul class="pad-entries">
+              <li><a class="pad-entry" href="marketing/pages/home.html">Marketing site</a></li>
+              <li><a class="pad-entry" href="combo/index.html">App</a></li>
+            </ul>
+            <p class="pad-empty">Nothing here yet.</p>
+          </div>
         </div>
       </li>
 
@@ -84,15 +96,11 @@
         <button class="pad-toggle" type="button" aria-expanded="false" aria-controls="pad-better">
           <span class="pad-toggle-text">
             <span class="pad-toggle-title">Better experience</span>
-            <span class="pad-badge pad-badge--green">Current</span>
           </span>
           <span class="pad-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
         <div class="pad-panel" id="pad-better" hidden>
           <ul class="pad-entries">
-            <li><a class="pad-entry" href="marketing/index.html">Marketing site ICP — Google search</a></li>
-            <li><a class="pad-entry" href="build/index.html">Marketing site, login, and our own harness</a></li>
-            <li><a class="pad-entry" href="build-sugar/index.html">Sugar hit &mdash; builder first, sign up later</a></li>
             <li><a class="pad-entry" href="install-5/index.html">EAI Setup app &mdash; design variant</a></li>
           </ul>
         </div>
