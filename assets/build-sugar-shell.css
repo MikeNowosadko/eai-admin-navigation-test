@@ -1,0 +1,140 @@
+/* ------------------------------------------------------------------
+   Split desktop — sign-in / harness setup + unified DesignEx layout
+------------------------------------------------------------------- */
+
+#winSetup.split-shell .split-shell-hide {
+  display: none !important;
+}
+
+#winSetup.split-shell:not(.eai-unified) [data-screen="start"],
+#winSetup.split-shell:not(.eai-unified) [data-screen="welcome"],
+#winSetup.split-shell:not(.eai-unified) [data-screen="setup"],
+#winSetup.split-shell:not(.eai-unified) [data-screen="running"] {
+  display: none !important;
+}
+
+.split-project-row {
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background: oklch(97.5% 0 0);
+  border: 1px solid oklch(92% 0 0);
+  border-radius: 10px;
+}
+
+.split-project-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: oklch(52% 0 0);
+  margin-bottom: 4px;
+}
+
+.split-project-path {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: oklch(20% 0 0);
+}
+
+.split-project-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: oklch(52% 0 0);
+  line-height: 1.45;
+}
+
+/* --- expand animation --------------------------------------------- */
+
+#winSetup.split-shell {
+  transition:
+    left 0.58s cubic-bezier(0.32, 0.72, 0, 1),
+    top 0.58s cubic-bezier(0.32, 0.72, 0, 1),
+    width 0.58s cubic-bezier(0.32, 0.72, 0, 1),
+    height 0.58s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+#winSetup.split-shell.eai-expanding .setup-split-art .setup-shader,
+#winSetup.split-shell.eai-expanding .setup-split-art .setup-art-center,
+#winSetup.split-shell.eai-expanding .setup-split-art .setup-art-mark {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* --- unified full-screen — harness inside Enterprise AI app -------- */
+
+#winSetup.eai-unified {
+  left: 1.5% !important;
+  top: 3.5% !important;
+  width: 97% !important;
+  height: 93% !important;
+  max-height: none !important;
+}
+
+#winSetup.eai-unified .win-bar .wt {
+  font-weight: 500;
+}
+
+#winSetup.eai-unified .setup-split-foot,
+#winSetup.eai-unified .setup-split-progress {
+  display: none;
+}
+
+#winSetup.eai-unified .setup-split {
+  min-height: 0;
+}
+
+#winSetup.eai-unified .setup-split-main {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  border-right: none;
+  padding: 0;
+}
+
+#winSetup.eai-unified .setup-split-art {
+  display: none !important;
+}
+
+#winSetup.eai-unified .eai-body > [data-screen]:not([hidden]) {
+  display: none !important;
+}
+
+#winSetup.eai-unified .eai-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.split-admin {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+#winSetup.eai-unified .split-admin {
+  display: flex;
+  flex: 1;
+}
+
+.split-zone--eai {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+  background: #ececec;
+  overflow: hidden;
+}
+
+.split-zone--eai::before {
+  display: none;
+}
+
+.split-zone--eai .designex {
+  flex: 1;
+  min-height: 0;
+}

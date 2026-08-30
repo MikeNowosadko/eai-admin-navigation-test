@@ -252,8 +252,13 @@ body.bd-builder { height: 100vh; overflow: hidden; }
 
 .bd-top-acts { display: flex; align-items: center; gap: 8px; }
 
-/* Every billable control carries its price. A meter nobody can account
-   for is a number that only goes down. */
+/* Per-action credit prices are never shown — meter and auth gate still run
+   in JS; we just don't surface numbers on controls or in the transcript. */
+.bd-cost,
+.bd-spent {
+  display: none !important;
+}
+
 .bd-cost {
   margin-left: 7px;
   padding: 1px 6px;
@@ -755,11 +760,31 @@ body:not(.bd-has-preview) .bd-composer-row { width: min(760px, 100%); margin-inl
 .bd-fld .ctl.blk {
   gap: 7px;
   justify-content: flex-start;
+  align-items: flex-start;
+  height: auto;
+  min-height: 34px;
+  padding: 8px 11px;
   background: #f5f3ff;
   border-color: #ddd6fe;
   color: #6d28d9;
 }
-.bd-fld .ctl.blk .spark { font-size: 10px; }
+.bd-fld .ctl.blk .spark { font-size: 10px; margin-top: 3px; }
+.bd-fld .ctl.blk .blk-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bd-fld .ctl.blk .blk-body b {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5b21b6;
+}
+.bd-fld .ctl.blk .blk-body span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #7c3aed;
+}
 .bd-fld.new .ctl { border-color: #86efac; }
 .bd-fld .tag {
   position: absolute;

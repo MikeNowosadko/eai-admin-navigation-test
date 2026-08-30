@@ -1087,6 +1087,7 @@ async function recheck(h) {
 }
 
 function finish(name, path) {
+  if (name && path) project = { name, path };
   labelProject();
   // The "your app is ready" strip came off this screen, so there is no
   // path or workspace to write into here any more.
@@ -1440,3 +1441,6 @@ document.querySelectorAll('button[data-harness]').forEach((btn) => {
     syncDock();
   });
 });
+
+/** Split-desktop shell bootstraps straight to harness pick — see build-sugar-shell.js */
+window.eaiSetupApi = { finish, showScreen };

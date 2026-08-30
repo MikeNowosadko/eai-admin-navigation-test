@@ -318,6 +318,7 @@ button, input, textarea { font-family: inherit; }
 .pad-entry {
   display: flex;
   align-items: center;
+  gap: 8px;
   min-height: 36px;
   padding: 0 10px;
   border-radius: 4px;
@@ -328,6 +329,8 @@ button, input, textarea { font-family: inherit; }
   color: var(--ds-gray-1000);
   transition: background 0.15s ease;
 }
+.pad-entry-text { flex: 1; min-width: 0; }
+.pad-entry .pad-badge { flex-shrink: 0; margin-left: auto; }
 .pad-entry:hover { background: var(--ds-gray-200); }
 .pad-entry code {
   font-family: 'Geist Mono', var(--mono);

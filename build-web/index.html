@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com" />
+<title>Prototype — Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/signup.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-web-home.css?v=mtg8tt0q.j1" />
+</head>
+<body class="site bd-site bw-site">
+
+  <!-- /build-web — step 1.
+
+       No macOS shell. No sign-in. The homepage is the front door: describe
+       a process, land in the no-code builder with the prompt already sent.
+
+       Chips are the shipped product's SUGGESTIONS array (new-workflow-chat.tsx). -->
+
+  <nav class="nav eai-nav">
+    <a class="brand" href="index.html"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <a class="bw-pad-link" href="../index.html">All prototypes</a>
+  </nav>
+
+  <section class="bd-hero">
+    <p class="bd-eyebrow">Enterprise AI Builder · MVP</p>
+    <h1>What do you want to build?</h1>
+    <p class="lede">
+      Describe a business process in a sentence. Enterprise AI designs it with you,
+      builds it, and gives you somewhere to run it — with the governance,
+      audit trail and access control your organisation already asks for.
+    </p>
+
+    <form class="bd-composer" id="bdForm" autocomplete="off">
+      <label class="sr-only" for="bdPrompt">What do you want to build?</label>
+      <input type="text" id="bdPrompt" name="prompt"
+             placeholder="e.g. KYC onboarding for CommBank" />
+      <button class="bd-start" type="submit" id="bdStart">
+        Start
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+
+    <div class="bd-chips" id="bdChips">
+      <button type="button">KYC onboarding</button>
+      <button type="button">Invoice processing</button>
+      <button type="button">Leave approval</button>
+      <button type="button">Customer feedback</button>
+      <button type="button">Vendor assessment</button>
+      <button type="button">Compliance review</button>
+    </div>
+
+    <p class="bd-note">
+      Start building now — no sign-in required.
+      <span class="dot">&middot;</span>
+      About <b>50 credits</b> of free work before we ask for an account.
+    </p>
+  </section>
+
+  <section class="bd-ways">
+    <div class="bd-way">
+      <span class="bd-way-k">In your browser</span>
+      <h3>The no-code builder</h3>
+      <p>Describe the process, answer a few questions, publish a working form with
+         analytics behind it. Submit → review → outcome — no smart blocks in MVP.</p>
+    </div>
+    <div class="bd-way">
+      <span class="bd-way-k">On your machine</span>
+      <h3>Your own AI harness</h3>
+      <p>For anything bigger than a form. Build in Claude Code, Copilot or Codex
+         against your own repo — on the AI subscription you already pay for.</p>
+    </div>
+  </section>
+
+  <section class="bd-props">
+    <div><b>Governed by default</b><span>Every run is logged, attributable and reviewable. Approval gates where your policy needs them.</span></div>
+    <div><b>In production in 6&ndash;8 weeks</b><span>Not a pilot that never ships. Deployed into your tenancy, with your identity provider.</span></div>
+    <div><b>Your data stays yours</b><span>Nothing you build here is used to train anybody&rsquo;s model, ours included.</span></div>
+  </section>
+
+  <div class="shot">
+    <div class="shot-bar"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="shot-url">enterpriseai.com / enterpriseAI</span></div>
+    <div class="shot-tabs"><span>Q&amp;A</span><span>Planning Pathway</span><span class="on">Document Checklist</span><span class="off">Submission</span></div>
+    <div class="shot-cols">
+      <div class="shot-card">
+        <div class="t">27 Willow Creek Drive, Granville NSW 2142</div>
+        <div class="map"></div>
+        <div class="tags"><span>Bushfire</span><span>No flood</span><span>Heritage</span></div>
+        <div class="kv"><b>Zone</b>R2 &mdash; Low Density Residential</div>
+        <div class="kv"><b>Property size</b>450 m&sup2;</div>
+      </div>
+      <div class="shot-card">
+        <div class="t">Document Validation</div>
+        <div class="sub">Review validation results for uploaded documents</div>
+        <div class="row"><span>Architectural Plans and Building Specifications</span><i class="rev">Review</i></div>
+        <div class="row"><span>Development Application Form</span><i class="pass">Pass</i></div>
+        <div class="row"><span>Owner's Consent</span><i class="pass">Pass</i></div>
+        <div class="row"><span>Proof of Application Fee Payment</span><i class="pass">Pass</i></div>
+      </div>
+      <div class="shot-card">
+        <div class="t">Daisy</div>
+        <div class="bub">Welcome! I can see you're looking at the property at 27 Willow Creek Drive. What type of development are you considering?</div>
+        <div class="q">Can I learn more about the types of development applications?</div>
+      </div>
+    </div>
+  </div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script>
+  const input = document.getElementById('bdPrompt');
+  const ENTER_KEY = 'build-sugar-enter';
+
+  function start() {
+    const v = input.value.trim();
+    if (!v) { input.focus(); return; }
+    sessionStorage.setItem(ENTER_KEY, '1');
+    location.href = 'builder.html?prompt=' + encodeURIComponent(v) + '&enter=1';
+  }
+
+  document.getElementById('bdForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    start();
+  });
+
+  document.querySelectorAll('#bdChips button').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      input.value = chip.textContent;
+      input.focus();
+    });
+  });
+
+  input.focus();
+</script>
+
+</body>
+</html>

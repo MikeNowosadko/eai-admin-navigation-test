@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Prototype — Split desktop (Google → harness)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/desktop.css?v=mtg8tt0q.j1" />
+<!-- The disk image and the base app skin are /install's. install-3.css
+     is this version's own: the bigger window, the logo, the shadcn hover
+     states, and the one-page form that replaces the click-through. -->
+<link rel="stylesheet" href="../assets/install.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/install-3.css?v=mtg8tt0q.j1" />
+<!-- Only the last screen differs, so this adds to install-3.css rather
+     than replacing it. -->
+<link rel="stylesheet" href="../assets/install-4.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/setup-split.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-sugar-shell.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-sugar-designex.css?v=mtg8tt0q.j1" />
+</head>
+<body>
+
+<div class="desktop" id="desktop">
+
+  <!-- menu bar --------------------------------------------------- -->
+  <div class="menubar">
+    <span class="apple" id="appleBtn">&#63743;</span>
+    <span class="app" id="menuApp">Safari</span>
+    <span class="mi">File</span><span class="mi">Edit</span><span class="mi">View</span>
+    <span class="mi">Window</span><span class="mi">Help</span>
+    <span class="spacer"></span>
+    <span class="right">
+      <svg width="15" height="12" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+        <rect x="0.7" y="0.7" width="18.6" height="14.6" rx="4" stroke="currentColor" stroke-width="1.3" />
+        <circle cx="6.5" cy="5.5" r="2" fill="currentColor" /><circle cx="13.5" cy="10.5" r="2" fill="currentColor" />
+      </svg>
+      <svg width="15" height="12" viewBox="0 0 18 13" fill="none" aria-hidden="true">
+        <path d="M1 4.2a12 12 0 0 1 16 0M3.6 7a8.4 8.4 0 0 1 10.8 0M6.2 9.8a4.6 4.6 0 0 1 5.6 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+        <circle cx="9" cy="12" r="1.1" fill="currentColor" />
+      </svg>
+      <svg width="22" height="12" viewBox="0 0 26 13" fill="none" aria-hidden="true">
+        <rect x="0.7" y="0.7" width="21" height="11.6" rx="3.4" stroke="currentColor" stroke-width="1.2" opacity="0.7" />
+        <rect x="2.4" y="2.4" width="14" height="8.2" rx="2" fill="currentColor" />
+        <path d="M23.4 4.4v4.2c1.1-.4 1.6-1 1.6-2.1s-.5-1.7-1.6-2.1z" fill="currentColor" opacity="0.7" />
+      </svg>
+      <span>Wed 12 Aug&nbsp; 4:44 pm</span>
+    </span>
+  </div>
+
+  <div class="apple-menu" id="appleMenu">
+    <a href="#">About This Mac</a>
+    <div class="sep"></div>
+    <a href="#">System Settings…</a>
+    <a href="#">App Store…</a>
+    <div class="sep"></div>
+    <a href="#">Sleep</a>
+    <a href="index.html">Restart…</a>
+    <a href="#">Shut Down…</a>
+    <div class="sep"></div>
+    <a href="#">Lock Screen</a>
+  </div>
+
+  <!-- browser window ---------------------------------------------- -->
+  <div class="win" id="winBrowser" style="left:2%; top:5.5%; width:68%; height:81%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="browserTitle">Safari</span>
+    </div>
+    <div class="brow-chrome">
+      <button class="navbtn" id="browBack" type="button" title="Back">&#8249;</button>
+      <button class="navbtn" id="browFwd" type="button" title="Forward">&#8250;</button>
+      <button class="navbtn" id="browReload" type="button" title="Reload">&#8635;</button>
+      <div class="addr"><span class="lock">&#128274;</span><span id="browUrl">google.com</span></div>
+
+      <!-- Safari's downloads button: appears when a download starts, fills a
+           progress ring, then opens a list. macOS stopped flying files into
+           the dock a long time ago; this is what people actually see. -->
+      <button class="dl-btn" id="dlBtn" type="button" title="Downloads" hidden>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4v10M7.5 10.5 12 15l4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M5 18h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span class="ring" id="dlRing"></span>
+      </button>
+
+      <div class="dl-pop" id="dlPop" hidden>
+        <div class="dl-pop-hd">Downloads</div>
+        <button class="dl-row" id="dlItem" type="button">
+          <span class="dl-ico"><img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="dl-meta">
+            <b>EAI-Setup.dmg</b>
+            <i id="dlSize">84 MB</i>
+          </span>
+          <span class="dl-open">Open</span>
+        </button>
+      </div>
+    </div>
+    <iframe class="brow-frame" id="browFrame" src="pages/google.html" title="Browser"></iframe>
+  </div>
+
+  <!-- the mounted disk image -------------------------------------- -->
+  <div class="win hidden" id="winDmg" style="left:29%; top:20%; width:46%; height:58%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">EAI Setup</span>
+    </div>
+    <!-- The window opens empty, fades the wordmark in, lifts it into a title,
+         then brings the two icons in. Sequence lives in assets/install.js. -->
+    <div class="skin-dmg dmg-anim" id="dmgStage">
+
+      <div class="dmg-intro" id="dmgIntro">
+        <span class="dmg-mark">
+          <img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+        </span>
+        <div class="dmg-hint" id="dmgHint">To install, drag <b>EAI Setup</b> to <b>Applications</b></div>
+      </div>
+
+      <div class="dmg-row" id="dmgRow">
+        <div class="dmg-item" id="dmgApp">
+          <span class="tile"><img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="nm">EAI Setup</span>
+        </div>
+        <span class="arrow" aria-hidden="true">
+          <svg viewBox="0 0 28 16" fill="none"><path d="M3 8h19M16.5 2.5 22.5 8l-6 5.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <div class="dmg-item" id="dmgApplications">
+          <span class="tile"><img src="../assets/logos/applications-folder.png?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="nm">Applications</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- the EAI Setup app itself ------------------------------------ -->
+  <!-- Two-column layout from Paper frame 5N0-0: flow on the left, Warp
+       shader and branding on the right. -->
+  <div class="win hidden i3 split split-shell" id="winSetup" style="left:11%; top:7%; width:78%; height:86%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Enterprise AI Setup</span>
+    </div>
+
+    <div class="skin-setup eai">
+      <div class="setup-split">
+        <div class="setup-split-main">
+          <div class="setup-split-progress" aria-hidden="true">
+            <div class="setup-split-bars" id="setupProgress">
+              <i class="on"></i><i></i>
+            </div>
+            <span class="setup-split-count" id="setupProgressCount">1 / 2</span>
+          </div>
+
+          <div class="eai-body">
+
+        <!-- Admin UI — Enterprise AI app (harness loads here on Start) -->
+        <div class="split-admin" id="splitAdmin">
+          <div class="split-zone split-zone--eai" data-zone="Enterprise AI app"></div>
+        </div>
+
+        <!-- 0 · The door.
+
+             The app opens on its own name and one button. No stepper here:
+             nothing has started yet, and a bar reading 1 / 5 before a single
+             question has been asked is a promise made too early. It appears
+             on the screen after this one, when the count is true. -->
+        <div class="eai-screen" data-screen="start" hidden>
+          <div class="setup-start">
+            <img class="setup-start-mark" src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+            <div class="setup-start-tx">
+              <h3>Set up Enterprise AI</h3>
+              <p>Pick your external harness — sign-in and app setup happen inside it.</p>
+            </div>
+          </div>
+
+          <div class="eai-acts">
+            <button class="eai-btn primary" type="button" id="setupStart">Get started</button>
+          </div>
+        </div>
+
+        <!-- A · Sign in.
+
+             The window opens bigger than two buttons need, because it is
+             about to hold the whole of setup and growing a window under
+             someone is worse than starting roomy.
+
+             The check is stated rather than listed: one line saying the
+             machine is ready, in the same row component the complex form
+             uses. The list only appears when something in it failed —
+             see FAILURES.prereq in the journey. -->
+        <div class="eai-screen gap-8" data-screen="signin">
+          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" /></div>
+
+          <div class="eai-head">
+            <h3>Sign in to Enterprise AI</h3>
+            <p>Sign in, or create an account if you don't have one yet.</p>
+          </div>
+
+          <div class="eai-rows" id="checkRows"></div>
+
+          <div class="eai-note" id="signinNote" hidden>
+            <i class="mk fail bang">!</i>
+            <div class="tx">
+              <b id="signinNoteTitle">Can't reach api.eai.com</b>
+              <span id="signinNoteBody">Your network blocked the request, or EAI is unreachable from here. Check your connection or VPN, then retry.</span>
+            </div>
+          </div>
+
+          <div class="eai-acts gap-2">
+            <button class="eai-btn" type="button" id="setupCreate">Create an EAI account</button>
+            <button class="eai-btn primary ring" type="button" id="setupSignin">Sign in with browser</button>
+          </div>
+        </div>
+
+        <!-- B · The beat between the browser and the form. Nobody acts on
+             it: it confirms what just happened, then hands its own title
+             over to the next thing. -->
+        <div class="eai-screen" data-screen="welcome" hidden>
+          <div class="i3-welcome">
+            <span class="i3-tick" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 id="welcomeTitle">Signed in</h3>
+            <p id="welcomeSub">gareth@northwind.com</p>
+          </div>
+        </div>
+
+        <!-- C · Setup, on one page.
+
+             Three questions revealed downwards as each is answered, with
+             no Continue between them: a click whose only meaning is "yes,
+             I did just answer that" is a click worth deleting. The
+             primary appears once the last answer lands. -->
+        <div class="eai-screen gap-6" data-screen="setup" hidden>
+          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" /></div>
+
+          <div class="eai-head">
+            <h3>Let's get set up</h3>
+            <p id="setupSub">Signed in as gareth@northwind.com. Three things, and your app exists.</p>
+          </div>
+
+          <div class="i3-steps">
+
+            <section class="i3-step" data-step="workspace">
+              <div class="i3-step-head">
+                <span class="i3-num">1</span>
+                <div class="tx">
+                  <b>Choose a workspace</b>
+                  <span>Where this app is managed, and who it belongs to.</span>
+                </div>
+              </div>
+              <div class="eai-rows" id="wsRows"></div>
+              <div class="eai-note" id="wsNote" hidden>
+                <i class="mk fail bang">!</i>
+                <div class="tx">
+                  <b>No workspaces for this account</b>
+                  <span>gareth@northwind.com isn't a member of a company workspace yet. An EAI admin can add you, then sign in again.</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="i3-step" data-step="name" hidden>
+              <div class="i3-step-head">
+                <span class="i3-num">2</span>
+                <div class="tx">
+                  <b>Name your app</b>
+                  <span>The name your team will see, and the folder we create. Lowercase words with hyphens work best.</span>
+                </div>
+              </div>
+              <div class="eai-field" data-field="name">
+                <input class="eai-input" type="text" id="projName" placeholder="contract-renewals" autocomplete="off" spellcheck="false" />
+                <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
+              </div>
+            </section>
+
+            <section class="i3-step" data-step="folder" hidden>
+              <div class="i3-step-head">
+                <span class="i3-num">3</span>
+                <div class="tx">
+                  <b>Choose a folder</b>
+                  <span>We recommend making a new folder for the project &mdash; it keeps the app's files together, and away from whatever is already there. The chooser has a New Folder button.</span>
+                </div>
+              </div>
+              <div class="eai-field" data-field="folder">
+                <div class="eai-combo">
+                  <input type="text" id="projFolder" placeholder="Choose a parent folder" readonly />
+                  <button class="eai-inner" type="button" id="chooseFolder">Choose folder</button>
+                </div>
+                <div class="eai-err" hidden><i class="mk fail bang sm">!</i><span></span></div>
+              </div>
+            </section>
+
+          </div>
+
+          <div class="eai-acts gap-3 pt-2 i3-reveal" id="setupActs" hidden>
+            <button class="eai-btn primary" type="button" id="createApp">Create app</button>
+          </div>
+        </div>
+
+        <!-- D · eai init -->
+        <div class="eai-screen gap-6" data-screen="running" hidden>
+          <div class="eai-head">
+            <h3 id="runTitle">Creating your EAI app</h3>
+            <p id="runSub">Downloading the app template into your folder.</p>
+          </div>
+
+          <div class="eai-rows" id="runLines"></div>
+
+          <div class="eai-note" id="runNote" hidden>
+            <i class="mk fail bang">!</i>
+            <div class="tx">
+              <b id="runNoteTitle">Gofer assets returned 403</b>
+              <span id="runNoteBody">Your tenant is connected, but this account can't read the Gofer asset library. An EAI admin can grant it, or you can retry once they have.</span>
+            </div>
+          </div>
+
+          <div class="eai-acts gap-3 pt-2" id="runActs" hidden>
+            <button class="eai-btn" type="button" id="runBack">Back</button>
+            <button class="eai-btn primary" type="button" id="runRetry">Retry this step</button>
+          </div>
+        </div>
+
+        <!-- E · Choosing a harness.
+
+             The workspace's standard is not a badge on a row — it is the
+             screen. An administrator sets it in workspace settings, so it
+             gets its own box and everything else collapses behind "Use
+             something else". Most people see one box and one button.
+
+             Whether that standard is on the Mac only changes the box's
+             right-hand state and the button's verb. The structure holds,
+             which matters for the enterprise case: the tenant with the
+             subscription probably has it deployed, and if not, setup can
+             install it rather than sending someone away to work it out.
+
+             With no standard set there is no box — a note says so, points
+             at the administrator, and the whole list opens. -->
+        <div class="eai-screen gap-6" data-screen="done" hidden>
+          <div class="eai-head">
+            <h3>Choose how to work with AI</h3>
+            <p id="harnessSub">Northwind Group has a standard for this, so it's already chosen.</p>
+          </div>
+
+          <!-- the standard, when there is one -->
+          <div class="i4-standard" id="harnessStandard">
+            <div class="i4-standard-label">Your workspace&rsquo;s standard</div>
+            <div class="i4-box">
+              <span class="i4-box-icon" id="stdIcon"></span>
+              <span class="tx">
+                <b id="stdName">Claude Code</b>
+                <span id="stdWhy">Set as the standard for Northwind Group by an administrator.</span>
+              </span>
+              <span class="i4-box-state" id="stdState"></span>
+            </div>
+          </div>
+
+          <div class="split-project-row">
+            <div class="split-project-label">Project location</div>
+            <div class="split-project-path" id="splitProjectPath">~/Downloads/my-process</div>
+            <p class="split-project-note">Default folder — name your app and configure inside the harness.</p>
+          </div>
+
+          <!-- and when there isn't -->
+          <div class="i4-alert" id="harnessNoStandard" role="status" hidden>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+            <div class="tx">
+              <b>Northwind Group hasn&rsquo;t set a standard</b>
+              <span>Pick whichever you use &mdash; nothing here is wrong. If your team should all be on the same one, an administrator can set it in workspace settings.</span>
+            </div>
+          </div>
+
+          <!-- everything else, behind a disclosure when there is a standard -->
+          <button class="i4-disclosure" type="button" id="harnessMore" aria-expanded="false">
+            <span class="lbl">Use something else</span>
+            <span class="count" id="harnessMoreCount">5 other options</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9.5l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+
+          <div class="eai-rows i4-list" id="harnessRows" hidden></div>
+
+          <div class="eai-note" id="harnessNote" hidden>
+            <i class="mk fail bang">!</i>
+            <div class="tx">
+              <b id="harnessNoteTitle">Couldn't install Claude Code</b>
+              <span id="harnessNoteBody">npm refused to write to its global folder on this Mac. Your app is finished either way — open the folder and install the tool yourself, or ask IT for permission and try again.</span>
+            </div>
+          </div>
+
+          <!-- What the button is about to do. It was a centred grey
+               paragraph under the button, which is the hardest shape of
+               text to read and the easiest to skip; as an alert it sits
+               above the action it explains, left-aligned, with the point
+               in the title. -->
+          <div class="i4-alert split-shell-hide" id="harnessFine" role="status" hidden>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+            <div class="tx">
+              <b id="harnessFineTitle">Claude Code will ask you to sign in</b>
+              <span id="harnessFineBody">It signs in to Anthropic the first time you open it. Enterprise AI never sees that account.</span>
+            </div>
+          </div>
+
+          <div class="setup-alt split-shell-hide">
+            <button class="eai-btn ghost-quiet" type="button" id="doneFolder">Show me the folder instead</button>
+          </div>
+
+          <div class="i4-actions">
+            <button class="i4-back split-shell-hide" type="button" id="harnessBack">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back
+            </button>
+            <button class="eai-btn primary big" type="button" id="harnessGo">Start</button>
+          </div>
+        </div>
+
+          </div>
+
+          <footer class="setup-split-foot">
+            <a href="#">Terms and Conditions</a><span>·</span><a href="#">Privacy Policy</a>
+          </footer>
+        </div>
+
+        <aside class="setup-split-art" aria-hidden="true">
+          <div class="setup-shader" id="setupShader"></div>
+          <div class="setup-art-center">
+            <img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+          </div>
+          <div class="setup-art-mark">
+            <img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" />
+          </div>
+          <div class="unified-harness-mount hidden" id="unifiedHarnessMount" aria-hidden="true"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- the folder chooser the app opens ---------------------------- -->
+  <div class="win hidden" id="winFinder" style="left:24%; top:16%; width:56%; height:60%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Choose the app folder</span>
+    </div>
+    <div class="skin-finder">
+      <div class="fnd-side">
+        <div class="grp">Favourites</div>
+        <div class="row"><span class="i">&#128337;</span> Recents</div>
+        <div class="row"><span class="i">&#128193;</span> Applications</div>
+        <div class="row on" data-dir="Downloads"><span class="i">&#11015;</span> Downloads</div>
+        <div class="row" data-dir="Desktop"><span class="i">&#128421;</span> Desktop</div>
+        <div class="row" data-dir="Documents"><span class="i">&#128196;</span> Documents</div>
+        <div class="grp">Locations</div>
+        <div class="row"><span class="i">&#9729;</span> iCloud Drive</div>
+        <div class="row" data-dir="gareth"><span class="i">&#127968;</span> gareth</div>
+        <div class="row"><span class="i">&#128190;</span> Macintosh HD</div>
+      </div>
+      <div class="fnd-main">
+        <div class="fnd-bar">
+          <span class="nav">&#8249;</span><span class="nav">&#8250;</span>
+          <span class="crumb" id="fndCrumb">&#128193; Downloads</span>
+          <span class="spacer"></span>
+          <span class="search">&#128269; Search</span>
+        </div>
+        <div class="fnd-cols"><span>Name</span><span>Size</span><span>Kind</span><span>Date Added</span></div>
+        <div class="fnd-list" id="fndList"></div>
+        <div class="fnd-foot">
+          <button class="btn btn-ghost btn-sm" type="button" id="fndNew">New Folder</button>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" type="button" id="fndCancel">Cancel</button>
+          <button class="btn btn-blue btn-sm" type="button" id="fndOpen">Open</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- where the journey ends: Copilot, in the new project folder --- -->
+  <div class="win dark hidden" id="winHost" data-app="copilotProject" style="left:8%; top:9%; width:76%; height:74%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt" id="hostTitle">Visual Studio Code</span>
+    </div>
+    <div class="host-body" id="hostBody"></div>
+  </div>
+
+  <!-- coach mark --------------------------------------------------- -->
+  <div class="coach" id="coach"></div>
+
+  <!-- ⌘K panel ------------------------------------------------------ -->
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <aside class="sheet" id="sheet" aria-hidden="true">
+    <button class="close" id="sheetClose" type="button" title="Close">&#10005;</button>
+    <h3>Prototype controls</h3>
+    <p class="sub">Hidden by default so the desktop reads as a real machine.</p>
+
+    <div class="grp">Error states</div>
+    <button class="act" type="button" data-err="prereq">Prereq install failed <span class="sub">Git, behind the scenes</span></button>
+    <button class="act" type="button" data-err="signin">Can't reach EAI <span class="sub">at sign-in</span></button>
+    <button class="act" type="button" data-err="workspace">No workspaces <span class="sub">account not added yet</span></button>
+    <button class="act" type="button" data-err="name">Name is taken <span class="sub">folder already exists</span></button>
+    <button class="act" type="button" data-err="running">Init fails <span class="sub">403 on Gofer assets</span></button>
+
+    <div class="grp">Choosing a harness</div>
+    <button class="act" type="button" data-harness="preferred-missing">Recommended one missing <span class="sub">we can install it</span></button>
+    <button class="act" type="button" data-harness="none">Nothing installed <span class="sub">empty machine</span></button>
+    <button class="act" type="button" data-harness="no-standard">No standard set <span class="sub">admin hasn't picked</span></button>
+    <button class="act" type="button" data-harness="download">Download required <span class="sub">VS Code</span></button>
+    <button class="act" type="button" data-harness="failed">Install fails <span class="sub">npm permissions</span></button>
+    <button class="act" type="button" data-err="clear">&#8635;&nbsp; Back to the happy path</button>
+
+    <div class="grp">Background</div>
+    <button class="act" type="button" data-art="warp">Warp <span class="sub">navy into black</span></button>
+    <button class="act" type="button" data-art="dither">Dithered <span class="sub">plum and blue, pixel grain</span></button>
+
+    <div class="grp">Disk image</div>
+    <button class="act" type="button" id="replayIntro">&#8635;&nbsp; Replay the intro</button>
+
+    <div class="grp">Go</div>
+    <a class="act primary" href="../index.html">&#9776;&nbsp; Back to launch pad <span class="sub">all flows</span></a>
+    <a class="act" href="shell.html">&#8635;&nbsp; Restart this flow</a>
+
+    <div class="foot">
+      <kbd>⌘</kbd> <kbd>K</kbd> toggles this panel · <kbd>esc</kbd> closes it.
+      <br /><br />
+      <b>Split desktop:</b> install → sign in (shader right) → harness + project location →
+      <b>Start</b> animates to full-screen EAI + DesignEx harness.
+      Architecture: <code>split-desktop-architecture.html</code>
+    </div>
+  </aside>
+
+  <!-- dock ---------------------------------------------------------- -->
+  <div class="dock">
+
+    <div class="item" data-app="finder">
+      <span class="tip">Finder</span>
+      <span class="ico" data-icon="finder"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item open" data-app="browser">
+      <span class="tip">Safari</span>
+      <span class="ico" data-icon="safari"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="mail">
+      <span class="tip">Mail</span>
+      <span class="ico" data-icon="mail"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="messages">
+      <span class="tip">Messages</span>
+      <span class="ico" data-icon="messages"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="calendar">
+      <span class="tip">Calendar</span>
+      <span class="ico" data-icon="calendar"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="notes">
+      <span class="tip">Notes</span>
+      <span class="ico" data-icon="notes"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="photos">
+      <span class="tip">Photos</span>
+      <span class="ico" data-icon="photos"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- arrives once the download is dragged to Applications -->
+    <div class="item tucked" data-app="setup">
+      <span class="tip">EAI Setup</span>
+      <span class="ico" data-icon="eai"></span>
+      <span class="dot"></span>
+    </div>
+
+    <!-- appears when the app hands over at the end -->
+    <div class="item tucked" data-app="copilotProject">
+      <span class="tip">GitHub Copilot</span>
+      <span class="ico" data-icon="copilot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item tucked" data-app="claude">
+      <span class="tip">Claude</span>
+      <span class="ico" data-icon="claude"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item tucked" data-app="codex">
+      <span class="tip">Codex</span>
+      <span class="ico" data-icon="codex"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item tucked" data-app="gemini">
+      <span class="tip">Gemini</span>
+      <span class="ico" data-icon="gemini"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item tucked" data-app="vscode">
+      <span class="tip">Visual Studio Code</span>
+      <span class="ico" data-icon="vscode"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="item tucked" data-app="terminal">
+      <span class="tip">Terminal</span>
+      <span class="ico" data-icon="terminal"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="settings">
+      <span class="tip">System Settings</span>
+      <span class="ico" data-icon="settings"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="item" data-app="downloads">
+      <span class="tip">Downloads</span>
+      <span class="ico" data-icon="downloads"></span>
+      <span class="badge" hidden>0</span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="item" data-app="trash">
+      <span class="tip">Trash</span>
+      <span class="ico" data-icon="trash"></span>
+      <span class="dot"></span>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Split desktop: Google → marketing → download → install → one-click connect → unified app.
+  window.EAI_HOME = 'pages/google.html';
+</script>
+<script src="../assets/icons.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/desktop.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/install-4.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/setup-split.js?v=mtg8tt0q.j1"></script>
+<script type="module" src="../assets/setup-shader.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/build-sugar-shell.js?v=mtg8tt0q.j1"></script>
+</body>
+</html>

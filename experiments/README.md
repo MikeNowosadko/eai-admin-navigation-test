@@ -8,6 +8,9 @@ Plans are mirrored here so they sit beside the prototypes they use.
 | Area | Experiment | Status | Decision it informs |
 | --- | --- | --- | --- |
 | EAI CLI set up | [Onboarding: current vs npx vs setup app](./eai-cli-setup/onboarding-ux-test.md) | Run — decision pending numbers | Which set-up path we build |
+| EAI CLI set up | [Setup shell + embedded harness](./eai-cli-setup/shell-harness-bridge.md) | Design | Can we unify admin and external harness without building our own agent |
+| Better experience | [Sugar hit — builder first](../build-sugar/PLAN.md) | Scaffolded — [`/build-sugar`](https://eai-website.github.io/prototypes/build-sugar) | Does value before account improve conversion |
+| Better experience | [Sugar hit + shell merge](https://app.notion.com/p/9921f8c973104f4799b9414e9e4019ae) | Future thinking (Notion) | North-star journey: web sugar hit → unified desktop shell |
 
 ## How we run one
 

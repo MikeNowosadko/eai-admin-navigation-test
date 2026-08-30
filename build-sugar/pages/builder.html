@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/builder" />
@@ -10,14 +13,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../assets/proto.css" />
-<link rel="stylesheet" href="../../assets/signup.css" />
-<link rel="stylesheet" href="../../assets/build.css" />
+<link rel="stylesheet" href="../../assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../../assets/signup.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../../assets/build.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../../assets/build-sugar-focus.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../../assets/build-sugar-enter.css?v=mtg8tt0q.j1" />
 </head>
 <!-- No carried-prompt strip here: the prompt is the first message in the
      transcript, and saying it twice on the same screen is one reassurance
-     too many. -->
-<body class="nb bd-builder" data-bd-strip="off">
+     too many.
+
+     bd-sugar-focus: no sidebar — straight into the full-width workshop. -->
+<body class="nb bd-builder bd-sugar-focus" data-bd-strip="off">
+
+  <!-- Enter transition — brief hand-off before workshop -->
+  <div class="bd-enter" id="bdEnter" hidden>
+    <div class="bd-enter-inner">
+      <div class="bd-enter-prompt" id="bdEnterPrompt"></div>
+      <p class="bd-enter-status">Opening the workshop</p>
+    </div>
+  </div>
 
   <!-- THE HARNESS.
 
@@ -39,8 +54,9 @@
 
   <div class="nb-shell">
 
-    <!-- ------------------------------------------------ sidebar -->
-    <aside class="nb-side">
+    <!-- Sidebar hidden in /build-sugar — sugar hit lands in the workshop,
+         not the logged-in app shell. Kept in DOM for paintMeter IDs. -->
+    <aside class="nb-side" hidden aria-hidden="true">
 
       <button class="nb-ws" type="button">
         <span class="tile" id="wsInitial">?</span>
@@ -129,7 +145,9 @@
 
       <header class="bd-top">
         <div class="bd-crumbs">
-          <a href="app.html" data-keep>Processes</a>
+          <a class="bd-sugar-home" href="../index.html" title="Back to site">
+            <img src="../../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+          </a>
           <span class="sep">/</span>
           <b id="bdProjectName">New process</b>
         </div>
@@ -137,13 +155,11 @@
         <!-- progress-breadcrumb.tsx, verbatim: four steps, the current one
              filled, the finished ones ticked. -->
         <nav class="bd-steps" id="bdSteps" aria-label="Progress">
-          <span class="st on" data-step="describe">Describe</span>
+          <span class="st on" data-step="plan">Plan</span>
           <span class="ln"></span>
-          <span class="st" data-step="generate">Generate</span>
+          <span class="st" data-step="build">Build</span>
           <span class="ln"></span>
-          <span class="st" data-step="improve">Improve</span>
-          <span class="ln"></span>
-          <span class="st" data-step="publish">Publish</span>
+          <span class="st" data-step="deploy">Deploy</span>
         </nav>
 
         <div class="bd-top-acts">
@@ -164,8 +180,10 @@
           <div class="bd-anchor" id="bdAnchor"></div>
 
           <div class="bd-composer-row">
-            <input type="text" id="bdSay" placeholder="Describe a change&hellip;" autocomplete="off" disabled />
-            <button class="nb-btn primary" type="button" id="bdSend" disabled>Send <i class="bd-cost">10</i></button>
+            <textarea id="bdSay" rows="3" placeholder="Describe a change&hellip;" autocomplete="off" disabled></textarea>
+            <div class="bd-composer-actions">
+              <button class="nb-btn primary" type="button" id="bdSend" disabled>Send <i class="bd-cost">10</i></button>
+            </div>
           </div>
         </section>
 
@@ -265,8 +283,23 @@
     </div>
   </div>
 
-<script src="../../assets/build-prompt.js"></script>
-<script src="../../assets/page.js"></script>
-<script src="../../assets/build-sugar-builder.js"></script>
+<script src="../../assets/build-prompt.js?v=mtg8tt0q.j1"></script>
+<script src="../../assets/page.js?v=mtg8tt0q.j1"></script>
+<script type="module">
+  import { playBuilderEnter } from '../../assets/build-sugar-enter.js';
+
+  const params = new URLSearchParams(location.search);
+  const prompt = (params.get('prompt') || '').trim();
+
+  async function boot() {
+    if (params.get('enter') === '1' && prompt) {
+      await playBuilderEnter(prompt);
+    }
+    window.dispatchEvent(new CustomEvent('bd-enter-done'));
+  }
+
+  boot();
+</script>
+<script src="../../assets/build-sugar-builder.js?v=mtg8tt0q.j1"></script>
 </body>
 </html>

@@ -22,6 +22,24 @@
 
   const win = document.getElementById('winSetup');
   if (win && win.classList.contains('split')) {
+    /* Split desktop shell: sign-in → harness (2 steps) */
+    if (win.classList.contains('split-shell')) {
+      const SHELL_STEP = { signin: 1, done: 2 };
+      function setShellProgress(name) {
+        const n = SHELL_STEP[name] || 1;
+        win.classList.toggle('at-start', false);
+        if (bars) bars.querySelectorAll('i').forEach((bar, i) => bar.classList.toggle('on', i < n));
+        if (count) count.textContent = `${n} / 2`;
+      }
+      const observer = new MutationObserver(() => {
+        const active = win.querySelector('[data-screen]:not([hidden])');
+        if (active) setShellProgress(active.dataset.screen);
+      });
+      observer.observe(win, { attributes: true, subtree: true, attributeFilter: ['hidden'] });
+      setShellProgress('signin');
+      return;
+    }
+
     const observer = new MutationObserver(() => {
       const active = win.querySelector('[data-screen]:not([hidden])');
       if (active) setProgress(active.dataset.screen);

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Split desktop — unified window architecture</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #18181b;
+    --muted: #71717a;
+    --border: #e4e4e7;
+    --surface: #ffffff;
+    --green: #16a34a;
+    --purple: #7c3aed;
+    --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --max: 720px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: var(--max); margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  h1 { margin: 0 0 12px; font-size: 32px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; }
+  .lede { margin: 0; font-size: 18px; color: var(--muted); line-height: 1.5; }
+  .meta { margin-top: 16px; font-size: 13px; color: var(--muted); }
+  .meta a { color: var(--fg); }
+  h2 { margin: 48px 0 16px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+  h3 { margin: 32px 0 12px; font-size: 17px; font-weight: 600; }
+  p { margin: 0 0 16px; }
+  ul { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  .diagram {
+    margin: 20px 0 24px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .zones {
+    display: grid;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .zone {
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 2px dashed;
+  }
+  .zone b { display: block; margin-bottom: 6px; font-size: 14px; }
+  .zone span { font-size: 14px; color: var(--muted); }
+  .zone--eai { border-color: #86efac; background: #f0fdf4; }
+  .zone--harness { border-color: #d4d4d8; background: #fafafa; }
+  .zone--injection { border-color: #c4b5fd; background: #f5f3ff; }
+  .flow { counter-reset: step; list-style: none; padding: 0; margin: 0 0 24px; }
+  .flow li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 20px 36px;
+    border-left: 2px solid var(--border);
+    margin-left: 10px;
+  }
+  .flow li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .flow li::before {
+    content: counter(step);
+    position: absolute;
+    left: -13px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--fg);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  code { font-family: var(--mono); font-size: 0.92em; background: #f4f4f5; padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Split desktop — unified window</h1>
+    <p class="lede">How Enterprise AI nests inside an external harness (DesignEx-style), with our app in a first column and our injection under the harness chat.</p>
+    <p class="meta">Prototype: <a href="shell.html">build-sugar/shell.html</a> · Launch pad item 2</p>
+  </header>
+
+  <h2>The journey</h2>
+  <ol class="flow">
+    <li><strong>Install</strong> — drag EAI Setup to Applications (macOS shell).</li>
+    <li><strong>Sign in</strong> — two-column setup window: sign-in left, EAI warp shader right.</li>
+    <li><strong>Harness + location</strong> — pick external harness and confirm default project folder; shader stays on the right.</li>
+    <li><strong>Start</strong> — window animates to full-screen unified app (below).</li>
+  </ol>
+
+  <h2>Unified window</h2>
+  <p>After <strong>Start</strong>, the window expands full-screen. The external harness (DesignEx reference) loads <em>inside</em> the Enterprise AI app — not a separate right column.</p>
+
+  <div class="zones">
+    <div class="zone zone--eai">
+      <b>Enterprise AI app</b>
+      <span>Full window. Contains the external harness shell (sidebar + chat). Starter cards (DESIGN.md, Codebase, …) sit in a labelled section: <strong>We control to an extent?</strong></span>
+    </div>
+  </div>
+
+  <div class="diagram">┌─ Enterprise AI (full screen) ─────────────────────────────────────────────┐
+│ ┌─ 1 · EAI app ─────┐ ┌─ 2 · External harness ────────────────────────────┐ │
+│ │                   │ │ ┌sidebar┐ ┌─ main ─────────────────────────────┐ │ │
+│ │  (empty for now)  │ │ │DesignEx│ │ What should we build today?     │ │ │
+│ │                   │ │ │ nav    │ │ [ chat composer · Opus 5 ]      │ │ │
+│ │                   │ │ │        │ │ [ DESIGN.md · Codebase · … ]    │ │ │
+│ │                   │ │ │        │ │ ┌─ 3 · EAI injection ──────────┐ │ │ │
+│ │                   │ │ │        │ │ │  (empty — our patch slot)    │ │ │ │
+│ │                   │ │ │        │ │ └──────────────────────────────┘ │ │ │
+│ └───────────────────┘ │ └────────┘ └──────────────────────────────────┘ │ │
+│                       └───────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘</div>
+
+  <h2>Design decisions</h2>
+  <ul>
+    <li><strong>Fewer clicks before wow</strong> — no workspace, app name, or folder chooser in setup. Default project path; naming happens in the harness.</li>
+    <li><strong>Shared auth assumed</strong> — sign-in through the harness can share session with Enterprise AI later.</li>
+    <li><strong>DesignEx as reference harness</strong> — we copy their shell faithfully first, then iterate on injection + EAI column.</li>
+    <li><strong>Prototype vs ship</strong> — HTML simulates nested harness; native would be WKWebView + child process (see install-5 pattern).</li>
+  </ul>
+
+  <h2>Files</h2>
+  <ul>
+    <li><code>build-sugar/shell.html</code> — macOS desktop + setup window</li>
+    <li><code>assets/build-sugar-shell.js</code> — sign-in → harness → expand animation</li>
+    <li><code>assets/build-sugar-shell.css</code> — unified layout + zone labels</li>
+    <li><code>assets/build-sugar-designex.css</code> — DesignEx harness shell (copied UI)</li>
+    <li><code>assets/setup-shader.js</code> — warp shader on setup right panel</li>
+  </ul>
+</main>
+</body>
+</html>

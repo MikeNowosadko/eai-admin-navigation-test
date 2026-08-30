@@ -2,143 +2,235 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="enterpriseaigroup.com" />
 <title>Prototype — Enterprise AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/proto.css" />
-<link rel="stylesheet" href="../assets/signup.css" />
-<link rel="stylesheet" href="../assets/build.css" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/build-sugar-landing.css?v=mtg8tt0q.j1" />
 </head>
-<body class="site bd-site">
+<body class="sg-landing">
 
-  <!-- /build-sugar entry — web only, no macOS shell. The fake desktop
-       lives in /build; here the marketing site is the whole viewport. -->
+<div class="sg-landing-page" id="start">
 
-  <nav class="nav eai-nav">
-    <a class="brand" href="index.html"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" class="wordmark" /></a>
-    <div class="spacer"></div>
-    <div class="links">
-      <a href="#">Business types &#9662;</a>
-      <a href="#">Products &#9662;</a>
-      <a href="#">About Us &#9662;</a>
-      <a href="#">Pricing &#9662;</a>
-      <a href="#">Support</a>
+  <header class="sg-landing-bar">
+    <div class="sg-landing-bar-spacer"></div>
+    <div class="sg-landing-logo-wrap">
+      <img class="sg-landing-logo" src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" width="56" height="56" />
+      <img class="sg-landing-wordmark" src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
     </div>
-    <div class="spacer"></div>
-    <a class="lnk-login" href="pages/signup.html">Login</a>
-    <a class="btn btn-dark btn-sm" href="pages/signup.html">Get Started</a>
-  </nav>
-
-  <section class="bd-hero">
-    <p class="bd-eyebrow">Enterprise AI Builder</p>
-    <h1>What do you want to build?</h1>
-    <p class="lede">
-      Describe a business process in a sentence. Enterprise AI designs it with you,
-      builds it, and gives you somewhere to run it &mdash; with the governance,
-      audit trail and access control your organisation already asks for.
-    </p>
-
-    <form class="bd-composer" id="bdForm" autocomplete="off">
-      <label class="sr-only" for="bdPrompt">What do you want to build?</label>
-      <input type="text" id="bdPrompt" name="prompt"
-             placeholder="e.g. KYC onboarding for CommBank" />
-      <button class="bd-start" type="submit" id="bdStart">
-        Start
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </form>
-
-    <div class="bd-chips" id="bdChips">
-      <button type="button">KYC onboarding</button>
-      <button type="button">Invoice processing</button>
-      <button type="button">Leave approval</button>
-      <button type="button">Customer feedback</button>
-      <button type="button">Vendor assessment</button>
-      <button type="button">Compliance review</button>
+    <div class="sg-landing-bar-cta">
+      <button class="sg-pill" type="button" id="sgDownloadTop">Download for macOS</button>
     </div>
+  </header>
 
-    <p class="bd-note">
-      No signup to start &mdash; describe your process and the builder opens straight away.
-      <span class="dot">&middot;</span>
-      Already have an account? <a href="pages/signup.html">Sign in</a>
-    </p>
-  </section>
-
-  <section class="bd-ways">
-    <div class="bd-way">
-      <span class="bd-way-k">In your browser</span>
-      <h3>The no-code builder</h3>
-      <p>Describe the process, answer a few questions, publish a working form with
-         analytics behind it. Nothing to install. Runs on Enterprise AI credits.</p>
-    </div>
-    <div class="bd-way">
-      <span class="bd-way-k">On your machine</span>
-      <h3>Your own AI harness</h3>
-      <p>For anything bigger than a form. Build in Claude Code, Copilot or Codex
-         against your own repo &mdash; on the AI subscription you already pay for.</p>
+  <section class="sg-landing-hero">
+    <h1>A Mac app that turns the coding agent you already pay for into a process improver.</h1>
+    <p class="sg-landing-lead">Enterprise AI connects your harness, maps how work runs today, and hands a governed workflow back to your repo as something your agent can ship.</p>
+    <div class="sg-landing-hero-cta">
+      <button class="sg-pill sg-pill-lg" type="button" id="sgDownload">Download for macOS</button>
+      <span class="sg-landing-preview-note">Research preview</span>
     </div>
   </section>
 
-  <section class="bd-props">
-    <div><b>Governed by default</b><span>Every run is logged, attributable and reviewable. Approval gates where your policy needs them.</span></div>
-    <div><b>In production in 6&ndash;8 weeks</b><span>Not a pilot that never ships. Deployed into your tenancy, with your identity provider.</span></div>
-    <div><b>Your data stays yours</b><span>Nothing you build here is used to train anybody&rsquo;s model, ours included.</span></div>
-  </section>
-
-  <div class="shot">
-    <div class="shot-bar"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="shot-url">enterpriseai.com / enterpriseAI</span></div>
-    <div class="shot-tabs"><span>Q&amp;A</span><span>Planning Pathway</span><span class="on">Document Checklist</span><span class="off">Submission</span></div>
-    <div class="shot-cols">
-      <div class="shot-card">
-        <div class="t">27 Willow Creek Drive, Granville NSW 2142</div>
-        <div class="map"></div>
-        <div class="tags"><span>Bushfire</span><span>No flood</span><span>Heritage</span></div>
-        <div class="kv"><b>Zone</b>R2 &mdash; Low Density Residential</div>
-        <div class="kv"><b>Property size</b>450 m&sup2;</div>
-      </div>
-      <div class="shot-card">
-        <div class="t">Document Validation</div>
-        <div class="sub">Review validation results for uploaded documents</div>
-        <div class="row"><span>Architectural Plans and Building Specifications</span><i class="rev">Review</i></div>
-        <div class="row"><span>Development Application Form</span><i class="pass">Pass</i></div>
-        <div class="row"><span>Owner's Consent</span><i class="pass">Pass</i></div>
-        <div class="row"><span>Proof of Application Fee Payment</span><i class="pass">Pass</i></div>
-      </div>
-      <div class="shot-card">
-        <div class="t">Daisy</div>
-        <div class="bub">Welcome! I can see you're looking at the property at 27 Willow Creek Drive. What type of development are you considering?</div>
-        <div class="q">Can I learn more about the types of development applications?</div>
+  <section class="sg-landing-showcase-block">
+    <div class="sg-landing-tldr-row">
+      <p><b>TL;DR:</b> Pick your harness, describe the process, and get a working app folder in minutes — not another login wall before you see value.</p>
+      <div class="sg-landing-arrows" aria-hidden="true">
+        <button type="button" title="Previous">&#8249;</button>
+        <button type="button" title="Next">&#8250;</button>
       </div>
     </div>
-  </div>
 
+    <div class="sg-landing-showcase">
+      <div class="sg-landing-frame" id="sgFrame">
+        <div class="sg-landing-frame-inner" id="sgFrameInner">
+          <aside class="sg-mock-sidebar">
+            <b>Enterprise AI</b>
+            <div class="sg-mock-nav on">Overview</div>
+            <div class="sg-mock-nav">Harness</div>
+            <div class="sg-mock-nav">Process</div>
+            <div class="sg-mock-nav">Blocks</div>
+          </aside>
+          <div class="sg-mock-main">
+            <div class="sg-mock-title">KYC onboarding</div>
+            <div class="sg-mock-grid">
+              <div class="sg-mock-card"><span>Harness</span><strong>Claude Code</strong></div>
+              <div class="sg-mock-card"><span>Location</span><strong>~/Downloads/kyc-onboarding</strong></div>
+              <div class="sg-mock-card"><span>Stage</span><strong>Plan · workshop open</strong></div>
+              <div class="sg-mock-card"><span>Blocks</span><strong>Validate · Route · Notify</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-landing-frame-ghost" aria-hidden="true"></div>
+    </div>
+
+    <nav class="sg-landing-tabs" aria-label="Product views">
+      <button class="sg-landing-tab on" type="button" data-tab="0">01 Project overview</button>
+      <button class="sg-landing-tab" type="button" data-tab="1">02 Harness setup</button>
+      <button class="sg-landing-tab" type="button" data-tab="2">03 Process workshop</button>
+      <button class="sg-landing-tab" type="button" data-tab="3">04 Smart blocks</button>
+      <button class="sg-landing-tab" type="button" data-tab="4">05 Deploy to tenancy</button>
+    </nav>
+  </section>
+
+  <section class="sg-landing-section">
+    <div class="sg-landing-section-label">What it does</div>
+    <ol class="sg-landing-list">
+      <li><span class="num">1.</span><div><b>Starts from what you have.</b> Uses the Claude Code, Cursor, or Copilot subscription you already pay for — no second agent.</div></li>
+      <li><span class="num">2.</span><div><b>Maps the process first.</b> Workshop mode understands how work runs today before a line of workflow is built.</div></li>
+      <li><span class="num">3.</span><div><b>Lets you change your mind.</b> Iterate on blocks and routing in the harness, then sync back to Enterprise AI.</div></li>
+      <li><span class="num">4.</span><div><b>Hands off cleanly.</b> A real folder on disk, ready for <code>/eai</code> and your existing git flow.</div></li>
+      <li><span class="num">5.</span><div><b>Ships with governance.</b> Tenancy, audit, and smart blocks — not a one-off script.</div></li>
+    </ol>
+  </section>
+
+  <section class="sg-landing-section">
+    <div class="sg-landing-section-label">What it needs</div>
+    <p class="sg-landing-prose">A Mac running macOS 14 or later. A harness you already use — Claude Code, Cursor, Copilot, or Codex. An EAI account once you are ready to deploy; not before the workshop opens.</p>
+  </section>
+
+  <section class="sg-landing-section">
+    <div class="sg-landing-section-label">What it is not</div>
+    <ul class="sg-landing-bullets">
+      <li>Not another coding agent competing with Claude or Copilot.</li>
+      <li>Not a mockup tool — the output is a real app folder your harness can implement.</li>
+    </ul>
+  </section>
+
+  <section class="sg-landing-section">
+    <div class="sg-landing-section-label">Status</div>
+    <p class="sg-landing-prose">Research preview — we are testing whether fewer clicks from download to harness improves how teams adopt process improvement.</p>
+  </section>
+
+  <section class="sg-landing-bottom">
+    <h2>The workflow is the spec.</h2>
+    <div class="sg-landing-hero-cta">
+      <button class="sg-pill sg-pill-lg" type="button" id="sgDownloadBottom">Download for macOS</button>
+      <span class="sg-landing-preview-note">Research preview</span>
+    </div>
+  </section>
+
+  <footer class="sg-landing-footer">
+    <span>© 2026 Enterprise AI Group</span>
+    <span>
+      <a href="../index.html">All prototypes</a>
+      <a href="#">Privacy</a>
+    </span>
+  </footer>
+
+  <p class="sg-landing-preview-note" id="sgDownloadNote" style="margin-top:24px;text-align:center;"></p>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script>
-  const input = document.getElementById('bdPrompt');
+  const inShell = window.parent !== window;
+  const downloadNote = document.getElementById('sgDownloadNote');
+  let downloaded = false;
 
-  function start() {
-    const v = input.value.trim();
-    if (!v) { input.focus(); return; }
-    location.href = 'pages/builder.html?prompt=' + encodeURIComponent(v);
+  const TAB_FRAMES = [
+    {
+      title: 'KYC onboarding',
+      cards: [
+        ['Harness', 'Claude Code'],
+        ['Location', '~/Downloads/kyc-onboarding'],
+        ['Stage', 'Plan · workshop open'],
+        ['Blocks', 'Validate · Route · Notify'],
+      ],
+    },
+    {
+      title: 'Choose your harness',
+      cards: [
+        ['Standard', 'Claude Code'],
+        ['Installed', 'Yes'],
+        ['Project', '~/Downloads/my-process'],
+        ['Next', 'Start → full app'],
+      ],
+    },
+    {
+      title: 'Invoice processing',
+      cards: [
+        ['Today', 'Email + shared inbox'],
+        ['Waste found', '3 manual handoffs'],
+        ['Proposed', 'Automated routing'],
+        ['Status', 'Workshop in progress'],
+      ],
+    },
+    {
+      title: 'Smart blocks',
+      cards: [
+        ['Validate docs', 'Policy check'],
+        ['Route approval', 'Manager queue'],
+        ['Notify', 'Slack + email'],
+        ['Audit log', 'Tenancy-ready'],
+      ],
+    },
+    {
+      title: 'Northwind Group',
+      cards: [
+        ['Tenancy', 'Client A · B · C'],
+        ['App', 'Leave approval'],
+        ['Deployed', 'Production'],
+        ['Governance', 'Audit enabled'],
+      ],
+    },
+  ];
+
+  function renderFrame(index) {
+    const data = TAB_FRAMES[index];
+    const inner = document.getElementById('sgFrameInner');
+    if (!inner || !data) return;
+    inner.querySelector('.sg-mock-title').textContent = data.title;
+    const grid = inner.querySelector('.sg-mock-grid');
+    grid.innerHTML = data.cards.map(([label, val]) =>
+      `<div class="sg-mock-card"><span>${label}</span><strong>${val}</strong></div>`
+    ).join('');
   }
 
-  document.getElementById('bdForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    start();
-  });
-
-  document.querySelectorAll('#bdChips button').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      input.value = chip.textContent;
-      input.focus();
+  document.querySelectorAll('.sg-landing-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.sg-landing-tab').forEach((t) => t.classList.remove('on'));
+      tab.classList.add('on');
+      renderFrame(Number(tab.dataset.tab));
     });
   });
 
-  input.focus();
+  function triggerDownload(btn) {
+    if (!inShell) {
+      location.href = 'shell.html';
+      return;
+    }
+    if (downloaded) {
+      downloadNote.textContent = 'Already downloaded — finish installing from the disk image, then open EAI Setup from the dock.';
+      return;
+    }
+    const r = btn.getBoundingClientRect();
+    tell({
+      action: 'download-app',
+      data: { app: 'EAI Setup', rect: { left: r.left, top: r.top, width: r.width, height: r.height } },
+    });
+    downloaded = true;
+    btn.textContent = 'Downloading…';
+    downloadNote.innerHTML = '<strong>EAI-Setup.dmg</strong> — check Safari’s downloads button.';
+    document.querySelectorAll('#sgDownload, #sgDownloadTop, #sgDownloadBottom').forEach((b) => {
+      if (b !== btn) b.textContent = 'Download for macOS';
+    });
+    setTimeout(() => { btn.textContent = 'Download for macOS'; }, 2200);
+  }
+
+  ['sgDownload', 'sgDownloadTop', 'sgDownloadBottom'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('click', (e) => triggerDownload(e.currentTarget));
+  });
+
+  if (!inShell) {
+    downloadNote.innerHTML = 'Open <a href="shell.html">Split desktop</a> for the full download → install journey on a simulated Mac.';
+  }
 </script>
 
 </body>

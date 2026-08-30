@@ -56,6 +56,12 @@ the hand-off between website and machine is visible.
 
 See [../README.md](../README.md) for hosting and how to edit.
 
+## Next iteration (design)
+
+[Setup shell + embedded harness](./shell-harness-bridge.md) — DesignEx-inspired
+split: EAI admin on the left, external harness on the right, one native window.
+Feasibility, constraints, and how DesignEx likely built it.
+
 ## Experiments
 
 - [Onboarding: current vs npx vs setup app](./onboarding-ux-test.md) — five

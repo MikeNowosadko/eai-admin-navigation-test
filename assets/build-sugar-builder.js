@@ -1,9 +1,9 @@
 /* ------------------------------------------------------------------
    /build-sugar — the sugar-hit iteration.
 
-   Same harness as /build, but sign-up waits until after the first
-   value moment: prompt from the homepage → builder opens with no auth
-   → AI reply and business process card land → gate appears on continue.
+   Same harness as /build, but sign-up waits until ~50 credits of value:
+   prompt → builder opens with no auth → plan, generate, iterate — gate
+   only when the next billable turn would pass 50 credits used.
 
    Forked from assets/builder.js so /build stays frozen for comparison.
 ------------------------------------------------------------------- */
@@ -31,11 +31,63 @@ const PRICE = {
 };
 
 const START_CREDITS = 100;
+const AUTH_CREDITS_USED = 50; /* free preview — sign in after this much work */
 const TOPUP = { credits: 500, price: '$49' };
+
+/** Never show per-action credit prices in the UI (CTAs, message chips). */
+const SHOW_CREDIT_COSTS = false;
+
+/* Six planned smart blocks — mirrors eaiNoCodeBuilder `data/smart-blocks.ts`. */
+const SMART_BLOCKS = {
+  'document-analysis': {
+    name: 'Document Analysis',
+    purpose: 'Extract structured data, summaries, or criteria from uploaded docs.',
+    backedBy: 'LLM + OCR',
+    example: 'Pre-filling forms, summarising proposals, tender criteria extraction',
+  },
+  'ai-chat': {
+    name: 'AI Chat',
+    purpose: 'Conversational step — gather input, clarify intent, multi-turn tasks.',
+    backedBy: 'LLM + workflow context',
+    example: 'Builder chat, helping users articulate applications',
+  },
+  'comparison-table': {
+    name: 'Comparison Table',
+    purpose: 'Side-by-side scoring against weighted criteria with rationale per cell.',
+    backedBy: 'LLM evaluator',
+    example: 'RFP evaluation, job screening, grant assessment',
+  },
+  'document-checklist': {
+    name: 'Document Checklist',
+    purpose: 'Required docs list, upload tracking, file type/content validation.',
+    backedBy: 'Rule engine + classifier',
+    example: 'Onboarding ID bundle, development application drawings',
+  },
+  'compliance-rules': {
+    name: 'Compliance Rules',
+    purpose: 'Run declared rules → pass/fail with explanation.',
+    backedBy: 'Rule engine',
+    example: 'Tender mandatory requirements, planning controls',
+  },
+  approvals: {
+    name: 'Approvals',
+    purpose: 'Role-based sign-off, comments, resubmit lifecycle, digital signatures.',
+    backedBy: 'Workflow state machine',
+    example: 'Peer review, determination sign-off, referee approval',
+  },
+};
+
+function blockMeta(f) {
+  return SMART_BLOCKS[f.blockType] || { name: f.label, backedBy: 'Runs automatically', purpose: '' };
+}
 
 /* ============================ state =============================== */
 
 const params = new URLSearchParams(location.search);
+
+const smartBlocks = params.get('blocks') === '1'
+  || params.get('variant') === 'blocks'
+  || document.body.dataset.bdBlocks === 'on';
 
 const state = {
   prompt: (params.get('prompt') || 'a new business process').trim(),
@@ -50,7 +102,12 @@ const state = {
   turnsSinceFork: 99,
   extraFields: [],
   busy: false,
-  pendingContinue: null,
+  pendingAuth: null,
+  authNudgeShown: false,
+  runStarted: false,
+  continuing: false,
+  activeStep: 0,
+  expandedStep: 0,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -64,9 +121,9 @@ const projectName = sentence(state.prompt);
 
 /* ====================== the workflow it builds ===================== */
 
-/* Four steps, because four is the ceiling. Generic enough to survive an
-   unscripted prompt, specific enough to look like a real form. */
-const WORKFLOW = [
+/* Four steps with smart blocks (stretch — desirability tests). MVP drops
+   the automated-checks step and stays manual review only. */
+const WORKFLOW_BLOCKS = [
   {
     id: 'submit', title: 'Submit', blurb: 'Everything captured once, by the person who has it.',
     fields: [
@@ -77,18 +134,18 @@ const WORKFLOW = [
     ],
   },
   {
-    id: 'checks', title: 'Automated checks', blurb: 'Was a manual review inbox. Now a smart block that runs on submit.',
+    id: 'checks', title: 'Automated checks', blurb: 'Was a manual review inbox. Now smart blocks that run on submit.',
     transform: 'Off-platform review → on-platform and monitored',
     fields: [
-      { label: 'Document validation', type: 'Smart block', req: false, block: true },
-      { label: 'Identity check', type: 'Smart block', req: false, block: true },
+      { label: 'Document Analysis', type: 'Smart block', blockType: 'document-analysis', req: false, block: true },
+      { label: 'Compliance Rules', type: 'Smart block', blockType: 'compliance-rules', req: false, block: true },
     ],
   },
   {
     id: 'review', title: 'Review and approve', blurb: 'One decision, with the checks already done and attached.',
     transform: 'Manual approval → auto-extract, human decides the exception',
     fields: [
-      { label: 'Decision', type: 'Select', req: true, opts: ['Approve', 'Send back for more information', 'Decline'] },
+      { label: 'Approvals', type: 'Smart block', blockType: 'approvals', req: false, block: true },
       { label: 'Reviewer notes', type: 'Long text', req: false },
     ],
   },
@@ -101,6 +158,86 @@ const WORKFLOW = [
     ],
   },
 ];
+
+const WORKFLOW_MVP = [
+  {
+    id: 'submit',
+    tab: 'Submit',
+    badge: 'Captured once',
+    badgeTone: 'blue',
+    title: 'Supplier submits the invoice',
+    blurb: 'Emailed invoice re-keyed into a spreadsheet → captured once, at submission',
+    problem: '"Supplier submits the invoice" re-collected information the user had already provided, creating rekeying errors and friction.',
+    solution: 'The data is captured once and pre-filled everywhere it is needed downstream.',
+    impact: ['No duplicate data entry', 'Fewer transcription errors', 'A faster, less repetitive experience for the user'],
+    previewTitle: 'Supplier submits the invoice',
+    previewSub: 'Replaces the email inbox — every invoice is tracked from the moment it arrives.',
+    fields: [
+      { label: 'Supplier name', type: 'Text', req: true, placeholder: 'Supplier name' },
+      { label: 'Supplier email', type: 'Email', req: true, placeholder: 'name@example.com', hint: 'Status updates are sent here.' },
+      { label: 'Invoice number', type: 'Text', req: true, placeholder: 'Invoice number' },
+      { label: 'Purchase order number', type: 'Text', req: true, placeholder: 'Purchase order number', hint: 'Used to match the invoice against the PO.' },
+      { label: 'Invoice amount', type: 'Text', req: true, placeholder: 'Invoice amount' },
+      { label: 'Invoice document', type: 'File', req: true },
+    ],
+  },
+  {
+    id: 'review',
+    tab: 'Review',
+    badge: 'Off-platform → monitored',
+    badgeTone: 'purple',
+    title: 'Accounts checks it against the purchase order',
+    blurb: 'PO check by eye, chased over email → matched on-platform and tracked',
+    problem: 'PO matching happens in email threads — nobody can see status until someone asks.',
+    solution: 'Matching runs on submit and the queue shows matched, partial, or exception.',
+    impact: ['One queue instead of inbox archaeology', 'Exceptions surfaced immediately', 'Audit trail from first touch'],
+    previewTitle: 'Accounts checks it against the purchase order',
+    previewSub: 'PO match status is visible before anyone approves.',
+    fields: [
+      { label: 'PO match status', type: 'Select', req: true, opts: ['Matched', 'Partial match', 'No PO found'] },
+      { label: 'Variance notes', type: 'Long text', req: false, placeholder: 'Explain any mismatch' },
+    ],
+  },
+  {
+    id: 'approval',
+    tab: 'Approval',
+    badge: 'Manual → automated',
+    badgeTone: 'green',
+    title: 'Finance director signs off anything over $10,000',
+    blurb: 'Printed again and hand-signed, then chased → routed on amount and nudged automatically',
+    problem: 'High-value approvals sit on desks because routing depends on someone remembering the threshold.',
+    solution: 'Amount rules route to the right approver with reminders until decided.',
+    impact: ['No invoices stuck below the radar', 'Approvers see only what needs them', 'SLA nudges without email ping-pong'],
+    previewTitle: 'Finance director signs off anything over $10,000',
+    previewSub: 'Routing and reminders are built into the step — not a side spreadsheet.',
+    fields: [
+      { label: 'Approval decision', type: 'Select', req: true, opts: ['Approve', 'Send back', 'Decline'] },
+      { label: 'Approver notes', type: 'Long text', req: false },
+    ],
+  },
+  {
+    id: 'payment',
+    tab: 'Payment',
+    badge: 'Sequential → collapsed',
+    badgeTone: 'amber',
+    title: 'Payment is scheduled and the supplier is notified',
+    blurb: 'Finance marks paid in a separate system → payment status and notice sent together',
+    problem: 'Suppliers chase payment status because nothing tells them when money is on the way.',
+    solution: 'Payment scheduling and supplier notification are one outcome step.',
+    impact: ['Fewer status-chasing emails', 'Supplier sees the same truth as finance', 'Closed loop on every invoice'],
+    previewTitle: 'Payment is scheduled and the supplier is notified',
+    previewSub: 'The supplier gets notified when payment is scheduled — not when someone remembers.',
+    fields: [
+      { label: 'Payment date', type: 'Text', req: true, placeholder: 'Scheduled date' },
+      { label: 'Notify supplier', type: 'Yes / no', req: false },
+    ],
+  },
+];
+
+const WORKFLOW = smartBlocks ? WORKFLOW_BLOCKS : WORKFLOW_MVP;
+
+if (smartBlocks) document.body.classList.add('bd-has-blocks');
+else document.body.classList.add('bd-no-blocks');
 
 /* Words that mean "this is not a form". Deliberately literal: the fit
    fork should fire on what somebody actually typed, not on a guess
@@ -120,7 +257,7 @@ function paintMeter() {
     ? 'Out of credits'
     : state.credits <= 50
       ? `About ${state.credits >= 40 ? 'one more workflow' : 'half a workflow'} left`
-      : state.authed ? 'Builder preview · free' : '100 free · sign in to save';
+      : state.authed ? 'Builder preview · free' : `${AUTH_CREDITS_USED} free · no account yet`;
 }
 
 function paintAccount() {
@@ -148,11 +285,22 @@ function paintAccount() {
 function setStep(step) {
   state.step = step;
   const order = ['describe', 'generate', 'improve', 'publish'];
+  const uiOrder = ['plan', 'build', 'deploy'];
   const at = order.indexOf(step);
+
+  /* Header breadcrumb — Plan · Build · Deploy (gopher stages) */
+  const uiAt = step === 'describe' ? 0 : step === 'publish' ? 2 : 1;
   document.querySelectorAll('#bdSteps .st').forEach((el) => {
-    const i = order.indexOf(el.dataset.step);
-    el.classList.toggle('on', i === at);
-    el.classList.toggle('done', i < at);
+    const i = uiOrder.indexOf(el.dataset.step);
+    el.classList.toggle('on', i === uiAt);
+    el.classList.toggle('done', i < uiAt);
+  });
+
+  /* Hero stage cards when present in builder chrome */
+  document.querySelectorAll('.bd-stage-card[data-stage]').forEach((el) => {
+    const i = uiOrder.indexOf(el.dataset.stage);
+    el.classList.toggle('on', i === uiAt);
+    el.classList.toggle('done', i < uiAt);
   });
 }
 
@@ -171,7 +319,7 @@ function bubble(role, html, cost) {
   row.innerHTML = role === 'user'
     ? `<div class="bd-bub">${html}</div>`
     : `<div class="bd-av">AI</div><div class="bd-bub">${html}</div>`;
-  if (cost) {
+  if (cost && SHOW_CREDIT_COSTS) {
     const chip = document.createElement('span');
     chip.className = 'bd-spent';
     chip.textContent = `−${cost}`;
@@ -218,17 +366,37 @@ async function say(text, cost) {
 
 /* ============================ the ledger ========================== */
 
-/**
- * Spend, repaint, and then decide whether this is the turn the flow
- * forks. The order matters: the fork card is the assistant's next
- * message, so it has to land after whatever the spend produced.
- */
+/* Spend, repaint, nudge when the free preview is used up. */
+function creditsUsed() {
+  return START_CREDITS - state.credits;
+}
+
+/** True when the next billable turn would exceed the free preview. */
+function authRequiredFor(cost) {
+  return !state.authed && creditsUsed() + cost > AUTH_CREDITS_USED;
+}
+
+function requireAuth(cost, resume) {
+  if (state.authed || !authRequiredFor(cost)) return true;
+  state.pendingAuth = resume;
+  showAuthGate();
+  return false;
+}
+
 function charge(kind) {
   const cost = PRICE[kind] || 0;
   state.credits = Math.max(0, state.credits - cost);
   state.turnsSinceFork += 1;
   paintMeter();
+  maybeAuthNudge();
   return cost;
+}
+
+async function maybeAuthNudge() {
+  if (state.authed || state.authNudgeShown || creditsUsed() < AUTH_CREDITS_USED) return;
+  state.authNudgeShown = true;
+  await wait(400);
+  await say('That\'s the free preview — sign in when you\'re ready to keep going. Your workflow stays here.');
 }
 
 function forkDue() {
@@ -468,23 +636,170 @@ function goCli(why) {
 
 /* ============================ preview ============================= */
 
+function mvpFieldHtml(f) {
+  const ph = f.placeholder || f.label;
+  if (f.type === 'File') {
+    return `
+      <div class="bd-pv-field">
+        <label>${esc(f.label)}${f.req ? '<i>*</i>' : ''}</label>
+        <div class="ctl file"><span>Choose File</span><span>No file chosen</span></div>
+      </div>`;
+  }
+  return `
+    <div class="bd-pv-field">
+      <label>${esc(f.label)}${f.req ? '<i>*</i>' : ''}</label>
+      ${f.hint ? `<span class="hint">${esc(f.hint)}</span>` : ''}
+      <div class="ctl">${esc(ph)}</div>
+    </div>`;
+}
+
+/** Pill stepper — matches WorkflowStepper in eaiNoCodeBuilder workflow-form. */
+function mvpStepperHtml(index) {
+  const check = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const steps = WORKFLOW.map((s, i) => {
+    const isComplete = i < index;
+    const isCurrent = i === index;
+    const label = esc(s.tab || s.shortTitle || s.title);
+    const cls = ['bd-pv-step'];
+    if (isCurrent) cls.push('on');
+    else if (isComplete) cls.push('done');
+    else cls.push('upcoming');
+
+    const icon = isComplete
+      ? `<span class="bd-pv-step-ico">${check}</span>`
+      : isCurrent
+        ? '<span class="bd-pv-step-dot" aria-hidden="true"></span>'
+        : '<span class="bd-pv-step-ring" aria-hidden="true"></span>';
+
+    return `<button type="button" class="${cls.join(' ')}" data-step="${i}"${
+      isCurrent ? ' aria-current="step"' : ''
+    } aria-label="Step ${i + 1}: ${label}">${icon}<span class="bd-pv-step-label">${label}</span></button>`;
+  }).join('');
+
+  return `<div class="bd-pv-stepper" role="group" aria-label="Form steps">${steps}</div>`;
+}
+
+function paintMvpPreviewStep(index) {
+  const step = WORKFLOW[index];
+  if (!step) return;
+  state.activeStep = index;
+
+  const extra = state.extraFields.filter((f) => f.stepId === step.id);
+  const fields = [...step.fields, ...extra].map(mvpFieldHtml).join('');
+
+  $('bdFrame').innerHTML = `
+    <div class="bd-pv-doc bd-pv-mvp">
+      <div class="bd-pv-hd">
+        <b>${esc(projectName)}</b>
+        <span>${state.published ? 'Published · anyone with the link' : 'Draft · only you'}</span>
+      </div>
+      <div class="bd-pv-body">
+        ${mvpStepperHtml(index)}
+        <div class="bd-pv-step-view">
+          <div class="bd-pv-step-hd">
+            <h2>${esc(step.previewTitle || step.title)}</h2>
+            <p class="sub">${esc(step.previewSub || step.blurb)}</p>
+          </div>
+          <div class="bd-pv-step-fields">${fields}</div>
+        </div>
+      </div>
+      <span class="bd-pv-watermark">MVP · prototype</span>
+    </div>`;
+
+  $('bdFrame').querySelectorAll('.bd-pv-step').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.step);
+      state.activeStep = i;
+      state.expandedStep = i;
+      paintMvpPreviewStep(i);
+      paintProcessMap();
+    });
+  });
+}
+
+function paintProcessMap() {
+  const host = $('bdProcessMap');
+  if (!host) return;
+
+  host.innerHTML = `
+    <div class="bd-pmap-hd">Process</div>
+    <div class="bd-pmap-scroll" id="bdPmapScroll">
+      ${WORKFLOW.map((s, i) => `
+        <article class="bd-pstep${i === state.expandedStep ? ' on' : ''}" data-step="${i}">
+          <button class="bd-pstep-head" type="button" data-toggle="${i}">
+            <span class="bd-pstep-meta">
+              <span class="bd-pstep-badge bd-pstep-badge--${s.badgeTone || 'blue'}">${esc(s.badge || '')}</span>
+              <span class="bd-pstep-title">${i + 1}. ${esc(s.title)}</span>
+            </span>
+            <svg class="bd-pstep-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <p class="bd-pstep-blurb">${esc(s.blurb)}</p>
+          <div class="bd-pstep-body">
+            <div class="bd-pstep-block bd-pstep-block--problem">
+              <span class="bd-pstep-block-label">Problem</span>
+              <p>${esc(s.problem || '')}</p>
+            </div>
+            <div class="bd-pstep-block bd-pstep-block--solution">
+              <span class="bd-pstep-block-label">Solution</span>
+              <p>${esc(s.solution || '')}</p>
+            </div>
+            ${s.impact ? `
+            <div class="bd-pstep-block bd-pstep-block--impact">
+              <span class="bd-pstep-block-label">Impact</span>
+              <ul>${s.impact.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+            </div>` : ''}
+          </div>
+        </article>`).join('')}
+    </div>`;
+
+  host.querySelectorAll('[data-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.toggle);
+      state.expandedStep = state.expandedStep === i ? -1 : i;
+      state.activeStep = i;
+      paintProcessMap();
+      paintMvpPreviewStep(i);
+    });
+  });
+}
+
+function enterMvpWorkshop() {
+  document.body.classList.add('bd-has-preview', 'bd-mvp-workshop');
+  state.activeStep = 0;
+  state.expandedStep = 0;
+  paintProcessMap();
+  paintMvpPreviewStep(0);
+  $('bdProjectName').textContent = projectName;
+}
+
 function fieldRow(f) {
   const cls = ['bd-fld'];
   if (f.block) cls.push('block');
   if (f.isNew) cls.push('new');
+  const meta = f.block ? blockMeta(f) : null;
   return `
     <div class="${cls.join(' ')}">
       <label>${esc(f.label)}${f.req ? '<i>*</i>' : ''}</label>
       ${f.opts
         ? `<div class="ctl select">${esc(f.opts[0])}<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>`
         : f.block
-          ? `<div class="ctl blk"><span class="spark">◆</span>${esc(f.type)} &middot; runs automatically</div>`
+          ? `<div class="ctl blk">
+              <span class="spark">◆</span>
+              <span class="blk-body">
+                <b>${esc(meta.name)}</b>
+                <span>${esc(meta.backedBy)} · runs automatically</span>
+              </span>
+            </div>`
           : `<div class="ctl">${f.type === 'Long text' ? '' : ''}</div>`}
       ${f.isNew ? '<span class="tag">New</span>' : ''}
     </div>`;
 }
 
 function paintPreview() {
+  if (!smartBlocks) {
+    paintMvpPreviewStep(state.activeStep);
+    return;
+  }
   const steps = WORKFLOW.map((s, i) => {
     const extra = state.extraFields.filter((f) => f.stepId === s.id);
     return `
@@ -539,14 +854,17 @@ const QUESTIONS = [
 function askClarify() {
   return new Promise((resolve) => {
     let at = 0;
+    let done = false;
     const answers = [];
+    $('bdAnchor').innerHTML = '';
     const box = document.createElement('div');
     box.className = 'bd-clarify';
     $('bdAnchor').appendChild(box);
 
     function paint() {
       const q = QUESTIONS[at];
-      box.innerHTML = `
+      box.className = smartBlocks ? 'bd-clarify' : 'bd-clarify bd-clarify--shadcn';
+      box.innerHTML = smartBlocks ? `
         <div class="bd-cl-hd">
           <b>A few questions before I build</b>
           <span>${at + 1} of ${QUESTIONS.length} &middot; free</span>
@@ -558,9 +876,21 @@ function askClarify() {
         <div class="bd-cl-ft">
           <input type="text" placeholder="Something else&hellip;" data-other />
           <button class="bd-cl-skip" type="button" data-skip>Skip &mdash; just build it</button>
+        </div>` : `
+        <div class="bd-cl-hd">
+          <b>Quick questions</b>
+          <span>${at + 1} of ${QUESTIONS.length} &middot; free</span>
+        </div>
+        <p class="bd-cl-q">${esc(q.q)}</p>
+        <div class="bd-cl-radio">
+          ${q.opts.map((o, i) => `<button type="button" data-i="${i}">${esc(o)}</button>`).join('')}
+        </div>
+        <div class="bd-cl-ft">
+          <input type="text" placeholder="Something else&hellip;" data-other />
+          <button class="bd-cl-skip" type="button" data-skip>Skip &mdash; just build it</button>
         </div>`;
 
-      box.querySelectorAll('.bd-cl-opts button').forEach((b) => {
+      box.querySelectorAll('.bd-cl-opts button, .bd-cl-radio button').forEach((b) => {
         b.addEventListener('click', () => pick(q.opts[Number(b.dataset.i)]));
       });
       const other = box.querySelector('[data-other]');
@@ -578,6 +908,8 @@ function askClarify() {
     }
 
     function finish(skipped) {
+      if (done) return;
+      done = true;
       box.remove();
       if (!skipped && answers.length) {
         /* clarification-answers-card.tsx: a read-only record of what was
@@ -598,27 +930,60 @@ function askClarify() {
 /* ============================ the run ============================= */
 
 async function generate() {
+  if (!requireAuth(PRICE.generate, () => generate())) return;
   const cost = charge('generate');
   await thinking(700);
-  const row = await say('Designing it now — four steps, and I\'m taking two things off the manual pile as I go.', cost);
+
+  if (!smartBlocks) {
+    await say('Here\'s your workflow — expand each step to see the problem, solution, and impact. The form preview updates as you go.', cost);
+    enterMvpWorkshop();
+    setStep('improve');
+    $('bdPublish').disabled = false;
+    $('bdSuggest').hidden = false;
+    $('bdSay').disabled = false;
+    $('bdSend').disabled = false;
+    $('bdSay').placeholder = 'Describe a change…';
+    await afterTurn();
+    return;
+  }
+
+  const stepCount = WORKFLOW.length;
+  const intro = smartBlocks
+    ? `Designing it now — ${stepCount} steps, and I'm taking two things off the manual pile as I go.`
+    : `Designing it now — ${stepCount} steps, focused on capture and a clear approval path.`;
+  const row = await say(intro, cost);
   void row;
+
+  const progress = smartBlocks
+    ? [
+        'Mapping the process as it runs today',
+        'Collapsing four handoffs into one submission',
+        'Adding Document Analysis and Compliance Rules blocks',
+        'Building the form',
+      ]
+    : [
+        'Mapping the process as it runs today',
+        'Collapsing handoffs into one submission',
+        'Building the form',
+      ];
 
   const prog = card(`
     <div class="bd-run">
-      <span class="r" data-r="1">Mapping the process as it runs today</span>
-      <span class="r" data-r="2">Collapsing four handoffs into one submission</span>
-      <span class="r" data-r="3">Adding document validation as a smart block</span>
-      <span class="r" data-r="4">Building the form</span>
+      ${progress.map((label, i) => `<span class="r" data-r="${i + 1}">${label}</span>`).join('')}
     </div>`);
-  for (const n of [1, 2, 3, 4]) {
+  for (let n = 1; n <= progress.length; n += 1) {
     await wait(620);
     prog.querySelector(`[data-r="${n}"]`).classList.add('done');
   }
 
   await wait(300);
+  const automated = WORKFLOW.filter((s) => s.fields.some((f) => f.block)).length;
+  const summaryMeta = smartBlocks
+    ? `${stepCount} steps · ${automated} automated`
+    : `${stepCount} steps · manual review`;
   card(`
     <div class="bd-summary">
-      <div class="hd"><b>${esc(projectName)}</b><span>4 steps · 2 automated</span></div>
+      <div class="hd"><b>${esc(projectName)}</b><span>${summaryMeta}</span></div>
       ${WORKFLOW.map((s, i) => `
         <div class="st">
           <span class="n">${i + 1}</span>
@@ -628,7 +993,9 @@ async function generate() {
             ${s.transform ? `<i class="tr">${esc(s.transform)}</i>` : ''}
           </div>
         </div>`).join('')}
-      <p class="fine">The builder caps a process at four steps on purpose — past that it stops being a form.</p>
+      <p class="fine">${smartBlocks
+        ? 'Smart blocks replace manual fields — Document Analysis, Compliance Rules, Approvals, and three more in the catalog.'
+        : 'MVP keeps it simple: submit, review, outcome — no smart blocks yet.'}</p>
     </div>`);
 
   openPreview();
@@ -658,6 +1025,8 @@ async function afterTurn() {
 }
 
 async function run() {
+  if (state.runStarted) return;
+  state.runStarted = true;
   paintMeter();
   $('bdProjectName').textContent = projectName;
   paintAccount();
@@ -709,17 +1078,15 @@ async function run() {
   });
 
   bu.querySelector('[data-confirm]').addEventListener('click', async () => {
+    if (state.continuing) return;
+    state.continuing = true;
     bu.querySelector('.acts').innerHTML = '<span class="bd-confirmed">Confirmed</span>';
-    if (!state.authed) {
-      state.pendingContinue = bu;
-      showAuthGate();
-      return;
-    }
     await continueAfterConfirm();
   });
 }
 
 async function continueAfterConfirm() {
+  if (state.step !== 'describe') return;
   setStep('generate');
   await wait(400);
   await say('Two or three questions, then I\'ll build it. They\'re free — asking you something isn\'t work.');
@@ -734,6 +1101,7 @@ async function send() {
   const text = input.value.trim();
   if (!text || state.busy) return;
   if (state.credits <= 0) { costFork(); return; }
+  if (!requireAuth(PRICE.change, () => send())) return;
 
   state.busy = true;
   input.value = '';
@@ -761,6 +1129,7 @@ async function send() {
 
 async function suggest() {
   if (state.busy) return;
+  if (!requireAuth(PRICE.improve, () => suggest())) return;
   state.busy = true;
   const cost = charge('improve');
   await thinking(900);
@@ -791,6 +1160,7 @@ async function suggest() {
 async function publish() {
   if (state.busy) return;
   if (state.credits < PRICE.publish) { costFork(); return; }
+  if (!requireAuth(PRICE.publish, () => publish())) return;
   state.busy = true;
   const cost = charge('publish');
   await thinking(900);
@@ -844,10 +1214,21 @@ function workspaceFromEmail(email) {
 
 const validEmail = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim());
 
+function syncWorkspaceGo() {
+  const go = $('wsGo');
+  if (go) go.disabled = !($('wsNameInput').value.trim() && $('wsCountry').value);
+}
+
 let signedUpEmail = '';
 
 function showAuthGate() {
   const gate = $('authGate');
+  const lede = $('gateLede');
+  if (lede) {
+    lede.textContent = creditsUsed() >= AUTH_CREDITS_USED
+      ? 'Sign in to keep building'
+      : 'Sign up to save your work';
+  }
   gate.hidden = false;
   document.body.classList.add('bd-gate');
   showSignUpPanel();
@@ -889,9 +1270,11 @@ function setWizardStep(step) {
 function goToWorkspaceStep(email) {
   signedUpEmail = email.trim();
   $('wsCountry').value = guessCountry();
-  const suggested = workspaceFromEmail(signedUpEmail);
-  $('wsNameInput').value = suggested;
-  syncWorkspace();
+  const suggested = workspaceFromEmail(signedUpEmail)
+    || signedUpEmail.split('@')[0].replace(/[._+]/g, ' ').trim()
+    || 'My workspace';
+  $('wsNameInput').value = suggested.charAt(0).toUpperCase() + suggested.slice(1);
+  syncWorkspaceGo();
   setWizardStep(2);
   $('wsNameInput').focus();
 }
@@ -906,21 +1289,21 @@ function finishAuth() {
     email: state.email,
     ws: state.ws,
     country: $('wsCountry').value,
+    ...(smartBlocks ? { blocks: '1' } : {}),
   }));
-  void continueAfterConfirm();
+  const resume = state.pendingAuth;
+  state.pendingAuth = null;
+  if (resume) void resume();
 }
 
 function wireAuthGate() {
   const syncGate = () => { $('gateGo').disabled = !validEmail($('gateEmail').value); };
   const syncOAuth = () => { $('oauthGo').disabled = !validEmail($('oauthEmail').value); };
-  const syncWorkspace = () => {
-    $('wsGo').disabled = !($('wsNameInput').value.trim() && $('wsCountry').value);
-  };
 
   $('gateEmail').addEventListener('input', syncGate);
   $('oauthEmail').addEventListener('input', syncOAuth);
-  $('wsNameInput').addEventListener('input', syncWorkspace);
-  $('wsCountry').addEventListener('change', syncWorkspace);
+  $('wsNameInput').addEventListener('input', syncWorkspaceGo);
+  $('wsCountry').addEventListener('change', syncWorkspaceGo);
 
   $('gateGo').addEventListener('click', () => {
     if (validEmail($('gateEmail').value)) goToWorkspaceStep($('gateEmail').value);
@@ -956,13 +1339,18 @@ function wireAuthGate() {
 /* ============================ wiring ============================== */
 
 $('bdSend').addEventListener('click', () => void send());
-$('bdSay').addEventListener('keydown', (e) => { if (e.key === 'Enter') void send(); });
+$('bdSay').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    void send();
+  }
+});
 $('bdSuggest').addEventListener('click', () => void suggest());
 $('bdPublish').addEventListener('click', () => void publish());
 
 /* The CLI tab is the same fork, reachable at any time — which is the
    point of it sitting above everything else in the sidebar. */
-$('tabCli').addEventListener('click', () => goCli('tab'));
+$('tabCli')?.addEventListener('click', () => goCli('tab'));
 
 document.querySelectorAll('#bdMode button, #bdDevice button').forEach((b) => {
   b.addEventListener('click', () => {
@@ -990,4 +1378,13 @@ document.querySelectorAll('[data-keep]').forEach((a) => {
 });
 
 wireAuthGate();
-void run();
+
+function bootBuilder() {
+  void run();
+}
+
+if (new URLSearchParams(location.search).get('enter') === '1') {
+  window.addEventListener('bd-enter-done', bootBuilder, { once: true });
+} else {
+  bootBuilder();
+}

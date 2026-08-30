@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="enterpriseaigroup.com" />
+<title>Prototype — Enterprise AI (smart blocks)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/signup.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-web-home.css?v=mtg8tt0q.j1" />
+</head>
+<body class="site bd-site bw-site">
+
+  <nav class="nav eai-nav">
+    <a class="brand" href="index-blocks.html"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" class="wordmark" /></a>
+    <div class="spacer"></div>
+    <a class="bw-pad-link" href="index.html">MVP variant</a>
+    <a class="bw-pad-link" href="../index.html">All prototypes</a>
+  </nav>
+
+  <section class="bd-hero">
+    <p class="bd-eyebrow">Enterprise AI Builder · Smart blocks (stretch)</p>
+    <h1>What do you want to build?</h1>
+    <p class="lede">
+      Same sugar-hit flow as MVP, but the generated workflow includes
+      <strong>smart blocks</strong> — AI-powered steps (Document Analysis,
+      Compliance Rules, Approvals, and more) that replace manual work.
+    </p>
+
+    <form class="bd-composer" id="bdForm" autocomplete="off">
+      <label class="sr-only" for="bdPrompt">What do you want to build?</label>
+      <input type="text" id="bdPrompt" name="prompt"
+             placeholder="e.g. KYC onboarding for CommBank" />
+      <button class="bd-start" type="submit" id="bdStart">
+        Start
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+
+    <div class="bd-chips" id="bdChips">
+      <button type="button">KYC onboarding</button>
+      <button type="button">Invoice processing</button>
+      <button type="button">Leave approval</button>
+      <button type="button">Customer feedback</button>
+      <button type="button">Vendor assessment</button>
+      <button type="button">Compliance review</button>
+    </div>
+
+    <p class="bd-note">
+      Desirability test variant — stretch goal for <b>16 Oct</b> hard release.
+      <span class="dot">&middot;</span>
+      Run in parallel with <a href="index.html">MVP (no smart blocks)</a>.
+    </p>
+  </section>
+
+  <section class="bd-ways">
+    <div class="bd-way">
+      <span class="bd-way-k">With smart blocks</span>
+      <h3>Automated checks step</h3>
+      <p>Submit → automated validation → review → outcome. Document validation and
+         identity check run as governed blocks before anyone opens the queue.</p>
+    </div>
+    <div class="bd-way">
+      <span class="bd-way-k">MVP comparison</span>
+      <h3>Manual review only</h3>
+      <p>The <a href="index.html">MVP variant</a> skips the automated-checks step —
+         submit goes straight to a human reviewer. Simpler, ships first.</p>
+    </div>
+  </section>
+
+  <section class="bd-props">
+    <div><b>What we're testing</b><span>Do builders want automated steps in the workflow, or is manual review enough for v1?</span></div>
+    <div><b>Same journey</b><span>Prompt-first marketing, delayed sign-in, same no-code builder shell.</span></div>
+    <div><b>Only difference</b><span>The workflow template and generate copy — smart blocks on or off.</span></div>
+  </section>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script>
+  const input = document.getElementById('bdPrompt');
+  const ENTER_KEY = 'build-sugar-enter';
+
+  function start() {
+    const v = input.value.trim();
+    if (!v) { input.focus(); return; }
+    sessionStorage.setItem(ENTER_KEY, '1');
+    location.href = 'builder-blocks.html?prompt=' + encodeURIComponent(v) + '&enter=1&blocks=1';
+  }
+
+  document.getElementById('bdForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    start();
+  });
+
+  document.querySelectorAll('#bdChips button').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      input.value = chip.textContent;
+      input.focus();
+    });
+  });
+
+  input.focus();
+</script>
+
+</body>
+</html>

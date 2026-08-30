@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Gopher architecture — three layers (DesignEx pattern)</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #18181b;
+    --muted: #71717a;
+    --border: #e4e4e7;
+    --surface: #ffffff;
+    --accent: #0d3856;
+    --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --max: 720px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  h1 {
+    margin: 0 0 12px;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+  .lede {
+    margin: 0;
+    font-size: 18px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .meta {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta a { color: var(--fg); }
+  h2 {
+    margin: 48px 0 16px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h3 {
+    margin: 32px 0 12px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  li:last-child { margin-bottom: 0; }
+  strong { font-weight: 600; }
+  .diagram {
+    margin: 20px 0 24px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: pre;
+    color: var(--fg);
+  }
+  table {
+    width: 100%;
+    margin: 16px 0 24px;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: #f4f4f5;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  .callout {
+    margin: 24px 0;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 15px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0 24px;
+  }
+  @media (max-width: 640px) {
+    .compare { grid-template-columns: 1fr; }
+  }
+  .compare-card {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .compare-card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .compare-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: #f4f4f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  section { scroll-margin-top: 24px; }
+  nav.toc {
+    margin: 32px 0;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  nav.toc ol { margin: 0; }
+  nav.toc a { color: var(--fg); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+<header>
+  <h1>Gopher architecture</h1>
+  <p class="lede">How the Gopher experience maps onto the same three-layer pattern as DesignEx — shell, agent runtime, artifacts on disk.</p>
+  <p class="meta">
+    Enterprise AI prototypes ·
+    <a href="shell.html">Open shell prototype</a> ·
+    Related: <a href="../experiments/eai-cli-setup/shell-harness-bridge.md">shell-harness-bridge.md</a>
+  </p>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#summary">One-sentence summary</a></li>
+    <li><a href="#designex">DesignEx recap (the pattern we borrow)</a></li>
+    <li><a href="#layers">Gopher three layers</a></li>
+    <li><a href="#journey">User journey → layers</a></li>
+    <li><a href="#phases">Phases and panes</a></li>
+    <li><a href="#dataflow">Data flow (/eai session)</a></li>
+    <li><a href="#stages">Plan · Build · Deploy</a></li>
+    <li><a href="#vs-designex">Gopher vs DesignEx</a></li>
+    <li><a href="#prototype">Prototype vs native ship</a></li>
+    <li><a href="#constraints">Hard constraints</a></li>
+  </ol>
+</nav>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="summary">
+  <h2>One-sentence summary</h2>
+  <div class="callout">
+    <p><strong>Gopher is EAI Desktop as Layer 1:</strong> after install and one-click connect, a single full-screen app keeps admin on the left and your real harness (Layer 2) nested on the right, while Gofer and <code>/eai</code> work on a project folder (Layer 3) — same shell pattern as DesignEx, but the right pane is the tool, not the prototype.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="designex">
+  <h2>DesignEx recap (the pattern we borrow)</h2>
+  <p>DesignEx is <strong>not a new AI</strong>. It is a Mac app that wraps the coding agent you already pay for (Claude Code, Codex, Cursor) and adds product UI around it.</p>
+
+  <div class="diagram">┌─────────────────────────────────────────────┐
+│  1. DesignEx app (Mac native)               │  ← DesignEx owns this
+│     ┌─────────────┬─────────────────────┐   │
+│     │ Left: Thread│ Right: Workbench    │   │
+│     │ (chat, forks)│ (HTML prototype)   │   │
+│     └──────┬──────┴─────────────────────┘   │
+│            ▼                                 │
+│  2. Agent child process (Claude/Codex)      │  ← Not DesignEx's AI
+│            ▼                                 │
+│  3. Files on disk (HTML, tokens, git)        │  ← Agent output
+└─────────────────────────────────────────────┘</div>
+
+  <p><strong>Key architectural idea:</strong> parent app spawns agent as child process (PTY or JSON-RPC over stdio). Parent owns left-side UX. Right side shows <em>output</em>, not a fake clone of Claude's UI.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="layers">
+  <h2>Gopher three layers</h2>
+  <p>DesignEx: shell → hidden agent → prototype on the right.<br />
+  Gopher: shell → <strong>visible harness</strong> on the right → Gofer/work on disk.</p>
+
+  <div class="diagram">┌──────────────────────────────────────────────────────────────────┐
+│  1. EAI Desktop (Mac app — extends EAI Setup)                     │
+│     ┌──────────────────────┬───────────────────────────────────┐ │
+│     │ Left — EAI (WebView) │ Right — Harness frame (PTY)       │ │
+│     │ Setup → Admin        │ Claude Code / Codex / Copilot     │ │
+│     │ Plan · Build · Deploy│ terminal view, same session       │ │
+│     └──────────┬───────────┴───────────────────────────────────┘ │
+│                │ postMessage / native bridge                       │
+│                ▼                                                   │
+│  2. eai core + Gofer (child process / MCP in harness)             │
+│     · eai init, surfaces, /eai command                            │
+│     · Gofer assets, workflow packs                                │
+│                │ reads/writes                                      │
+│                ▼                                                   │
+│  3. Project on disk (~/Projects/kyc-onboarding/…)                │
+│     · app code, Gofer markdown, workflow config, tenancy           │
+└──────────────────────────────────────────────────────────────────┘</div>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Gopher name</th><th>Who owns it</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Shell</strong></td>
+        <td>EAI Desktop — one window, two panes</td>
+        <td>Enterprise AI (native app + WebView admin)</td>
+      </tr>
+      <tr>
+        <td><strong>2. Agent runtime</strong></td>
+        <td>External harness + <code>eai</code> / Gofer MCP</td>
+        <td>Anthropic, OpenAI, etc. (harness) + EAI CLI (Gofer)</td>
+      </tr>
+      <tr>
+        <td><strong>3. Artifacts</strong></td>
+        <td>Project folder after <code>eai init</code></td>
+        <td>User's machine (git repo, configs, workflows)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>DesignEx right pane = output.</strong> <strong>Gopher right pane = the tool itself</strong> — an honest terminal view, not fake Claude chrome. We wrap the process; we do not skin their GUI.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="journey">
+  <h2>User journey → layers</h2>
+  <p>Clickable prototype: <code>build-sugar/shell.html</code></p>
+
+  <div class="diagram">macOS shell
+│
+├─ Safari — Layer 0 (discovery, not product)
+│    Google → marketing site → Download EAI Setup
+│
+├─ Finder / DMG — Layer 0 (OS install)
+│    drag EAI Setup → Applications
+│
+└─ EAI Setup opens — Layer 1 begins
+     │
+     ├─ Connect (one click)
+     │    sign-in · workspace · folder · eai init
+     │    ─────────────────────────────────────
+     │    Layer 2 wakes up (Gofer assets land)
+     │    Layer 3 created (project folder)
+     │
+     └─ Window expands → unified app
+          ┌─────────────────┬──────────────────────┐
+          │ LEFT (Layer 1)  │ RIGHT (Layer 1+2)  │
+          │ Plan stage      │ Harness nested       │
+          │ project, credits│ user types /eai      │
+          └─────────────────┴──────────────────────┘
+                    │                    │
+                    │                    ▼
+                    │         Layer 2: Claude Code runs
+                    │         Layer 3: Gofer edits repo
+                    │
+                    ▼
+          Later: full admin WebView
+          (builder, analytics, tenancy)</div>
+
+  <table>
+    <thead>
+      <tr><th>Step</th><th>What the user sees</th><th>Layer</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Google search</td><td>Safari, search results</td><td>0 — discovery</td></tr>
+      <tr><td>Marketing site</td><td>Gopher homepage, Download EAI Setup</td><td>0 — discovery</td></tr>
+      <tr><td>Install</td><td>DMG, drag to Applications, dock icon</td><td>0 — OS</td></tr>
+      <tr><td>App opens</td><td>EAI Setup window, Connect button</td><td>1 — shell</td></tr>
+      <tr><td>One-click setup</td><td>Sign-in, workspace, create app (automated)</td><td>1 + 2 + 3 init</td></tr>
+      <tr><td>Unified app</td><td>Full-screen EAI, harness on right</td><td>1 (both panes live)</td></tr>
+      <tr><td>Type /eai</td><td>Gopher runs in harness</td><td>2 + 3</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="phases">
+  <h2>Phases and panes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Left pane</th>
+        <th>Right pane</th>
+        <th>Layer activity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>0 · Find</strong></td>
+        <td>— (Safari)</td>
+        <td>—</td>
+        <td>User on Google → marketing</td>
+      </tr>
+      <tr>
+        <td><strong>1 · Install</strong></td>
+        <td>—</td>
+        <td>—</td>
+        <td>DMG, dock, quiet prereqs</td>
+      </tr>
+      <tr>
+        <td><strong>2 · Connect</strong></td>
+        <td>Sign-in, workspace, name, folder</td>
+        <td>"Harness opens here…"</td>
+        <td><code>eai init</code>, Gofer fetch → Layer 3</td>
+      </tr>
+      <tr>
+        <td><strong>3 · Hand-off</strong></td>
+        <td>Plan stage + "type /eai"</td>
+        <td>Harness live (PTY)</td>
+        <td>Layer 2 session starts</td>
+      </tr>
+      <tr>
+        <td><strong>4 · Build</strong></td>
+        <td>Admin / no-code builder</td>
+        <td>Agent running Gofer stages</td>
+        <td>Layer 3 files change on disk</td>
+      </tr>
+      <tr>
+        <td><strong>5 · Deploy</strong></td>
+        <td>Publish, tenancy, credits</td>
+        <td>Same session or detach</td>
+        <td>Layer 3 shipped per client</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Setup must <strong>not</strong> spawn a second window. The right pane activates in place — same geometry as install-5 two-column Setup, but the branding panel becomes the harness.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="dataflow">
+  <h2>Data flow (one /eai session)</h2>
+
+  <div class="diagram">You (left or right)
+    │
+    ▼
+┌─────────────┐     spawn / attach      ┌──────────────────┐
+│ EAI shell   │ ───────────────────────►│ Claude Code PTY  │
+│ (Layer 1)   │     cd project && claude │ (Layer 2)        │
+└─────────────┘                         └────────┬─────────┘
+       │                                           │
+       │  context: project name, brief,            │  /eai → Gofer MCP
+       │  workflow id (when travel works)          │
+       │                                           ▼
+       │                                  ┌──────────────────┐
+       │◄── left pane updates ────────────│ ~/…/kyc-onboard  │
+       │    (admin, gates, credits)       │ (Layer 3)        │
+       └──────────────────────────────────└──────────────────┘</div>
+
+  <ol>
+    <li><strong>Connect</strong> creates Layer 3 — folder + Gofer assets on disk.</li>
+    <li><strong>Right pane</strong> attaches Layer 2 — harness running in that project directory.</li>
+    <li>User types <code>/eai</code> — Gopher ("go get that for me") runs Plan → Build → Deploy inside the harness.</li>
+    <li><strong>Left pane</strong> shows EAI product state (Plan stage first; builder/admin later) without killing the PTY session.</li>
+  </ol>
+
+  <p><strong>Critical rule (same as DesignEx / Codex App Server):</strong> left-pane navigation must not destroy the agent session. The PTY is owned by the main app process, not the WebView lifecycle.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="stages">
+  <h2>Plan · Build · Deploy (Gopher stages)</h2>
+  <p>Gopher is the CLI personality for Layer 2. Plan / Build / Deploy are stages that span Layer 1 labels and Layer 3 outcomes.</p>
+
+  <div class="diagram">                    Plan          Build         Deploy
+                      │             │             │
+Left (EAI)     [●]───────────[ ]───────────[ ]     admin, cards, credits
+                      │             │             │
+Right (Harness)  /eai ──► Gofer collects ──► snap blocks ──► tenancy
+                      │             │             │
+Layer 3        understand    workflow files    published app
+               process       on disk           per client</div>
+
+  <table>
+    <thead>
+      <tr><th>Stage</th><th>Left pane (EAI)</th><th>Right pane (harness)</th><th>Layer 3</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Plan</strong></td>
+        <td>Workshop, business process card, clarify</td>
+        <td>Gopher collects context via /eai</td>
+        <td>Process understanding, Gofer markdown</td>
+      </tr>
+      <tr>
+        <td><strong>Build</strong></td>
+        <td>No-code builder, smart blocks</td>
+        <td>Agent generates workflow files</td>
+        <td>App code, workflow config on disk</td>
+      </tr>
+      <tr>
+        <td><strong>Deploy</strong></td>
+        <td>Publish, tenancy, credits</td>
+        <td>Agent ships / configures</td>
+        <td>Live app per client tenancy</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="vs-designex">
+  <h2>Gopher vs DesignEx</h2>
+  <div class="compare">
+    <div class="compare-card">
+      <h4>DesignEx</h4>
+      <p>Left: design thread (comments, forks). Right: <strong>rendered prototype</strong> (WebView). Agent hidden. Bet: own the design collaboration UX.</p>
+    </div>
+    <div class="compare-card">
+      <h4>Gopher / EAI</h4>
+      <p>Left: admin + builder (Plan, credits, processes). Right: <strong>the harness itself</strong> (terminal). Bet: own admin; harness stays theirs.</p>
+    </div>
+  </div>
+  <p>Same shell pattern — one window, two panes, child agent process. Different right pane: output vs tool.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="prototype">
+  <h2>Prototype vs native ship</h2>
+  <table>
+    <thead>
+      <tr><th>Concern</th><th>Today (shell.html)</th><th>Native ship (eai-installer)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Layer 1 shell</td><td>Fake macOS + HTML split</td><td>Swift/AppKit split + WKWebView</td></tr>
+      <tr><td>Layer 2 harness</td><td>Scripted terminal skin</td><td>Real PTY (node-pty / Swift)</td></tr>
+      <tr><td>Layer 3 project</td><td>Pretend paths in copy</td><td>Real <code>eai init</code> on disk</td></tr>
+      <tr><td>Google → marketing</td><td>✓ pages/google.html</td><td>Same journey</td></tr>
+      <tr><td>Nested harness</td><td>✓ right column in Setup window</td><td>Same layout, real terminal</td></tr>
+      <tr><td>Entry URL</td><td><code>build-sugar/shell.html</code></td><td>EAI Setup.app</td></tr>
+    </tbody>
+  </table>
+  <p>The architecture is identical; the HTML prototype simulates Layer 2 instead of running a real child process.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+
+<section id="constraints">
+  <h2>Hard constraints</h2>
+  <ul>
+    <li><strong>Cannot inject UI into someone else's harness</strong> when it is their standalone app. Embedding via PTY is wrapping the process, not skinning their GUI.</li>
+    <li><strong>Two auth domains.</strong> EAI account (e.g. Microsoft Entra) and harness account (Anthropic, OpenAI) stay separate. UI must say so clearly.</li>
+    <li><strong>VS Code / Cursor are not PTY CLIs.</strong> v1 either launches them externally with a detach path, or defers embed claims.</li>
+    <li><strong>Web prototype limit.</strong> This repo can simulate layout and copy; it cannot prove real PTY behaviour. Native spike belongs in eai-installer.</li>
+    <li><strong>Workflow travel browser → CLI</strong> is an open engineering question. Shell design assumes project name + brief + optional workflow id cross the panes; if CLI cannot consume it, left pane must show the gap honestly.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Enterprise AI prototypes · build-sugar · August 2026</p>
+  <p>Sources: experiments/eai-cli-setup/shell-harness-bridge.md, build-sugar/PLAN.md, DesignEx marketing (designex.app), OpenAI Codex harness docs.</p>
+</footer>
+
+</main>
+
+</body>
+</html>

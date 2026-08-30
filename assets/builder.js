@@ -45,6 +45,9 @@ const PRICE = {
 const START_CREDITS = 100;
 const TOPUP = { credits: 500, price: '$49' };
 
+/** Never show per-action credit prices in the UI (CTAs, message chips). */
+const SHOW_CREDIT_COSTS = false;
+
 /* ============================ state =============================== */
 
 const params = new URLSearchParams(location.search);
@@ -159,7 +162,7 @@ function bubble(role, html, cost) {
   row.innerHTML = role === 'user'
     ? `<div class="bd-bub">${html}</div>`
     : `<div class="bd-av">AI</div><div class="bd-bub">${html}</div>`;
-  if (cost) {
+  if (cost && SHOW_CREDIT_COSTS) {
     const chip = document.createElement('span');
     chip.className = 'bd-spent';
     chip.textContent = `−${cost}`;
