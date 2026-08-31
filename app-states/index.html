@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>App — statemachine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<!-- Same stylesheets /build-web/builder.html loads — the app on this
+     page IS that builder, lifted at load rather than copied. app-states.css
+     comes last and only draws the rail and frame around it. -->
+<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/signup.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-sugar-enter.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-web-app.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build-web-mvp.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/app-states.css?v=mtg8tt0q.j1" />
+</head>
+<body class="as" data-as-drive="on">
+
+  <!-- Every state the no-code builder can be in, on one page.
+
+       Oct 16 release focus: marketing site → builder, no macOS shell, no
+       app install. Smart blocks is a setting on the rail, not a second copy
+       of the app to maintain.
+
+       · **Not a copy.** The builder shell is fetched out of /build-web at
+         load. Change builder.html, reload here, and it stays in sync.
+       · **Not the flow.** Nothing here is clickable inside the app. Every
+         state comes from the rail, so each one can be linked to. -->
+
+  <aside class="as-rail">
+    <div class="as-title">
+      <b>App — statemachine</b>
+      <span>Marketing site into the no-code builder — plan, build, publish, and the forks that interrupt.</span>
+      <a href="../build-web/">Play the flow instead &rarr;</a>
+    </div>
+    <div id="rail"></div>
+  </aside>
+
+  <main class="as-stage" id="stage">
+    <div class="as-cap">
+      <b id="capName">Opening</b>
+      <span id="capNote"></span>
+    </div>
+    <div class="as-frame"><!-- the real builder lands here --></div>
+  </main>
+
+<script src="../assets/app-states.js?v=mtg8tt0q.j1"></script>
+</body>
+</html>
