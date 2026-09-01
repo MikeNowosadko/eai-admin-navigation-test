@@ -168,8 +168,63 @@ const dialogDesc = document.getElementById('mktDialogDesc');
 const dialogSummary = document.getElementById('mktDialogSummary');
 const dialogSteps = document.getElementById('mktDialogSteps');
 const dialogPreview = document.getElementById('mktDialogPreview');
+const useTemplateBtn = document.getElementById('mktUseTemplate');
+const promptInput = document.getElementById('mktPrompt');
+
+const workflowBase = document.body.dataset.mktWorkflowsUrl || '../smart-blocks-config/index.html';
+const WORKFLOW_LINKS = {
+  rfi: `${workflowBase}?workflow=rfp`,
+  interview: `${workflowBase}?workflow=candidates`,
+  edm: `${workflowBase}?workflow=email`,
+};
+
+/** Smart block workflow ids → marketing preview dialog template ids */
+const SB_PREVIEW_MAP = {
+  candidates: 'interview',
+  rfp: 'rfi',
+  email: 'edm',
+};
+
+let activeTemplateId = null;
+
+function builderTarget(prompt) {
+  const body = document.body;
+  const base = body.dataset.mktBuilderUrl || 'builder-blocks.html';
+  const blocks = body.dataset.mktBlocksMode === '1';
+  const params = new URLSearchParams();
+  if (prompt) params.set('prompt', prompt);
+  if (blocks) params.set('blocks', '1');
+  params.set('enter', '1');
+  sessionStorage.setItem('build-sugar-enter', '1');
+  sessionStorage.setItem('bw-builder-url', base);
+  const q = params.toString();
+  return q ? `${base}?${q}` : base;
+}
+
+function signupTarget(prompt) {
+  const base = document.body.dataset.mktSignupUrl;
+  if (!base) return null;
+  const params = new URLSearchParams();
+  if (prompt) params.set('prompt', prompt);
+  const q = params.toString();
+  return q ? `${base}?${q}` : base;
+}
+
+function goSignup(prompt) {
+  const href = signupTarget(prompt);
+  if (!href) return false;
+  sessionStorage.removeItem('bw-signed-in');
+  sessionStorage.setItem('bw-builder-url', document.body.dataset.mktBuilderUrl || 'builder.html');
+  location.href = href;
+  return true;
+}
+
+function goBuilder(prompt) {
+  location.href = builderTarget(prompt || '');
+}
 
 function renderSteps(steps) {
+  if (!dialogSteps) return;
   dialogSteps.innerHTML = steps.map(([title, desc, block], i) => `
     <div class="mkt-step">
       <span class="mkt-step-num">${i + 1}</span>
@@ -180,9 +235,15 @@ function renderSteps(steps) {
 }
 
 function renderAppPreview(app) {
-  const tabs = app.tabs.map((t, i) => `
-    <button type="button" class="${i === 0 ? 'on' : ''}"><span class="mkt-seg-dot"></span>${t}</button>
-  `).join('');
+  const stages = app.tabs.map((t, i) => {
+    const active = i === 0;
+    return `
+      <div class="mkt-wf-stage${active ? ' active' : ''}">
+        <span class="mkt-wf-stage-ring">${active ? String(i + 1) : '○'}</span>
+        ${t}
+      </div>
+    `;
+  }).join('');
 
   const msgs = app.messages.map(([role, text]) => `
     <div class="mkt-bubble mkt-bubble-${role}">${text}</div>
@@ -214,7 +275,7 @@ function renderAppPreview(app) {
             </div>
             <div class="mkt-app-main">
               <h3 class="mkt-app-title">${app.title}</h3>
-              <div class="mkt-seg-tabs">${tabs}</div>
+              <div class="mkt-wf-stages">${stages}</div>
               <div class="mkt-app-section">
                 <h4>${app.sectionTitle}</h4>
                 <p>${app.sectionDesc}</p>
@@ -250,14 +311,19 @@ function renderAppPreview(app) {
 
 function openPreview(id) {
   const t = TEMPLATES[id];
-  if (!t) return;
+  if (!t || !dialog) return;
 
-  dialogTitle.textContent = t.name;
-  dialogLeftTitle.textContent = t.name;
-  dialogDesc.textContent = t.desc;
-  dialogSummary.textContent = t.summary;
+  activeTemplateId = id;
+  if (dialogTitle) dialogTitle.textContent = t.name;
+  if (dialogLeftTitle) dialogLeftTitle.textContent = t.name;
+  if (dialogDesc) dialogDesc.textContent = t.desc;
+  if (dialogSummary) dialogSummary.textContent = t.summary;
   renderSteps(t.steps);
-  dialogPreview.innerHTML = renderAppPreview(t.app);
+  if (dialogPreview) dialogPreview.innerHTML = renderAppPreview(t.app);
+
+  if (useTemplateBtn) {
+    useTemplateBtn.hidden = false;
+  }
 
   dialog.classList.add('is-open');
   document.body.classList.add('mkt-dialog-open');
@@ -265,37 +331,93 @@ function openPreview(id) {
 }
 
 function closePreview() {
+  activeTemplateId = null;
+  if (!dialog) return;
   dialog.classList.remove('is-open');
   document.body.classList.remove('mkt-dialog-open');
   dialog.setAttribute('aria-hidden', 'true');
 }
 
-document.querySelectorAll('[data-template-preview]').forEach((btn) => {
-  btn.addEventListener('click', () => openPreview(btn.dataset.templatePreview));
+window.openMktTemplatePreview = openPreview;
+
+document.addEventListener('click', (e) => {
+  const sbBtn = e.target.closest('[data-sb-preview]');
+  if (sbBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    const mktId = SB_PREVIEW_MAP[sbBtn.dataset.sbPreview];
+    if (mktId) openPreview(mktId);
+    return;
+  }
+
+  const mktBtn = e.target.closest('[data-template-preview]');
+  if (mktBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    openPreview(mktBtn.dataset.templatePreview);
+  }
 });
 
-document.getElementById('mktDialogClose').addEventListener('click', closePreview);
+const dialogClose = document.getElementById('mktDialogClose');
+if (dialogClose) dialogClose.addEventListener('click', closePreview);
 
-dialog.addEventListener('click', (e) => {
-  if (e.target === dialog) closePreview();
+if (useTemplateBtn) {
+  useTemplateBtn.addEventListener('click', () => {
+    const href = WORKFLOW_LINKS[activeTemplateId];
+    if (href) location.href = href;
+    else goBuilder(promptInput?.value?.trim());
+  });
+}
+
+document.querySelectorAll('button[data-mkt-start]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const prompt = promptInput?.value?.trim();
+    if (!goSignup(prompt)) goBuilder(prompt);
+  });
 });
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && dialog.classList.contains('is-open')) closePreview();
+document.querySelectorAll('button[data-mkt-signin]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    sessionStorage.setItem('bw-signed-in', '1');
+    sessionStorage.setItem('bw-tenancy', 'seeded');
+    sessionStorage.removeItem('bw-email');
+    sessionStorage.removeItem('bw-ws');
+    sessionStorage.setItem('bw-builder-url', document.body.dataset.mktBuilderUrl || 'builder.html');
+    const base = document.body.dataset.mktSigninUrl || 'home.html';
+    location.href = `${base}${base.includes('?') ? '&' : '?'}tenancy=seeded`;
+  });
 });
 
-const promptInput = document.getElementById('mktPrompt');
+if (dialog) {
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) closePreview();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && dialog.classList.contains('is-open')) closePreview();
+  });
+}
+
 document.querySelectorAll('[data-mkt-chip]').forEach((chip) => {
   chip.addEventListener('click', () => {
+    if (!promptInput) return;
     promptInput.value = chip.textContent;
     promptInput.focus();
   });
 });
 
-document.getElementById('mktForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!promptInput.value.trim()) promptInput.focus();
-});
+const mktForm = document.getElementById('mktForm');
+if (mktForm) {
+  mktForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = promptInput?.value?.trim();
+    if (!v) {
+      promptInput?.focus();
+      return;
+    }
+    if (!goSignup(v)) goBuilder(v);
+  });
+}
 
 document.querySelectorAll('[data-dept]').forEach((el) => {
   const c = DEPT_COLORS[el.dataset.dept];

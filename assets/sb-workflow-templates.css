@@ -1,0 +1,200 @@
+/* Smart block workflow templates — Candidate screening, RFP evaluation, EDM email.
+   Matches smart-blocks-config/5layer-editor launchpad cards. */
+
+.sb-templates {
+  width: 100%;
+}
+
+.sb-templates-hd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+}
+
+.sb-templates-hd b {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.sb-templates-hd a {
+  font-size: 13px;
+  color: #71717a;
+  text-decoration: none;
+}
+
+.sb-templates-hd a:hover {
+  color: #09090b;
+}
+
+.sb-templates-label {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.sb-wf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sb-wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sb-wf-card:hover {
+  border-color: #a1a1aa;
+  box-shadow: 0 8px 24px -12px rgba(16, 24, 40, 0.18);
+}
+
+.sb-wf-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sb-wf-ico {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #1c84e0;
+  color: #fff;
+  flex: none;
+}
+
+.sb-wf-ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sb-wf-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c84e0;
+  flex: none;
+}
+
+.sb-wf-go svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sb-wf-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.sb-wf-blurb {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #71717a;
+}
+
+.sb-wf-card--preview {
+  min-height: 180px;
+}
+
+.sb-wf-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.sb-wf-preview {
+  padding: 7px 14px;
+  border: 1px solid #ebebeb;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #26251e;
+  cursor: pointer;
+}
+
+.sb-wf-preview:hover {
+  background: #f7f7f3;
+}
+
+/* Marketing page — full width section below hero */
+.mkt-site .sb-templates-section {
+  width: 100%;
+  max-width: var(--mkt-max, 1160px);
+  padding: 0 16px;
+}
+
+.mkt-site .sb-templates-section .mkt-templates-head {
+  margin-bottom: 22px;
+}
+
+.mkt-site .sb-templates-section .sb-wf-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .mkt-site .sb-templates-section .sb-wf-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .mkt-site .sb-templates-section .sb-wf-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bw-site .sb-templates-section {
+  max-width: 720px;
+  margin: -24px auto 0;
+  padding: 0 24px 56px;
+}
+
+.bw-site .sb-templates-section .sb-wf-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bw-site .sb-templates-section .sb-wf-card:last-child {
+  grid-column: 1;
+}
+
+/* Signed-in home — sits under composer inside nb-page */
+.nb-page .sb-templates {
+  margin-top: 34px;
+}
+
+@media (max-width: 720px) {
+  .sb-wf-grid,
+  .bw-site .sb-templates-section .sb-wf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bw-site .sb-templates-section .sb-wf-card:last-child {
+    grid-column: auto;
+  }
+}
