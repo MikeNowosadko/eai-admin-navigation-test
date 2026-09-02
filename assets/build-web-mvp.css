@@ -381,3 +381,74 @@
   }
   .bd-mvp-workshop .bd-body { flex-direction: column; }
 }
+
+/* ------------------------------------------------------------------
+   Buttons — eai-installer 32px spec (outline / primary / ghost-quiet).
+   Scoped to the in-app builder; signup.css .nb-btn stays untouched for
+   the frozen /signup flow.
+------------------------------------------------------------------- */
+
+.bd-web-app .nb-btn {
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.bd-web-app .nb-btn:hover { background: var(--muted); }
+.bd-web-app .nb-btn:active { transform: translateY(0.5px); }
+
+.bd-web-app .nb-btn.primary {
+  background: var(--foreground);
+  border-color: var(--foreground);
+  color: #ffffff;
+}
+.bd-web-app .nb-btn.primary:hover { background: #2b2b2b; border-color: #2b2b2b; }
+.bd-web-app .nb-btn.primary:active { background: var(--foreground); }
+
+.bd-web-app .nb-btn[disabled] {
+  background: var(--muted);
+  border-color: var(--border);
+  color: var(--muted-foreground);
+  opacity: 1;
+  cursor: default;
+}
+.bd-web-app .nb-btn[disabled]:hover { background: var(--muted); }
+
+.bd-web-app .nb-btn svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.bd-web-app .nb-btn svg:first-child { margin-left: -3px; }
+.bd-web-app .nb-btn svg:last-child { margin-right: -3px; }
+
+.bd-web-app .bd-wizard-submit,
+.bd-web-app .bd-oauth-btn,
+.bd-web-app .bd-fork-back {
+  height: 32px;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.bd-web-app .bd-wizard-submit:active,
+.bd-web-app .bd-oauth-btn:active,
+.bd-web-app .bd-fork-back:active { transform: translateY(0.5px); }
+
+.bd-web-app .bd-oauth-btn { border-color: var(--border); }
+.bd-web-app .bd-oauth-btn:hover { background: var(--muted); border-color: var(--border); }
+
+.bd-web-app .bd-fork-back {
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+.bd-web-app .bd-fork-back:hover { background: var(--muted); }

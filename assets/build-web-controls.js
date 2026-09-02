@@ -46,7 +46,8 @@
         <div class="grp">Jump to</div>
         <a class="act" href="${inBuildWeb ? '' : `${root}build-web/`}${mktPage}">Marketing site</a>
         <a class="act" href="${inBuildWeb ? '' : `${root}build-web/`}${builderPage}">Builder workshop</a>
-        <a class="act" href="${inBuildWeb ? 'home.html?tenancy=seeded' : `${root}build-web/home.html?tenancy=seeded`}">Signed-in home</a>
+        <a class="act" href="${inBuildWeb ? 'ws-home.html?tenancy=seeded' : `${root}build-web/ws-home.html?tenancy=seeded`}">Signed-in home</a>
+        <a class="act" href="${inBuildWeb ? 'home.html?tenancy=seeded' : `${root}build-web/home.html?tenancy=seeded`}">Signed-in home (legacy)</a>
         <a class="act" href="${inBuildWeb ? 'apps.html?tenancy=seeded' : `${root}build-web/apps.html?tenancy=seeded`}">Manage your apps</a>
         <div class="grp">Go</div>
         <a class="act primary" href="${root}index.html">Launch pad</a>

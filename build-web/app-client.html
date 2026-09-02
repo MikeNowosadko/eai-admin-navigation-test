@@ -27,48 +27,12 @@
   </div>
 
   <div class="ad-tabs" id="tabs">
-    <button type="button" data-tab="submissions" class="on">Submissions</button>
-    <button type="button" data-tab="analytics">Analytics</button>
+    <button type="button" data-tab="analytics" class="on">Analytics</button>
+    <button type="button" data-tab="submissions">Submissions</button>
   </div>
 
-  <!-- Submissions -------------------------------------------------- -->
-  <section data-pane="submissions">
-    <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
-      <div class="ad-f" style="flex:1;min-width:0;">
-        <div class="ctl" style="margin-top:0;">
-          <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
-          <input id="q" type="search" placeholder="Search by reference or person…" style="flex:1;border:0;outline:none;padding:0;height:auto;margin-top:0;" />
-        </div>
-      </div>
-      <select id="statusFilter" style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;font-size:14px;font-weight:500;">
-        <option value="">All statuses</option>
-        <option value="completed">Completed</option>
-        <option value="in_progress">In progress</option>
-        <option value="abandoned">Abandoned</option>
-      </select>
-      <button class="ad-btn" type="button" data-stub id="rangeBtn"></button>
-      <button class="ad-btn" type="button" data-stub id="exportBtn"></button>
-    </div>
-
-    <div class="ad-c">
-      <div class="ad-t">
-        <div class="hd">
-          <div style="width:104px;flex:0 0 104px;">Reference</div>
-          <div class="grow">Person</div>
-          <div style="width:132px;flex:0 0 132px;">Started</div>
-          <div style="width:132px;flex:0 0 132px;">Status</div>
-          <div style="width:150px;flex:0 0 150px;">Reached</div>
-          <div style="width:96px;flex:0 0 96px;">Device</div>
-          <div style="width:76px;flex:0 0 76px;" class="num">Time</div>
-          <div style="width:20px;flex:0 0 20px;"></div>
-        </div>
-        <div id="subRows"></div>
-      </div>
-    </div>
-  </section>
-
   <!-- Analytics ---------------------------------------------------- -->
-  <section data-pane="analytics" hidden>
+  <section data-pane="analytics">
     <div class="ad-grid" style="margin-top:20px;" id="aTiles"></div>
 
     <div class="ad-c pad">
@@ -89,12 +53,73 @@
       <div style="padding:0 20px 20px;" id="funnelBody"></div>
     </div>
   </section>
+
+  <!-- Submissions -------------------------------------------------- -->
+  <section data-pane="submissions" hidden>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
+      <div class="ad-f" style="flex:1;min-width:0;">
+        <div class="ctl" style="margin-top:0;">
+          <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
+          <input id="q" type="search" placeholder="Search by reference or person…" style="flex:1;border:0;outline:none;padding:0;height:auto;margin-top:0;" />
+        </div>
+      </div>
+      <select id="statusFilter" style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;font-size:14px;font-weight:500;">
+        <option value="">All statuses</option>
+        <option value="completed">Completed</option>
+        <option value="in_progress">In progress</option>
+        <option value="abandoned">Abandoned</option>
+      </select>
+      <div class="ad-pop-wrap" id="rangeWrap" data-open="false">
+        <button class="ad-btn" type="button" id="rangeBtn" aria-expanded="false" aria-haspopup="dialog"></button>
+        <div class="ad-range-pop" id="rangePop" hidden role="dialog" aria-label="Date range">
+          <div class="ad-range-presets">
+            <button type="button" data-preset="today">Today</button>
+            <button type="button" data-preset="7">Last 7 days</button>
+            <button type="button" data-preset="30" class="on">Last 30 days</button>
+          </div>
+          <div class="ad-range-fields">
+            <label>From<input type="date" id="rangeFrom" value="2026-08-04" /></label>
+            <label>To<input type="date" id="rangeTo" value="2026-09-02" /></label>
+          </div>
+          <div class="ad-range-foot">
+            <button class="ad-btn sm" type="button" data-range-clear>Reset</button>
+            <button class="ad-btn sm dark" type="button" data-range-apply>Apply</button>
+          </div>
+        </div>
+      </div>
+      <div class="ad-pop-wrap ad-export-wrap" id="exportWrap" data-open="false">
+        <button class="ad-btn" type="button" id="exportBtn" aria-expanded="false" aria-haspopup="menu"></button>
+        <div class="ad-menu" id="exportMenu" hidden>
+          <button type="button" data-export="csv">Export as CSV</button>
+          <button type="button" data-export="pdf">Export as PDF</button>
+          <button type="button" data-export="xlsx">Export as Excel (.xlsx)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-c">
+      <div class="ad-t">
+        <div class="hd">
+          <div style="width:104px;flex:0 0 104px;">Reference</div>
+          <div class="grow">Person</div>
+          <div style="width:132px;flex:0 0 132px;">Started</div>
+          <div style="width:132px;flex:0 0 132px;">Status</div>
+          <div style="width:150px;flex:0 0 150px;">Reached</div>
+          <div style="width:128px;flex:0 0 128px;">Device</div>
+          <div style="width:76px;flex:0 0 76px;" class="num">Time</div>
+          <div style="width:20px;flex:0 0 20px;"></div>
+        </div>
+        <div id="subRows"></div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-filters.js?v=mtg8tt0q.j1"></script>
 <script>
   const D = window.ADMIN;
   const A = window.ADANALYTICS;
@@ -102,26 +127,33 @@
   /* Both resolved through the seed, not read raw — they are written into
      hrefs via innerHTML. */
   const appId = D.process(qs.get('app')).id;
-  const c = D.client(qs.get('client'));
-  const rows = D.submissions[c.id] || [];
+  const c = D.client(qs.get('client'), appId);
+  const rows = D.submissionsFor(appId, c.id);
+  const steps = D.stepsFor(appId);
 
   document.getElementById('cAv').textContent = c.initial;
   document.getElementById('cName').textContent = c.name;
   document.getElementById('cMeta').textContent =
     `${c.submissions.toLocaleString()} submissions · ${c.completionRate}% completed · avg ${A.formatTime(c.avgMinutes)}`;
   document.getElementById('cSettings').innerHTML = `${window.adIcon('gear')}Client settings`;
-  document.getElementById('rangeBtn').innerHTML = `${window.adIcon('calendar')}Last 30 days`;
-  document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export`;
+  document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export<span class="ad-ico-chev">${window.adIcon('chev')}</span>`;
   document.getElementById('searchIcon').innerHTML = window.adIcon('search');
   document.title = `Prototype — ${c.name} · Enterprise AI`;
 
-  /* Submissions — search and status filter narrow the same list. */
+  if (window.__adClientFiltersTeardown) window.__adClientFiltersTeardown();
+
+  let filteredCount = rows.length;
+
+  /* Submissions — search, status, and date range narrow the same list. */
   function paintSubs() {
     const q = document.getElementById('q').value.trim().toLowerCase();
     const status = document.getElementById('statusFilter').value;
     const shown = rows.filter((s) =>
       (!status || s.status === status) &&
-      (!q || s.ref.toLowerCase().includes(q) || s.who.toLowerCase().includes(q)));
+      (!q || s.ref.toLowerCase().includes(q) || s.who.toLowerCase().includes(q)) &&
+      rangeFilter.matches(s.at));
+
+    filteredCount = shown.length;
 
     document.getElementById('subRows').innerHTML = shown.length ? shown.map((s) => {
       const st = D.STATUS[s.status];
@@ -133,8 +165,11 @@
         </div>
         <div style="width:132px;flex:0 0 132px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.at}</div>
         <div style="width:132px;flex:0 0 132px;display:flex;"><span class="ad-badge ${st.tone}"><i class="dot"></i>${st.label}</span></div>
-        <div style="width:150px;flex:0 0 150px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${D.STEPS[s.step - 1]}</div>
-        <div style="width:96px;flex:0 0 96px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.device}</div>
+        <div style="width:150px;flex:0 0 150px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${steps[s.step - 1]}</div>
+        <div style="width:128px;flex:0 0 128px;font-size:13px;color:var(--ad-ink-4);text-align:left;">
+          <span style="display:block;font-weight:500;color:var(--ad-ink-3);">${s.device}</span>
+          <span style="display:block;font-size:12px;color:var(--ad-mute);">${D.submissionOs(s)}</span>
+        </div>
         <div style="width:76px;flex:0 0 76px;font-size:13px;color:var(--ad-ink-4);" class="num">${A.formatTime(s.minutes)}</div>
         <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
       </button>`;
@@ -146,6 +181,32 @@
   }
   document.getElementById('q').addEventListener('input', paintSubs);
   document.getElementById('statusFilter').addEventListener('change', paintSubs);
+
+  const rangeFilter = window.AD_FILTERS.bindDateRange({
+    wrap: document.getElementById('rangeWrap'),
+    btn: document.getElementById('rangeBtn'),
+    pop: document.getElementById('rangePop'),
+    fromInput: document.getElementById('rangeFrom'),
+    toInput: document.getElementById('rangeTo'),
+    onApply: () => paintSubs(),
+  });
+
+  const exportFilter = window.AD_FILTERS.bindExport({
+    wrap: document.getElementById('exportWrap'),
+    btn: document.getElementById('exportBtn'),
+    menu: document.getElementById('exportMenu'),
+    onExport: (format) => {
+      const labels = { csv: 'CSV', pdf: 'PDF', xlsx: 'Excel' };
+      window.adToast(`Exported ${filteredCount} submission${filteredCount === 1 ? '' : 's'} as ${labels[format] || format.toUpperCase()}.`);
+    },
+  });
+
+  window.__adClientFiltersTeardown = () => {
+    rangeFilter?.teardown();
+    exportFilter?.teardown();
+    window.__adClientFiltersTeardown = null;
+  };
+
   paintSubs();
 
   /* Analytics — every figure below is read off this client's steps. */
@@ -193,7 +254,7 @@
     const b = e.target.closest('button');
     if (b) show(b.dataset.tab);
   });
-  show(qs.get('tab') === 'analytics' ? 'analytics' : 'submissions');
+  show(qs.get('tab') === 'submissions' ? 'submissions' : 'analytics');
 </script>
 </body>
 </html>

@@ -129,7 +129,16 @@
         </button>
       </div>
     </div>
-    <iframe class="brow-frame" id="browFrame" src="pages/home.html" title="Browser"></iframe>
+    <iframe class="brow-frame" id="browFrame" title="Browser"></iframe>
+  </div>
+
+  <!-- Mail — optional path for notification user testing -->
+  <div class="win hidden" id="winMail" style="left:18%; top:8%; width:64%; height:76%;">
+    <div class="win-bar" data-drag>
+      <span class="tl r" data-win-close></span><span class="tl y" data-win-min></span><span class="tl g" data-win-zoom></span>
+      <span class="wt">Mail</span>
+    </div>
+    <iframe class="brow-frame" id="mailFrame" src="pages/mail.html" title="Mail"></iframe>
   </div>
 
   <!-- the mounted disk image -------------------------------------- -->
@@ -734,6 +743,7 @@
     <div class="item" data-app="mail">
       <span class="tip">Mail</span>
       <span class="ico" data-icon="mail"></span>
+      <span class="badge">2</span>
       <span class="dot"></span>
     </div>
 
@@ -832,6 +842,11 @@
   // This journey starts at the marketing site, not a search — finding EAI is
   // the onboarding study's question, not this one's.
   window.EAI_HOME = 'pages/home.html';
+  if (sessionStorage.getItem('adUtLeave') === '1' && sessionStorage.getItem('adUtMode') === 'desktop') {
+    window.EAI_HOME = '../build-web/ws-home.html?ut=leave';
+    sessionStorage.setItem('bw-signed-in', '1');
+    sessionStorage.setItem('bw-tenancy', 'seeded');
+  }
 </script>
 <script src="../assets/icons.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/desktop.js?v=mtg8tt0q.j1"></script>

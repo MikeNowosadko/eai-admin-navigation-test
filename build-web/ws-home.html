@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
 </head>
-<body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
+<body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-mode="ncb" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
 
 <div id="adPane">
   <h1 class="ad-home-h1">Let&apos;s build a process</h1>
@@ -38,7 +38,7 @@
     </div>
   </form>
 
-  <div class="ad-sec-hd"><b>Start from a template</b><button type="button" class="ad-link" data-stub>Browse all ›</button></div>
+  <div class="ad-sec-hd"><b>Start from a template</b><a class="ad-link" href="ws-templates.html">Browse all ›</a></div>
   <div class="ad-tpl">
     <button type="button" class="card" data-stub>
       <span class="art teal"><svg viewBox="0 0 120 70" aria-hidden="true"><rect x="30" y="10" width="60" height="50" rx="4" fill="#fff" stroke="#CBD5E1"/><rect x="38" y="20" width="30" height="4" rx="2" fill="#CBD5E1"/><rect x="38" y="29" width="44" height="4" rx="2" fill="#E2E8F0"/><rect x="38" y="38" width="44" height="4" rx="2" fill="#E2E8F0"/><rect x="38" y="48" width="26" height="7" rx="3.5" fill="#0EA5A4"/></svg></span>
@@ -57,7 +57,7 @@
     </button>
   </div>
 
-  <div class="ad-sec-hd"><b>Recent processes</b><button type="button" class="ad-link" data-stub>View all ›</button></div>
+  <div class="ad-sec-hd"><b>Recent processes</b><a class="ad-link" href="ws-processes.html">View all ›</a></div>
   <div class="ad-c" style="margin-top:12px;" id="recent"></div>
 </div>
 
@@ -69,11 +69,9 @@
   const D = window.ADMIN;
   document.getElementById('recent').innerHTML = D.processes.slice(0, 3).map((p) => `
     <a class="ad-t-r" href="app-overview.html?app=${p.id}">
-      <span class="ad-avatar sq" style="background:#F4F4F5;color:#3F3F46;">${p.initial}</span>
       <span class="tx"><b>${p.name}</b><span>${p.subtitle}</span></span>
       <span class="st">${p.status === 'Live' ? '<i class="live"></i>' : '<i class="draft"></i>'}${p.status}</span>
       <span class="ago">${p.seen}</span>
-      ${window.adIcon("right", "go")}
     </a>`).join('');
   document.getElementById('composer').addEventListener('submit', (e) => {
     e.preventDefault();

@@ -37,8 +37,9 @@
 
   /* The pages this router owns. A link to anything else is a real link. */
   const ROUTES = [
-    'ws-home.html', 'ws-processes.html', 'ws-users.html', 'ws-settings.html', 'profile.html',
-    'app-overview.html', 'app-general.html', 'app-clients.html', 'app-client.html',
+    'ws-home.html', 'ws-processes.html', 'ws-cli.html', 'ws-templates.html', 'ws-integrations.html',
+    'ws-users.html', 'ws-settings.html', 'profile.html',
+    'app-overview.html', 'app-submissions.html', 'app-analytics.html', 'app-general.html', 'app-clients.html', 'app-client.html',
   ];
 
   const I = {
@@ -123,9 +124,10 @@
       rail: b.adRail || '',
       hero: b.adHero === '1',
       narrow: b.adNarrow === '1',
+      mode: b.adMode || 'ncb',
       appId: app.id,
       app,
-      clientId: rawClient ? D.client(rawClient).id : '',
+      clientId: rawClient ? D.client(rawClient, app.id).id : '',
     };
   }
 
@@ -151,23 +153,22 @@
         ${svg('swap')}
       </button>
       <div class="ad-seg" role="tablist" aria-label="How you build">
-        <button class="on" type="button" role="tab" aria-selected="true">No Code Builder</button>
-        <button type="button" role="tab" aria-selected="false" data-stub>${svg('terminal')}CLI</button>
+        <a class="ad-seg-tab${s.mode === 'ncb' ? ' on' : ''}" href="ws-home.html" role="tab" aria-selected="${s.mode === 'ncb'}">No Code Builder</a>
+        <a class="ad-seg-tab${s.mode === 'cli' ? ' on' : ''}" href="ws-cli.html" role="tab" aria-selected="${s.mode === 'cli'}">${svg('terminal')}CLI</a>
       </div>
     </div>
     <div class="ad-side-body">
       <nav class="ad-nav">
         ${wsItem(s, 'home', 'home', 'Home', 'ws-home.html')}
         ${wsItem(s, 'processes', 'grid', 'All processes', 'ws-processes.html', `<i class="count">${D.processes.length}</i>`)}
-        ${wsItem(s, 'templates', 'template', 'Templates', null)}
-        ${wsItem(s, 'integrations', 'plug', 'Integrations', null)}
+        ${wsItem(s, 'templates', 'template', 'Templates', 'ws-templates.html')}
+        ${wsItem(s, 'integrations', 'plug', 'Integrations', 'ws-integrations.html')}
       </nav>
       <nav class="ad-nav">
         <div class="ad-nav-label">Manage</div>
         ${wsItem(s, 'data', 'data', 'Data', null)}
         ${wsItem(s, 'users', 'users', 'Users &amp; roles', 'ws-users.html')}
         ${wsItem(s, 'analytics', 'chart', 'Analytics', null, '<span class="tag">New</span>')}
-        ${wsItem(s, 'theme', 'theme', 'Theme', null)}
         ${wsItem(s, 'automations', 'zap', 'Automations', null)}
         ${wsItem(s, 'audit', 'file', 'Audit log', null)}
       </nav>
@@ -192,9 +193,24 @@
         <button class="collapse" type="button" data-stub aria-label="Collapse sidebar">${svg('panel')}</button>
         <b>${s.title}</b>
       </div>
-      <div class="ad-search" role="search">${svg('search')}<span>Search processes…</span><kbd>&#8984;K</kbd></div>
+      <div class="ad-search-wrap">
+        <button class="ad-search-trigger" type="button" aria-label="Search processes" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
+          ${svg('search')}<span>Search processes…</span><kbd>&#8984;K</kbd>
+        </button>
+        <div class="ad-search-pal" id="adSearchPal" hidden role="dialog" aria-label="Search processes">
+          <div class="ad-search-pal-hd">
+            ${svg('search')}
+            <input class="ad-search-input" type="search" placeholder="Search processes…" autocomplete="off" spellcheck="false" aria-label="Search processes" />
+            <kbd class="ad-search-esc" aria-hidden="true">esc</kbd>
+          </div>
+          <ul class="ad-search-list" role="listbox" aria-label="Processes"></ul>
+          <div class="ad-search-pal-ft">
+            <a href="ws-processes.html">Browse all processes</a>
+          </div>
+        </div>
+      </div>
       <div class="ad-top-r">
-        <button class="ad-icon-btn" type="button" data-stub aria-label="Notifications">${svg('bell')}</button>
+        ${notifBell()}
         <button class="ad-btn dark" type="button" data-stub>${svg('plus')}New process</button>
       </div>
     </header>
@@ -210,8 +226,29 @@
     return `<a class="ad-rail-item${on}" href="${href}">${svg(icon)}<span class="lb">${label}</span></a>`;
   }
 
+  function notifBell() {
+    const unread = D.unreadCount();
+    const badge = unread ? `<span class="ad-notif-badge">${unread}</span>` : '';
+    const items = D.notifications.map((n) => `
+      <a class="ad-notif-row${n.unread ? ' unread' : ''}" href="${n.href}">
+        <span class="ad-notif-dot" aria-hidden="true"></span>
+        <span class="tx"><b>${esc(n.title)}</b><span>${esc(n.body)}</span><i>${esc(n.time)}</i></span>
+      </a>`).join('');
+    return `
+<div class="ad-notif-wrap">
+  <button class="ad-icon-btn ad-notif-btn" type="button" aria-label="Notifications" aria-expanded="false" aria-haspopup="true">
+    ${svg('bell')}${badge}
+  </button>
+  <div class="ad-notif-panel" hidden role="menu" aria-label="Notifications">
+    <div class="ad-notif-hd"><b>Notifications</b>${unread ? `<span>${unread} unread</span>` : ''}</div>
+    <div class="ad-notif-list">${items}</div>
+    <div class="ad-notif-ft"><button type="button" data-notif-mark>Mark all as read</button></div>
+  </div>
+</div>`;
+  }
+
   function clientSub(s) {
-    const rows = D.clients.map((c) => {
+    const rows = D.clientsFor(s.appId).map((c) => {
       const on = s.clientId === c.id ? ' on' : '';
       return `<a class="${on.trim()}" href="app-client.html?app=${s.appId}&client=${c.id}">${c.name}</a>`;
     }).join('');
@@ -234,6 +271,7 @@
         <span class="tx"><b>${app.name}</b><span>${w.name}</span></span>
       </div>
       <div class="ad-app-acts">
+        ${notifBell()}
         <div class="ad-av-stack">
           <span class="av">${u.av}</span>
           <button class="add" type="button" data-stub aria-label="Invite people">${svg('plus')}</button>
@@ -253,8 +291,10 @@
             <label>${svg('search')}<input type="search" placeholder="Search…" aria-label="Search settings" /></label>
           </div>
           <nav class="ad-rail-nav" aria-label="App settings">
-            ${railItem(s, 'overview', 'chart', 'Overview', `app-overview.html?app=${s.appId}`)}
-            ${railItem(s, 'general', 'sliders', 'General', `app-general.html?app=${s.appId}`)}
+            ${railItem(s, 'overview', 'home', 'Overview', `app-overview.html?app=${s.appId}`)}
+            ${railItem(s, 'submissions', 'file', 'Submissions', `app-submissions.html?app=${s.appId}`)}
+            ${railItem(s, 'analytics', 'chart', 'Analytics', `app-analytics.html?app=${s.appId}`)}
+            ${railItem(s, 'general', 'gear', 'Settings', `app-general.html?app=${s.appId}`)}
             <div>
               <a class="ad-rail-item${clientsOpen ? ' on' : ''}" href="app-clients.html?app=${s.appId}" aria-expanded="${clientsOpen}">
                 ${svg('building')}<span class="lb">Clients</span>${svg('chev', 'chev')}
@@ -274,7 +314,185 @@
 <div class="ad-flag" data-ad-root>MVP · prototype</div>`;
   }
 
+  /* ---------------------------------------------------------- search */
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function bindSearch(root) {
+    const wrap = root.querySelector('.ad-search-wrap');
+    if (!wrap) return;
+
+    const trigger = wrap.querySelector('.ad-search-trigger');
+    const pal = wrap.querySelector('.ad-search-pal');
+    const input = wrap.querySelector('.ad-search-input');
+    const list = wrap.querySelector('.ad-search-list');
+    let idx = -1;
+    let open = false;
+
+    function match(q) {
+      const needle = q.trim().toLowerCase();
+      if (!needle) return D.processes;
+      return D.processes.filter((p) =>
+        [p.name, p.subtitle, p.desc, p.status, p.id].some((field) => field.toLowerCase().includes(needle)),
+      );
+    }
+
+    function hits() {
+      return [...list.querySelectorAll('.ad-search-hit')];
+    }
+
+    function paintActive() {
+      hits().forEach((el, i) => el.classList.toggle('on', i === idx));
+      const opts = list.querySelectorAll('[role="option"]');
+      opts.forEach((el, i) => el.setAttribute('aria-selected', String(i === idx)));
+    }
+
+    function render(q) {
+      const rows = match(q);
+      idx = rows.length ? 0 : -1;
+      if (!rows.length) {
+        list.innerHTML = '<li class="ad-search-empty" role="presentation">No processes match.</li>';
+        return;
+      }
+      list.innerHTML = rows.map((p, i) => `
+        <li role="option" aria-selected="${i === 0}">
+          <a class="ad-search-hit${i === 0 ? ' on' : ''}" href="app-overview.html?app=${esc(p.id)}">
+            <span class="tx">
+              <b>${esc(p.name)}</b>
+              <span>${esc(p.subtitle)}</span>
+            </span>
+            <span class="ad-badge ${p.live ? 'green' : 'amber'}"><i class="dot"></i>${esc(p.status)}</span>
+          </a>
+        </li>`).join('');
+    }
+
+    function setOpen(next) {
+      open = next;
+      pal.hidden = !open;
+      trigger.setAttribute('aria-expanded', String(open));
+      if (open) {
+        input.value = '';
+        render('');
+        input.focus();
+      }
+    }
+
+    function pickActive() {
+      const hit = hits()[idx];
+      if (hit) hit.click();
+    }
+
+    trigger.addEventListener('click', () => setOpen(!open));
+
+    input.addEventListener('input', () => render(input.value));
+    input.addEventListener('keydown', (e) => {
+      const rows = hits();
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!rows.length) return;
+        idx = Math.min(idx + 1, rows.length - 1);
+        paintActive();
+        rows[idx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!rows.length) return;
+        idx = Math.max(idx - 1, 0);
+        paintActive();
+        rows[idx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        pickActive();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+
+    const onDocClick = (e) => {
+      if (!open) return;
+      if (wrap.contains(e.target)) return;
+      setOpen(false);
+    };
+
+    const onDocKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setOpen(true);
+        return;
+      }
+      if (e.key === 'Escape' && open && document.activeElement !== input) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onDocKey);
+
+    return () => {
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onDocKey);
+    };
+  }
+
   /* ---------------------------------------------------------- mount */
+  function bindNotifications(root) {
+    const wrap = root.querySelector('.ad-notif-wrap');
+    if (!wrap) return;
+
+    if (window.__adNotifTeardown) window.__adNotifTeardown();
+
+    const btn = wrap.querySelector('.ad-notif-btn');
+    const panel = wrap.querySelector('.ad-notif-panel');
+    const mark = wrap.querySelector('[data-notif-mark]');
+
+    function close() {
+      panel.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function open() {
+      panel.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (panel.hidden) open();
+      else close();
+    });
+
+    mark?.addEventListener('click', (e) => {
+      e.preventDefault();
+      D.notifications.forEach((n) => { n.unread = false; });
+      wrap.querySelectorAll('.ad-notif-row.unread').forEach((r) => r.classList.remove('unread'));
+      wrap.querySelector('.ad-notif-badge')?.remove();
+      const hd = wrap.querySelector('.ad-notif-hd span');
+      if (hd) hd.remove();
+      toast('All notifications marked as read.');
+      close();
+    });
+
+    const onDocClick = (e) => {
+      if (!wrap.contains(e.target)) close();
+    };
+    const onDocKey = (e) => {
+      if (e.key === 'Escape') close();
+    };
+
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onDocKey);
+    window.__adNotifTeardown = () => {
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onDocKey);
+      window.__adNotifTeardown = null;
+    };
+  }
+
   function bindStubs(root) {
     root.querySelectorAll('[data-stub]').forEach((el) => {
       el.addEventListener('click', (e) => {
@@ -287,9 +505,29 @@
 
   function mount(paneHTML) {
     const s = state();
+    if (window.__adSearchTeardown) window.__adSearchTeardown();
     document.querySelectorAll('[data-ad-root]').forEach((n) => n.remove());
     document.body.insertAdjacentHTML('afterbegin', s.shell === 'app' ? appShell(paneHTML, s) : wsShell(paneHTML, s));
-    document.querySelectorAll('[data-ad-root]').forEach(bindStubs);
+    document.querySelectorAll('[data-ad-root]').forEach((root) => {
+      bindStubs(root);
+      bindNotifications(root);
+      const off = bindSearch(root);
+      if (off) window.__adSearchTeardown = off;
+    });
+    mountUt();
+  }
+
+  function mountUt() {
+    if (window.adUtMount) {
+      window.adUtMount();
+      return;
+    }
+    if (document.querySelector('script[data-ad-ut]')) return;
+    const s = document.createElement('script');
+    s.dataset.adUt = '1';
+    s.src = '../assets/admin-ut.js?v=mtg8tt0q.j1';
+    s.onload = () => { if (window.adUtMount) window.adUtMount(); };
+    document.head.appendChild(s);
   }
 
   /* --------------------------------------------------------- router */
@@ -324,6 +562,26 @@
     }, '*');
   }
 
+  function loadedScript(src) {
+    const file = src.split('/').pop().split('?')[0];
+    return [...document.scripts].some((s) => s.src && s.src.split('/').pop().split('?')[0] === file);
+  }
+
+  async function ensureScripts(doc) {
+    const tags = [...doc.querySelectorAll('script[src]')];
+    for (const tag of tags) {
+      const src = tag.getAttribute('src');
+      if (!src || loadedScript(src)) continue;
+      await new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = new URL(src, location.href).href;
+        el.onload = resolve;
+        el.onerror = reject;
+        document.head.appendChild(el);
+      });
+    }
+  }
+
   let token = 0;
   async function go(href, push) {
     const mine = ++token;
@@ -352,6 +610,7 @@
 
     const pane = doc.getElementById('adPane');
     mount(pane ? pane.innerHTML : '');
+    await ensureScripts(doc);
     runPageScripts(doc);
     announce();
   }

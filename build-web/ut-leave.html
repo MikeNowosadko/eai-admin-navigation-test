@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>User study — Leave approval</title>
+<script>
+  const utParams = new URLSearchParams(location.search);
+  const desktop = utParams.get('desktop') === '1';
+  sessionStorage.setItem('adUtLeave', '1');
+  sessionStorage.setItem('adUtMode', desktop ? 'desktop' : 'web');
+  sessionStorage.removeItem('adUtStarted');
+  if (desktop) {
+    sessionStorage.setItem('bw-signed-in', '1');
+    sessionStorage.setItem('bw-tenancy', 'seeded');
+    sessionStorage.removeItem('bw-email');
+    sessionStorage.removeItem('bw-ws');
+  }
+  location.replace(desktop ? '../build/index.html' : 'ws-home.html?ut=leave');
+</script>
+</head>
+<body></body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/builder/edit" />
+<title>Prototype — Edit process · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/signup.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/build.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/mkt-site.css?v=mtg8tt0q.j1" />
+</head>
+<!-- Mirrors eainocodebuilder ConfiguratorShell: chat left, preview right. -->
+<body class="ad ad-edit bd-has-preview">
+
+<header class="ad-edit-hd">
+  <div class="ad-edit-hd-l">
+    <a class="ad-edit-icon" href="ws-processes.html" id="backLink" aria-label="Back to processes">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a class="ad-edit-icon" href="ws-home.html" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <b id="pName">—</b>
+    <span class="ad-badge" id="pBadge"><i class="dot"></i>—</span>
+  </div>
+  <div class="ad-edit-hd-r">
+    <span class="ad-edit-saved">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Saved
+    </span>
+    <button class="ad-btn primary" type="button" id="publishBtn">Publish</button>
+  </div>
+</header>
+
+<div class="ad-edit-body bd-body">
+  <section class="bd-chat">
+    <div class="ad-edit-chat-hd">AI Assistant</div>
+    <div class="bd-log" id="chatLog"></div>
+    <div class="bd-composer-row">
+      <input id="say" type="text" placeholder="Describe a change…" autocomplete="off" />
+      <button class="ad-btn primary" type="button" id="sendBtn">Send</button>
+    </div>
+  </section>
+  <aside class="ad-edit-preview" id="preview"></aside>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-live.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-edit.js?v=mtg8tt0q.j1"></script>
+<script>
+  (function () {
+    const qs = new URLSearchParams(location.search);
+    const id = qs.get('app') || 'candidate-screening';
+    const D = window.ADMIN;
+    const PL = window.AD_PROCESS_LIVE;
+    const ED = window.AD_PROCESS_EDIT;
+    const preview = document.getElementById('preview');
+
+    if (!D || !PL || !ED) {
+      preview.innerHTML =
+        '<div class="ad-live-miss"><p>Editor failed to load.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
+      return;
+    }
+
+    const p = D.process(id);
+    const live = PL.forProcess(id);
+    const chat = ED.chatFor(id);
+
+    if (!p || !live) {
+      preview.innerHTML =
+        '<div class="ad-live-miss"><p>That process doesn’t have an editor in this prototype.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
+      return;
+    }
+
+    document.title = `Prototype — ${p.name} · Enterprise AI`;
+    document.getElementById('pName').textContent = p.name;
+    const badge = document.getElementById('pBadge');
+    badge.className = `ad-badge ${p.live ? 'green' : 'amber'}`;
+    badge.innerHTML = `<i class="dot"></i>${p.status}`;
+    document.getElementById('chatLog').innerHTML = ED.renderChat(id);
+    document.getElementById('say').placeholder = chat.placeholder;
+    preview.innerHTML = PL.render(live.app, live.brand);
+    PL.bindPreview(preview);
+
+    function toast(msg) {
+      let el = document.querySelector('.ad-toast');
+      if (!el) {
+        el = document.createElement('div');
+        el.className = 'ad-toast';
+        el.hidden = true;
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.hidden = false;
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => { el.hidden = true; }, 2200);
+    }
+
+    document.getElementById('publishBtn').addEventListener('click', () => {
+      toast(`${p.name} is already ${p.live ? 'live' : 'a draft'} — publish isn’t wired in this prototype.`);
+    });
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      toast('Chat changes aren’t wired in this prototype — the seeded transcript shows the edit experience.');
+    });
+    document.getElementById('say').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('sendBtn').click();
+    });
+
+    const ref = document.referrer;
+    if (ref && /\/build-web\//.test(ref)) {
+      try {
+        const back = new URL(ref);
+        if (back.pathname.endsWith('.html')) {
+          document.getElementById('backLink').href = back.pathname.split('/').pop() + back.search;
+        }
+      } catch { /* keep default */ }
+    }
+  }());
+</script>
+</body>
+</html>

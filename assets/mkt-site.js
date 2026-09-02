@@ -382,8 +382,9 @@ document.querySelectorAll('button[data-mkt-signin]').forEach((btn) => {
     sessionStorage.setItem('bw-tenancy', 'seeded');
     sessionStorage.removeItem('bw-email');
     sessionStorage.removeItem('bw-ws');
+    sessionStorage.removeItem('bw-pending-prompt');
     sessionStorage.setItem('bw-builder-url', document.body.dataset.mktBuilderUrl || 'builder.html');
-    const base = document.body.dataset.mktSigninUrl || 'home.html';
+    const base = document.body.dataset.mktSigninUrl || 'ws-home.html';
     location.href = `${base}${base.includes('?') ? '&' : '?'}tenancy=seeded`;
   });
 });

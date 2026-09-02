@@ -51,6 +51,8 @@
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-live.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-edit.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
 <script>
   const D = window.ADMIN;
@@ -154,14 +156,13 @@
 
     const edit = e.target.closest('[data-edit]');
     if (edit) {
-      window.adToast(`Editing ${D.process(edit.dataset.edit).name} opens the builder — not wired up in this prototype.`);
+      location.href = window.AD_PROCESS_EDIT.url(edit.dataset.edit);
       return;
     }
     const view = e.target.closest('[data-view]');
     if (view) {
       closeMenus();
-      const p = D.process(view.dataset.view);
-      window.adToast(p.live ? `Would open ${p.url}` : `${p.name} has not been published yet — this would open a preview.`);
+      location.href = window.AD_PROCESS_LIVE.url(view.dataset.view);
     }
   };
   const onKey = (e) => { if (e.key === 'Escape') closeMenus(); };

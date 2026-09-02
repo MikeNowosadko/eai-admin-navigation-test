@@ -16,6 +16,7 @@
 // instance — so only register the ones this page actually contains.
 const WINDOWS = {
   browser: document.getElementById('winBrowser'),
+  mail: document.getElementById('winMail'),
   host: document.getElementById('winHost'),
   setup: document.getElementById('winSetup'),
   dmg: document.getElementById('winDmg'),
@@ -31,6 +32,7 @@ Object.keys(WINDOWS).forEach((k) => { if (!WINDOWS[k]) delete WINDOWS[k]; });
 const desktop = {
   wins: WINDOWS,
   frame: document.getElementById('browFrame'),
+  mailFrame: document.getElementById('mailFrame'),
   urlBar: document.getElementById('browUrl'),
   titleBar: document.getElementById('browserTitle'),
   hostTitle: document.getElementById('hostTitle'),
@@ -223,7 +225,7 @@ function focusWin(name) {
   win.classList.remove('hidden');
   win.classList.add('focused');
   win.style.zIndex = ++desktop.z;
-  const MENU = { setup: 'EAI Setup', chat: 'Enterprise AI', dmg: 'Finder', browser: 'Safari' };
+  const MENU = { setup: 'EAI Setup', chat: 'Enterprise AI', dmg: 'Finder', browser: 'Safari', mail: 'Mail' };
   desktop.menuApp.textContent = name === 'host'
     ? (HOSTS[win.dataset.app] || HOSTS.terminal).menu
     : (MENU[name] || 'Safari');
@@ -254,6 +256,7 @@ function syncDock() {
     const app = item.dataset.app;
     let open = false;
     if (app === 'browser') open = !desktop.wins.browser.classList.contains('hidden');
+    else if (app === 'mail') open = desktop.wins.mail && !desktop.wins.mail.classList.contains('hidden');
     else if (app === 'setup') {
       // One app, two windows: the dot stays lit while either is open.
       const wins = [desktop.wins.setup, desktop.wins.chat].filter(Boolean);
@@ -332,6 +335,9 @@ document.querySelectorAll('.dock .item').forEach((item) => {
       window.dispatchEvent(new CustomEvent('terminal-opened'));
     } else if (app === 'setup') {
       focusWin(appWindow);
+    } else if (app === 'mail') {
+      focusWin('mail');
+      hideCoach();
     } else if (app === 'downloads') {
       item.querySelector('.badge').hidden = true;
       /* Only the flows that hand us their download rows get the stack. The
@@ -622,7 +628,14 @@ document.getElementById('browReload').addEventListener('click', () => {
 desktop.frame.addEventListener('load', () => {
   let doc;
   try { doc = desktop.frame.contentDocument; } catch (err) { return; }
-  if (!doc || doc.querySelector('meta[name="eai-url"]')) return;
+  if (!doc) return;
+
+  const eaiUrl = doc.querySelector('meta[name="eai-url"]');
+  if (eaiUrl) {
+    desktop.urlBar.textContent = eaiUrl.getAttribute('content') || 'app.enterpriseaigroup.com';
+    desktop.titleBar.textContent = doc.title || 'Safari';
+    return;
+  }
 
   const path = doc.location.pathname.replace(/\.html$/, '');
   desktop.urlBar.textContent = `enterpriseaigroup.com${path}`;
@@ -641,10 +654,27 @@ desktop.frame.addEventListener('load', () => {
 });
 
 window.addEventListener('message', (e) => {
-  // Only the page inside our own browser window may drive the desktop.
-  if (e.source !== desktop.frame.contentWindow) return;
+  const fromBrowser = e.source === desktop.frame.contentWindow;
+  const fromMail = desktop.mailFrame && e.source === desktop.mailFrame.contentWindow;
+  if (!fromBrowser && !fromMail) return;
   const msg = e.data;
   if (!msg || !msg.eai) return;
+
+  if (msg.action === 'open-admin') {
+    const url = msg.data && msg.data.url;
+    if (url) {
+      desktop.frame.src = url;
+      desktop.urlBar.textContent = 'app.enterpriseaigroup.com/leave/submissions';
+      desktop.titleBar.textContent = (msg.data && msg.data.title) || 'Enterprise AI';
+      focusWin('browser');
+      if (desktop.wins.mail) hideWin('mail');
+      const mailBadge = dockItem('mail')?.querySelector('.badge');
+      if (mailBadge) mailBadge.hidden = true;
+    }
+    return;
+  }
+
+  if (!fromBrowser) return;
 
   if (msg.nav) {
     desktop.urlBar.textContent = String(msg.nav.url || '');
@@ -772,6 +802,7 @@ if (desktopEl) {
 setHost('terminal');
 browser.history = [HOME_PAGE];
 browser.at = 0;
+browser.go(HOME_PAGE, { push: false });
 focusWin('browser');
 syncDock();
 

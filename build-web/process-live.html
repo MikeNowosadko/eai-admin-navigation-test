@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/live" />
+<title>Prototype — Live process · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/mkt-site.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad ad-live">
+
+<header class="ad-live-hd">
+  <a class="ad-live-back" href="ws-processes.html" id="backLink">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    All processes
+  </a>
+  <div class="ad-live-title">
+    <b id="pName">—</b>
+    <span class="ad-badge" id="pBadge"><i class="dot"></i>—</span>
+  </div>
+  <span class="ad-live-url" id="pUrl"></span>
+</header>
+
+<main class="ad-live-main" id="preview"></main>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-live.js?v=mtg8tt0q.j1"></script>
+<script>
+  (function () {
+    const qs = new URLSearchParams(location.search);
+    const id = qs.get('app') || 'candidate-screening';
+    const D = window.ADMIN;
+    const PL = window.AD_PROCESS_LIVE;
+    const preview = document.getElementById('preview');
+
+    if (!D || !PL) {
+      preview.innerHTML =
+        '<div class="ad-live-miss"><p>Preview data failed to load.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
+      return;
+    }
+
+    const p = D.process(id);
+    const live = PL.forProcess(id);
+
+    if (!p || !live) {
+      preview.innerHTML =
+        '<div class="ad-live-miss"><p>That process doesn’t have a live preview in this prototype.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
+      return;
+    }
+
+    document.title = `Prototype — ${p.name} · Enterprise AI`;
+    document.getElementById('pName').textContent = p.name;
+    const badge = document.getElementById('pBadge');
+    badge.className = `ad-badge ${p.live ? 'green' : 'amber'}`;
+    badge.innerHTML = `<i class="dot"></i>${p.status}`;
+    if (p.live && p.url && p.url !== '—') {
+      document.getElementById('pUrl').textContent = p.url;
+    }
+    preview.innerHTML = PL.render(live.app, live.brand);
+    PL.bindPreview(preview);
+
+    /* Return to the page we came from when possible. */
+    const ref = document.referrer;
+    if (ref && /\/build-web\//.test(ref)) {
+      try {
+        const back = new URL(ref);
+        if (back.pathname.endsWith('.html')) {
+          document.getElementById('backLink').href = back.pathname.split('/').pop() + back.search;
+        }
+      } catch { /* keep default */ }
+    }
+  }());
+</script>
+</body>
+</html>

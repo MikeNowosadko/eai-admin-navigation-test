@@ -59,21 +59,22 @@
   /* Resolved through the seed, not read raw — the id is written into
      hrefs via innerHTML. */
   const appId = D.process(new URLSearchParams(location.search).get('app')).id;
-  const sum = D.overview.summary;
+  const clients = D.clientsFor(appId);
+  const sum = D.overviewFor(appId).summary;
 
   document.getElementById('rangeBtn').innerHTML = `${window.adIcon('calendar')}Last 30 days${window.adIcon('chev')}`;
   document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export`;
 
   /* The busiest client and the leakiest one are rarely the same, which is
      the reason this table exists rather than one process-wide number. */
-  const leakiest = [...D.clients].sort((a, b) => a.completionRate - b.completionRate)[0];
+  const leakiest = [...clients].sort((a, b) => a.completionRate - b.completionRate)[0];
   document.getElementById('totals').innerHTML = `
-    <div class="ad-tile"><span class="k">Clients</span><span class="v">${D.clients.length}</span><span class="m">all active this month</span></div>
+    <div class="ad-tile"><span class="k">Clients</span><span class="v">${clients.length}</span><span class="m">all active this month</span></div>
     <div class="ad-tile"><span class="k">Submissions</span><span class="v">${sum.total.toLocaleString()}</span><span class="m">across every client</span></div>
     <div class="ad-tile"><span class="k">Completion rate</span><span class="v">${sum.completionRate}%</span><span class="m">${sum.completed.toLocaleString()} completed</span></div>
     <div class="ad-tile"><span class="k">Lowest completion</span><span class="v" style="font-size:22px;line-height:34px;">${leakiest.name}</span><span class="m down">${window.adIcon('down')}${leakiest.completionRate}% completed</span></div>`;
 
-  document.getElementById('rows').innerHTML = D.clients.map((c) => `
+  document.getElementById('rows').innerHTML = clients.map((c) => `
     <a class="r" href="app-client.html?app=${appId}&client=${c.id}">
       <div class="grow" style="display:flex;align-items:center;gap:10px;">
         <span class="ad-avatar sq">${c.initial}</span>

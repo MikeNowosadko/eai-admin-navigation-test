@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mail</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: #fff; color: #1d1d1f; height: 100vh; display: flex; flex-direction: column;
+  }
+  .mail-toolbar {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #e5e5ea;
+    background: #f5f5f7; font-size: 13px; color: #6e6e73;
+  }
+  .mail-body { display: flex; flex: 1; min-height: 0; }
+  .mail-list {
+    width: 320px; border-right: 1px solid #e5e5ea; overflow: auto; background: #fafafa;
+  }
+  .mail-row {
+    display: block; width: 100%; border: 0; border-bottom: 1px solid #ececf0; background: #fff;
+    text-align: left; padding: 12px 14px; cursor: pointer;
+  }
+  .mail-row:hover { background: #f2f2f7; }
+  .mail-row.unread { background: #eef4ff; }
+  .mail-row.on { background: #e8f0fe; }
+  .mail-row b { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .mail-row span { display: block; font-size: 12px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mail-row i { display: block; font-size: 11px; color: #aeaeb2; font-style: normal; margin-top: 4px; }
+  .mail-read { flex: 1; padding: 24px 28px; overflow: auto; }
+  .mail-read h1 { margin: 0 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .mail-meta { font-size: 13px; color: #6e6e73; margin-bottom: 20px; }
+  .mail-meta b { color: #1d1d1f; font-weight: 600; }
+  .mail-copy { font-size: 14px; line-height: 1.55; color: #3a3a3c; max-width: 560px; }
+  .mail-copy p { margin: 0 0 14px; }
+  .mail-cta {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px 16px;
+    border: 0; border-radius: 8px; background: #007aff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .mail-cta:hover { background: #0066d6; }
+  .mail-logo { font-size: 12px; font-weight: 700; color: #007aff; letter-spacing: 0.02em; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<div class="mail-toolbar">Inbox · gareth@northwindops.com · 2 unread</div>
+<div class="mail-body">
+  <div class="mail-list" id="list"></div>
+  <div class="mail-read" id="read"></div>
+</div>
+
+<script>
+  const ADMIN_URL = '../build-web/app-submissions.html?app=leave-approval';
+
+  const EMAILS = [
+    {
+      id: 'e1',
+      unread: true,
+      from: 'Enterprise AI',
+      subject: '5 new leave requests this week',
+      time: '1h ago',
+      body: [
+        'Hi Gareth,',
+        'Your Leave approval process received 5 new submissions since Monday — sick leave, annual leave and personal leave.',
+        'Open Enterprise AI to review them in Submissions.',
+      ],
+    },
+    {
+      id: 'e2',
+      unread: true,
+      from: 'Enterprise AI',
+      subject: 'Sick leave submitted · Tom Halloran',
+      time: '2h ago',
+      body: [
+        'Tom Halloran submitted a sick leave request.',
+        'Status: In progress · awaiting manager review.',
+      ],
+    },
+    {
+      id: 'e3',
+      unread: false,
+      from: 'Enterprise AI',
+      subject: 'Annual leave request completed · Priya Sharma',
+      time: 'Yesterday',
+      body: [
+        'Priya Sharma completed an annual leave request for 12–16 Sep.',
+      ],
+    },
+  ];
+
+  let active = EMAILS[0].id;
+
+  function openAdmin() {
+    window.parent.postMessage({
+      eai: true,
+      action: 'open-admin',
+      data: { url: ADMIN_URL, title: 'Leave approval · Enterprise AI' },
+    }, '*');
+  }
+
+  function renderList() {
+    document.getElementById('list').innerHTML = EMAILS.map((e) => `
+      <button type="button" class="mail-row${e.unread ? ' unread' : ''}${e.id === active ? ' on' : ''}" data-id="${e.id}">
+        <b>${e.from}</b>
+        <span>${e.subject}</span>
+        <i>${e.time}</i>
+      </button>`).join('');
+  }
+
+  function renderRead() {
+    const e = EMAILS.find((x) => x.id === active);
+    document.getElementById('read').innerHTML = `
+      <div class="mail-logo">ENTERPRISE AI</div>
+      <h1>${e.subject}</h1>
+      <div class="mail-meta"><b>${e.from}</b> · ${e.time} · To: gareth@northwindops.com</div>
+      <div class="mail-copy">
+        ${e.body.map((p) => `<p>${p}</p>`).join('')}
+        <button class="mail-cta" type="button" id="cta">View submissions in Enterprise AI</button>
+      </div>`;
+    document.getElementById('cta').addEventListener('click', openAdmin);
+  }
+
+  document.getElementById('list').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-id]');
+    if (!btn) return;
+    active = btn.dataset.id;
+    const row = EMAILS.find((x) => x.id === active);
+    if (row) row.unread = false;
+    renderList();
+    renderRead();
+  });
+
+  renderList();
+  renderRead();
+</script>
+</body>
+</html>

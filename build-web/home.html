@@ -5,6 +5,11 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<script>
+  if (sessionStorage.getItem('bw-signed-in') === '1' || new URLSearchParams(location.search).get('tenancy') === 'seeded') {
+    location.replace(`ws-home.html${location.search || '?tenancy=seeded'}`);
+  }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/home" />

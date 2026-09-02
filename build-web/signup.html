@@ -325,7 +325,7 @@
     if (prompt) sessionStorage.setItem('bw-pending-prompt', prompt);
     document.body.classList.add('bd-gate-leaving');
     setTimeout(() => {
-      window.location.href = window.bdCarry('home.html', {
+      window.location.href = window.bdCarry('ws-home.html', {
         email: signedUpEmail,
         ws: wsNameInput.value.trim(),
         country: wsCountry.value,
