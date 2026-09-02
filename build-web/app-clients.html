@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/clients" />
+<title>Prototype — Clients · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="clients">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Clients</h1>
+      <p>The organisations using this process. Open one to see its submissions and analytics.</p>
+    </div>
+    <div class="ad-hd-acts">
+      <button class="ad-btn" type="button" data-stub id="rangeBtn"></button>
+      <button class="ad-btn" type="button" data-stub id="exportBtn"></button>
+    </div>
+  </div>
+
+  <div class="ad-grid" style="margin-top:24px;" id="totals"></div>
+
+  <div class="ad-c">
+    <div class="ad-c-hd">
+      <div><h2>By client</h2><p class="sub">Share of volume across the last 30 days.</p></div>
+      <button class="ad-link" type="button" data-stub>Add client</button>
+    </div>
+    <div class="ad-t">
+      <div class="hd">
+        <div class="grow">Client</div>
+        <div style="width:104px;flex:0 0 104px;" class="num">Submissions</div>
+        <div style="width:88px;flex:0 0 88px;" class="num">Completed</div>
+        <div style="width:96px;flex:0 0 96px;" class="num">Avg time</div>
+        <div style="width:192px;flex:0 0 192px;padding-left:24px;">Share of volume</div>
+        <div style="width:20px;flex:0 0 20px;"></div>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const A = window.ADANALYTICS;
+  /* Resolved through the seed, not read raw — the id is written into
+     hrefs via innerHTML. */
+  const appId = D.process(new URLSearchParams(location.search).get('app')).id;
+  const sum = D.overview.summary;
+
+  document.getElementById('rangeBtn').innerHTML = `${window.adIcon('calendar')}Last 30 days${window.adIcon('chev')}`;
+  document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export`;
+
+  /* The busiest client and the leakiest one are rarely the same, which is
+     the reason this table exists rather than one process-wide number. */
+  const leakiest = [...D.clients].sort((a, b) => a.completionRate - b.completionRate)[0];
+  document.getElementById('totals').innerHTML = `
+    <div class="ad-tile"><span class="k">Clients</span><span class="v">${D.clients.length}</span><span class="m">all active this month</span></div>
+    <div class="ad-tile"><span class="k">Submissions</span><span class="v">${sum.total.toLocaleString()}</span><span class="m">across every client</span></div>
+    <div class="ad-tile"><span class="k">Completion rate</span><span class="v">${sum.completionRate}%</span><span class="m">${sum.completed.toLocaleString()} completed</span></div>
+    <div class="ad-tile"><span class="k">Lowest completion</span><span class="v" style="font-size:22px;line-height:34px;">${leakiest.name}</span><span class="m down">${window.adIcon('down')}${leakiest.completionRate}% completed</span></div>`;
+
+  document.getElementById('rows').innerHTML = D.clients.map((c) => `
+    <a class="r" href="app-client.html?app=${appId}&client=${c.id}">
+      <div class="grow" style="display:flex;align-items:center;gap:10px;">
+        <span class="ad-avatar sq">${c.initial}</span>
+        <span style="font-size:14px;font-weight:500;">${c.name}</span>
+      </div>
+      <div style="width:104px;flex:0 0 104px;" class="num"><b style="font-weight:500;">${c.submissions.toLocaleString()}</b></div>
+      <div style="width:88px;flex:0 0 88px;color:var(--ad-ink-3);" class="num">${c.completionRate}%</div>
+      <div style="width:96px;flex:0 0 96px;color:var(--ad-ink-3);" class="num">${A.formatTime(c.avgMinutes)}</div>
+      <div style="width:192px;flex:0 0 192px;padding-left:24px;display:flex;align-items:center;gap:10px;">
+        <span class="ad-bar"><i style="width:${c.share}%"></i></span>
+        <span style="width:32px;text-align:right;font-size:12px;color:var(--ad-ink-4);">${c.share}%</span>
+      </div>
+      <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
+    </a>`).join('');
+</script>
+</body>
+</html>

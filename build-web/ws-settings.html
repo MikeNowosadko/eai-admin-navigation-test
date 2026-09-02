@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/settings" />
+<title>Prototype — Workspace settings · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="ws" data-ad-nav="settings" data-ad-title="Settings">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Settings</h1>
+      <p>Defaults and policy for everyone in <span id="wsName">this workspace</span>.</p>
+    </div>
+    <div class="ad-hd-acts"><button class="ad-btn dark" type="button" id="saveBtn">Save changes</button></div>
+  </div>
+
+  <div class="ad-tabs" id="tabs">
+    <button type="button" data-tab="general">General</button>
+    <button type="button" data-tab="harness" class="on">Harness defaults</button>
+    <button type="button" data-tab="billing">Billing &amp; credits</button>
+    <button type="button" data-tab="danger">Danger zone</button>
+  </div>
+
+  <!-- General ------------------------------------------------------ -->
+  <section data-pane="general" hidden>
+    <div class="ad-c pad">
+      <h2>Workspace</h2>
+      <p class="sub">What this workspace is called and where its data lives.</p>
+      <div style="margin-top:16px;">
+        <div class="ad-f-row">
+          <div class="ad-f"><label for="wn">Workspace name</label><input id="wn" type="text" /></div>
+          <div class="ad-f"><label for="wr">Data region</label>
+            <select id="wr"><option>Australia (Sydney)</option><option>EU (Frankfurt)</option><option>US (Virginia)</option></select>
+          </div>
+        </div>
+        <div class="ad-f"><label for="wu">Workspace URL</label>
+          <div class="ctl read"><span class="grow mono" id="wu">app.enterpriseaigroup.com/northwind-ops</span><span class="ad-link" data-copy>Copy</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-c">
+      <div class="ad-c-row" style="border-top:0;">
+        <div class="tx"><b>Default access for new processes</b><span>What a process is set to the moment it is created.</span></div>
+        <select style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;">
+          <option>Only invited people</option><option selected>Anyone in workspace</option>
+        </select>
+      </div>
+      <div class="ad-c-row">
+        <div class="tx"><b>Require sign-in to run a process</b><span>Off means anyone with the link can submit.</span></div>
+        <button class="ad-toggle on" type="button" data-toggle><i></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Harness defaults --------------------------------------------- -->
+  <section data-pane="harness">
+    <div class="ad-c pad">
+      <h2>Where new members build</h2>
+      <p class="sub">They can change this later unless you lock it.</p>
+      <div class="ad-grid" style="margin-top:16px;" id="surfaces"></div>
+    </div>
+
+    <div class="ad-c">
+      <div style="padding:20px;">
+        <h2>CLI harness</h2>
+        <p class="sub">The agent your CLI members run against this workspace.</p>
+        <div class="ad-f-row" style="margin-top:16px;">
+          <div class="ad-f"><label for="agent">Default agent</label>
+            <select id="agent"><option>Claude Code</option><option>Codex</option><option>Copilot</option></select>
+          </div>
+          <div class="ad-f"><label for="model">Model</label>
+            <select id="model"><option>Claude Opus 5</option><option>Claude Sonnet 5</option><option>Claude Haiku 4.5</option></select>
+          </div>
+          <div class="ad-f"><label for="cap">Credit cap per run</label>
+            <select id="cap"><option>10 credits</option><option>25 credits</option><option>50 credits</option><option>No cap</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="ad-c-row">
+        <div class="tx"><b>Who can use the CLI</b><span>Viewers never get CLI access.</span></div>
+        <div style="display:flex;gap:8px;" id="cliRoles"></div>
+      </div>
+      <div class="ad-snippet">
+        <code id="install"></code>
+        <span class="ad-link" data-copy>Copy</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Billing ------------------------------------------------------ -->
+  <section data-pane="billing" hidden>
+    <div class="ad-grid" style="margin-top:24px;">
+      <div class="ad-tile"><span class="k">Plan</span><span class="v" id="bPlan">—</span><span class="m">Renews 1 Oct</span></div>
+      <div class="ad-tile"><span class="k">Seats</span><span class="v" id="bSeats">—</span><span class="m">1 invite pending</span></div>
+      <div class="ad-tile"><span class="k">Credits this month</span><span class="v">312</span><span class="m">of 1,000</span></div>
+    </div>
+    <div class="ad-c">
+      <div class="ad-c-row" style="border-top:0;">
+        <div class="tx" style="flex:1;min-width:0;">
+          <b>Credit usage</b><span>Resets on the 1st. Unused credits do not roll over.</span>
+          <div class="ad-bar ink" style="margin-top:10px;"><i style="width:31%"></i></div>
+        </div>
+        <button class="ad-btn sm" type="button" data-stub>Buy credits</button>
+      </div>
+      <div class="ad-c-row">
+        <div class="tx"><b>Payment method</b><span>Visa ending 4242 · expires 04/28</span></div>
+        <button class="ad-btn sm" type="button" data-stub>Update</button>
+      </div>
+      <div class="ad-c-row">
+        <div class="tx"><b>Invoices</b><span>Sent to gareth@northwindops.com on the 1st.</span></div>
+        <button class="ad-btn sm" type="button" data-stub>View invoices</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Danger ------------------------------------------------------- -->
+  <section data-pane="danger" hidden>
+    <div class="ad-c" style="border-color:#FECACA;">
+      <div class="ad-c-row" style="border-top:0;">
+        <div class="tx"><b>Transfer ownership</b><span>Hand this workspace to another Admin. You keep your seat.</span></div>
+        <button class="ad-btn sm" type="button" data-stub>Transfer</button>
+      </div>
+      <div class="ad-c-row">
+        <div class="tx"><b>Delete workspace</b><span>Removes 4 processes, 1,284 submissions and every member. Cannot be undone.</span></div>
+        <button class="ad-btn sm" type="button" style="border-color:#FECACA;color:var(--ad-red);" data-stub>Delete workspace</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const w = D.workspace;
+  const h = D.harness;
+
+  document.getElementById('wsName').textContent = w.name;
+  document.getElementById('wn').value = w.name;
+  document.getElementById('wr').value = w.region;
+  document.getElementById('bPlan').textContent = w.plan;
+  document.getElementById('bSeats').textContent = `${w.seatsUsed} / ${w.seatsTotal}`;
+  document.getElementById('install').textContent = h.install;
+  document.getElementById('agent').value = h.agent;
+  document.getElementById('model').value = h.model;
+  document.getElementById('cap').value = h.creditCap;
+
+  const SURFACES = [
+    { id: 'nocode', title: 'No-code builder', why: 'Chat and forms in the browser. No install.' },
+    { id: 'cli', title: 'CLI', why: 'Terminal harness on their own machine.' },
+    { id: 'choose', title: 'Let them choose', why: 'Both surfaces offered on first sign-in.' },
+  ];
+  function paintSurfaces() {
+    document.getElementById('surfaces').innerHTML = SURFACES.map((s) => `
+      <button class="ad-radio${h.surface === s.id ? ' on' : ''}" type="button" data-surface="${s.id}">
+        <span class="top"><b>${s.title}</b><span class="dot"></span></span>
+        <p>${s.why}</p>
+      </button>`).join('');
+    document.querySelectorAll('[data-surface]').forEach((el) => {
+      el.addEventListener('click', () => { h.surface = el.dataset.surface; paintSurfaces(); });
+    });
+  }
+  paintSurfaces();
+
+  function paintRoles() {
+    document.getElementById('cliRoles').innerHTML = Object.keys(h.cliRoles).map((r) => {
+      const on = h.cliRoles[r];
+      return `<button type="button" data-role="${r}" style="height:28px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:500;${on ? 'background:var(--ad-ink-2);color:#fff;' : 'border:1px solid var(--ad-line);color:var(--ad-faint);'}">${r}</button>`;
+    }).join('');
+    document.querySelectorAll('[data-role]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const r = el.dataset.role;
+        if (r === 'Owner') return window.adToast('Owners always have CLI access.');
+        h.cliRoles[r] = !h.cliRoles[r];
+        paintRoles();
+      });
+    });
+  }
+  paintRoles();
+
+  const tabs = document.getElementById('tabs');
+  function show(name) {
+    tabs.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
+    document.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+    history.replaceState(null, '', `?tab=${name}`);
+  }
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b) show(b.dataset.tab);
+  });
+  show(new URLSearchParams(location.search).get('tab') || 'harness');
+
+  document.querySelectorAll('[data-toggle]').forEach((el) => {
+    el.addEventListener('click', () => el.classList.toggle('on'));
+  });
+  document.querySelectorAll('[data-copy]').forEach((el) => {
+    el.addEventListener('click', () => window.adToast('Copied to clipboard.'));
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => window.adToast('Saved. (Nothing persists in the prototype.)'));
+</script>
+</body>
+</html>

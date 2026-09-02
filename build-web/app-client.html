@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/clients/detail" />
+<title>Prototype — Client · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="client">
+
+<div id="adPane">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div style="width:44px;height:44px;flex:0 0 44px;border-radius:10px;background:var(--ad-blue-wash);color:var(--ad-blue);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;" id="cAv">A</div>
+    <div style="flex:1;min-width:0;">
+      <h1 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;" id="cName">—</h1>
+      <p style="margin:0;font-size:13px;color:var(--ad-mute);" id="cMeta">—</p>
+    </div>
+    <button class="ad-btn" type="button" data-stub id="cSettings"></button>
+  </div>
+
+  <div class="ad-tabs" id="tabs">
+    <button type="button" data-tab="submissions" class="on">Submissions</button>
+    <button type="button" data-tab="analytics">Analytics</button>
+  </div>
+
+  <!-- Submissions -------------------------------------------------- -->
+  <section data-pane="submissions">
+    <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
+      <div class="ad-f" style="flex:1;min-width:0;">
+        <div class="ctl" style="margin-top:0;">
+          <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
+          <input id="q" type="search" placeholder="Search by reference or person…" style="flex:1;border:0;outline:none;padding:0;height:auto;margin-top:0;" />
+        </div>
+      </div>
+      <select id="statusFilter" style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;font-size:14px;font-weight:500;">
+        <option value="">All statuses</option>
+        <option value="completed">Completed</option>
+        <option value="in_progress">In progress</option>
+        <option value="abandoned">Abandoned</option>
+      </select>
+      <button class="ad-btn" type="button" data-stub id="rangeBtn"></button>
+      <button class="ad-btn" type="button" data-stub id="exportBtn"></button>
+    </div>
+
+    <div class="ad-c">
+      <div class="ad-t">
+        <div class="hd">
+          <div style="width:104px;flex:0 0 104px;">Reference</div>
+          <div class="grow">Person</div>
+          <div style="width:132px;flex:0 0 132px;">Started</div>
+          <div style="width:132px;flex:0 0 132px;">Status</div>
+          <div style="width:150px;flex:0 0 150px;">Reached</div>
+          <div style="width:96px;flex:0 0 96px;">Device</div>
+          <div style="width:76px;flex:0 0 76px;" class="num">Time</div>
+          <div style="width:20px;flex:0 0 20px;"></div>
+        </div>
+        <div id="subRows"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analytics ---------------------------------------------------- -->
+  <section data-pane="analytics" hidden>
+    <div class="ad-grid" style="margin-top:20px;" id="aTiles"></div>
+
+    <div class="ad-c pad">
+      <h2>Outcomes</h2>
+      <p class="sub" id="oSub">—</p>
+      <div class="ad-stack" id="oStack"></div>
+      <div class="ad-legend" id="oLegend"></div>
+    </div>
+
+    <div class="ad-c">
+      <div class="ad-c-hd">
+        <div><h2>Where users drop off</h2><p class="sub" id="fSub">Same data, two views</p></div>
+        <div class="ad-pill" id="funnelTabs">
+          <button type="button" class="on" data-fun="funnel">Funnel</button>
+          <button type="button" data-fun="table">Table</button>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px;" id="funnelBody"></div>
+    </div>
+  </section>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const A = window.ADANALYTICS;
+  const qs = new URLSearchParams(location.search);
+  /* Both resolved through the seed, not read raw — they are written into
+     hrefs via innerHTML. */
+  const appId = D.process(qs.get('app')).id;
+  const c = D.client(qs.get('client'));
+  const rows = D.submissions[c.id] || [];
+
+  document.getElementById('cAv').textContent = c.initial;
+  document.getElementById('cName').textContent = c.name;
+  document.getElementById('cMeta').textContent =
+    `${c.submissions.toLocaleString()} submissions · ${c.completionRate}% completed · avg ${A.formatTime(c.avgMinutes)}`;
+  document.getElementById('cSettings').innerHTML = `${window.adIcon('gear')}Client settings`;
+  document.getElementById('rangeBtn').innerHTML = `${window.adIcon('calendar')}Last 30 days`;
+  document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export`;
+  document.getElementById('searchIcon').innerHTML = window.adIcon('search');
+  document.title = `Prototype — ${c.name} · Enterprise AI`;
+
+  /* Submissions — search and status filter narrow the same list. */
+  function paintSubs() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    const shown = rows.filter((s) =>
+      (!status || s.status === status) &&
+      (!q || s.ref.toLowerCase().includes(q) || s.who.toLowerCase().includes(q)));
+
+    document.getElementById('subRows').innerHTML = shown.length ? shown.map((s) => {
+      const st = D.STATUS[s.status];
+      return `<button class="r" type="button" data-sub="${s.ref}">
+        <div style="width:104px;flex:0 0 104px;font-family:var(--ad-mono);font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.ref}</div>
+        <div class="grow" style="text-align:left;min-width:0;">
+          <span style="display:block;font-size:14px;font-weight:500;">${s.who}</span>
+          <span style="display:block;font-size:12px;color:var(--ad-mute);">${s.email}</span>
+        </div>
+        <div style="width:132px;flex:0 0 132px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.at}</div>
+        <div style="width:132px;flex:0 0 132px;display:flex;"><span class="ad-badge ${st.tone}"><i class="dot"></i>${st.label}</span></div>
+        <div style="width:150px;flex:0 0 150px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${D.STEPS[s.step - 1]}</div>
+        <div style="width:96px;flex:0 0 96px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.device}</div>
+        <div style="width:76px;flex:0 0 76px;font-size:13px;color:var(--ad-ink-4);" class="num">${A.formatTime(s.minutes)}</div>
+        <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
+      </button>`;
+    }).join('') : `<div class="ad-empty">No submissions match that filter.</div>`;
+
+    document.querySelectorAll('[data-sub]').forEach((el) => {
+      el.addEventListener('click', () => window.adToast(`${el.dataset.sub} — the answers view isn’t in this prototype yet.`));
+    });
+  }
+  document.getElementById('q').addEventListener('input', paintSubs);
+  document.getElementById('statusFilter').addEventListener('change', paintSubs);
+  paintSubs();
+
+  /* Analytics — every figure below is read off this client's steps. */
+  const worst = A.fixes(c.metrics, 0, 1)[0];
+  document.getElementById('aTiles').innerHTML = `
+    <div class="ad-tile"><span class="k">Completion rate</span><span class="v">${c.completionRate}%</span><span class="m">${c.completed.toLocaleString()} of ${c.submissions.toLocaleString()} submissions</span></div>
+    <div class="ad-tile"><span class="k">Avg time to complete</span><span class="v">${A.formatTime(c.avgMinutes)}</span><span class="m">across ${c.metrics.length} steps</span></div>
+    <div class="ad-tile"><span class="k">Biggest leak</span><span class="v" style="font-size:22px;line-height:34px;">${worst.stepTitle}</span><span class="m down">${window.adIcon('down')}${worst.dropOffRate.toFixed(1)}% drop-off</span></div>`;
+
+  const OUT = [
+    { k: 'Completed', n: c.completed, color: '#16A34A' },
+    { k: 'In progress', n: c.inProgress, color: '#D97706' },
+    { k: 'Abandoned', n: c.abandoned, color: '#DC2626' },
+  ];
+  const outTotal = OUT.reduce((a, x) => a + x.n, 0);
+  document.getElementById('oSub').textContent = `${c.submissions.toLocaleString()} submissions in the last 30 days.`;
+  document.getElementById('oStack').innerHTML = OUT.map((x) =>
+    `<i style="width:${((x.n / outTotal) * 100).toFixed(1)}%;background:${x.color};"></i>`).join('');
+  document.getElementById('oLegend').innerHTML = OUT.map((x) =>
+    `<span><span class="sw" style="background:${x.color};"></span>${x.k}<b>${x.n} · ${Math.round((x.n / outTotal) * 100)}%</b></span>`).join('');
+
+  document.getElementById('fSub').textContent = `${c.name} only · ${c.metrics.length} steps`;
+  function paintFunnel(mode) {
+    const el = document.getElementById('funnelBody');
+    el.innerHTML = mode === 'table' ? A.tableHTML(c.metrics) : A.funnelHTML(c.metrics);
+    if (mode !== 'table') A.bindFunnel(el, c.metrics);
+  }
+  paintFunnel('funnel');
+  document.getElementById('funnelTabs').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#funnelTabs button').forEach((x) => x.classList.toggle('on', x === b));
+    paintFunnel(b.dataset.fun);
+  });
+
+  const tabs = document.getElementById('tabs');
+  function show(name) {
+    tabs.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
+    document.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+    const u = new URLSearchParams(location.search);
+    u.set('tab', name);
+    history.replaceState(null, '', `?${u}`);
+  }
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b) show(b.dataset.tab);
+  });
+  show(qs.get('tab') === 'analytics' ? 'analytics' : 'submissions');
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/settings/users" />
+<title>Prototype — Users &amp; roles · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="ws" data-ad-nav="users" data-ad-title="Users &amp; roles">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Users &amp; roles</h1>
+      <p>Everyone who can build, run, or watch processes in <span id="wsName">this workspace</span>.</p>
+    </div>
+    <div class="ad-hd-acts">
+      <button class="ad-btn dark" type="button" data-stub id="inviteBtn">Invite people</button>
+    </div>
+  </div>
+
+  <div class="ad-c" style="margin-top:24px;">
+    <div class="ad-c-row" style="border-top:0;">
+      <div class="tx" style="flex:1;min-width:0;">
+        <b id="seatLine">— of — seats used</b>
+        <span id="seatSub">—</span>
+        <div class="ad-bar ink" style="margin-top:10px;"><i id="seatBar" style="width:0%"></i></div>
+      </div>
+      <button class="ad-btn sm" type="button" data-stub>Add seats</button>
+    </div>
+  </div>
+
+  <div class="ad-c">
+    <div class="ad-t">
+      <div class="hd">
+        <div class="grow">Person</div>
+        <div style="width:140px;flex:0 0 140px;">Role</div>
+        <div style="width:168px;flex:0 0 168px;">Builds with</div>
+        <div style="width:120px;flex:0 0 120px;">Last active</div>
+        <div style="width:20px;flex:0 0 20px;"></div>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const w = D.workspace;
+  document.getElementById('wsName').textContent = w.name;
+  document.getElementById('seatLine').textContent = `${w.seatsUsed} of ${w.seatsTotal} seats used`;
+  document.getElementById('seatSub').textContent = `${w.invitesPending} invite pending · ${w.plan} plan`;
+  document.getElementById('seatBar').style.width = `${Math.round((w.seatsUsed / w.seatsTotal) * 100)}%`;
+
+  document.getElementById('rows').innerHTML = D.members.map((m) => `
+    <div class="r">
+      <div class="grow" style="display:flex;align-items:center;gap:10px;">
+        <span class="ad-avatar${m.pending ? ' dim' : ''}">${m.av}</span>
+        <span style="display:flex;flex-direction:column;min-width:0;">
+          <b style="font-size:14px;font-weight:500;line-height:20px;">${m.name}</b>
+          <span style="font-size:12px;color:var(--ad-mute);">${m.email}${m.pending ? ' · invite pending' : ''}</span>
+        </span>
+      </div>
+      <div style="width:140px;flex:0 0 140px;"><span class="ad-role">${m.role}</span></div>
+      <div style="width:168px;flex:0 0 168px;display:flex;gap:6px;">
+        ${m.builds.length ? m.builds.map((b) => `<span class="ad-chip">${b}</span>`).join('') : '<span style="color:var(--ad-faint);">—</span>'}
+      </div>
+      <div style="width:120px;flex:0 0 120px;font-size:13px;color:var(--ad-ink-4);">${m.seen}</div>
+      <div style="width:20px;flex:0 0 20px;" class="end">
+        <button type="button" data-stub aria-label="Manage ${m.name}" style="color:var(--ad-faint);display:flex;">${window.adIcon('dots')}</button>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('#rows [data-stub]').forEach((el) => {
+    el.addEventListener('click', () => window.adToast('Role changes aren’t part of this prototype.'));
+  });
+</script>
+</body>
+</html>
