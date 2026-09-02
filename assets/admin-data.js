@@ -54,10 +54,10 @@ window.ADMIN = (function () {
   };
 
   const processes = [
-    { id: 'kyc-onboarding', name: 'KYC Onboarding', initial: 'K', subtitle: 'Customer identity verification · Finance', desc: 'Collect documents and verify identity in four steps.', status: 'Live', seen: '2h ago', url: 'kyc.northwindops.app', access: 'Anyone in workspace', badge: true },
-    { id: 'candidate-screening', name: 'Candidate Screening', initial: 'C', subtitle: 'Shortlisting · People', desc: 'Score applicants against a rubric and shortlist the top of the list.', status: 'Live', seen: 'Yesterday', url: 'screening.northwindops.app', access: 'Only invited people', badge: true },
-    { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', subtitle: 'Supplier checks · Procurement', desc: 'Collect vendor details and run compliance checks.', status: 'Draft', seen: '3d ago', url: '—', access: 'Only invited people', badge: true },
-    { id: 'invoice-processing', name: 'Invoice processing', initial: 'I', subtitle: 'PO matching · Finance', desc: 'Capture invoice details and match them to purchase orders.', status: 'Draft', seen: 'Last week', url: '—', access: 'Only invited people', badge: true },
+    { id: 'kyc-onboarding', name: 'KYC Onboarding', initial: 'K', subtitle: 'Customer identity verification · Finance', desc: 'Collect documents and verify identity in four steps.', status: 'Live', seen: '2h ago', hoursAgo: 2, url: 'kyc.northwindops.app', access: 'Anyone in workspace', badge: true },
+    { id: 'candidate-screening', name: 'Candidate Screening', initial: 'C', subtitle: 'Shortlisting · People', desc: 'Score applicants against a rubric and shortlist the top of the list.', status: 'Live', seen: 'Yesterday', hoursAgo: 26, url: 'screening.northwindops.app', access: 'Only invited people', badge: true },
+    { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', subtitle: 'Supplier checks · Procurement', desc: 'Collect vendor details and run compliance checks.', status: 'Draft', seen: '3d ago', hoursAgo: 72, url: '—', access: 'Only invited people', badge: true },
+    { id: 'invoice-processing', name: 'Invoice processing', initial: 'I', subtitle: 'PO matching · Finance', desc: 'Capture invoice details and match them to purchase orders.', status: 'Draft', seen: 'Last week', hoursAgo: 168, url: '—', access: 'Only invited people', badge: true },
   ];
 
   /* The four steps of the published form. */
@@ -108,6 +108,39 @@ window.ADMIN = (function () {
   const processSummary = A.summary(processMetrics);
   clients.forEach((c) => { c.share = Math.round((c.submissions / processSummary.total) * 100); });
 
+  /* Per-process headline numbers for the processes list. KYC's are read
+     off its funnel so the list can never disagree with the dashboard;
+     the others are seeded, and drafts have none by definition. */
+  const PROCESS_STATS = {
+    'candidate-screening': { submissions: 486, completionRate: 61 },
+  };
+  processes.forEach((p) => {
+    p.live = p.status === 'Live';
+    /* Only KYC has a seeded funnel and client list. Everything downstream
+       checks this rather than showing KYC's numbers under another name. */
+    p.hasAnalytics = p.id === 'kyc-onboarding';
+    if (!p.live) { p.stats = null; return; }
+    p.stats = p.id === 'kyc-onboarding'
+      ? { submissions: processSummary.total, completionRate: processSummary.completionRate }
+      : PROCESS_STATS[p.id] || { submissions: 0, completionRate: 0 };
+  });
+
+  /* Workspace roll-up — the sum of the live processes, weighted by volume
+     so a small process cannot drag the average around. */
+  const live = processes.filter((p) => p.live);
+  const totalSubmissions = live.reduce((a, p) => a + p.stats.submissions, 0);
+  const workspace_summary = {
+    processes: processes.length,
+    live: live.length,
+    draft: processes.length - live.length,
+    submissions: totalSubmissions,
+    completionRate: totalSubmissions
+      ? Math.round(live.reduce((a, p) => a + p.stats.completionRate * p.stats.submissions, 0) / totalSubmissions)
+      : 0,
+    creditsLeft: 42,
+    creditsTotal: 100,
+  };
+
   const overview = {
     steps: STEPS,
     metrics: processMetrics,
@@ -155,5 +188,5 @@ window.ADMIN = (function () {
   function client(id) { return clients.find((c) => c.id === id) || clients[0]; }
   function process(id) { return processes.find((p) => p.id === id) || processes[0]; }
 
-  return { workspace, user, members, harness, processes, STEPS, overview, clients, submissions, STATUS, client, process };
+  return { workspace, user, members, harness, processes, summary: workspace_summary, STEPS, overview, clients, submissions, STATUS, client, process };
 })();

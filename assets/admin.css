@@ -523,3 +523,45 @@ body.ad[data-ad-shell='app'] { background: #f8fafc; }
 .ad-steps tr.worst { background: #fef2f2; }
 .ad-steps td.s { font-weight: 500; }
 .ad-steps td.h-critical, .ad-steps td.h-warning, .ad-steps td.h-healthy { font-weight: 600; }
+
+/* =================================================================
+   Split button + menu — one primary action with the rest folded
+   behind a caret, so a row of four processes is not twelve buttons.
+================================================================= */
+
+/* Deliberately not a primary button. Every row would carry one, and a
+   primary that repeats on every line is just a dark rectangle — the only
+   primary on this page is "New process" in the top bar. */
+.ad-split { display: inline-flex; align-items: stretch; border-radius: var(--ad-r-sm); overflow: hidden; border: 1px solid var(--ad-line); background: #fff; }
+.ad-split > button { display: flex; align-items: center; justify-content: center; height: 30px; color: var(--ad-ink); font-size: 13px; font-weight: 500; }
+.ad-split > button:hover { background: var(--ad-line-2); }
+.ad-split .main { padding: 0 14px; white-space: nowrap; }
+.ad-split .caret { width: 28px; border-left: 1px solid var(--ad-line); }
+.ad-split .caret svg { width: 14px; height: 14px; transition: transform 0.15s; }
+.ad-split[data-open='true'] .caret svg { transform: rotate(180deg); }
+
+.ad-menu {
+  position: absolute; z-index: 40; min-width: 168px; padding: 4px;
+  background: #fff; border: 1px solid var(--ad-line); border-radius: var(--ad-r-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+.ad-menu[hidden] { display: none; }
+.ad-menu a, .ad-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%; height: 32px;
+  padding: 0 10px; border-radius: var(--ad-r-sm); font-size: 13px; font-weight: 500;
+  color: var(--ad-ink); text-align: left; white-space: nowrap;
+}
+.ad-menu a:hover, .ad-menu button:hover { background: var(--ad-line-2); }
+.ad-menu svg { width: 14px; height: 14px; color: var(--ad-ink-4); flex-shrink: 0; }
+.ad-menu .sep { height: 1px; margin: 4px 0; background: var(--ad-line-2); }
+.ad-menu .danger { color: var(--ad-red); }
+.ad-menu .danger svg { color: var(--ad-red); }
+
+/* sortable column headers */
+.ad-t .hd button { display: inline-flex; align-items: center; gap: 4px; font: inherit; color: inherit; }
+.ad-t .hd button:hover { color: var(--ad-ink); }
+.ad-t .hd button svg { width: 12px; height: 12px; opacity: 0; }
+.ad-t .hd button[aria-sort] { color: var(--ad-ink); }
+.ad-t .hd button[aria-sort] svg { opacity: 1; }
+.ad-t .hd button[aria-sort='descending'] svg { transform: rotate(180deg); }
+.ad-t .hd .num button { justify-content: flex-end; width: 100%; }

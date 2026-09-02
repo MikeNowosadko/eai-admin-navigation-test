@@ -37,7 +37,7 @@
 
   /* The pages this router owns. A link to anything else is a real link. */
   const ROUTES = [
-    'ws-home.html', 'ws-users.html', 'ws-settings.html', 'profile.html',
+    'ws-home.html', 'ws-processes.html', 'ws-users.html', 'ws-settings.html', 'profile.html',
     'app-overview.html', 'app-general.html', 'app-clients.html', 'app-client.html',
   ];
 
@@ -158,7 +158,7 @@
     <div class="ad-side-body">
       <nav class="ad-nav">
         ${wsItem(s, 'home', 'home', 'Home', 'ws-home.html')}
-        ${wsItem(s, 'processes', 'grid', 'All processes', null, `<i class="count">${D.processes.length}</i>`)}
+        ${wsItem(s, 'processes', 'grid', 'All processes', 'ws-processes.html', `<i class="count">${D.processes.length}</i>`)}
         ${wsItem(s, 'templates', 'template', 'Templates', null)}
         ${wsItem(s, 'integrations', 'plug', 'Integrations', null)}
       </nav>

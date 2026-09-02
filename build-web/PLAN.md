@@ -80,6 +80,7 @@ Two shells, eight screens. Enter at `ws-home.html`.
 | URL | Screen |
 | --- | --- |
 | `ws-home.html` | Workspace home — composer, templates, recent processes |
+| `ws-processes.html` | All processes — roll-up tiles, search, sortable table, split-button row actions |
 | `ws-users.html` | Users & roles — seats, members, **Builds with** (No-code / CLI) |
 | `ws-settings.html` | Settings — General · **Harness defaults** · Billing · Danger zone |
 | `profile.html` | Your profile — identity, workspaces, inherited harness |
@@ -109,6 +110,13 @@ totals, so the same holds when you drill in.
 The overview does not list submissions. A submission belongs to a client, so
 the way out of the overview is the clients card at the foot of it — each row
 carries that client's own worst step, which is rarely the process-wide one.
+
+On the processes table each row carries one split button: **Edit** with a
+caret that opens View/Preview and Manage. The middle action follows state —
+a live process can be **View**ed, a draft only **Preview**ed, because there
+is nothing published to visit. Sorting lives on the column headers rather
+than a filter control; clicking **Status** groups live above draft, which
+is the same cut the old tabs made with one less thing on screen.
 
 **Scope:** this is a form builder. A submission is completed, in progress or
 abandoned — there is no reviewer, no approval and no decision anywhere in the

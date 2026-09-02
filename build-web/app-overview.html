@@ -25,6 +25,7 @@
 
   <div id="alertSlot"></div>
 
+  <div id="dashboard">
   <div class="ad-grid" style="margin-top:20px;" id="kpis"></div>
 
     <div class="ad-two">
@@ -74,6 +75,7 @@
         <div style="flex:1;min-width:0;" id="devices"></div>
       </div>
     </div>
+  </div>
 </div>
 
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
@@ -93,6 +95,21 @@
   document.getElementById('pName').textContent = app.name;
   document.getElementById('pStatus').textContent = app.status;
   document.title = `Prototype — ${app.name} · Enterprise AI`;
+
+  /* Only KYC has a seeded funnel. Showing its numbers under another
+     process's name would make the prototype lie, so the rest say so. */
+  if (!app.hasAnalytics) {
+    document.getElementById('dashboard').innerHTML = `
+      <div class="ad-c" style="margin-top:20px;">
+        <div class="ad-empty">
+          <b style="display:block;color:var(--ad-ink);font-size:14px;">No analytics for ${app.name} yet</b>
+          <span style="display:block;margin-top:6px;">${app.live
+            ? 'Seeded funnel data only exists for KYC Onboarding in this prototype.'
+            : 'This process has not been published, so there is nothing to measure.'}</span>
+        </div>
+      </div>`;
+    document.getElementById('alertSlot').innerHTML = '';
+  } else {
 
   /* Triage banner — rendered only when a step is unhealthy, exactly as
      AttentionBanner does. Every number in it is read off the funnel. */
@@ -172,6 +189,7 @@
   }).join('');
 
   document.getElementById('allClients').href = `app-clients.html?app=${appId}`;
+
   /* "View funnel" makes sure the funnel (not the table) is showing first,
      the same handoff the real dashboard does. */
   document.querySelectorAll('[data-jump]').forEach((el) => el.addEventListener('click', () => {
@@ -179,6 +197,7 @@
     paintFunnel('funnel');
     document.getElementById('funnelCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
+  }
   document.querySelectorAll('[data-improve]').forEach((el) => el.addEventListener('click', () => {
     window.adToast('“Improve with AI” opens the builder — not wired up in this prototype.');
   }));
