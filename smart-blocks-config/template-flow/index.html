@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Template flow — marketing site to published app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* Tokens mirrored from smart-blocks-config/5layer-editor/src/styles.css */
+:root{
+  --fg:#252525; --muted:#8e8e8e; --border:#e8e8e8; --border-light:#eef0f2;
+  --surface:#fafafa; --paper:#f7f7f3; --card:#fff;
+  --brand:#1c84e0; --brand-hover:#1774c8;
+  --success:#16a34a; --success-wash:#dcfce7; --danger:#ef4444; --danger-wash:#fef2f2; --pending:#f1f1f1;
+  --r-sm:6px; --r-md:8px; --r-lg:10px; --r-xl:14px; --r-full:999px;
+  --accent:#1c84e0; --accent-wash:#eff6ff; --accent-ink:#fff; --app-bg:#fafafa;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Geist',system-ui,-apple-system,sans-serif;font-size:14px;color:var(--fg);background:#fff;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+
+/* ---------- chrome ---------- */
+.wrap{min-height:100vh}
+
+
+
+
+
+
+
+.screen{background:#fff;min-height:100vh;overflow:hidden}
+.hide{display:none !important}
+
+/* ---------- marketing ---------- */
+.mkt{background:var(--paper)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;border-bottom:1px solid var(--border);background:rgba(247,247,243,.92)}
+.nav .left{display:flex;align-items:center;gap:32px}
+.wordmark{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.wordmark span{font-weight:400;color:var(--muted)}
+.navlinks{display:flex;gap:24px;font-size:13px;color:#696c74}
+.navlinks .on{color:var(--fg);font-weight:500}
+.navactions{display:flex;align-items:center;gap:12px;font-size:13px}
+.btn-dark{padding:7px 14px;border-radius:var(--r-sm);background:#26251e;color:#fff;font-size:13px}
+.btn-out{padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:#fff;font-size:13px}
+.mkt-body{padding:44px 32px 56px}
+.mkt-h{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 20px}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tcard{display:flex;flex-direction:column;gap:8px;padding:20px;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);text-align:left}
+.tcard:hover{border-color:#cfcfcf}
+.tcard.hot{border-color:var(--brand);box-shadow:0 10px 26px -18px rgba(28,132,224,.7)}
+.dept{align-self:flex-start;padding:3px 9px;border-radius:var(--r-full);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.tcard h4{margin:0;font-size:16px;font-weight:600}
+.tcard p{margin:0;font-size:13px;line-height:20px;color:var(--muted)}
+.tcard .go{align-self:flex-start;margin-top:6px;padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px}
+/* shelves */
+.mkt-hero{padding:40px 32px 22px;display:flex;flex-direction:column;gap:18px}
+.mkt-hero h1{margin:0;font-size:44px;line-height:47px;font-weight:600;letter-spacing:-.03em;max-width:620px}
+.mkt-hero .lede{margin:0;font-size:16px;line-height:25px;color:#696c74;max-width:520px}
+.chips-row{display:flex;flex-wrap:wrap;gap:8px}
+.catchip{padding:7px 14px;border-radius:var(--r-full);background:#fff;border:1px solid var(--border);font-size:13px;color:var(--fg)}
+.catchip:hover{border-color:#cfcfcf}
+.catchip.on{background:#26251e;border-color:#26251e;color:#fff;font-weight:500}
+.catchip.more{color:var(--muted)}
+.searchbar{display:flex;align-items:center;gap:12px;max-width:520px;padding:14px 18px;border-radius:var(--r-xl);background:#fff;border:1px solid #dedcd5;box-shadow:0 8px 22px -18px rgba(38,37,30,.5)}
+.searchbar .ph{flex:1;font-size:15px;color:#b4b4b4}
+.searchbar .cnt{font-size:12px;color:#8b8a83}
+.shelf{padding:14px 0 26px 32px}
+.shelf-head{display:flex;align-items:baseline;gap:12px;padding-right:32px}
+.shelf-head h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.shelf-head .blurb{flex:1;font-size:13px;color:var(--muted)}
+.shelf-head .see{font-size:13px;font-weight:500;color:var(--brand)}
+.track{display:flex;gap:18px;margin-top:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.tile{width:400px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;text-align:left}
+.tile .shot{height:230px;border-radius:12px;border:1px solid var(--border);background:#f1f0ee;padding:20px 20px 0;overflow:hidden}
+.tile.live .shot{border-color:var(--border)}
+.tile.live:hover .shot{border-color:var(--brand);box-shadow:0 12px 30px -20px rgba(28,132,224,.75)}
+.tile .nm{font-size:16px;font-weight:600}
+.tile .mt{font-size:13px;color:var(--muted)}
+.tile.live .nm:after{content:' ›';color:var(--brand)}
+/* window inside a tile */
+.win{height:100%;background:#fff;border:1px solid rgba(38,37,30,.08);border-bottom:0;border-radius:8px 8px 0 0;overflow:hidden;display:flex;flex-direction:column}
+.win-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.win-bar .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.win-bar .t{font-size:11px;font-weight:600}
+.win-bar .s{font-size:10px;color:var(--muted)}
+.win-in{padding:12px;display:flex;flex-direction:column;gap:9px;flex:1}
+.mk-row{display:flex;align-items:center;gap:9px;font-size:10px}
+.mk-row .ic{width:14px;height:14px;border-radius:50%;flex-shrink:0;display:grid;place-items:center}
+.mk-row .gr{flex:1}
+.mk-row .rt{width:44px;flex-shrink:0;text-align:left}
+.mk-th{display:flex;gap:8px;padding:8px 12px;background:#fafaf8;border-bottom:1px solid var(--border);font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mk-td{display:flex;gap:8px;padding:9px 12px;border-bottom:1px solid #f2f2ef;font-size:10px}
+.mk-stats{display:flex;gap:10px;padding:14px 12px 10px}
+.mk-stats .st{flex:1;display:flex;flex-direction:column;gap:2px}
+.mk-stats .v{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.mk-stats .k{font-size:9px;color:var(--muted)}
+.mk-bars{display:flex;align-items:flex-end;gap:5px;height:76px;padding:0 12px 14px;flex:1}
+.mk-bars i{flex:1;border-radius:2px;background:#e7e5de;display:block}
+.mk-kan{display:flex;gap:8px;padding:12px;flex:1}
+.mk-kan .col{flex:1;display:flex;flex-direction:column;gap:6px}
+.mk-kan .h{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mk-card{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:5px;background:#f7f7f4;border:1px solid var(--border)}
+.mk-card .n{font-size:9px;font-weight:600}
+.mk-card .d{font-size:8px;color:var(--muted)}
+.mk-tl{display:flex;gap:10px}
+.mk-tl .tm{width:44px;flex-shrink:0;font-size:9px;color:var(--muted);font-family:'Geist Mono'}
+.mk-tl .ln{width:1px;background:#e4e2db;flex-shrink:0}
+.mk-tl .ev{flex:1;padding:0 0 12px 10px;display:flex;flex-direction:column;gap:2px}
+.mk-tl .ev b{font-size:10px;font-weight:600}
+.mk-tl .ev span{font-size:9px;color:var(--muted)}
+.mk-gantt{display:flex;align-items:center;gap:8px}
+.mk-gantt .lb{width:66px;flex-shrink:0;font-size:9px;color:var(--muted)}
+.mk-gantt .bar{flex:1;height:12px;display:flex}
+.mk-gantt .bar i{border-radius:3px;display:block}
+.mk-mail{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:6px;border:1px solid var(--border)}
+
+/* ---------- template detail ---------- */
+.detail{background:var(--paper)}
+.hero{display:flex;gap:40px;padding:36px 32px 40px}
+.hero .copy{width:460px;flex-shrink:0;display:flex;flex-direction:column;gap:14px}
+.bcrumb{font-size:12px;color:#8b8a83}
+.hero h1{margin:0;font-size:46px;line-height:48px;font-weight:600;letter-spacing:-.03em}
+.hero p.lede{margin:0;font-size:16px;line-height:25px;color:#696c74}
+.meta{display:flex;gap:14px;font-size:12px;color:#696c74}
+.ctas{display:flex;gap:10px;padding-top:4px}
+.btn-primary{padding:12px 22px;border-radius:var(--r-md);background:var(--accent);color:var(--accent-ink);font-size:14px;font-weight:600}
+.btn-primary:hover{filter:brightness(.94)}
+.btn-second{padding:12px 20px;border-radius:var(--r-md);background:#fff;border:1px solid #dedcd5;font-size:14px}
+.fineprint{font-size:12px;color:#8b8a83}
+.previewcol{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+.devbar{display:flex;align-items:center;gap:10px}
+.devbar .lbl{flex:1;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#8b8a83}
+.devswitch{display:flex;gap:2px;padding:3px;border-radius:var(--r-full);background:#fff;border:1px solid #e4e2db}
+.devswitch button{width:34px;height:26px;border-radius:var(--r-full);display:grid;place-items:center;color:#8b8a83}
+.devswitch button.on{background:#26251e;color:#fff}
+.devsize{width:66px;font-size:12px;color:#8b8a83}
+.stage{display:flex;justify-content:center;padding:16px;border-radius:var(--r-xl);background:#edece8;border:1px solid #e4e2db;min-height:430px}
+.stage.tablet{padding:16px 90px}
+.stage.mobile{padding:22px;align-items:flex-start}
+
+
+
+
+
+
+
+
+
+
+
+.blocks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:32px}
+.bcard{padding:18px;border:1px solid var(--border);border-radius:var(--r-lg);background:#fff;display:flex;flex-direction:column;gap:8px}
+.btag{align-self:flex-start;padding:4px 10px;border-radius:var(--r-full);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.bcard h4{margin:0;font-size:15px;font-weight:600}
+.bcard p{margin:0;font-size:12px;line-height:19px;color:var(--muted)}
+.ctabar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 32px;background:#26251e;color:#f4f3f0}
+.ctabar h3{margin:0 0 3px;font-size:19px;font-weight:600}
+.ctabar p{margin:0;font-size:13px;color:rgba(244,243,240,.65)}
+.btn-light{padding:12px 24px;border-radius:var(--r-md);background:#f4f3f0;color:#26251e;font-size:14px;font-weight:600}
+
+/* ---------- builder shell ---------- */
+.builder{display:flex;flex-direction:column;height:100vh}
+.topbar{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tb-icon{width:34px;height:34px;border-radius:var(--r-md);border:1px solid var(--border);display:grid;place-items:center}
+.tb-title{font-size:16px;font-weight:600}
+.pill{padding:4px 10px;border-radius:var(--r-full);background:var(--surface);font-size:12px;color:var(--muted)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--muted)}
+.btn-pub{padding:9px 18px;border-radius:var(--r-md);background:#efefef;color:#b4b4b4;font-size:13px;font-weight:500}
+.btn-pub.live{background:var(--brand);color:#fff}
+.bbody{display:grid;grid-template-columns:384px 1fr;flex:1;min-height:0}
+.chat{display:flex;flex-direction:column;border-right:1px solid var(--border);min-height:0}
+.chat-scroll{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg{font-size:14px;line-height:20px}
+.msg b{font-weight:600}
+.result{display:flex;gap:10px;align-items:flex-start}
+.tick{width:20px;height:20px;border-radius:var(--r-full);background:var(--success-wash);color:var(--success);display:grid;place-items:center;flex-shrink:0}
+.result .rt{font-size:13px;font-weight:600}
+.result .rs{font-size:12px;color:var(--muted)}
+.result button.edit{font-size:11px;color:var(--brand);align-self:center}
+.chat-input{display:flex;align-items:center;gap:8px;padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.chat-input .box{flex:1;padding:10px 16px;border-radius:var(--r-full);border:1px solid var(--border);font-size:13px;color:var(--muted)}
+.send{width:36px;height:36px;border-radius:var(--r-full);background:var(--brand);color:#fff;display:grid;place-items:center;flex-shrink:0}
+
+.clarify{border:1px solid var(--border);border-radius:var(--r-xl);background:#fff;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:14px}
+.clarify .q{font-size:15px;line-height:20px;font-weight:600}
+.clarify .help{font-size:13px;line-height:18px;color:var(--muted);margin-top:3px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--r-md);text-align:left;width:100%}
+.opt:hover{border-color:#cfcfcf}
+.opt.on{border-color:var(--fg);background:var(--surface)}
+.ind{width:16px;height:16px;border-radius:var(--r-full);border:1.5px solid #d5d5d5;flex-shrink:0;display:grid;place-items:center}
+.ind.sq{border-radius:4px}
+.opt.on .ind{background:var(--fg);border-color:var(--fg);color:#fff}
+.opt .txt{flex:1;font-size:14px}
+.opt .kind{font-size:11px;color:var(--muted)}
+.exp{padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--border-light);display:flex;flex-direction:column;gap:12px}
+.exp .lbl{font-size:11px;font-weight:600;color:var(--muted)}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:8px 4px;border-radius:var(--r-sm);border:1px solid var(--border);background:#fff;font-size:11px;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--fg);border-color:var(--fg);color:#fff;font-weight:500}
+.row{display:flex;align-items:center;gap:9px;font-size:12px}
+.row .grow{flex:1}
+.sw{width:32px;height:18px;border-radius:var(--r-full);background:#dcdcdc;padding:2px;display:flex;flex-shrink:0}
+.sw i{width:14px;height:14px;border-radius:var(--r-full);background:#fff;display:block}
+.sw.on{background:var(--brand);justify-content:flex-end}
+.chk{width:14px;height:14px;border-radius:4px;border:1.5px solid #d5d5d5;flex-shrink:0;display:grid;place-items:center}
+.chk.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.srcrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:var(--r-sm);border:1px solid var(--border);background:#fff;width:100%;text-align:left}
+.srcrow.on{border-color:var(--brand);background:var(--accent-wash)}
+.srcrow .nm{font-size:13px;font-weight:500}
+.srcrow .dt{font-size:11px;color:var(--muted)}
+.tag{padding:3px 9px;border-radius:var(--r-full);font-size:10px;font-weight:600}
+.tag.ok{background:var(--success-wash);color:var(--success)}
+.tag.link{color:var(--brand)}
+.cfoot{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border-light)}
+.cfoot .count{flex:1;font-size:12px;color:var(--muted)}
+.btn-skip{padding:8px 14px;border-radius:var(--r-md);font-size:13px;color:var(--muted)}
+.btn-next{padding:8px 18px;border-radius:var(--r-md);background:var(--brand);color:#fff;font-size:13px;font-weight:500}
+.btn-next[disabled]{background:#e4e4e4;color:#a8a8a8;cursor:not-allowed}
+
+.prev{display:flex;flex-direction:column;background:var(--surface);min-width:0}
+.prev-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.prev-head .t{font-size:13px;font-weight:600}
+.toggle{display:flex;gap:2px;padding:3px;border-radius:var(--r-full);background:var(--pending)}
+.toggle button{padding:6px 13px;border-radius:var(--r-full);font-size:12px;color:var(--muted)}
+.toggle button.on{background:#fff;font-weight:500;color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.prev-view{flex:1;padding:22px;overflow:auto;display:flex;justify-content:center}
+
+/* ---------- the generated app ---------- */
+.app{width:100%;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:#fff;box-shadow:0 12px 34px -22px rgba(10,12,20,.4);align-self:flex-start}
+.app.w-tablet{max-width:700px}
+.app.w-mobile{max-width:380px;border-radius:22px;border:8px solid #26251e}
+.app-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--accent);color:var(--accent-ink)}
+.app-logo{width:28px;height:28px;border-radius:var(--r-md);background:#fff;color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:14px;flex-shrink:0}
+.app-logo.swoosh{background:none}
+.app-name{font-size:15px;font-weight:700}
+.app-sub{margin-left:auto;font-size:11px;opacity:.8}
+.app-body{padding:20px;background:var(--app-bg);flex:1;display:flex;flex-direction:column;gap:14px}
+.app-title{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.tabs{display:flex;gap:8px}
+.tabs .tab{flex:1;padding:9px 4px;border-radius:var(--r-md);background:#fff;border:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center}
+.tabs .tab.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
+.panel h3{margin:0;font-size:16px;font-weight:600}
+.panel .psub{margin:0;font-size:13px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:600}
+.field .inp{padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13px;color:var(--muted)}
+.two{display:flex;gap:12px}
+.two>*{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 11px;border-radius:var(--r-full);background:var(--surface);border:1px solid var(--border);font-size:11px}
+.subj{display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12px;width:100%;text-align:left;background:#fff}
+.subj.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,#fff)}
+.subj .dot{width:14px;height:14px;border-radius:var(--r-full);border:1.5px solid #d5d5d5;flex-shrink:0;display:grid;place-items:center}
+.subj.on .dot{background:var(--accent);border-color:var(--accent);color:#fff}
+.email{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.email .meta{padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border-light);display:block}
+.email .subject{font-size:14px;font-weight:700}
+.email .pre{font-size:12px;color:var(--muted);margin-top:3px}
+.email .body{padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px;line-height:20px}
+.email .cta{align-self:flex-start;padding:10px 20px;border-radius:var(--r-md);background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:600}
+.filerow{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13px}
+.filerow .dot{width:8px;height:8px;border-radius:var(--r-full);background:var(--success);flex-shrink:0}
+.filerow .when{margin-left:auto;font-size:11px;color:var(--muted)}
+.note{padding:12px 14px;border-radius:var(--r-md);background:var(--app-bg);border:1px solid var(--border);font-size:12px;line-height:18px}
+.rt-title{font-size:18px;font-weight:700;margin:0}
+.rtable{width:100%;border:1px solid var(--border);border-radius:var(--r-md);border-collapse:separate;border-spacing:0;overflow:hidden;font-size:13px}
+.rtable th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:13px 14px;border-bottom:1px solid var(--border)}
+.rtable td{padding:13px 14px;border-bottom:1px solid var(--border-light)}
+.rtable tr:last-child td{border-bottom:0}
+.rtable tr.clickable:hover td{background:#fbfbfb;cursor:pointer}
+.role-pill{display:inline-block;border:1px solid var(--border);border-radius:var(--r-full);padding:4px 12px;font-size:13px;font-weight:500}
+.rev{display:flex;align-items:center;gap:10px}
+.avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:600;flex-shrink:0}
+.a0{background:#dbeafe;color:#1e40af}.a1{background:#ede9fe;color:#6d28d9}.a2{background:#fee2e2;color:#b91c1c}.a3{background:#dcfce7;color:#15803d}
+.status{display:inline-flex;border-radius:var(--r-full);padding:4px 12px;font-size:13px;font-weight:500}
+.status.approved{background:var(--success-wash);color:var(--success)}
+.status.pending{background:var(--pending);color:var(--muted)}
+.muted{color:var(--muted)}
+.addapp{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;align-self:flex-start}
+.hint{font-size:12px;color:var(--muted)}
+
+/* ---------- review dialog ---------- */
+.overlay{position:absolute;inset:0;background:rgba(38,37,30,.45);display:flex;align-items:center;justify-content:center;padding:32px;z-index:5}
+.dialog{display:flex;width:100%;max-width:980px;height:100%;max-height:560px;background:#fff;border-radius:var(--r-xl);overflow:hidden;box-shadow:0 30px 70px -30px rgba(10,12,20,.55)}
+.dlg-left{flex:1;display:flex;flex-direction:column;min-width:0}
+.dlg-head{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--border)}
+.avatars{display:flex}
+.avatars .avatar{border:2px solid #fff;margin-left:-6px}
+.avatars .avatar:first-child{margin-left:0}
+.dlg-head .title{font-size:16px;font-weight:600}
+.dlg-body{flex:1;overflow:auto;padding:22px}
+.ctable{width:100%;border:1px solid var(--border);border-radius:var(--r-md);border-collapse:separate;border-spacing:0;overflow:hidden;font-size:13px}
+.ctable th{text-align:left;font-size:12px;font-weight:500;color:var(--muted);padding:11px 14px;background:var(--surface);border-bottom:1px solid var(--border)}
+.ctable td{padding:13px 14px;border-bottom:1px solid var(--border-light)}
+.ctable tr:last-child td{border-bottom:0}
+.ctable td.k{width:170px;color:var(--muted)}
+.dlg-foot{display:flex;justify-content:space-between;padding:14px 22px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.dlg-right{width:320px;flex-shrink:0;border-left:1px solid var(--border);background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:14px}
+.dlg-right h3{margin:0;font-size:17px;font-weight:600;flex:1}
+.dlg-close{width:28px;height:28px;border-radius:var(--r-md);border:1px solid var(--border);background:#fff;display:grid;place-items:center}
+.who{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r-md);background:#fff;border:1px solid var(--border)}
+.who .nm{font-size:12px;font-weight:500}
+.who .rl{font-size:11px;color:var(--muted)}
+.ta{height:104px;padding:12px;border-radius:var(--r-md);border:1px solid var(--border);background:#fff;font-size:12px;color:#b4b4b4}
+.outcomes{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.btn-approve{padding:12px;border-radius:var(--r-md);background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:600}
+.btn-reject{padding:12px;border-radius:var(--r-md);background:#fff;border:1px solid var(--border);font-size:13px;font-weight:500}
+
+/* ---------- published ---------- */
+.pub{display:flex;gap:28px;padding:32px}
+.pub .side{width:400px;flex-shrink:0;display:flex;flex-direction:column;gap:14px}
+.pub h1{margin:0;font-size:34px;line-height:38px;font-weight:600;letter-spacing:-.03em}
+.recap{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.recap .r{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border-light);font-size:13px}
+.recap .r:last-child{border-bottom:0}
+.recap .r .dot{width:16px;height:16px;border-radius:var(--r-full);background:var(--success);flex-shrink:0}
+.recap .r .e{margin-left:auto;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="screen" id="screen"></div>
+</div>
+
+<script>
+/* ============================================================
+   Data — mirrors smart-blocks-config/5layer-editor fixtures
+   ============================================================ */
+const BRANDS = {
+  lumina: {
+    key:'lumina', name:'Lumina', site:'lumina.com', initial:'L', sector:'Skincare',
+    accent:'#C2426A', wash:'#F6EFEA', ink:'#fff', swatches:['#C2426A','#F6EFEA','#2C2A33','#D9A441'],
+    tone:'Warm, plain, evidence-led',
+    goal:'Announce a new product — Aurora Serum', audience:'Newsletter customers', date:'14 October',
+    subjects:['14 days to visibly brighter skin','The serum everyone’s about to talk about','Radiance, bottled.'],
+    pre:'Clinically-tested vitamin C for a visible glow — now 20% off.',
+    body:['Hi {first_name},','Brighter skin in two weeks? That was the brief. Aurora Serum is a clinically-tested vitamin-C formula that targets dullness and uneven tone, day by day.','In our trial, 9 in 10 saw a visible improvement in radiance by week two. No sting, no heaviness — just glow.'],
+    cta:'Get the glow',
+    files:['lumina-brand-guide.pdf','tone-of-voice.docx','aurora-product-shots.zip'],
+    roles:['Marketing lead','Brand manager','Head of Growth'],
+    people:[{n:'J. Okonjo',i:'JO'},{n:'A. Fenn',i:'AF'},{n:'S. Iyer',i:'SI'}],
+    listSize:'24,180',
+  },
+  nike: {
+    key:'nike', name:'Nike', site:'nike.com', initial:'', sector:'Sportswear',
+    accent:'#FA5400', wash:'#F5F5F5', ink:'#fff', swatches:['#FA5400','#111111','#FFFFFF','#F5F5F5'],
+    tone:'Direct, urgent, athlete-first',
+    goal:'Launch the Pegasus 41', audience:'Nike Run Club members', date:'3 October',
+    subjects:['Your next PB starts here','Meet the Pegasus 41','Run longer. Feel lighter.'],
+    pre:'Lighter, springier, built for everyday miles — three new colourways.',
+    body:['Hi {first_name},','The Pegasus has carried more miles than any shoe we make. The 41 is lighter underfoot, springier through the midsole, and built for the run you actually do.','Members get first access, 48 hours before anyone else.'],
+    cta:'Shop Pegasus 41',
+    files:['nike-brand-guide.pdf','tone-of-voice.docx','pegasus-41-shots.zip'],
+    roles:['Brand marketing lead','Regional marketing','Head of Running'],
+    people:[{n:'R. Adeyemi',i:'RA'},{n:'K. Lindqvist',i:'KL'},{n:'T. Moreau',i:'TM'}],
+    listSize:'1,240,000',
+  },
+  none: {
+    key:'none', name:'Your company', site:'', initial:'?', sector:'',
+    accent:'#1C84E0', wash:'#FAFAFA', ink:'#fff', swatches:['#1C84E0','#FAFAFA','#252525','#8E8E8E'],
+    tone:'Neutral',
+    goal:'Announce something new', audience:'Your newsletter list', date:'Next Tuesday',
+    subjects:['Subject line one','Subject line two','Subject line three'],
+    pre:'A short preview line that sits under the subject.',
+    body:['Hi {first_name},','This is where the composer writes the body copy, using the assets you connect in the next step.','Three tight paragraphs, then the call to action.'],
+    cta:'Read more',
+    files:['brand-guide.pdf','tone-of-voice.docx','product-shots.zip'],
+    roles:['Marketing lead','Brand manager','Head of Growth'],
+    people:[{n:'A. Approver',i:'AA'},{n:'B. Reviewer',i:'BR'},{n:'C. Signer',i:'CS'}],
+    listSize:'12,000',
+  },
+};
+
+const CHIPS = ['Everything','Marketing','Banking','HR','Oil & gas','Healthcare','Public sector','Manufacturing','Engineering','Finance','Procurement','Legal & risk'];
+
+const SHELVES = [
+  {cat:'Marketing', n:9, blurb:'campaigns, briefs, launches, lifecycle', tiles:[
+    {m:'email',     t:'EDM campaign',              s:'Marketing · Composer · 214 teams', live:true},
+    {m:'table',     t:'Content brief intake',      s:'Marketing · Intake & triage · 88 teams'},
+    {m:'stats',     t:'Campaign performance',      s:'Marketing · Reporting · 132 teams'},
+    {m:'kanban',    t:'Launch checklist',          s:'Marketing · Case management · 64 teams'},
+  ]},
+  {cat:'Banking', n:11, blurb:'KYC, credit, complaints, treasury ops', tiles:[
+    {m:'checklist', t:'KYC client onboarding',     s:'Banking · Intake & triage · 312 teams'},
+    {m:'table',     t:'Supplier risk & spend review', s:'Banking · Reporting · 186 teams'},
+    {m:'stats',     t:'Payments exception queue',  s:'Banking · Approvals · 401 teams'},
+    {m:'kanban',    t:'Relationship manager hiring', s:'Banking · Case management · 240 teams'},
+  ]},
+  {cat:'HR', n:8, blurb:'hiring, onboarding, reviews, leave, exits', tiles:[
+    {m:'checklist', t:'New starter onboarding',    s:'HR · Case management · 198 teams'},
+    {m:'timeline',  t:'Headcount & role approval', s:'HR · Approvals · 96 teams'},
+    {m:'stats',     t:'Leave & absence dashboard', s:'HR · Reporting · 141 teams'},
+    {m:'kanban',    t:'Interview candidate process', s:'HR · Case management · 240 teams'},
+  ]},
+  {cat:'Oil & gas', n:6, blurb:'permits, HSE reporting, shutdowns, maintenance', tiles:[
+    {m:'gantt',     t:'Permit to work scheduling', s:'Oil & gas · Approvals · 74 teams'},
+    {m:'incident',  t:'HSE incident investigation',s:'Oil & gas · Case management · 61 teams'},
+    {m:'stats',     t:'Turnaround cost tracking',  s:'Oil & gas · Reporting · 44 teams'},
+    {m:'kanban',    t:'Contractor mobilisation',   s:'Oil & gas · Intake & triage · 38 teams'},
+  ]},
+];
+
+/* Questions — copy verbatim from composerClarification.ts / approvalClarification.ts
+   where it exists in the prototype. */
+const QUESTIONS = [
+  {
+    id:'brand', label:'Brand',
+    q:'Whose brand should this wear?',
+    help:'Colours, logo and tone of voice, read from your public site.',
+    options:[
+      {v:'lumina', t:'Lumina — lumina.com'},
+      {v:'nike', t:'Nike — nike.com'},
+      {v:'none', t:'No brand yet'},
+    ],
+    summary:v=> v==='none' ? 'Unbranded for now' : BRANDS[v].name+' · read from '+BRANDS[v].site,
+  },
+  {
+    id:'assets', label:'Assets',
+    q:'Where do the assets come from?',
+    help:'Brand guidelines, product details, past emails — the raw material for the copy.',
+    options:[
+      {v:'User upload', t:'User upload'},
+      {v:'A previous step', t:'A previous step'},
+      {v:'Another workflow', t:'Another workflow'},
+      {v:'A data source', t:'A data source'},
+    ],
+    summary:v=> v==='A data source' ? 'SharePoint · Brand / Guidelines · 3 files, kept live'
+      : v==='User upload' ? 'Pinned files, same every run' : v,
+  },
+  {
+    id:'tone', label:'Composer',
+    q:'How should the copy sound?',
+    help:'The composer writes the subject lines and the body from your brief.',
+    options:[
+      {v:'friendly', t:'Friendly'},
+      {v:'professional', t:'Professional'},
+      {v:'urgent', t:'Urgent'},
+      {v:'playful', t:'Playful'},
+    ],
+    summary:v=> v+' email · subject variants',
+  },
+  {
+    id:'who', label:'Review',
+    q:'Who should sign off?',
+    help:'Pick a role to lock it, or let the person running the app choose.',
+    dynamic:true,
+    summary:(v,s)=> v+' · '+(s.levels===1?'one level':s.levels+' levels')+' · approve or reject',
+  },
+];
+
+/* ============================================================
+   State
+   ============================================================ */
+const state = {
+  screen:'marketing',     // marketing | detail | builder | published
+  cat:'Everything',       // shelf filter on the marketing screen
+  device:'desktop',
+  step:0,                 // index into QUESTIONS
+  answers:{},             // id -> value
+  brand:'lumina',        // the template ships with its sample brand
+  source:'A data source',
+  levels:2,
+  outcomes:'approve or reject',
+  needComment:true,
+  needSignature:false,
+  subject:0,
+  dialog:null,            // reviewer index being reviewed
+  decisions:[],           // per-reviewer status
+};
+
+const brand = ()=> BRANDS[state.brand];
+const answered = id => state.answers[id] !== undefined;
+const allAnswered = ()=> QUESTIONS.every(q=>answered(q.id));
+
+function applyBrandVars(){
+  const b = brand();
+  document.documentElement.style.setProperty('--accent', b.accent);
+  document.documentElement.style.setProperty('--accent-wash', b.key==='none' ? '#eff6ff' : b.wash);
+  document.documentElement.style.setProperty('--accent-ink', b.ink);
+  document.documentElement.style.setProperty('--app-bg', b.key==='none' ? '#fafafa' : b.wash);
+}
+
+/* ============================================================
+   Icons
+   ============================================================ */
+const I = {
+  check:'<svg viewBox="0 0 24 24" fill="none" width="11" height="11"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  check9:'<svg viewBox="0 0 24 24" fill="none" width="9" height="9"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" width="17" height="17"><path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  monitor:'<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M9 20h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  tablet:'<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" width="17" height="17"><circle cx="11" cy="11" r="7" stroke="#8B8A83" stroke-width="1.8"/><path d="m16.5 16.5 4 4" stroke="#8B8A83" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  pen:'<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  swoosh:'<svg viewBox="0 0 24 24" width="34" height="17"><path d="M24 7.8 6.442 15.276c-1.456.616-2.679.925-3.668.925-1.11 0-1.922-.392-2.437-1.177-.317-.503-.4-1.152-.25-1.947.152-.795.532-1.643 1.14-2.543.505-.75 1.371-1.708 2.6-2.874-.365.615-.766 1.395-1.084 2.155-.55 1.32-.68 2.4-.394 3.24.13.375.365.65.68.83.36.2.83.29 1.41.29.44 0 .93-.06 1.47-.18L24 7.8Z" fill="currentColor"/></svg>',
+};
+
+/* ============================================================
+   Render
+   ============================================================ */
+const $ = id => document.getElementById(id);
+
+function render(){
+  applyBrandVars();
+  $('screen').innerHTML =
+    state.screen==='marketing' ? marketing() :
+    state.screen==='detail'    ? detail() :
+    state.screen==='builder'   ? builder() : published();
+  wire();
+  window.scrollTo(0,0);
+}
+
+
+/* ---------- 01 marketing ---------- */
+function marketing(){
+  const shelves = state.cat==='Everything' ? SHELVES : SHELVES.filter(sh=>sh.cat===state.cat);
+  const total = 50;  // library size shown on the marketing site
+  return `<div class="mkt">
+    ${nav()}
+    <div class="mkt-hero">
+      <h1>Don’t start from scratch. Browse ${total} templates by the shelf.</h1>
+      <p class="lede">Every tile is a running app, not a screenshot. Scroll a shelf, click one, watch it work.</p>
+      <div class="chips-row">
+        ${CHIPS.map(c=>`<button class="catchip ${state.cat===c?'on':''}" data-cat="${c}">${c}</button>`).join('')}
+        <span class="catchip more">+ 9 more</span>
+      </div>
+      <div class="searchbar"><span>${I.search}</span><span class="ph">Search ${total} templates</span><span class="cnt mono">⌘K</span></div>
+    </div>
+    ${shelves.map(shelf).join('')}
+  </div>`;
+}
+
+function shelf(sh){
+  return `<section class="shelf">
+    <div class="shelf-head">
+      <h2>${sh.cat}</h2>
+      <span class="blurb">${sh.n} templates · ${sh.blurb}</span>
+      <span class="see">See all</span>
+    </div>
+    <div class="track">
+      ${sh.tiles.map(t=>`
+        <button class="tile ${t.live?'live':''}" ${t.live?'data-open="detail"':'disabled style="cursor:default"'}>
+          <span class="shot">${MOCK[t.m]()}</span>
+          <span class="nm">${t.t}</span>
+          <span class="mt">${t.s}</span>
+        </button>`).join('')}
+    </div>
+  </section>`;
+}
+
+/* Shelf tile mocks — miniature versions of the apps each template builds. */
+const win = (dot,title,sub,inner) => `<span class="win">
+  <span class="win-bar"><span class="dot" style="background:${dot}"></span><span class="t">${title}</span><span class="s">${sub}</span></span>
+  ${inner}</span>`;
+
+const MOCK = {
+  checklist: ()=> win('#3D7A4E','Onboarding · Meridian Capital','Step 3 of 5',`<span class="win-in">
+    ${[['Identity documents verified','#3D7A4E','Auto'],['Beneficial ownership mapped','#3D7A4E','Auto']].map(r=>
+      `<span class="mk-row"><span class="ic" style="background:${r[1]};color:#fff">${I.check9}</span><span class="gr">${r[0]}</span><span class="rt muted">${r[2]}</span></span>`).join('')}
+    <span class="mk-row"><span class="ic" style="border:2px solid var(--brand)"></span><span class="gr" style="font-weight:600">Sanctions &amp; PEP screening</span><span class="rt" style="color:var(--brand);font-weight:600">Running</span></span>
+    <span class="mk-row"><span class="ic" style="border:2px solid #dedcd5"></span><span class="gr muted">Risk rating &amp; approval</span><span class="rt muted">Analyst</span></span>
+    <span class="mk-row"><span class="ic" style="border:2px solid #dedcd5"></span><span class="gr muted">Account activation</span><span class="rt muted">Auto</span></span>
+  </span>`),
+
+  table: ()=> win('#E0913C','Vendor register','3 flagged',`
+    <span class="mk-th"><span style="flex:1">Supplier</span><span style="width:62px">Spend</span><span style="width:52px">Risk</span></span>
+    ${[['Halden Logistics','£1.2m','High','#B4472B'],['Norwell Chemicals','£840k','High','#B4472B'],
+       ['Kestrel Data Ltd','£410k','Medium','#8A6A1F'],['Arden Facilities','£265k','Low','#3D7A4E'],
+       ['Pell &amp; Rowe','£98k','Low','#3D7A4E']].map(r=>
+      `<span class="mk-td"><span style="flex:1;font-weight:500">${r[0]}</span><span class="muted" style="width:62px">${r[1]}</span><span style="width:52px;color:${r[3]};font-weight:600">${r[2]}</span></span>`).join('')}`),
+
+  stats: ()=> win('#1C84E0','Approval queue','This week',`
+    <span class="mk-stats">
+      <span class="st"><span class="v">128</span><span class="k">Awaiting</span></span>
+      <span class="st"><span class="v" style="color:#3D7A4E">94%</span><span class="k">Auto-matched</span></span>
+      <span class="st"><span class="v">1.4d</span><span class="k">Avg cycle</span></span>
+    </span>
+    <span class="mk-bars">${[38,56,44,72,88,61,47,66,35,52].map((h,i)=>
+      `<i style="height:${h}%;${i===4?'background:var(--brand)':''}"></i>`).join('')}</span>`),
+
+  kanban: ()=> win('#D8D5CE','Candidate pipeline','18 active',`<span class="mk-kan">
+    <span class="col"><span class="h">Screen · 6</span>
+      ${[['A. Whitfield','CV scored 82'],['R. Okafor','CV scored 79'],['M. Bento','CV scored 74']].map(c=>
+        `<span class="mk-card"><span class="n">${c[0]}</span><span class="d">${c[1]}</span></span>`).join('')}</span>
+    <span class="col"><span class="h">Interview · 4</span>
+      <span class="mk-card" style="background:rgba(28,132,224,.08);border-color:rgba(28,132,224,.35)"><span class="n">S. Iyer</span><span class="d" style="color:var(--brand)">Panel today 2pm</span></span>
+      <span class="mk-card"><span class="n">D. Kaur</span><span class="d">Scorecard due</span></span></span>
+    <span class="col"><span class="h">Offer · 1</span>
+      <span class="mk-card"><span class="n">T. Nguyen</span><span class="d">Awaiting signature</span></span></span>
+  </span>`),
+
+  timeline: ()=> win('#1C84E0','REQ-4417 · Senior Analyst','Stage 2',`<span class="win-in">
+    ${[['Mon','Business case submitted','Budget checked against plan',''],
+       ['Tue','Finance partner approved','Owner: R. Mbeki',''],
+       ['Wed','With HR director','SLA 2 days remaining','var(--brand)']].map(r=>
+      `<span class="mk-tl"><span class="tm" ${r[3]?`style="color:${r[3]}"`:''}>${r[0]}</span><span class="ln"></span>
+        <span class="ev"><b ${r[3]?`style="color:${r[3]}"`:''}>${r[1]}</b><span>${r[2]}</span></span></span>`).join('')}
+  </span>`),
+
+  incident: ()=> win('#B4472B','INC-2291 · Checkout latency','Sev 2',`<span class="win-in">
+    ${[['09:14','Alert fired · p99 &gt; 3s','Auto-detected from SLO burn',''],
+       ['09:22','Rollback of build 4471','Owner: platform on-call',''],
+       ['09:48','Postmortem drafted','3 actions assigned','var(--brand)']].map(r=>
+      `<span class="mk-tl"><span class="tm" ${r[3]?`style="color:${r[3]}"`:''}>${r[0]}</span><span class="ln"></span>
+        <span class="ev"><b ${r[3]?`style="color:${r[3]}"`:''}>${r[1]}</b><span>${r[2]}</span></span></span>`).join('')}
+  </span>`),
+
+  gantt: ()=> win('#E0913C','Shutdown week 14 · Platform B','42 permits',`<span class="win-in">
+    ${[['Isolation',12,36,'#3D7A4E'],['Hot work',34,44,'#E0913C'],['Confined space',48,30,'#1C84E0'],
+       ['Pressure test',62,26,'#C9C6BE'],['Reinstate',78,20,'#C9C6BE']].map(r=>
+      `<span class="mk-gantt"><span class="lb">${r[0]}</span><span class="bar"><i style="width:${r[1]}%"></i><i style="width:${r[2]}%;background:${r[3]}"></i></span></span>`).join('')}
+  </span>`),
+
+  email: ()=> win('#1C84E0','Campaign email · Aurora','Compose',`<span class="win-in">
+    <span class="mk-row" style="gap:6px"><span class="chip" style="font-size:9px;padding:3px 8px">Tone · friendly</span><span class="chip" style="font-size:9px;padding:3px 8px">3 subjects</span></span>
+    <span class="mk-mail">
+      <b style="font-size:10px">14 days to visibly brighter skin</b>
+      <span style="font-size:9px;color:var(--muted);line-height:14px">Clinically-tested vitamin C for a visible glow — now 20% off.</span>
+      <span style="font-size:9px;line-height:14px">Brighter skin in two weeks? That was the brief. Aurora Serum targets dullness and uneven tone.</span>
+      <span style="align-self:flex-start;padding:6px 12px;border-radius:5px;background:var(--brand);color:#fff;font-size:9px;font-weight:600">Get the glow</span>
+    </span>
+  </span>`),
+};
+
+function nav(){
+  return `<div class="nav">
+    <div class="left">
+      <button class="wordmark" data-open="marketing">Enterprise<span>AI</span></button>
+      <div class="navlinks"><span>Business types</span><span>Products</span><span class="on">Templates</span><span>Pricing</span><span>Support</span></div>
+    </div>
+    <div class="navactions"><span class="muted">Sign in</span><span class="btn-out">Contact sales</span><span class="btn-dark">Get started</span></div>
+  </div>`;
+}
+
+/* ---------- 02 template detail ---------- */
+function detail(){
+  const sizes = {desktop:'1440 px',tablet:'768 px',mobile:'390 px'};
+  return `<div class="detail">
+    ${nav()}
+    <div class="hero">
+      <div class="copy">
+        <div class="bcrumb"><button data-open="marketing" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Templates</button> &nbsp;/&nbsp; <button data-cat="Marketing" data-open="marketing" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Marketing</button> &nbsp;/&nbsp; EDM campaign</div>
+        <h1>EDM campaign</h1>
+        <p class="lede">Brief in, approved email out. Four blocks that take a campaign from a one-line goal to a signed-off send, using your brand guide and your past campaigns.</p>
+        <div class="meta"><span>214 teams use it</span><span>·</span><span>4 blocks</span><span>·</span><span>About 6 minutes to make it yours</span></div>
+        <div class="ctas">
+          <button class="btn-primary" data-open="builder">Make your own</button>
+          <button class="btn-second" data-open="builder">See it running</button>
+        </div>
+        <div class="fineprint">No card. Your first run is on us.</div>
+      </div>
+      <div class="previewcol">
+        <div class="devbar">
+          <span class="lbl">Live preview</span>
+          <div class="devswitch">
+            <button data-dev="desktop" class="${state.device==='desktop'?'on':''}">${I.monitor}</button>
+            <button data-dev="tablet" class="${state.device==='tablet'?'on':''}">${I.tablet}</button>
+            <button data-dev="mobile" class="${state.device==='mobile'?'on':''}">${I.phone}</button>
+          </div>
+          <span class="devsize mono">${sizes[state.device]}</span>
+        </div>
+        <div class="stage ${state.device}">${appFrame('compose', state.device)}</div>
+      </div>
+    </div>
+    <div class="blocks">
+      ${[['01 · Form','#eef4ff','#1d4ed8','Campaign brief','Goal, audience, send date and where the copy draws from.'],
+         ['02 · Composer','#fdf6e7','#8a6a1f','Draft the email','Three subject lines, body copy and a CTA, in your tone.'],
+         ['03 · Approval','#f3f0ff','#5e4a8a','Sign-off','Named approvers, recorded reasons, escalation if nobody moves.'],
+         ['04 · Table','#ecfdf5','#3d7a4e','Send &amp; log','Every campaign recorded, and pushed back to your ESP.']]
+        .map(b=>`<div class="bcard"><span class="btag" style="background:${b[1]};color:${b[2]}">${b[0]}</span><h4>${b[3]}</h4><p>${b[4]}</p></div>`).join('')}
+    </div>
+    <div class="ctabar">
+      <div><h3>Make this one yours</h3><p>Answer four questions — brand, assets, tone, sign-off — and publish.</p></div>
+      <button class="btn-light" data-open="builder">Make your own</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- the app being previewed ---------- */
+function appFrame(stage, size){
+  const b = brand();
+  const cls = size==='tablet' ? 'w-tablet' : size==='mobile' ? 'w-mobile' : '';
+  const logo = b.key==='nike'
+    ? `<span class="app-logo swoosh" style="color:#fff">${I.swoosh}</span>`
+    : `<span class="app-logo">${b.initial}</span>`;
+  const tabs = ['Brief','Assets','Compose','Review'];
+  const activeTab = {brief:0,assets:1,compose:2,review:3}[stage] ?? 0;
+  return `<div class="app ${cls}">
+    <div class="app-head">${logo}<span class="app-name">${b.key==='none'?'Your app':b.name}</span><span class="app-sub">Campaign email</span></div>
+    <div class="app-body">
+      ${size==='mobile'?'':'<div class="app-title">Campaign email</div>'}
+      <div class="tabs">${tabs.map((t,i)=>`<span class="tab ${i===activeTab?'on':''}">${t}</span>`).join('')}</div>
+      ${stage==='brief'?briefPanel():stage==='assets'?assetsPanel():stage==='compose'?composePanel(size):reviewPanel()}
+    </div>
+  </div>`;
+}
+
+function briefPanel(){
+  const b = brand();
+  return `<div class="panel">
+    <div><h3>Tell us about the campaign</h3><p class="psub">Four fields. The rest is written for you.</p></div>
+    <div class="field"><label>Campaign goal</label><div class="inp">${b.goal}</div></div>
+    <div class="two">
+      <div class="field"><label>Audience</label><div class="inp">${b.audience}</div></div>
+      <div class="field"><label>Send date</label><div class="inp">${b.date}</div></div>
+    </div>
+    <span class="email"><span class="body" style="padding:0"><span class="cta">Next: assets</span></span></span>
+  </div>`;
+}
+
+function assetsPanel(){
+  const b = brand();
+  const src = state.source;
+  const from = src==='A data source' ? 'Pulled from SharePoint · Brand / Guidelines.'
+    : src==='User upload' ? 'Pinned to the workflow — every run uses these.'
+    : 'Handed over by '+src.toLowerCase()+'.';
+  return `<div class="panel">
+    <div><h3>Assets</h3><p class="psub">What this campaign draws on. ${from}</p></div>
+    ${b.files.map(f=>`<div class="filerow"><span class="dot"></span>${f}<span class="when">Synced 2 min ago</span></div>`).join('')}
+    <div class="note">Kept up to date automatically — the next campaign reads whatever is current.</div>
+  </div>`;
+}
+
+function composePanel(size){
+  const b = brand();
+  const tone = state.answers.tone || 'friendly';
+  return `<div class="panel">
+    <div><h3>Generate your email</h3><p class="psub">A ${tone}, medium email from your brief and assets.</p></div>
+    ${size==='mobile'?'':`<div class="chips"><span class="chip">${b.goal}</span><span class="chip">Assets · Brand / Guidelines</span><span class="chip">Tone · ${tone}</span></div>`}
+    <div class="field"><label>Subject line · pick one</label>
+      ${b.subjects.map((s,i)=>`<button class="subj ${i===state.subject?'on':''}" data-subject="${i}"><span class="dot">${i===state.subject?I.check9:''}</span>${s}</button>`).join('')}
+    </div>
+    <div class="email">
+      <div class="meta"><div class="subject">${b.subjects[state.subject]}</div><div class="pre">${b.pre}</div></div>
+      <div class="body">${b.body.map(p=>`<span>${p}</span>`).join('')}<span class="cta">${b.cta}</span></div>
+    </div>
+  </div>`;
+}
+
+function reviewPanel(){
+  const rows = reviewers();
+  return `<div class="panel">
+    <h3 class="rt-title">Peer Reviewers</h3>
+    <table class="rtable">
+      <thead><tr><th>Role</th><th>Reviewer</th><th>Status</th><th>Date signed</th><th>Comment</th><th>Due date</th></tr></thead>
+      <tbody>
+        ${rows.map((r,i)=>`<tr class="${r.status==='pending'?'clickable':''}" ${r.status==='pending'?`data-review="${i}"`:''}>
+          <td><span class="role-pill">${r.role}</span></td>
+          <td><span class="rev"><span class="avatar a${i%4}">${r.initials}</span>${r.name}</span></td>
+          <td><span class="status ${r.status}">${r.status==='approved'?'Approved':'Pending'}</span></td>
+          <td class="muted">${r.signed||'—'}</td>
+          <td class="muted">${r.comment||'—'}</td>
+          <td class="muted">${r.due}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <span class="addapp">${I.plus} Add approver</span>
+    <span class="hint">Click a pending row to see what that reviewer sees and does.</span>
+  </div>`;
+}
+
+function reviewers(){
+  const b = brand();
+  const chosen = state.answers.who;
+  const list = [];
+  for(let i=0;i<state.levels;i++){
+    const role = i===0 ? (chosen && chosen!=='Whoever the user picks' ? chosen : b.roles[0]) : b.roles[(i)%b.roles.length];
+    const p = b.people[i%b.people.length];
+    const d = state.decisions[i];
+    list.push({
+      role, name:p.n, initials:p.i,
+      status: d ? d.status : (i===0 && state.levels>1 ? 'approved' : 'pending'),
+      signed: d ? d.signed : (i===0 && state.levels>1 ? '2 Oct' : ''),
+      comment: d ? d.comment : (i===0 && state.levels>1 ? 'Subject line is the strongest one.' : ''),
+      due:'3 Oct',
+    });
+  }
+  return list;
+}
+
+/* ---------- 03 builder ---------- */
+function builder(){
+  const stage = ['brief','assets','compose','review'][Math.min(state.step,3)];
+  const done = allAnswered();
+  return `<div class="builder" style="position:relative">
+    <div class="topbar">
+      <span class="tb-icon" data-open="detail">${I.back}</span>
+      <span class="tb-icon" data-open="marketing">${I.home}</span>
+      <span class="tb-title">Campaign email</span>
+      <span class="pill">${done?'Ready':'Draft'}</span>
+      <div class="tb-right">
+        <span>${done?'Saved':'Draft — not saved'}</span>
+        <button class="btn-pub ${done?'live':''}" ${done?'data-open="published"':'disabled'}>Publish</button>
+      </div>
+    </div>
+    <div class="bbody">
+      <div class="chat">
+        <div class="chat-scroll" id="chatscroll">
+          <div class="msg">You’re starting from the <b>EDM campaign</b> template. Four blocks, already wired. Let’s make them yours.</div>
+          ${QUESTIONS.map((q,i)=> i<state.step ? resultRow(q,i) : '').join('')}
+          ${state.step<QUESTIONS.length ? prompt(state.step)+clarify(state.step) : donePanel()}
+        </div>
+        <div class="chat-input"><div class="box">Ask the assistant to change this step…</div><span class="send">${I.arrow}</span></div>
+      </div>
+      <div class="prev">
+        <div class="prev-head">
+          <span class="t">Workflow Preview</span>
+          <div class="toggle"><button>Editor</button><button class="on">Preview</button></div>
+        </div>
+        <div class="prev-view">${appFrame(stage,'desktop')}</div>
+      </div>
+    </div>
+    ${state.dialog!==null?reviewDialog():''}
+  </div>`;
+}
+
+function prompt(i){
+  const msgs = [
+    'First, the look. Everything this app renders will use it.',
+    'You’ve added a <b>Composer</b> block — it writes the email. <b>Assets.</b> The copy is only as good as its source material.',
+    '<b>The copy.</b> What should the Composer produce, and how should it sound?',
+    '<b>The review.</b> Before the email goes out, it’s signed off. Who approves, and how?',
+  ];
+  return `<div class="msg">${msgs[i]}</div>`;
+}
+
+function resultRow(q,i){
+  const v = state.answers[q.id];
+  return `<div class="result">
+    <span class="tick">${I.check}</span>
+    <div style="flex:1"><div class="rt">${q.label}</div><div class="rs">${q.summary(v,state)}</div></div>
+    <button class="edit" data-step="${i}">Edit</button>
+  </div>`;
+}
+
+function clarify(i){
+  const q = QUESTIONS[i];
+  const opts = q.dynamic ? whoOptions() : q.options;
+  const cur = state.answers[q.id];
+  const body = `
+    <div>
+      <div class="q">${q.q}</div>
+      <div class="help">${q.help}</div>
+    </div>
+    <div class="opts">
+      ${opts.map(o=>`<button class="opt ${cur===o.v?'on':''}" data-answer="${q.id}" data-value="${o.v}">
+        <span class="ind">${cur===o.v?I.check9:''}</span><span class="txt">${o.t}</span>${o.kind?`<span class="kind">${o.kind}</span>`:''}
+      </button>`).join('')}
+    </div>
+    ${cur!==undefined?expansion(q.id,cur):''}
+    <div class="cfoot">
+      <span class="count mono">${i+1} / ${QUESTIONS.length}</span>
+      <button class="btn-skip" data-next="1">Skip</button>
+      <button class="btn-next" data-next="1" ${cur===undefined?'disabled':''}>${i===QUESTIONS.length-1?'Build':'Next'}</button>
+    </div>`;
+  return `<div class="clarify">${body}</div>`;
+}
+
+function whoOptions(){
+  const b = brand();
+  return b.roles.map(r=>({v:r,t:r,kind:'a role'}))
+    .concat([{v:'Whoever the user picks',t:'Whoever the user picks',kind:'an individual'}]);
+}
+
+function expansion(id, val){
+  const b = brand();
+  if(id==='brand'){
+    if(val==='none') return '';
+    const bb = BRANDS[val];
+    return `<div class="exp">
+      <span class="lbl">Read from ${bb.site} — change any of it:</span>
+      <div class="row">
+        <span class="app-logo" style="background:${bb.accent};color:#fff;width:34px;height:34px">${bb.key==='nike'?I.swoosh:bb.initial}</span>
+        <span style="display:flex;gap:6px;flex:1">${bb.swatches.map(s=>`<span style="width:32px;height:32px;border-radius:6px;background:${s};border:1px solid #e4e2db"></span>`).join('')}</span>
+      </div>
+      <div class="row"><span class="grow muted">Tone of voice</span><span>${bb.tone}</span></div>
+      <div class="row"><span class="grow muted">Keep in sync with the site</span><span class="sw on"><i></i></span></div>
+    </div>`;
+  }
+  if(id==='assets'){
+    if(val==='A data source'){
+      const srcs = [['SharePoint','Microsoft 365 · document libraries & lists',true],['Google Drive','Folders & shared drives',false],['Airtable','Bases & tables',false]];
+      return `<div class="exp">
+        <span class="lbl">Connect a data source — we’ll pull rows from it:</span>
+        ${srcs.map(s=>`<span class="srcrow ${s[2]?'on':''}"><span class="ind" style="${s[2]?'background:var(--brand);border-color:var(--brand)':''}"></span>
+          <span style="flex:1"><span class="nm">${s[0]}</span><br><span class="dt">${s[1]}</span></span>
+          <span class="tag ${s[2]?'ok':'link'}">${s[2]?'Connected':'Connect'}</span></span>`).join('')}
+        <span class="lbl" style="font-weight:400">Salesforce · Snowflake · Box · HubSpot · SQL database</span>
+        <div class="exp" style="background:#fff">
+          <div><span class="lbl">Which folder?</span><div class="srcrow" style="margin-top:5px">Brand / Guidelines</div></div>
+          <div><span class="lbl">Which files? (3/4)</span>
+            ${b.files.map(f=>`<div class="row" style="margin-top:6px"><span class="chk on">${I.check9}</span><span class="mono" style="font-size:12px">${f}</span></div>`).join('')}
+            <div class="row" style="margin-top:6px"><span class="chk"></span><span class="mono muted" style="font-size:12px">legacy-2023-assets.zip</span></div>
+          </div>
+          <div class="row" style="border-top:1px solid var(--border-light);padding-top:10px"><span class="grow">Keep up to date automatically</span><span class="sw on"><i></i></span></div>
+        </div>
+      </div>`;
+    }
+    if(val==='User upload'){
+      return `<div class="exp">
+        <span class="lbl">Who provides the files?</span>
+        <span class="srcrow on"><span class="ind" style="background:var(--brand);border-color:var(--brand)"></span><span style="flex:1"><span class="nm">You — same files every time</span><br><span class="dt">Pinned into the workflow. Every run uses these.</span></span></span>
+        <span class="srcrow"><span class="ind"></span><span style="flex:1"><span class="nm">The person running the app</span><br><span class="dt">They upload their own files on every run.</span></span></span>
+      </div>`;
+    }
+    return `<div class="exp"><span class="lbl">Handed straight through — nothing else to configure.</span></div>`;
+  }
+  if(id==='tone'){
+    return `<div class="exp">
+      <div class="row"><span class="grow">Offer three subject lines</span><span class="sw on"><i></i></span></div>
+      <div class="row"><span class="grow">Length</span><span class="muted">Medium ▾</span></div>
+      <div class="row"><span class="grow muted">Cites the files it used</span><span class="tag ok">Always</span></div>
+    </div>`;
+  }
+  if(id==='who'){
+    return `<div class="exp">
+      <div>
+        <span class="lbl">How many levels of approval?</span>
+        <div class="seg" style="margin-top:6px">
+          ${[1,2,3].map(n=>`<button data-levels="${n}" class="${state.levels===n?'on':''}">${['One','Two','Three'][n-1]}</button>`).join('')}
+        </div>
+        <span class="lbl" style="font-weight:400;display:block;margin-top:6px">${state.levels===1?'One reviewer signs it off.':'They sign in order — level 2 only sees it once level 1 approves.'}</span>
+      </div>
+      <div style="border-top:1px solid var(--border-light);padding-top:10px">
+        <span class="lbl">How should the approver respond?</span>
+        <div class="seg" style="margin-top:6px">
+          <button data-outcomes="approve or reject" class="${state.outcomes==='approve or reject'?'on':''}">Approve or reject</button>
+          <button data-outcomes="approve, reject or request changes" class="${state.outcomes!=='approve or reject'?'on':''}">+ request changes</button>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border-light);padding-top:10px">
+        <span class="lbl">What must they provide with the decision?</span>
+        <div class="row" style="margin-top:7px"><span class="chk ${state.needComment?'on':''}" data-toggle="comment">${state.needComment?I.check9:''}</span><span class="grow">A comment</span></div>
+        <div class="row" style="margin-top:7px"><span class="chk ${state.needSignature?'on':''}" data-toggle="signature">${state.needSignature?I.check9:''}</span><span class="grow">A digital signature</span></div>
+      </div>
+    </div>`;
+  }
+  return '';
+}
+
+function donePanel(){
+  const b = brand();
+  return `<div class="msg">Done — a <b>${state.answers.tone}</b> email drawing on your <b>brand library</b>, signed off by <b>${state.answers.who}</b>. Publish to try it.</div>
+  <button class="btn-second" style="align-self:flex-start" data-step="0">${I.pen} Adjust</button>`;
+}
+
+/* ---------- review dialog ---------- */
+function reviewDialog(){
+  const b = brand();
+  const r = reviewers()[state.dialog];
+  return `<div class="overlay" data-close="1">
+    <div class="dialog" data-stop="1">
+      <div class="dlg-left">
+        <div class="dlg-head">
+          <span class="avatars">${b.people.map((p,i)=>`<span class="avatar a${i%4}">${p.i}</span>`).join('')}</span>
+          <span class="title">Campaign email — ${b.goal.replace(/^.*— /,'')}</span>
+        </div>
+        <div class="dlg-body">
+          <table class="ctable">
+            <thead><tr><th>Field</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td class="k">Subject line</td><td>${b.subjects[state.subject]}</td></tr>
+              <tr><td class="k">Preview text</td><td>${b.pre}</td></tr>
+              <tr><td class="k">Call to action</td><td>${b.cta}</td></tr>
+              <tr><td class="k">Audience</td><td>${b.audience} · ${b.listSize}</td></tr>
+              <tr><td class="k">Drew on</td><td>${b.files.slice(0,2).join(' · ')}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dlg-foot"><span>5 fields</span><span>Reviewing against the agreed brand guide</span></div>
+      </div>
+      <div class="dlg-right">
+        <div style="display:flex;align-items:center;gap:12px"><h3>Decision</h3><button class="dlg-close" data-close="1">${I.x}</button></div>
+        <div class="who"><span class="avatar a${state.dialog%4}">${r.initials}</span>
+          <div><div class="nm">${r.name}</div><div class="rl">${r.role} · level ${state.dialog+1} of ${state.levels}</div></div></div>
+        <div><span class="lbl" style="font-size:11px;font-weight:600;color:var(--muted)">Comment ${state.needComment?'(required)':'(optional)'}</span>
+          <div class="ta" style="margin-top:6px">Add a comment ${state.needComment?'(required)':'(optional)'}…</div></div>
+        ${state.needSignature?`<div class="row"><span class="chk"></span>${I.pen}<span class="grow">I sign off on this decision</span></div>`:''}
+        <div class="outcomes">
+          <button class="btn-approve" data-decide="approved">Approve</button>
+          <button class="btn-reject" data-decide="rejected">Reject</button>
+          ${state.outcomes!=='approve or reject'?'<button class="btn-reject" data-decide="changes">Request changes</button>':''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- 04 published ---------- */
+function published(){
+  const b = brand();
+  return `<div>
+    <div class="app-head" style="border-radius:0">
+      ${b.key==='nike'?`<span class="app-logo swoosh" style="color:#fff">${I.swoosh}</span>`:`<span class="app-logo">${b.initial}</span>`}
+      <span class="app-name">${b.key==='none'?'Your app':b.name}</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.35)"></span>
+      <span style="font-size:14px;opacity:.9">Campaign email</span>
+      <span class="app-sub" style="display:flex;align-items:center;gap:8px">● Live &nbsp; ${(b.site||'your-company.com').replace('.com','')}.enterpriseai.app</span>
+    </div>
+    <div class="pub">
+      <div class="side">
+        <span class="lbl" style="font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#8b8a83">Published</span>
+        <h1>Live in six minutes.</h1>
+        <p class="muted" style="margin:0;font-size:15px;line-height:23px">Your team can run it now. Everything below can still be changed without starting again.</p>
+        <div class="recap">
+          ${QUESTIONS.map(q=>`<div class="r"><span class="dot"></span>${q.label}: ${q.summary(state.answers[q.id],state)}<span class="e">Edit</span></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-primary" data-open="builder">Run a campaign</button>
+          <button class="btn-second">Invite the team</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0">${appFrame('compose','desktop')}</div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   Events
+   ============================================================ */
+function wire(){
+  document.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{state.screen=el.dataset.goto;render()});
+  document.querySelectorAll('[data-open]').forEach(el=>el.onclick=()=>{state.screen=el.dataset.open;render()});
+  document.querySelectorAll('[data-cat]').forEach(el=>el.onclick=()=>{state.cat=el.dataset.cat;render()});
+  document.querySelectorAll('[data-dev]').forEach(el=>el.onclick=()=>{state.device=el.dataset.dev;render()});
+  document.querySelectorAll('[data-subject]').forEach(el=>el.onclick=()=>{state.subject=+el.dataset.subject;render()});
+
+  document.querySelectorAll('[data-answer]').forEach(el=>el.onclick=()=>{
+    const id = el.dataset.answer, v = el.dataset.value;
+    state.answers[id] = v;
+    if(id==='brand'){ state.brand = v; }
+    if(id==='assets'){ state.source = v; }
+    render();
+  });
+  document.querySelectorAll('[data-next]').forEach(el=>el.onclick=()=>{
+    const q = QUESTIONS[state.step];
+    if(state.answers[q.id]===undefined){ state.answers[q.id] = q.dynamic ? whoOptions()[0].v : q.options[0].v; if(q.id==='brand')state.brand=state.answers[q.id]; }
+    state.step = Math.min(state.step+1, QUESTIONS.length);
+    render();
+  });
+  document.querySelectorAll('[data-step]').forEach(el=>el.onclick=()=>{state.step=+el.dataset.step;render()});
+  document.querySelectorAll('[data-levels]').forEach(el=>el.onclick=()=>{state.levels=+el.dataset.levels;state.decisions=[];render()});
+  document.querySelectorAll('[data-outcomes]').forEach(el=>el.onclick=()=>{state.outcomes=el.dataset.outcomes;render()});
+  document.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=()=>{
+    if(el.dataset.toggle==='comment') state.needComment=!state.needComment; else state.needSignature=!state.needSignature;
+    render();
+  });
+  document.querySelectorAll('[data-review]').forEach(el=>el.onclick=()=>{state.dialog=+el.dataset.review;render()});
+  document.querySelectorAll('[data-close]').forEach(el=>el.onclick=e=>{ if(e.target===el){state.dialog=null;render()} });
+  document.querySelectorAll('[data-stop]').forEach(el=>el.onclick=e=>e.stopPropagation());
+  document.querySelectorAll('[data-decide]').forEach(el=>el.onclick=()=>{
+    const i = state.dialog;
+    state.decisions[i] = {status: el.dataset.decide==='approved'?'approved':'pending', signed:'3 Oct', comment: el.dataset.decide==='approved'?'Approved — on brand.':'Sent back for changes.'};
+    state.dialog=null; render();
+  });
+
+}
+
+render();
+</script>
+</body>
+</html>
