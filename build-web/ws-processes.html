@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes" />
+<title>Prototype — Processes · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="ws" data-ad-nav="processes" data-ad-title="All processes">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div><h1>Processes</h1></div>
+  </div>
+
+  <div class="ad-grid" style="margin-top:24px;" id="tiles"></div>
+
+  <div class="ad-c">
+    <div class="ad-c-hd" style="padding:14px 20px;">
+      <div class="ad-f" style="width:280px;flex:0 0 280px;">
+        <div class="ctl" style="margin-top:0;">
+          <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
+          <input id="q" type="search" placeholder="Search processes…" style="flex:1;border:0;outline:none;padding:0;height:auto;margin-top:0;" />
+        </div>
+      </div>
+      <span id="count" style="font-size:13px;color:var(--ad-mute);"></span>
+    </div>
+
+    <div class="ad-t">
+      <div class="hd" id="thead">
+        <div class="grow" style="padding-right:16px;"><button type="button" data-sort="name">Process<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
+        <div style="width:92px;flex:0 0 92px;"><button type="button" data-sort="status">Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
+        <div style="width:100px;flex:0 0 100px;" class="num"><button type="button" data-sort="submissions">Submissions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
+        <div style="width:96px;flex:0 0 96px;" class="num"><button type="button" data-sort="completed">Completed<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
+        <div style="width:110px;flex:0 0 110px;padding-left:20px;"><button type="button" data-sort="edited">Edited<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
+        <div style="width:180px;flex:0 0 180px;"></div>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-live.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-process-edit.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const sum = D.summary;
+  const availableProcesses = () => new URLSearchParams(location.search).get('demo') === 'michael' && window.adCompanyProcesses
+    ? window.adCompanyProcesses()
+    : D.processes;
+  const initialProcesses = availableProcesses();
+  const initialLive = initialProcesses.filter((p) => p.live).length;
+
+  document.getElementById('searchIcon').innerHTML = window.adIcon('search');
+
+  document.getElementById('tiles').innerHTML = `
+    <div class="ad-tile">
+      <span class="k">Processes</span><span class="v" id="companyProcessCount">${initialProcesses.length}</span>
+      <span class="m" style="gap:10px;">
+        <span style="display:flex;align-items:center;gap:5px;"><i style="width:6px;height:6px;border-radius:999px;background:#16A34A;display:block;"></i><span id="companyLiveCount">${initialLive}</span> live</span>
+        <span style="display:flex;align-items:center;gap:5px;"><i style="width:6px;height:6px;border-radius:999px;background:#D97706;display:block;"></i><span id="companyDraftCount">${initialProcesses.length - initialLive}</span> draft</span>
+      </span>
+    </div>
+    <div class="ad-tile"><span class="k">Submissions</span><span class="v">${sum.submissions.toLocaleString()}</span><span class="m up">${window.adIcon('up')}14% vs last month</span></div>
+    <div class="ad-tile"><span class="k">Avg completion</span><span class="v">${sum.completionRate}%</span><span class="m">weighted across live processes</span></div>
+    <div class="ad-tile"><span class="k">Credits left</span><span class="v">${sum.creditsLeft}</span><span class="m">of ${sum.creditsTotal} this month</span></div>`;
+
+  /* Sorting replaces the old All/Live/Draft tabs: clicking Status groups
+     live above draft, which is the same cut without a second control. */
+  const SORTERS = {
+    name: (p) => p.name.toLowerCase(),
+    status: (p) => (p.live ? 0 : 1),
+    submissions: (p) => (p.stats ? p.stats.submissions : -1),
+    completed: (p) => (p.stats ? p.stats.completionRate : -1),
+    edited: (p) => p.hoursAgo,
+  };
+  let sortKey = 'edited';
+  let sortDir = 'asc'; // most recently edited first
+
+  function paint() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const get = SORTERS[sortKey];
+    const available = availableProcesses();
+    const liveCount = available.filter((p) => p.live).length;
+    document.getElementById('companyProcessCount').textContent = available.length;
+    document.getElementById('companyLiveCount').textContent = liveCount;
+    document.getElementById('companyDraftCount').textContent = available.length - liveCount;
+    const shown = [...available]
+      .filter((p) => !q || p.name.toLowerCase().includes(q))
+      .sort((a, b) => {
+        const x = get(a);
+        const y = get(b);
+        const d = x < y ? -1 : x > y ? 1 : 0;
+        return sortDir === 'asc' ? d : -d;
+      });
+
+    document.getElementById('count').textContent =
+      `${shown.length} of ${available.length}`;
+
+    document.querySelectorAll('#thead button').forEach((b) => {
+      if (b.dataset.sort === sortKey) {
+        b.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+      } else {
+        b.removeAttribute('aria-sort');
+      }
+    });
+
+    document.getElementById('rows').innerHTML = shown.length ? shown.map((p) => `
+      <div class="r">
+        <div class="grow" style="font-size:14px;font-weight:600;padding-right:16px;">${p.name}</div>
+        <div style="width:92px;flex:0 0 92px;display:flex;">
+          <span class="ad-badge ${p.live ? 'green' : 'amber'}"><i class="dot"></i>${p.status}</span>
+        </div>
+        <div style="width:100px;flex:0 0 100px;" class="num">${p.stats ? `<b style="font-weight:500;">${p.stats.submissions.toLocaleString()}</b>` : '<span style="color:var(--ad-faint);">—</span>'}</div>
+        <div style="width:96px;flex:0 0 96px;color:var(--ad-ink-3);" class="num">${p.stats ? p.stats.completionRate + '%' : '<span style="color:var(--ad-faint);">—</span>'}</div>
+        <div style="width:110px;flex:0 0 110px;padding-left:20px;font-size:13px;color:var(--ad-mute);">${p.seen}</div>
+        <div style="width:180px;flex:0 0 180px;display:flex;justify-content:flex-end;position:relative;">
+          <span class="ad-split" data-open="false" data-row="${p.id}">
+            <button type="button" class="main" data-edit="${p.id}">Edit</button>
+            <button type="button" class="caret" data-menu="${p.id}" aria-haspopup="true" aria-expanded="false" aria-label="More actions for ${p.name}">${window.adIcon('down')}</button>
+          </span>
+          <div class="ad-menu" id="menu-${p.id}" hidden style="top:36px;right:0;">
+            <button type="button" data-view="${p.id}">${window.adIcon('open')}${p.live ? 'View live process' : 'Preview draft'}</button>
+            <a href="app-overview.html?app=${p.id}">${window.adIcon('gear')}Manage</a>
+          </div>
+        </div>
+      </div>`).join('') : '<div class="ad-empty">No processes match that search.</div>';
+  }
+
+  /* One delegated handler, because the rows are rebuilt on every sort. */
+  function closeMenus(except) {
+    document.querySelectorAll('.ad-menu').forEach((m) => { if (m !== except) m.hidden = true; });
+    document.querySelectorAll('.ad-split').forEach((sp) => sp.dataset.open = 'false');
+    document.querySelectorAll('[data-menu]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  }
+
+  /* These two live on document so a click anywhere closes the menu — which
+     means they must be torn down when the router swaps this page out, or
+     each revisit stacks another copy and one click fires three toasts. */
+  if (window.__wsProcessesTeardown) window.__wsProcessesTeardown();
+
+  const onDocClick = (e) => {
+    const caret = e.target.closest('[data-menu]');
+    if (caret) {
+      const menu = document.getElementById(`menu-${caret.dataset.menu}`);
+      const open = menu.hidden;
+      closeMenus(open ? menu : null);
+      menu.hidden = !open;
+      caret.setAttribute('aria-expanded', String(open));
+      caret.closest('.ad-split').dataset.open = String(open);
+      return;
+    }
+    if (!e.target.closest('.ad-menu')) closeMenus();
+
+    const edit = e.target.closest('[data-edit]');
+    if (edit) {
+      location.href = window.AD_PROCESS_EDIT.url(edit.dataset.edit);
+      return;
+    }
+    const view = e.target.closest('[data-view]');
+    if (view) {
+      closeMenus();
+      location.href = window.AD_PROCESS_LIVE.url(view.dataset.view);
+    }
+  };
+  const onKey = (e) => { if (e.key === 'Escape') closeMenus(); };
+  const onCompanyChange = () => paint();
+
+  document.addEventListener('click', onDocClick);
+  document.addEventListener('keydown', onKey);
+  window.addEventListener('ad:company-change', onCompanyChange);
+  window.__wsProcessesTeardown = () => {
+    document.removeEventListener('click', onDocClick);
+    document.removeEventListener('keydown', onKey);
+    window.removeEventListener('ad:company-change', onCompanyChange);
+    window.__wsProcessesTeardown = null;
+  };
+
+  document.getElementById('q').addEventListener('input', paint);
+  document.getElementById('thead').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-sort]');
+    if (!b) return;
+    if (b.dataset.sort === sortKey) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortKey = b.dataset.sort;
+      /* Text reads A–Z first; numbers and dates read biggest/newest first. */
+      sortDir = sortKey === 'name' || sortKey === 'status' || sortKey === 'edited' ? 'asc' : 'desc';
+    }
+    paint();
+  });
+  paint();
+</script>
+</body>
+</html>

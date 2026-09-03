@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/users" />
+<title>Prototype — App users · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="users">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Users</h1>
+      <p>Choose who can access and manage <span id="appName">this app</span>.</p>
+    </div>
+    <div class="ad-hd-acts">
+      <button class="ad-btn dark" type="button" id="openAddUser">Add user</button>
+    </div>
+  </div>
+
+  <div class="ad-c ad-app-users-card" style="margin-top:24px;">
+    <div class="ad-c-hd">
+      <div><h2>People with access</h2><p class="sub" id="userCount">—</p></div>
+    </div>
+    <div class="ad-t ad-app-users-table">
+      <div class="hd">
+        <div class="grow">Person</div>
+        <div class="ad-app-user-role">App role</div>
+        <div class="ad-app-user-status">Status</div>
+        <div class="ad-app-user-action"></div>
+      </div>
+      <div id="userRows"></div>
+    </div>
+  </div>
+
+  <div class="ad-user-dialog-layer" id="addUserDialog" hidden>
+    <section class="ad-user-dialog" role="dialog" aria-modal="true" aria-labelledby="addUserTitle">
+      <header class="ad-user-dialog-head">
+        <div><h2 id="addUserTitle">Add a user</h2><p id="addUserCopy">Give someone access to this app.</p></div>
+        <button type="button" id="closeAddUser" aria-label="Close add user dialog">&times;</button>
+      </header>
+      <form id="addUserForm" novalidate>
+        <div class="ad-user-dialog-body">
+          <div class="ad-f">
+            <label for="userName">Name</label>
+            <input id="userName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Morgan" required />
+          </div>
+          <div class="ad-f">
+            <label for="userEmail">Work email</label>
+            <input id="userEmail" name="email" type="email" autocomplete="email" placeholder="alex@company.com" required />
+          </div>
+          <div class="ad-f">
+            <label for="userRole">App role</label>
+            <select id="userRole" name="role">
+              <option value="Editor">Editor — build and change the app</option>
+              <option value="Reviewer">Reviewer — review submissions</option>
+              <option value="Viewer">Viewer — view the app and results</option>
+            </select>
+          </div>
+          <p class="ad-form-error" id="addUserError" role="alert" hidden></p>
+        </div>
+        <footer class="ad-user-dialog-foot">
+          <button class="ad-btn" type="button" id="cancelAddUser">Cancel</button>
+          <button class="ad-btn dark" type="submit">Add user</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
+  const company = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
+  const storeKey = `app-users-${company.id}-${app.id}`;
+  const seedUsers = [
+    { id: 'gareth-chainey', name: 'Gareth Chainey', email: 'gareth@northwindops.com', role: 'Owner', status: 'Active', fixed: true },
+    { id: 'priya-sharma', name: 'Priya Sharma', email: 'priya@northwindops.com', role: 'Editor', status: 'Active', fixed: true },
+    { id: 'mei-lin', name: 'Mei Lin', email: 'mei@northwindops.com', role: 'Reviewer', status: 'Active', fixed: true },
+  ];
+  let addedUsers = window.adDemoStore.read(storeKey, []);
+  if (!Array.isArray(addedUsers)) addedUsers = [];
+
+  const dialog = document.getElementById('addUserDialog');
+  const form = document.getElementById('addUserForm');
+  const nameInput = document.getElementById('userName');
+  const emailInput = document.getElementById('userEmail');
+  const roleInput = document.getElementById('userRole');
+  const error = document.getElementById('addUserError');
+  let lastFocus = null;
+
+  function safe(value) {
+    return String(value).replace(/[&<>'"]/g, (char) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+    })[char]);
+  }
+
+  function initials(name) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase() || '?';
+  }
+
+  function allUsers() {
+    return [...seedUsers, ...addedUsers];
+  }
+
+  function renderUsers() {
+    const users = allUsers();
+    document.getElementById('userCount').textContent = `${users.length} ${users.length === 1 ? 'person' : 'people'} can access this app`;
+    document.getElementById('userRows').innerHTML = users.map((user) => `
+      <div class="r" data-user-id="${safe(user.id)}">
+        <div class="grow ad-app-user-person">
+          <span class="ad-avatar${user.status === 'Invite sent' ? ' dim' : ''}">${safe(initials(user.name))}</span>
+          <span class="tx"><b>${safe(user.name)}</b><span>${safe(user.email)}</span></span>
+        </div>
+        <div class="ad-app-user-role"><span class="ad-role">${safe(user.role)}</span></div>
+        <div class="ad-app-user-status"><span class="ad-badge ${user.status === 'Active' ? 'green' : 'grey'}"><span class="dot"></span>${safe(user.status)}</span></div>
+        <div class="ad-app-user-action">
+          ${user.fixed ? '' : `<button type="button" data-remove-user="${safe(user.id)}" aria-label="Remove ${safe(user.name)}">${window.adIcon('exit')}</button>`}
+        </div>
+      </div>`).join('');
+
+    document.querySelectorAll('[data-remove-user]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const removed = addedUsers.find((user) => user.id === button.dataset.removeUser);
+        addedUsers = addedUsers.filter((user) => user.id !== button.dataset.removeUser);
+        window.adDemoStore.write(storeKey, addedUsers);
+        renderUsers();
+        window.adToast(`${removed ? removed.name : 'User'} removed from ${app.name}.`);
+      });
+    });
+  }
+
+  function openDialog() {
+    lastFocus = document.activeElement;
+    dialog.hidden = false;
+    document.body.classList.add('ad-user-dialog-open');
+    error.hidden = true;
+    nameInput.focus();
+  }
+
+  function closeDialog() {
+    dialog.hidden = true;
+    document.body.classList.remove('ad-user-dialog-open');
+    form.reset();
+    error.hidden = true;
+    lastFocus?.focus();
+  }
+
+  document.getElementById('appName').textContent = app.name;
+  document.getElementById('addUserCopy').textContent = `Give someone access to ${app.name}.`;
+  document.title = `Prototype — ${app.name} users · Enterprise AI`;
+  renderUsers();
+
+  document.getElementById('openAddUser').addEventListener('click', openDialog);
+  document.getElementById('closeAddUser').addEventListener('click', closeDialog);
+  document.getElementById('cancelAddUser').addEventListener('click', closeDialog);
+  dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !dialog.hidden) closeDialog(); });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
+    if (!name || !email || !emailInput.validity.valid) {
+      error.textContent = 'Enter a name and a valid work email.';
+      error.hidden = false;
+      (!name ? nameInput : emailInput).focus();
+      return;
+    }
+    if (allUsers().some((user) => user.email.toLowerCase() === email)) {
+      error.textContent = 'That person already has access to this app.';
+      error.hidden = false;
+      emailInput.focus();
+      return;
+    }
+    const id = `added-${Date.now()}`;
+    addedUsers.push({ id, name, email, role: roleInput.value, status: 'Invite sent', fixed: false });
+    window.adDemoStore.write(storeKey, addedUsers);
+    renderUsers();
+    closeDialog();
+    window.adToast(`${name} added to ${app.name}.`);
+  });
+
+  if (qs.get('add') === '1') openDialog();
+</script>
+</body>
+</html>

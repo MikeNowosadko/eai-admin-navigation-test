@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/overview" />
+<title>Prototype — Overview · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="overview">
+
+<div id="adPane">
+  <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:4px;">
+    <div style="width:56px;height:56px;flex:0 0 56px;border-radius:12px;background:var(--ad-blue-wash);color:var(--ad-blue);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;" id="pInitial">—</div>
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.01em;" id="pName">—</h1>
+        <span class="ad-role" id="pStatus">Active</span>
+      </div>
+      <p style="margin:6px 0 0;font-size:14px;color:var(--ad-mute);" id="pMeta">—</p>
+    </div>
+    <div class="ad-hd-acts">
+      <button class="ad-btn sm" type="button" data-stub>Edit workflow</button>
+      <button class="ad-btn dark" type="button" id="saveAppSettings">Save changes</button>
+    </div>
+  </div>
+
+  <div class="ad-c pad" style="margin-top:24px;">
+    <h2>Who can access</h2>
+    <p class="sub">Control who can open and run this process.</p>
+    <div style="margin-top:16px;max-width:320px;">
+      <select id="pAccess" style="width:100%;height:40px;padding:0 12px;border:1px solid var(--ad-line);border-radius:8px;background:#fff;font-size:14px;font-weight:500;">
+        <option>Anyone in workspace</option>
+        <option>Only invited people</option>
+        <option>Anyone with the link</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ad-c pad">
+    <h2>Share this process</h2>
+    <p class="sub">Send the link to people who need to fill it in.</p>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      <div class="ctl read" style="flex:1;min-width:200px;max-width:420px;margin-top:0;">
+        <span class="grow mono" id="pUrl" style="font-size:13px;">—</span>
+      </div>
+      <button class="ad-btn" type="button" id="copyBtn"></button>
+      <button class="ad-btn" type="button" id="inviteBtn"></button>
+    </div>
+  </div>
+
+  <div class="ad-c">
+    <div class="ad-c-row" style="border-top:0;">
+      <div class="tx"><b>&ldquo;Built with EAI&rdquo; badge</b><span id="badgeNote">Shown in the footer of the published process.</span></div>
+      <button class="ad-toggle on" type="button" id="badgeToggle" data-toggle aria-label="Show Built with EAI badge" aria-pressed="true"><i></i></button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
+  const appId = app.id;
+  const appPreferences = window.adDemoStore.read(`app-settings-${appId}`, {
+    access: app.access,
+    badge: true,
+  });
+
+  if (qs.get('tab') === 'submissions') {
+    location.replace(`app-submissions.html?app=${appId}`);
+  } else if (qs.get('tab') === 'analytics') {
+    location.replace(`app-analytics.html?app=${appId}`);
+  }
+
+  document.getElementById('pInitial').textContent = app.initial;
+  document.getElementById('pName').textContent = app.name;
+  document.getElementById('pStatus').textContent = app.status;
+  document.getElementById('pMeta').textContent = `${app.subtitle} · ${app.live ? 'Published' : 'Draft'}`;
+  document.getElementById('pAccess').value = appPreferences.access;
+  document.getElementById('pUrl').textContent = app.url;
+  document.getElementById('copyBtn').innerHTML = `${window.adIcon('globe')}Copy link`;
+  document.getElementById('inviteBtn').innerHTML = `${window.adIcon('userplus')}Send invites`;
+  document.title = `Prototype — ${app.name} · Enterprise AI`;
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    window.adToast(app.url === '—' ? 'This process has not been published yet.' : 'Copied to clipboard.');
+  });
+  document.getElementById('inviteBtn').addEventListener('click', () => window.adToast('Invite flow isn’t wired up in this prototype.'));
+  const badgeToggle = document.getElementById('badgeToggle');
+  function paintBadge(on) {
+    badgeToggle.classList.toggle('on', on);
+    badgeToggle.setAttribute('aria-pressed', String(on));
+    document.getElementById('badgeNote').textContent = on
+      ? 'Shown in the footer of the published process.'
+      : 'Hidden from the published process.';
+  }
+  paintBadge(appPreferences.badge !== false);
+
+  badgeToggle.addEventListener('click', () => {
+    paintBadge(!badgeToggle.classList.contains('on'));
+  });
+  document.getElementById('saveAppSettings').addEventListener('click', () => {
+    const next = {
+      access: document.getElementById('pAccess').value,
+      badge: badgeToggle.classList.contains('on'),
+    };
+    window.adDemoStore.write(`app-settings-${appId}`, next);
+    app.access = next.access;
+    window.adToast('App settings saved.');
+  });
+</script>
+</body>
+</html>

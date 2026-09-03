@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/cli" />
+<title>Prototype — CLI · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-mode="cli" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
+
+<div id="adPane">
+  <h1 class="ad-home-h1">Get started with the EAI Setup app</h1>
+
+  <div class="ad-cli">
+    <div class="ad-cli-get">
+      <div class="ad-cli-row">
+        <span class="tx">Download the app</span>
+        <button class="ad-btn dark" type="button" id="downloadBtn">Download EAI Setup app &middot; 84 MB</button>
+      </div>
+
+      <div class="ad-cli-note">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor"/></svg>
+        </span>
+        <span class="tx">
+          <b>Get started with EAI</b>
+          <span>Once you have completed the installation of the EAI Setup app and you are in your external harness (Codex, Claude etc.), type <code>/eai</code> to start using Enterprise AI CLI.</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="ad-cli-install">
+      <span class="lbl">Or install it yourself</span>
+      <div class="ad-cli-cmd">
+        <span class="pfx">$</span>
+        <code>npx install eai</code>
+        <button class="copy" id="copyCmd" type="button">COPY</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    window.adToast('Download isn’t wired in this prototype.');
+  });
+  document.getElementById('copyCmd').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('npx install eai');
+      window.adToast('Copied to clipboard.');
+    } catch {
+      window.adToast('Couldn’t copy — select the command manually.');
+    }
+  });
+</script>
+</body>
+</html>
