@@ -379,6 +379,21 @@ button.swcell.sel .hx{color:var(--fg);font-weight:600}
 .livewrap{margin-top:12px}
 .livenote{margin-top:16px;display:flex;align-items:center;gap:11px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:var(--r-md);font-size:13px;line-height:19px}
 .livenote .dot{width:8px;height:8px;border-radius:var(--r-full);background:var(--success);flex-shrink:0}
+
+/* ---------- variation B: setup inside the chat card ---------- */
+.wsfields{display:flex;flex-direction:column;gap:12px}
+.wsf{display:flex;flex-direction:column;gap:6px}
+.wsf label{font-size:12px;font-weight:600}
+.wsin{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-md);background:#fff;transition:border-color .12s,box-shadow .12s}
+.wsin:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(28,132,224,.12)}
+.wsin input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;font-size:13px;color:var(--fg)}
+.wsin input::placeholder{color:#b4b2ab}
+.wsin .dom{font-size:11px;color:#9a9891;white-space:nowrap}
+.wshint{font-size:12px;line-height:18px;color:var(--muted)}
+.wshint b{color:var(--fg);font-weight:600}
+.exp .swrow{display:flex;gap:6px;flex:1}
+.exp .swrow button{flex:1;height:26px;border-radius:5px;border:1px solid #e4e2db;cursor:pointer;padding:0}
+.exp .swrow button.sel{outline:2px solid var(--fg);outline-offset:1px}
 </style>
 </head>
 <body>
@@ -584,6 +599,26 @@ const QUESTIONS = [
   },
 ];
 
+/* ------------------------------------------------------------
+   Two ways to ask the same thing.
+     pages — full-screen sign-up, then a brand confirmation (Paper J2/J3)
+     chat  — one card in the builder's chat column, beside the live preview
+   ------------------------------------------------------------ */
+const VARIANT = new URLSearchParams(location.search).get('setup')==='chat' ? 'chat' : 'pages';
+
+/* Variation B folds sign-up into the first clarifying question, so the
+   brand lands while you are already looking at the app it paints. */
+const WORKSPACE_Q = {
+  id:'workspace', label:'Workspace',
+  q:'Set up your workspace',
+  help:'Your work email signs you in. The domain after the @ tells us whose brand the app should wear.',
+  custom:'workspace',
+  summary:(v,s)=> v + (s.brand!=='none' && BRANDS[s.brand] ? ' · brand read from '+BRANDS[s.brand].site : ' · unbranded'),
+};
+
+const QUESTIONS_CHAT = [WORKSPACE_Q].concat(QUESTIONS.slice(1));
+const QS = ()=> VARIANT==='chat' ? QUESTIONS_CHAT : QUESTIONS;
+
 /* ============================================================
    State
    ============================================================ */
@@ -597,6 +632,8 @@ const state = {
   email:'',               // typed on the sign-up screen — signs you up AND matches the brand
   match:null,             // {domain, personal, key} resolved from the email
   editColours:false,      // brand-match screen: palette open for editing
+  workspace:'',           // variation B: the workspace name, auto-filled from the brand
+  wsTouched:false,        // ...unless they have typed their own
   source:'A data source',
   levels:2,
   outcomes:'approve or reject',
@@ -609,7 +646,7 @@ const state = {
 
 const brand = ()=> BRANDS[state.brand];
 const answered = id => state.answers[id] !== undefined;
-const allAnswered = ()=> QUESTIONS.every(q=>answered(q.id));
+const allAnswered = ()=> QS().every(q=>answered(q.id));
 
 function applyBrandVars(){
   const b = brand();
@@ -868,6 +905,87 @@ function signup(){
   </div>`;
 }
 
+/* ---------- variation B: the workspace card ---------- */
+function wsHint(){
+  const m = state.match;
+  if(!m) return 'We read the domain, not the inbox — try <b>nike.com</b>, <b>lumina.com</b>, or your own company.';
+  if(m.personal) return `<b>${m.domain}</b> is a personal address, so there is no brand behind it. Carry on and the app stays unbranded.`;
+  const b = BRANDS[m.key];
+  return b.generated
+    ? `Reading <b>${m.domain}</b> — the preview is wearing what we found.`
+    : `Matched <b>${b.name}</b>. The preview is already wearing it.`;
+}
+
+function workspaceCard(i){
+  const ready = !!state.match && state.workspace.trim().length>0;
+  return `<div class="clarify">
+    <div>
+      <div class="q">${WORKSPACE_Q.q}</div>
+      <div class="help">${WORKSPACE_Q.help}</div>
+    </div>
+    <div class="wsfields">
+      <div class="wsf">
+        <label for="cemail">Work email</label>
+        <div class="wsin">
+          <input id="cemail" type="text" inputmode="email" spellcheck="false" placeholder="you@yourcompany.com" value="${state.email}" />
+          <span class="dom">${state.match?state.match.domain:''}</span>
+        </div>
+      </div>
+      <div class="wsf">
+        <label for="cws">Workspace name</label>
+        <div class="wsin"><input id="cws" type="text" spellcheck="false" placeholder="Your team" value="${state.workspace}" /></div>
+      </div>
+    </div>
+    <div class="wshint">${wsHint()}</div>
+    ${state.brand!=='none' ? expansion('brand', state.brand) : ''}
+    <div class="cfoot">
+      <span class="count mono">${i+1} / ${QS().length}</span>
+      <button class="btn-skip" data-wsskip="1">Skip</button>
+      <button class="btn-next" data-wsnext="1" ${ready?'':'disabled'}>Next</button>
+    </div>
+  </div>`;
+}
+
+/* Re-render without losing the caret — the preview repaints on every keystroke. */
+function renderKeepingFocus(){
+  const a = document.activeElement;
+  const id = a && a.id, pos = a && a.selectionStart;
+  render();
+  if(id){
+    const el = $(id);
+    if(el){ el.focus(); if(pos!=null && el.setSelectionRange) el.setSelectionRange(pos,pos) }
+  }
+}
+
+function wireWorkspace(){
+  const em = $('cemail'), ws = $('cws');
+  if(!em) return;
+  /* first time the card lands, put the cursor where the work starts */
+  if(!state.email && document.activeElement === document.body) em.focus();
+
+  em.oninput = ()=>{
+    state.email = em.value;
+    state.match = resolveBrand(state.email);
+    state.brand = state.match && !state.match.personal ? state.match.key : 'none';
+    /* the workspace name follows the brand until they name it themselves */
+    if(!state.wsTouched) state.workspace = state.brand==='none' ? '' : BRANDS[state.brand].name;
+    renderKeepingFocus();
+  };
+  if(ws) ws.oninput = ()=>{ state.wsTouched = true; state.workspace = ws.value; renderKeepingFocus() };
+
+  document.querySelectorAll('[data-wsnext]').forEach(el=>el.onclick=()=>{
+    state.answers.workspace = state.workspace.trim();
+    if(state.brand!=='none') state.answers.brand = state.brand;
+    state.step = 1; render();
+  });
+  document.querySelectorAll('[data-wsskip]').forEach(el=>el.onclick=()=>{
+    state.brand='none'; state.answers.workspace = state.workspace.trim() || 'My workspace';
+    state.step = 1; render();
+  });
+  /* the swatches in the brand strip stay pickable here too */
+  document.querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{setAccent(el.dataset.pick);render()});
+}
+
 /* ---------- 02c this is your brand, right? (Paper J3) ---------- */
 function brandLogo(b, size){
   const px = size||44;
@@ -1050,8 +1168,8 @@ function builder(){
       <div class="chat">
         <div class="chat-scroll" id="chatscroll">
           <div class="msg">You’re starting from the <b>EDM campaign</b> template. Four blocks, already wired. Let’s make them yours.</div>
-          ${QUESTIONS.map((q,i)=> i<state.step ? resultRow(q,i) : '').join('')}
-          ${state.step<QUESTIONS.length ? prompt(state.step)+clarify(state.step) : donePanel()}
+          ${QS().map((q,i)=> i<state.step ? resultRow(q,i) : '').join('')}
+          ${state.step<QS().length ? prompt(state.step)+clarify(state.step) : donePanel()}
         </div>
         <div class="chat-input"><div class="box">Ask the assistant to change this step…</div><span class="send">${I.arrow}</span></div>
       </div>
@@ -1069,7 +1187,9 @@ function builder(){
 
 function prompt(i){
   const msgs = [
-    'First, the look. Everything this app renders will use it.',
+    VARIANT==='chat'
+      ? 'First, your workspace. The address you sign in with is also how we find your brand — watch the preview.'
+      : 'First, the look. Everything this app renders will use it.',
     'You’ve added a <b>Composer</b> block — it writes the email. <b>Assets.</b> The copy is only as good as its source material.',
     '<b>The copy.</b> What should the Composer produce, and how should it sound?',
     '<b>The review.</b> Before the email goes out, it’s signed off. Who approves, and how?',
@@ -1087,7 +1207,8 @@ function resultRow(q,i){
 }
 
 function clarify(i){
-  const q = QUESTIONS[i];
+  const q = QS()[i];
+  if(q.custom==='workspace') return workspaceCard(i);
   const opts = q.id==='brand' ? brandOptions() : q.dynamic ? whoOptions() : q.options;
   const cur = state.answers[q.id];
   const body = `
@@ -1102,9 +1223,9 @@ function clarify(i){
     </div>
     ${cur!==undefined?expansion(q.id,cur):''}
     <div class="cfoot">
-      <span class="count mono">${i+1} / ${QUESTIONS.length}</span>
+      <span class="count mono">${i+1} / ${QS().length}</span>
       <button class="btn-skip" data-next="1">Skip</button>
-      <button class="btn-next" data-next="1" ${cur===undefined?'disabled':''}>${i===QUESTIONS.length-1?'Build':'Next'}</button>
+      <button class="btn-next" data-next="1" ${cur===undefined?'disabled':''}>${i===QS().length-1?'Build':'Next'}</button>
     </div>`;
   return `<div class="clarify">${body}</div>`;
 }
@@ -1134,8 +1255,8 @@ function expansion(id, val){
     return `<div class="exp">
       <span class="lbl">Read from ${bb.site} — change any of it:</span>
       <div class="row">
-        <span class="app-logo" style="background:${bb.accent};color:#fff;width:34px;height:34px">${bb.key==='nike'?I.swoosh:bb.initial}</span>
-        <span style="display:flex;gap:6px;flex:1">${bb.swatches.map(s=>`<span style="width:32px;height:32px;border-radius:6px;background:${s};border:1px solid #e4e2db"></span>`).join('')}</span>
+        <span class="app-logo" style="background:${bb.accent};color:${bb.ink};width:34px;height:34px">${bb.key==='nike'?I.swoosh:bb.initial}</span>
+        <span class="swrow">${bb.swatches.map(sw=>`<button data-pick="${sw}" title="${sw}" class="${sw.toLowerCase()===bb.accent.toLowerCase()?'sel':''}" style="background:${sw}"></button>`).join('')}</span>
       </div>
       <div class="row"><span class="grow muted">Tone of voice</span><span>${bb.tone}</span></div>
       <div class="row"><span class="grow muted">Keep in sync with the site</span><span class="sw on"><i></i></span></div>
@@ -1267,7 +1388,7 @@ function published(){
         <h1>Live in six minutes.</h1>
         <p class="muted" style="margin:0;font-size:15px;line-height:23px">Your team can run it now. Everything below can still be changed without starting again.</p>
         <div class="recap">
-          ${QUESTIONS.map(q=>`<div class="r"><span class="dot"></span>${q.label}: ${q.summary(state.answers[q.id],state)}<span class="e">Edit</span></div>`).join('')}
+          ${QS().map(q=>`<div class="r"><span class="dot"></span>${q.label}: ${q.summary(state.answers[q.id],state)}<span class="e">Edit</span></div>`).join('')}
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn-primary" data-open="builder">Run a campaign</button>
@@ -1290,6 +1411,7 @@ const PRISTINE = JSON.parse(JSON.stringify({lumina:BRANDS.lumina, nike:BRANDS.ni
 function startSetup(){
   Object.keys(PRISTINE).forEach(k=>{ Object.assign(BRANDS[k], JSON.parse(JSON.stringify(PRISTINE[k]))) });
   state.brand='none'; state.match=null; state.editColours=false;
+  state.email=''; state.workspace=''; state.wsTouched=false;
   state.step=0; state.answers={}; state.decisions=[];
 }
 
@@ -1357,8 +1479,9 @@ function continueFromEmail(){
 function wire(){
   document.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{state.screen=el.dataset.goto;render()});
   document.querySelectorAll('[data-open]').forEach(el=>el.onclick=()=>{
-    if(el.dataset.open==='signup') startSetup();
-    state.screen=el.dataset.open; render();
+    let to = el.dataset.open;
+    if(to==='signup'){ startSetup(); if(VARIANT==='chat') to='builder' }
+    state.screen=to; render();
   });
   document.querySelectorAll('[data-cat]').forEach(el=>el.onclick=()=>{state.cat=el.dataset.cat;render()});
   document.querySelectorAll('[data-dev]').forEach(el=>el.onclick=()=>{state.device=el.dataset.dev;render()});
@@ -1372,9 +1495,9 @@ function wire(){
     render();
   });
   document.querySelectorAll('[data-next]').forEach(el=>el.onclick=()=>{
-    const q = QUESTIONS[state.step];
-    if(state.answers[q.id]===undefined){ state.answers[q.id] = q.dynamic ? whoOptions()[0].v : q.options[0].v; if(q.id==='brand')state.brand=state.answers[q.id]; }
-    state.step = Math.min(state.step+1, QUESTIONS.length);
+    const q = QS()[state.step];
+    if(state.answers[q.id]===undefined && !q.custom){ state.answers[q.id] = q.dynamic ? whoOptions()[0].v : q.options[0].v; if(q.id==='brand')state.brand=state.answers[q.id]; }
+    state.step = Math.min(state.step+1, QS().length);
     render();
   });
   document.querySelectorAll('[data-step]').forEach(el=>el.onclick=()=>{state.step=+el.dataset.step;render()});
@@ -1394,6 +1517,7 @@ function wire(){
   });
 
   wireSetup();
+  wireWorkspace();
 }
 
 /* Deep link for user testing: land straight on the sign-up, optionally prefilled.
@@ -1403,7 +1527,13 @@ if(Q.has('email') || Q.get('screen')==='signup'){
   startSetup();
   state.email = Q.get('email') || '';
   state.match = resolveBrand(state.email);
-  state.screen = 'signup';
+  if(VARIANT==='chat'){
+    state.brand = state.match && !state.match.personal ? state.match.key : 'none';
+    if(state.brand!=='none') state.workspace = BRANDS[state.brand].name;
+    state.screen = 'builder';
+  } else {
+    state.screen = 'signup';
+  }
 }
 
 render();

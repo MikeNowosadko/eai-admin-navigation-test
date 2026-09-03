@@ -106,12 +106,37 @@ Everything branded reads three CSS variables — `--accent`, `--accent-wash`,
 `--accent-ink` — set on `:root` by `applyBrandVars()`. That is the whole theming
 mechanism; nothing else needs to know which brand is on.
 
+### Two variations of where the setup lives
+
+Same brand mechanism, two places to put the question. `?setup=chat` switches
+between them; everything downstream is identical.
+
+**A — full-screen setup** (default). "Make your own" leaves the builder for two
+pages: the sign-up, then "This is Lumina, right?" with the brand card beside a
+preview. Faithful to the Paper file. It is a bigger moment, but it is also two
+screens of chrome — a step rail, a confirmation — before you reach the editor.
+
+**B — inside the chat card** (`?setup=chat`). "Make your own" goes straight into
+the builder in editor mode. The first clarifying card asks for work email and
+workspace name, and the brand strip appears inside it as the domain resolves.
+The preview is already on screen to the right, so you watch the app take your
+colour while you are still typing — the repaint is the feedback, not a separate
+confirmation screen. The workspace name auto-fills from the matched brand until
+you type your own.
+
+B is the cheaper build: no new screens, no step rail, no second route. It reuses
+the clarifying-card shell and the `expansion('brand', …)` strip that were already
+there, and the workspace question simply replaces the brand question as step 1 —
+so the builder still counts 1/4 through 4/4.
+
 Deep links for user testing:
 
 | URL | Lands on |
 | --- | --- |
-| `template-flow/index.html?screen=signup` | The sign-up screen, empty |
-| `…?email=jo@lumina.com` | The sign-up screen, prefilled and matched |
+| `template-flow/index.html?screen=signup` | A — the sign-up screen, empty |
+| `…?email=jo@lumina.com` | A — the sign-up screen, prefilled and matched |
+| `…?setup=chat` | B — the builder, workspace card waiting |
+| `…?setup=chat&email=jo@lumina.com` | B — the builder, already matched and painted |
 
 Question copy is lifted from `5layer-editor/src/blocks/composer/composerClarification.ts`
 and `.../approval/approvalClarification.ts`; the reviewers table and review dialog
