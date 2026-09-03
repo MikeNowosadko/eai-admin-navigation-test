@@ -68,16 +68,50 @@ It walks the whole journey the Paper file describes:
    app that template builds. The EDM campaign tile is the live one.
 2. **Read the template** — detail page with a live preview you can switch
    between desktop / tablet / mobile, the four blocks, and the CTA.
-3. **Make it yours** — the builder shell (384px chat + preview). Four
+3. **Sign up = brand match** — one field, a work email. It creates the account
+   *and* the domain after the @ is the brand lookup. Then "This is Lumina,
+   right?" shows what came back — logo, four colours with their hexes, typeface,
+   tone of voice — beside a live preview already wearing it.
+4. **Make it yours** — the builder shell (384px chat + preview). Four
    clarifying questions, the answers *are* the configuration:
-   brand (Lumina / Nike / none) → assets → tone → sign-off.
-   Picking a brand re-skins the preview immediately.
-4. **The review** — reviewers table built from the role and number of levels you
+   brand → assets → tone → sign-off. Brand arrives already answered from the
+   sign-up, so the builder opens on assets.
+5. **The review** — reviewers table built from the role and number of levels you
    chose; click a pending row to open the review dialog and approve or reject.
-5. **Publish** — the recap and the live branded app.
+6. **Publish** — the recap and the live branded app.
 
-There is no step rail or reset button — you move through it by clicking what is
-actually on screen, the way the real product would work. Refresh to start over.
+There is no reset button — you move through it by clicking what is actually on
+screen, the way the real product would work. Refresh to start over. The setup
+screens do carry the five-step rail from the Paper file, because a tester who has
+just handed over an email wants to know how much more there is.
+
+### The brand, and where the colour comes from
+
+The whole point of the sign-up screen: **one email does sign-up and branding.**
+
+- `lumina.com` and `nike.com` are the two designed brands, with the palettes from
+  the Paper file. They are the ones to demo.
+- **Any other company domain** gets a brand generated from it — the domain is
+  hashed to a hue, and accent / wash / deep / secondary are derived from that.
+  So a tester can type their own address and watch the app take their colour.
+  It is deterministic: the same domain always gives the same palette.
+- Free mail domains (gmail, outlook, …) are recognised as personal — there is no
+  brand behind them, and Continue goes on unbranded.
+- **Edit colours** turns the swatches into buttons and adds a colour input. Pick
+  anything and the preview repaints as you drag. Text colour on the accent flips
+  to dark automatically past a luminance threshold, so a pale pick never becomes
+  white-on-white.
+
+Everything branded reads three CSS variables — `--accent`, `--accent-wash`,
+`--accent-ink` — set on `:root` by `applyBrandVars()`. That is the whole theming
+mechanism; nothing else needs to know which brand is on.
+
+Deep links for user testing:
+
+| URL | Lands on |
+| --- | --- |
+| `template-flow/index.html?screen=signup` | The sign-up screen, empty |
+| `…?email=jo@lumina.com` | The sign-up screen, prefilled and matched |
 
 Question copy is lifted from `5layer-editor/src/blocks/composer/composerClarification.ts`
 and `.../approval/approvalClarification.ts`; the reviewers table and review dialog
