@@ -1,7 +1,14 @@
-# EAI admin navigation test
+# Michael's EAI platform journey
 
-Isolated static prototype for a Lyssna navigation study.
+An isolated static prototype that connects the EAI marketing site, no-code app builder, sign-in gate, and admin platform.
 
-This repository contains only the pages and assets required for the study. It has no production data, authentication, backend services, or history from the source prototype repository.
+The seeded journey is:
 
-The participant entry point is the repository's GitHub Pages homepage, which opens the Michael demo automatically.
+1. Describe a process on the marketing site.
+2. Review and generate the first version of the app without signing in.
+3. Try to make a change and sign in when prompted.
+4. Continue in the EAI platform with the newly created app open inside Amazing Pet Store.
+
+This copy has no production data, real authentication, or backend services. Its state is stored only in the browser for the prototype.
+
+Open `build-web/index.html` to start the complete journey.

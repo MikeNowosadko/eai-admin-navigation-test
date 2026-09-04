@@ -1,0 +1,197 @@
+/* Signed-in app — manage apps & settings */
+
+a.nb-ws {
+  text-decoration: none;
+  color: inherit;
+}
+
+.bw-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.bw-app-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--background);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bw-app-card:hover {
+  border-color: #d4d4d8;
+  box-shadow: 0 8px 24px -12px rgb(16 24 40 / 0.12);
+}
+
+.bw-app-card-hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bw-app-card-hd b {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.bw-app-status {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bw-app-status.live { background: #dcfce7; color: #166534; }
+.bw-app-status.draft { background: #f4f4f5; color: #52525b; }
+
+.bw-app-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.bw-app-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.bw-app-meta span {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--muted);
+}
+
+.bw-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 28px;
+  max-width: 640px;
+}
+
+.bw-settings-section {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--background);
+}
+
+.bw-settings-section h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bw-settings-section > p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.bw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.bw-field:last-child { margin-bottom: 0; }
+
+.bw-field label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.bw-field input,
+.bw-field select,
+.bw-field textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.bw-field textarea { min-height: 88px; resize: vertical; }
+
+.bw-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bw-settings-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.bw-crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.bw-crumb a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+
+.bw-crumb a:hover { color: var(--foreground); text-decoration: underline; }
+
+.bw-page-lead {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+
+.bw-new-app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 140px;
+  border: 1px dashed #d4d4d8;
+  border-radius: 14px;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.bw-new-app:hover {
+  border-color: #a1a1aa;
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .bw-field-row { grid-template-columns: 1fr; }
+}

@@ -9,6 +9,13 @@
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/me" />
 <title>Prototype — Your profile · Enterprise AI</title>
+<script>
+  if (new URLSearchParams(location.search).get('demo') === 'michael') {
+    const params = new URLSearchParams(location.search);
+    params.set('profile', '1');
+    location.replace(`ws-home.html?${params.toString()}`);
+  }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -105,8 +112,8 @@
   notificationToggle.setAttribute('aria-pressed', String(profilePreferences.notifications !== false));
 
   const WORKSPACES = [
-    { initial: w.initial, name: w.name, meta: `${D.processes.length} processes · 42 credits left`, role: 'Owner', dark: true },
-    { initial: 'B', name: 'Bendigo pilot', meta: '1 process · guest access', role: 'Builder', dark: false },
+    { initial: w.initial, name: w.name, meta: `${D.processes.length} apps · 42 credits left`, role: 'Owner', dark: true },
+    { initial: 'B', name: 'Bendigo pilot', meta: '1 app · guest access', role: 'Builder', dark: false },
   ];
   document.getElementById('wsRows').innerHTML = WORKSPACES.map((x) => `
     <div class="ad-c-row">

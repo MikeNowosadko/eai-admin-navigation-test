@@ -110,7 +110,7 @@
   window.adToast = toast;
 
   /* ---------------------------------------------- persistent demo state */
-  const DEMO_STORAGE_PREFIX = 'eai-admin-redesign:';
+  const DEMO_STORAGE_PREFIX = 'eai-michael-platform-journey:';
   function demoRead(key, fallback) {
     try {
       const value = localStorage.getItem(`${DEMO_STORAGE_PREFIX}${key}`);
@@ -128,12 +128,46 @@
     }
   }
   window.adDemoStore = { read: demoRead, write: demoWrite };
+  const signedInUser = demoRead('signed-in-user', null);
+  if (signedInUser?.name) {
+    D.user.name = String(signedInUser.name);
+    D.user.av = D.user.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase() || D.user.av;
+  }
+  if (signedInUser?.email) D.user.email = String(signedInUser.email);
   const savedProfile = demoRead('profile', null);
   if (savedProfile?.name) {
     D.user.name = String(savedProfile.name);
     D.user.av = D.user.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase() || D.user.av;
   }
   if (savedProfile?.title) D.user.title = String(savedProfile.title);
+  if (D.members?.length) {
+    D.members[0] = {
+      ...D.members[0],
+      av: D.user.av,
+      name: D.user.name,
+      email: D.user.email,
+    };
+  }
+
+  D.workspace.name = 'Amazing Pet Store';
+  D.workspace.initial = 'A';
+
+  const createdApp = demoRead('created-app', null);
+  if (createdApp?.name) {
+    const app = D.processes.find((process) => process.id === 'vendor-onboarding');
+    if (app) {
+      Object.assign(app, {
+        name: String(createdApp.name),
+        initial: String(createdApp.initial || createdApp.name.charAt(0)).toUpperCase(),
+        subtitle: 'Built with EAI',
+        desc: String(createdApp.prompt || app.desc),
+        status: 'Draft',
+        seen: 'Just now',
+        hoursAgo: 0,
+        url: '—',
+      });
+    }
+  }
 
   /* --------------------------------------------------------- state */
   /* `?app=` and `?client=` are resolved through the seed rather than used
@@ -243,7 +277,7 @@
   const MICHAEL_DEFAULT_APP_RESOURCES = ['supplier-compliance-policy', 'vendor-due-diligence-pack'];
   const MICHAEL_KNOWLEDGE_RESOURCES = [
     { id: 'supplier-compliance-policy', name: 'Supplier compliance policy', desc: 'Rules and guidance for supplier assessment' },
-    { id: 'procurement-operating-guide', name: 'Procurement operating guide', desc: 'Approved purchasing and escalation processes' },
+    { id: 'procurement-operating-guide', name: 'Procurement operating guide', desc: 'Approved purchasing and escalation procedures' },
     { id: 'customer-identity-standard', name: 'Customer identity standard', desc: 'Verification requirements for customer-facing apps' },
   ];
 
@@ -273,7 +307,11 @@
 
   function michaelCompanyProcesses() {
     const ids = MICHAEL_COMPANY_APPS[michaelActiveCompany().id] || [];
-    return ids.map((id) => D.processes.find((process) => process.id === id)).filter(Boolean);
+    const apps = ids.map((id) => D.processes.find((process) => process.id === id)).filter(Boolean);
+    if (createdApp?.name && michaelActiveCompany().id === 'northwind-ops') {
+      return apps.sort((a, b) => (a.id === 'vendor-onboarding' ? -1 : b.id === 'vendor-onboarding' ? 1 : 0));
+    }
+    return apps;
   }
   window.adCompanyProcesses = michaelCompanyProcesses;
 
@@ -464,7 +502,7 @@
             <span class="tx"><b>${esc(u.name)}</b><span>${esc(u.email)}</span></span>
           </div>
           <div class="ad-user-menu-items">
-            <a class="ad-user-menu-item${s.nav === 'profile' ? ' on' : ''}" href="${michaelHref(s, 'profile.html')}" role="menuitem">${svg('person')}<span>Profile</span></a>
+            <button class="ad-user-menu-item" type="button" role="menuitem" data-profile-open>${svg('person')}<span>Profile</span></button>
             <button class="ad-user-menu-item" type="button" role="menuitem" data-stub>${svg('theme')}<span>Light mode</span></button>
           </div>
           <div class="ad-user-menu-items split">
@@ -475,6 +513,87 @@
             <button class="ad-user-menu-item" type="button" role="menuitem" data-stub>${svg('exit')}<span>Sign out</span></button>
           </div>
         </div>
+      </div>`;
+  }
+
+  function michaelProfileModal(s, w, u) {
+    const profilePreferences = demoRead('profile', {
+      name: u.name,
+      title: u.title,
+      notifications: true,
+    });
+    const surface = D.harness.surface === 'cli' ? ['CLI'] : D.harness.surface === 'nocode' ? ['No-code'] : ['No-code', 'CLI'];
+    const workspaces = [
+      { initial: w.initial, name: w.name, meta: `${D.processes.length} apps · 42 credits left`, role: 'Owner', dark: true },
+      { initial: 'B', name: 'Bendigo pilot', meta: '1 app · guest access', role: 'Builder', dark: false },
+    ];
+    const workspaceRows = workspaces.map((workspace) => `
+      <div class="ad-c-row">
+        <span class="ad-avatar sq" style="${workspace.dark ? 'background:#18181B;color:#fff;' : 'background:var(--ad-line);color:var(--ad-ink-3);'}width:28px;height:28px;flex-basis:28px;">${esc(workspace.initial)}</span>
+        <div class="tx" style="flex:1;min-width:0;"><b>${esc(workspace.name)}</b></div>
+        <span class="ad-profile-workspace-meta">${esc(workspace.meta)}</span>
+        <span class="ad-role">${esc(workspace.role)}</span>
+      </div>`).join('');
+    return `
+      <div class="ad-settings-modal-layer ad-profile-modal-layer" id="adProfileModal" data-profile-modal hidden>
+        <section class="ad-settings-modal-window ad-profile-modal-window" role="dialog" aria-modal="true" aria-labelledby="adProfileModalTitle">
+          <header class="ad-settings-modal-head">
+            <div class="ad-settings-modal-title">${svg('person')}<h2 id="adProfileModalTitle">Profile</h2></div>
+            <button class="ad-settings-modal-close" type="button" data-profile-close aria-label="Close profile">&times;</button>
+          </header>
+          <div class="ad-profile-modal-content">
+            <div class="ad-profile-modal-panel">
+              <div class="ad-profile-modal-heading">
+                <div><h3>Your profile</h3><p>How you appear to everyone you build with.</p></div>
+                <button class="ad-btn dark" type="button" data-profile-save>Save changes</button>
+              </div>
+
+              <div class="ad-c pad ad-profile-details-card">
+                <div class="ad-profile-details">
+                  <div class="ad-profile-avatar-column">
+                    <div class="ad-profile-avatar" data-profile-avatar>${esc(u.av)}</div>
+                    <button type="button" class="ad-link" data-stub>Change photo</button>
+                  </div>
+                  <div class="ad-profile-fields">
+                    <div class="ad-f-row">
+                      <div class="ad-f"><label for="adProfileName">Full name</label><input id="adProfileName" type="text" value="${esc(profilePreferences.name || u.name)}" data-profile-name /></div>
+                      <div class="ad-f"><label for="adProfileTitle">What you do</label><input id="adProfileTitle" type="text" value="${esc(profilePreferences.title || u.title)}" data-profile-title /></div>
+                    </div>
+                    <div class="ad-f"><label>Email</label><div class="ctl read"><span class="grow">${esc(u.email)}</span><span class="ad-badge green">Verified</span></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ad-c">
+                <div class="ad-c-hd"><div><h2>Your workspaces</h2><p class="sub">Your role is set by each workspace owner.</p></div></div>
+                ${workspaceRows}
+              </div>
+
+              <div class="ad-c">
+                <div class="ad-c-row" style="border-top:0;">
+                  <div class="tx" style="flex:1;min-width:0;"><b>How you build</b><span>${esc(`${surface.join(' and ')}, running ${D.harness.agent}. Inherited from ${w.name}.`)}</span></div>
+                  <div class="ad-profile-harness-chips">${surface.map((label) => `<span class="ad-chip">${esc(label)}</span>`).join('')}</div>
+                  <button class="ad-btn sm" type="button" data-stub data-stub-label="Changing how you build">Change</button>
+                </div>
+                <div class="ad-c-row">
+                  <div class="tx"><b>Notifications</b><span>Daily digest of submissions that need you.</span></div>
+                  <button class="ad-toggle${profilePreferences.notifications === false ? '' : ' on'}" type="button" data-profile-notifications aria-label="Daily notification digest" aria-pressed="${profilePreferences.notifications === false ? 'false' : 'true'}"><i></i></button>
+                </div>
+                <div class="ad-c-row">
+                  <div class="tx"><b>Sign-in &amp; security</b><span>Microsoft Entra ID · last signed in 2 minutes ago</span></div>
+                  <button class="ad-btn sm" type="button" data-stub>Manage</button>
+                </div>
+              </div>
+
+              <div class="ad-c ad-profile-danger">
+                <div class="ad-c-row" style="border-top:0;">
+                  <div class="tx"><b>Sign out everywhere</b><span>Ends every session on every device, including this one.</span></div>
+                  <button class="ad-btn sm" type="button" data-stub>Sign out everywhere</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>`;
   }
 
@@ -534,9 +653,9 @@
                   <p>Workspace-wide reporting and activity summaries.</p>
                 </div>
                 <div class="ad-settings-metric-grid">
-                  <div><span>Active processes</span><b data-company-app-count>${michaelCompanyProcesses().length}</b><small>Across the workspace</small></div>
+                  <div><span>Active apps</span><b data-company-app-count>${michaelCompanyProcesses().length}</b><small>Across the workspace</small></div>
                   <div><span>Total submissions</span><b>1,284</b><small>Last 30 days</small></div>
-                  <div><span>Completion rate</span><b>76%</b><small>All live processes</small></div>
+                  <div><span>Completion rate</span><b>76%</b><small>All live apps</small></div>
                 </div>
                 <div class="ad-settings-save"><button class="ad-btn dark" type="button" data-stub>View analytics</button></div>
               </section>
@@ -547,7 +666,7 @@
                   <p>Review administrative actions and security events across the workspace.</p>
                 </div>
                 <div class="ad-settings-summary-list">
-                  <div>${svg('person')}<span><b>Gareth Chainey updated workspace settings</b><small>Today at 10:42 am</small></span></div>
+                  <div>${svg('person')}<span><b>${esc(D.user.name)} updated workspace settings</b><small>Today at 10:42 am</small></span></div>
                   <div>${svg('users')}<span><b>Priya Sharma invited a new member</b><small>Yesterday at 4:18 pm</small></span></div>
                   <div>${svg('template')}<span><b>KYC Onboarding was published</b><small>2 days ago</small></span></div>
                 </div>
@@ -663,7 +782,7 @@
     <div class="ad-side-body">
       <nav class="ad-nav">
         ${wsItem(s, 'home', 'home', 'Home', 'ws-home.html')}
-        ${wsItem(s, 'processes', 'grid', 'All processes', 'ws-processes.html', `<i class="count"${s.michaelDemo ? ' data-company-app-count' : ''}>${s.michaelDemo ? michaelCompanyProcesses().length : D.processes.length}</i>`)}
+        ${wsItem(s, 'processes', 'grid', 'All apps', 'ws-processes.html', `<i class="count"${s.michaelDemo ? ' data-company-app-count' : ''}>${s.michaelDemo ? michaelCompanyProcesses().length : D.processes.length}</i>`)}
         ${wsItem(s, 'templates', 'template', 'Templates', 'ws-templates.html')}
         ${wsItem(s, 'integrations', 'plug', 'Integrations', 'ws-integrations.html')}
       </nav>
@@ -683,11 +802,11 @@
     </div>
     <div class="ad-side-ft">
       ${s.michaelDemo
-        ? `<nav class="ad-nav ad-settings-above-user"><button class="ad-item" type="button" data-settings-open ${s.settingsLayout === 'popup' ? 'aria-haspopup="dialog"' : 'aria-controls="adWorkspaceSettings"'} aria-expanded="false">${svg('gear')}<span>Settings</span></button></nav>`
-        : `<nav class="ad-nav">${wsItem(s, 'settings', 'gear', 'Settings', 'ws-settings.html')}</nav>`}
+        ? `<nav class="ad-nav ad-settings-above-user"><button class="ad-item" type="button" data-settings-open ${s.settingsLayout === 'popup' ? 'aria-haspopup="dialog"' : 'aria-controls="adWorkspaceSettings"'} aria-expanded="false">${svg('gear')}<span>Workspace settings</span></button></nav>`
+        : `<nav class="ad-nav">${wsItem(s, 'settings', 'gear', 'Workspace settings', 'ws-settings.html')}</nav>`}
       ${s.michaelDemo ? '' : `<div class="ad-upsell">
         <b>Upgrade to Team</b>
-        <p>Unlimited processes, roles &amp; audit history.</p>
+        <p>Unlimited apps, roles &amp; audit history.</p>
         <button class="btn" type="button" data-stub>View plans</button>
       </div>`}
       ${s.michaelDemo ? michaelUserMenu(s, u) : `<a class="ad-user${s.nav === 'profile' ? ' on' : ''}" href="profile.html">
@@ -705,29 +824,30 @@
         ${s.michaelDemo ? `<span class="ad-top-company" data-company-current-name>${esc(activeCompany.name)}</span>` : ''}
       </div>
       <div class="ad-search-wrap">
-        <button class="ad-search-trigger" type="button" aria-label="Search processes" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
-          ${svg('search')}<span>Search processes…</span><kbd>&#8984;K</kbd>
+        <button class="ad-search-trigger" type="button" aria-label="Search apps" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
+          ${svg('search')}<span>Search apps…</span><kbd>&#8984;K</kbd>
         </button>
-        <div class="ad-search-pal" id="adSearchPal" hidden role="dialog" aria-label="Search processes">
+        <div class="ad-search-pal" id="adSearchPal" hidden role="dialog" aria-label="Search apps">
           <div class="ad-search-pal-hd">
             ${svg('search')}
-            <input class="ad-search-input" type="search" placeholder="Search processes…" autocomplete="off" spellcheck="false" aria-label="Search processes" />
+            <input class="ad-search-input" type="search" placeholder="Search apps…" autocomplete="off" spellcheck="false" aria-label="Search apps" />
             <kbd class="ad-search-esc" aria-hidden="true">esc</kbd>
           </div>
-          <ul class="ad-search-list" role="listbox" aria-label="Processes"></ul>
+          <ul class="ad-search-list" role="listbox" aria-label="Apps"></ul>
           <div class="ad-search-pal-ft">
-            <a href="ws-processes.html">Browse all processes</a>
+            <a href="ws-processes.html">Browse all apps</a>
           </div>
         </div>
       </div>
       <div class="ad-top-r">
         ${notifBell()}
-        <button class="ad-btn dark" type="button" data-stub>${svg('plus')}New process</button>
+        <button class="ad-btn dark" type="button" data-stub>${svg('plus')}New app</button>
       </div>
     </header>
     <div class="ad-body${s.hero ? ' hero' : ''}"><div class="ad-col${s.narrow ? ' narrow' : ''}${s.wide ? ' wide' : ''}">${pane}</div></div>
   </main>
   ${s.michaelDemo ? michaelSettingsModal(s, w) : ''}
+  ${s.michaelDemo ? michaelProfileModal(s, w, u) : ''}
 </div>
 <div class="ad-flag" data-ad-root>MVP · prototype</div>`;
   }
@@ -735,7 +855,7 @@
   /* ----------------------------------------------------- app shell */
   function railItem(s, id, icon, label, href) {
     const on = s.rail === id ? ' on' : '';
-    return `<a class="ad-rail-item${on}" href="${href}">${svg(icon)}<span class="lb">${label}</span></a>`;
+    return `<a class="ad-rail-item${on}" href="${michaelHref(s, href)}">${svg(icon)}<span class="lb">${label}</span></a>`;
   }
 
   function railStubItem(icon, label, tail, extraClass) {
@@ -749,6 +869,11 @@
       ${railItem(s, 'submissions', 'file', 'Submissions', `app-submissions.html?app=${s.appId}`)}
       ${railItem(s, 'analytics', 'chart', 'Analytics & reports', `app-analytics.html?app=${s.appId}`)}
       ${railItem(s, 'users', 'users', 'Users', `app-users.html?app=${s.appId}`)}
+      <div class="ad-rail-section-label">Configure</div>
+      ${railItem(s, 'configure-workflow', 'workflow', 'Workflow', `app-configure.html?app=${s.appId}&section=workflow`)}
+      ${railItem(s, 'configure-resources', 'data', 'Resources', `app-configure.html?app=${s.appId}&section=resources`)}
+      ${railItem(s, 'configure-ai', 'sparkle', 'AI & prompts', `app-configure.html?app=${s.appId}&section=ai`)}
+      ${railItem(s, 'configure-connections', 'plug', 'Connections', `app-configure.html?app=${s.appId}&section=connections`)}
       <div class="ad-rail-section-label">Launch</div>
       ${railStubItem('checklist', 'Readiness')}
       ${railStubItem('rocket', 'Deploy')}`;
@@ -793,7 +918,7 @@
 <div class="ad-app" data-ad-root>
   <div class="ad-app-outer">
     <header class="ad-app-top">
-      <a class="ad-mark" href="ws-home.html" aria-label="Back to ${esc(activeCompany.name)}">${svg('logo')}</a>
+      <a class="ad-mark" href="${michaelHref(s, 'ws-home.html')}" aria-label="Back to ${esc(activeCompany.name)}">${svg('logo')}</a>
       <span class="ad-slash" aria-hidden="true"></span>
       <div class="ad-appid">
         <span class="av">${app.initial}</span>
@@ -804,7 +929,7 @@
         <div class="ad-av-stack">
           <span class="av">${u.av}</span>
           ${s.michaelDemo
-            ? `<a class="add" href="app-users.html?app=${s.appId}&add=1" aria-label="Add a user">${svg('plus')}</a>`
+            ? `<a class="add" href="${michaelHref(s, `app-users.html?app=${s.appId}&add=1`)}" aria-label="Add a user">${svg('plus')}</a>`
             : `<button class="add" type="button" data-stub aria-label="Invite people">${svg('plus')}</button>`}
         </div>
         <button class="ad-icon-btn" type="button" data-stub aria-label="More">${svg('dots')}</button>
@@ -888,7 +1013,7 @@
       const rows = match(q);
       idx = rows.length ? 0 : -1;
       if (!rows.length) {
-        list.innerHTML = '<li class="ad-search-empty" role="presentation">No processes match.</li>';
+        list.innerHTML = '<li class="ad-search-empty" role="presentation">No apps match.</li>';
         return;
       }
       list.innerHTML = rows.map((p, i) => `
@@ -1164,6 +1289,86 @@
       document.removeEventListener('keydown', onDocKey);
       window.__adUserMenuTeardown = null;
     };
+  }
+
+  function bindProfileModal(root) {
+    const trigger = root.querySelector('[data-profile-open]');
+    const layer = root.querySelector('[data-profile-modal]');
+    if (!trigger || !layer) return;
+
+    const closeBtn = layer.querySelector('[data-profile-close]');
+    const saveBtn = layer.querySelector('[data-profile-save]');
+    const nameInput = layer.querySelector('[data-profile-name]');
+    const titleInput = layer.querySelector('[data-profile-title]');
+    const avatar = layer.querySelector('[data-profile-avatar]');
+    const notificationToggle = layer.querySelector('[data-profile-notifications]');
+    let lastFocus = null;
+
+    function close() {
+      if (layer.hidden) return;
+      layer.hidden = true;
+      document.body.classList.remove('ad-profile-modal-open');
+      lastFocus?.focus();
+    }
+
+    function open() {
+      lastFocus = document.activeElement;
+      const preferences = demoRead('profile', {
+        name: D.user.name,
+        title: D.user.title,
+        notifications: true,
+      });
+      nameInput.value = preferences.name || D.user.name;
+      titleInput.value = preferences.title || D.user.title;
+      avatar.textContent = D.user.av;
+      const notificationsOn = preferences.notifications !== false;
+      notificationToggle.classList.toggle('on', notificationsOn);
+      notificationToggle.setAttribute('aria-pressed', String(notificationsOn));
+      root.querySelector('.ad-user-menu').hidden = true;
+      root.querySelector('[data-user-menu-toggle]').setAttribute('aria-expanded', 'false');
+      layer.hidden = false;
+      document.body.classList.add('ad-profile-modal-open');
+      closeBtn.focus();
+    }
+
+    trigger.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    notificationToggle.addEventListener('click', () => {
+      const on = !notificationToggle.classList.contains('on');
+      notificationToggle.classList.toggle('on', on);
+      notificationToggle.setAttribute('aria-pressed', String(on));
+    });
+    saveBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const title = titleInput.value.trim();
+      if (!name || !title) {
+        toast('Enter your name and job title before saving.');
+        (!name ? nameInput : titleInput).focus();
+        return;
+      }
+      const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase() || D.user.av;
+      const next = { name, title, notifications: notificationToggle.classList.contains('on') };
+      demoWrite('profile', next);
+      D.user.name = name;
+      D.user.title = title;
+      D.user.av = initials;
+      avatar.textContent = initials;
+      root.querySelectorAll('.ad-user .tx b, .ad-user-menu-head .tx b').forEach((el) => { el.textContent = name; });
+      root.querySelectorAll('.ad-user .av, .ad-user-menu-head .av').forEach((el) => { el.textContent = initials; });
+      toast('Profile saved.');
+    });
+
+    const onLayerClick = (event) => { if (event.target === layer) close(); };
+    const onDocKey = (event) => { if (event.key === 'Escape' && !layer.hidden) close(); };
+    layer.addEventListener('click', onLayerClick);
+    document.addEventListener('keydown', onDocKey);
+    window.__adProfileModalTeardown = () => {
+      document.body.classList.remove('ad-profile-modal-open');
+      document.removeEventListener('keydown', onDocKey);
+      window.__adProfileModalTeardown = null;
+    };
+
+    if (new URLSearchParams(location.search).get('profile') === '1') open();
   }
 
   function bindSettingsModal(root) {
@@ -1464,6 +1669,7 @@
     const s = state();
     if (window.__adSearchTeardown) window.__adSearchTeardown();
     if (window.__adUserMenuTeardown) window.__adUserMenuTeardown();
+    if (window.__adProfileModalTeardown) window.__adProfileModalTeardown();
     if (window.__adSettingsModalTeardown) window.__adSettingsModalTeardown();
     if (window.__adCompanyPickerTeardown) window.__adCompanyPickerTeardown();
     document.querySelectorAll('[data-ad-root]').forEach((n) => n.remove());
@@ -1472,6 +1678,7 @@
       bindStubs(root);
       bindNotifications(root);
       bindUserMenu(root);
+      bindProfileModal(root);
       bindCompanyPicker(root);
       bindSettingsModal(root);
       const off = bindSearch(root);

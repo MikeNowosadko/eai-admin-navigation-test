@@ -80,7 +80,7 @@
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=michael-dashboard2"></script>
 <script>
   const D = window.ADMIN;
   const qs = new URLSearchParams(location.search);
@@ -88,7 +88,7 @@
   const company = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
   const storeKey = `app-users-${company.id}-${app.id}`;
   const seedUsers = [
-    { id: 'gareth-chainey', name: 'Gareth Chainey', email: 'gareth@northwindops.com', role: 'Owner', status: 'Active', fixed: true },
+    { id: 'workspace-owner', name: D.user.name, email: D.user.email, role: 'Owner', status: 'Active', fixed: true },
     { id: 'priya-sharma', name: 'Priya Sharma', email: 'priya@northwindops.com', role: 'Editor', status: 'Active', fixed: true },
     { id: 'mei-lin', name: 'Mei Lin', email: 'mei@northwindops.com', role: 'Reviewer', status: 'Active', fixed: true },
   ];

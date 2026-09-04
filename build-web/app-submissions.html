@@ -20,7 +20,7 @@
   <div class="ad-hd">
     <div>
       <h1>Submissions</h1>
-      <p id="subDesc">Every form someone filled in for this process.</p>
+      <p id="subDesc">Every form someone filled in through this app.</p>
     </div>
   </div>
 
@@ -85,7 +85,7 @@
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=michael-dashboard2"></script>
 <script src="../assets/admin-filters.js?v=mtg8tt0q.j1"></script>
 <script>
   const D = window.ADMIN;
@@ -144,7 +144,7 @@
         <div style="width:76px;flex:0 0 76px;font-size:13px;color:var(--ad-ink-4);" class="num">${A.formatTime(s.minutes)}</div>
         <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
       </button>`;
-    }).join('') : `<div class="ad-empty">${rows.length ? 'No submissions match that filter.' : 'No submissions for this process yet.'}</div>`;
+    }).join('') : `<div class="ad-empty">${rows.length ? 'No submissions match that filter.' : 'No submissions for this app yet.'}</div>`;
 
     document.querySelectorAll('[data-sub]').forEach((el) => {
       el.addEventListener('click', () => window.adToast(`${el.dataset.sub} — the answers view isn’t in this prototype yet.`));

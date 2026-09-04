@@ -55,7 +55,7 @@
       <div class="ad-ut-intro-card" role="dialog" aria-modal="true" aria-labelledby="adUtIntroTitle">
         <p class="ad-ut-intro-eyebrow">Unmoderated study · ~5 minutes</p>
         <h2 id="adUtIntroTitle">Review this week&apos;s leave requests</h2>
-        <p class="ad-ut-intro-lead">You work at <b>Northwind Ops</b>. A few weeks ago you set up a live <b>Leave approval</b> process so staff could apply for sick leave and holiday leave online.</p>
+        <p class="ad-ut-intro-lead">You work at <b>Northwind Ops</b>. A few weeks ago you set up a live <b>Leave approval</b> app so staff could apply for sick leave and holiday leave online.</p>
         <div class="ad-ut-intro-box">
           <b>Your task</b>
           <p>Find and review the <b>new leave requests that came in this week</b>. When you reach the list, skim a few entries so you know what people applied for.</p>

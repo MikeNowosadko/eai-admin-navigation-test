@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<script src="../assets/dev-cache.js?v=michael-dashboard2"></script>
+<title>Prototype — Configure app · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="configure">
+<div id="adPane"><div id="appConfigurePane"></div></div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=michael-dashboard2"></script>
+<script>
+  const D = window.ADMIN;
+  const query = new URLSearchParams(location.search);
+  const app = D.process(query.get('app'));
+  const section = ['workflow', 'resources', 'ai', 'connections'].includes(query.get('section')) ? query.get('section') : 'resources';
+  const company = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
+  const storeKey = `app-tenant-config-${company.id}-${app.id}`;
+  const saved = window.adDemoStore.read(storeKey, {});
+
+  const sections = {
+    workflow: {
+      title: 'Workflow',
+      desc: 'Choose the workspace workflow this app starts from.',
+      groups: [{ title: 'Workspace workflows', icon: 'workflow', single: true, items: [
+        ['vendor-onboarding-baseline', 'Vendor onboarding baseline', 'Intake, due diligence and approval stages'],
+        ['compliance-review', 'Compliance review', 'Risk checks with a manual review path'],
+        ['approvals-handoff', 'Approvals and handoff', 'Two-stage approval with ownership handoff'],
+      ] }],
+    },
+    resources: {
+      title: 'Resources',
+      desc: 'Add approved workspace knowledge, documents and assets to this app.',
+      groups: [
+        { title: 'Knowledge', icon: 'data', items: [
+          ['supplier-compliance-policy', 'Supplier compliance policy', 'Rules and guidance for supplier assessment'],
+          ['procurement-operating-guide', 'Procurement operating guide', 'Approved purchasing and escalation procedures'],
+        ] },
+        { title: 'Documents & assets', icon: 'file', items: [
+          ['vendor-due-diligence-pack', 'Vendor due diligence pack', 'Standard forms and evidence requirements'],
+          ['standard-supplier-agreement', 'Standard supplier agreement', 'Current legal agreement template'],
+          ['brand-kit', 'Workspace brand kit', 'Approved logos, colours and app assets'],
+        ] },
+      ],
+    },
+    ai: {
+      title: 'AI & prompts',
+      desc: 'Choose the approved model behaviour and prompt defaults this app uses.',
+      groups: [
+        { title: 'Model profile', icon: 'sparkle', single: true, items: [
+          ['standard-reasoning', 'Standard reasoning', 'Balanced quality and speed for most app tasks'],
+          ['fast-extraction', 'Fast extraction', 'Optimised for structured document extraction'],
+        ] },
+        { title: 'Prompt configuration', icon: 'terminal', single: true, items: [
+          ['supplier-onboarding-guardrails', 'Supplier onboarding guardrails', 'Approved procurement instructions and boundaries'],
+          ['general-operations-assistant', 'General operations assistant', 'Company-wide tone, safety and response defaults'],
+        ] },
+      ],
+    },
+    connections: {
+      title: 'Connections',
+      desc: 'Enable integrations and services approved for this workspace.',
+      groups: [
+        { title: 'Integrations', icon: 'plug', items: [
+          ['sharepoint', 'Microsoft SharePoint', 'Read approved procurement sites and libraries'],
+          ['docusign', 'DocuSign', 'Send and track supplier agreements'],
+          ['teams', 'Microsoft Teams', 'Post approvals and status updates'],
+        ] },
+        { title: 'Services', icon: 'grid', items: [
+          ['identity-verification', 'Identity verification', 'Verify directors and beneficial owners'],
+          ['email-delivery', 'Email delivery', 'Send transactional app notifications'],
+        ] },
+      ],
+    },
+  };
+
+  const meta = sections[section];
+  const selected = new Set(Array.isArray(saved[section]) ? saved[section] : []);
+  const safe = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+
+  function itemRow(item, single) {
+    const [id, name, desc] = item;
+    const on = selected.has(id);
+    return `
+      <div class="ad-config-option">
+        <span class="ad-config-option-mark">${window.adIcon(single ? 'checklist' : 'plus')}</span>
+        <span class="tx"><b>${safe(name)}</b><span>${safe(desc)}</span></span>
+        <span class="ad-config-badge available">Available</span>
+        <button class="ad-config-add${on ? ' on' : ''}" type="button" data-config-id="${safe(id)}" data-config-single="${single ? '1' : '0'}" aria-pressed="${on}">${on ? 'Added' : 'Add'}</button>
+      </div>`;
+  }
+
+  document.getElementById('appConfigurePane').innerHTML = `
+    <div class="ad-hd">
+      <div><h1>${safe(meta.title)}</h1><p>${safe(meta.desc)}</p></div>
+      <div class="ad-hd-acts"><button class="ad-btn dark" type="button" id="saveConfigure">Save changes</button></div>
+    </div>
+    <div class="ad-config-source">
+      <span class="ad-config-source-icon">${window.adIcon('building')}</span>
+      <span class="tx"><b>Available from ${safe(company.name)}</b><span>Only workspace-approved items you can use are shown here.</span></span>
+      <a class="ad-btn sm" href="ws-home.html?demo=michael&settings=knowledge">Manage workspace settings</a>
+    </div>
+    <div class="ad-config-grid">
+      ${meta.groups.map((group) => `
+        <section class="ad-config-card">
+          <div class="ad-config-card-hd"><span class="ad-config-card-icon">${window.adIcon(group.icon)}</span><span><b>${safe(group.title)}</b><small>From ${safe(company.name)} workspace settings</small></span></div>
+          <div class="ad-config-options">${group.items.map((item) => itemRow(item, group.single)).join('')}</div>
+        </section>`).join('')}
+    </div>`;
+
+  document.querySelectorAll('[data-config-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.configSingle === '1') {
+        selected.clear();
+        document.querySelectorAll('[data-config-single="1"]').forEach((option) => {
+          option.classList.remove('on');
+          option.setAttribute('aria-pressed', 'false');
+          option.textContent = 'Add';
+        });
+      }
+      const id = button.dataset.configId;
+      if (selected.has(id)) selected.delete(id); else selected.add(id);
+      const on = selected.has(id);
+      button.classList.toggle('on', on);
+      button.setAttribute('aria-pressed', String(on));
+      button.textContent = on ? 'Added' : 'Add';
+    });
+  });
+  document.getElementById('saveConfigure').addEventListener('click', () => {
+    window.adDemoStore.write(storeKey, { ...saved, [section]: [...selected] });
+    window.adToast(`${meta.title} settings saved for ${app.name}.`);
+  });
+  document.title = `Prototype — ${meta.title} · ${app.name}`;
+</script>
+</body>
+</html>

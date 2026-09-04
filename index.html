@@ -4,15 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<meta http-equiv="refresh" content="0; url=build-web/ws-home.html?demo=michael" />
-<title>Admin navigation user test</title>
+<meta http-equiv="refresh" content="0; url=build-web/index.html" />
+<title>Michael's EAI platform journey</title>
 </head>
 <body>
-  <p>Opening the <a href="build-web/ws-home.html?demo=michael">Admin navigation user test</a>…</p>
+  <p>Opening <a href="build-web/index.html">Michael's EAI platform journey</a>…</p>
   <script>
     const params = new URLSearchParams(location.search);
-    params.set('demo', 'michael');
-    location.replace(`build-web/ws-home.html?${params.toString()}`);
+    const query = params.toString();
+    location.replace(`build-web/index.html${query ? `?${query}` : ''}`);
   </script>
 </body>
 </html>
