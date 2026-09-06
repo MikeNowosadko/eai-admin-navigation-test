@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+  <script src="../assets/dev-cache.js?v=transition3"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/processes/submissions" />
@@ -12,9 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/admin.css?v=transition3" />
 </head>
-<body class="ad" data-ad-shell="app" data-ad-rail="submissions">
+<body class="ad ad-submissions-page" data-ad-shell="app" data-ad-rail="submissions">
 
 <div id="adPane">
   <div class="ad-hd">
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+  <div class="ad-submissions-toolbar" style="display:flex;align-items:center;gap:8px;margin-top:4px;">
     <div class="ad-f" style="flex:1;min-width:0;">
       <div class="ctl" style="margin-top:0;">
         <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div class="ad-c" style="margin-top:16px;">
+  <div class="ad-c ad-submissions-table-card" style="margin-top:16px;">
     <div class="ad-t">
       <div class="hd" id="subHead">
         <div style="width:104px;flex:0 0 104px;">Reference</div>
@@ -85,13 +85,17 @@
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-shell.js?v=michael-dashboard2"></script>
+<script src="../assets/admin-shell.js?v=transition3"></script>
 <script src="../assets/admin-filters.js?v=mtg8tt0q.j1"></script>
 <script>
   const D = window.ADMIN;
   const A = window.ADANALYTICS;
-  const app = D.process(new URLSearchParams(location.search).get('app'));
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
   const appId = app.id;
+  if (qs.get('demo') === 'michael' && qs.get('embedded') !== '1' && window.adBuilderAppHref) {
+    location.replace(window.adBuilderAppHref(appId, 'submissions'));
+  }
   const clients = D.clientsFor(appId);
   const multiClient = clients.length > 1;
   const steps = D.stepsFor(appId);

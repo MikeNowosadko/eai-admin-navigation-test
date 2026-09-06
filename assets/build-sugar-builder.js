@@ -85,6 +85,8 @@ function blockMeta(f) {
 
 const params = new URLSearchParams(location.search);
 const BUILDER_STORAGE_PREFIX = 'eai-michael-platform-journey:';
+const activeAppId = params.get('app') || 'vendor-onboarding';
+const buildSurface = params.get('surface') === 'cli' ? 'cli' : 'ncb';
 
 const smartBlocks = params.get('blocks') === '1'
   || params.get('variant') === 'blocks'
@@ -114,7 +116,13 @@ const state = {
   appChatMessages: [
     { role: 'assistant', text: 'Hi! I can help you complete this application or answer questions about onboarding.' },
   ],
-  viewMode: 'preview',
+  appChatWidth: 405,
+  appChatPosition: null,
+  buildSurface,
+  viewMode: buildSurface === 'cli' ? 'dashboard' : 'preview',
+  dashboardSection: ['overview', 'submissions', 'analytics', 'users', 'workflow', 'resources', 'ai', 'connections', 'readiness', 'deploy'].includes(params.get('section'))
+    ? params.get('section')
+    : 'overview',
   dashboardAccess: 'Anyone in workspace',
   dashboardBadge: true,
   activeStep: 0,
@@ -723,6 +731,7 @@ function fitFork(trigger) {
     whole offer depends on it arriving at the other end. */
 function goCli(why) {
   location.href = window.bdCarry('ws-cli.html', {
+    demo: 'michael',
     ws: state.ws,
     email: state.email,
     project: projectName,
@@ -754,12 +763,13 @@ function appChatWidgetHtml() {
   const messages = state.appChatMessages.map((message) => `
     <div class="bd-app-chat-message ${message.role}">${esc(message.text)}</div>`).join('');
   return `
-    <aside class="bd-app-chat${state.appChatOpen ? '' : ' is-closed'}" aria-label="Supplier assistant chatbot" data-app-chat>
+    <aside class="bd-app-chat${state.appChatOpen ? '' : ' is-closed'}" style="--bd-app-chat-width:${state.appChatWidth}px" aria-label="Supplier assistant chatbot" data-app-chat>
       <button class="bd-app-chat-launcher" type="button" data-app-chat-open aria-label="Open supplier assistant">${star}</button>
       <div class="bd-app-chat-panel">
-        <div class="bd-app-chat-head">
+        <span class="bd-app-chat-resize" data-app-chat-resize role="separator" aria-label="Resize supplier assistant" title="Drag to resize"></span>
+        <div class="bd-app-chat-head" data-app-chat-drag title="Drag to move">
           <span class="bd-app-chat-mark">${star}</span>
-          <div><b>Supplier assistant</b><span>Here to help</span></div>
+          <div><b>Supplier assistant</b></div>
           <button class="bd-app-chat-close" type="button" data-app-chat-close aria-label="Close supplier assistant">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </button>
@@ -785,6 +795,12 @@ function appAssistantResponse(text) {
   if (/bank|payment|tax|abn/i.test(text)) {
     return 'Add the supplier’s business number, tax details and verified payment information. Sensitive payment details can be collected in a protected step.';
   }
+  if (/name|email|contact|field|form/i.test(text)) {
+    return 'Start with the supplier name and work email, then add any business details your review team needs. I can explain what belongs in each field.';
+  }
+  if (/check|review|approve|decision/i.test(text)) {
+    return 'This app moves from supplier details through checks and review to a recorded outcome. Select a stage above to preview what happens there.';
+  }
   return 'I can help with that. Tell me what you’re trying to complete, and I’ll guide you to the right part of the application.';
 }
 
@@ -801,31 +817,142 @@ function wireAppChatWidget() {
   const form = $('bdFrame').querySelector('[data-app-chat-form]');
   if (!host || !form) return;
   const input = form.querySelector('input');
+  const frame = $('bdFrame');
+  const launcher = host.querySelector('[data-app-chat-open]');
+  let suppressLauncherClick = false;
+
+  const isMobileFullscreen = () => frame.dataset.device === 'mobile' && !host.classList.contains('is-closed');
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const constrainPosition = () => {
+    if (!state.appChatPosition || isMobileFullscreen()) return;
+    const parent = host.offsetParent;
+    if (!parent) return;
+    const maxLeft = Math.max(8, parent.clientWidth - host.offsetWidth - 8);
+    const maxTop = Math.max(8, parent.clientHeight - host.offsetHeight - 8);
+    const left = clamp(state.appChatPosition.left, 8, maxLeft);
+    const top = clamp(state.appChatPosition.top, 8, maxTop);
+    state.appChatPosition = { left, top };
+    host.style.left = `${left}px`;
+    host.style.top = `${top}px`;
+    host.style.right = 'auto';
+    host.style.bottom = 'auto';
+  };
+
+  const makeDraggable = (handle) => {
+    handle.addEventListener('pointerdown', (event) => {
+      const pressedControl = event.target.closest('button, input');
+      if (event.button !== 0 || (pressedControl && handle !== launcher) || isMobileFullscreen()) return;
+      event.preventDefault();
+      const parent = host.offsetParent;
+      if (!parent) return;
+      const parentRect = parent.getBoundingClientRect();
+      const hostRect = host.getBoundingClientRect();
+      const startX = event.clientX;
+      const startY = event.clientY;
+      const startLeft = hostRect.left - parentRect.left;
+      const startTop = hostRect.top - parentRect.top;
+      let moved = false;
+
+      handle.setPointerCapture(event.pointerId);
+      host.classList.add('is-dragging');
+
+      const onMove = (moveEvent) => {
+        const dx = moveEvent.clientX - startX;
+        const dy = moveEvent.clientY - startY;
+        if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+        const maxLeft = Math.max(8, parent.clientWidth - host.offsetWidth - 8);
+        const maxTop = Math.max(8, parent.clientHeight - host.offsetHeight - 8);
+        const left = clamp(startLeft + dx, 8, maxLeft);
+        const top = clamp(startTop + dy, 8, maxTop);
+        state.appChatPosition = { left, top };
+        host.style.left = `${left}px`;
+        host.style.top = `${top}px`;
+        host.style.right = 'auto';
+        host.style.bottom = 'auto';
+      };
+
+      const onUp = () => {
+        host.classList.remove('is-dragging');
+        handle.removeEventListener('pointermove', onMove);
+        handle.removeEventListener('pointerup', onUp);
+        handle.removeEventListener('pointercancel', onUp);
+        if (moved && handle === launcher) {
+          suppressLauncherClick = true;
+          window.setTimeout(() => { suppressLauncherClick = false; }, 120);
+        }
+      };
+
+      handle.addEventListener('pointermove', onMove);
+      handle.addEventListener('pointerup', onUp);
+      handle.addEventListener('pointercancel', onUp);
+    });
+  };
+
+  const resizeHandle = host.querySelector('[data-app-chat-resize]');
+  resizeHandle.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0 || isMobileFullscreen()) return;
+    event.preventDefault();
+    const parent = host.offsetParent;
+    if (!parent) return;
+    const parentRect = parent.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const startX = event.clientX;
+    const startWidth = hostRect.width;
+    const fixedRight = hostRect.right - parentRect.left;
+    const maxWidth = Math.max(320, Math.min(680, fixedRight - 8));
+
+    resizeHandle.setPointerCapture(event.pointerId);
+    host.classList.add('is-resizing');
+
+    const onMove = (moveEvent) => {
+      const width = clamp(startWidth + startX - moveEvent.clientX, 320, maxWidth);
+      const left = fixedRight - width;
+      state.appChatWidth = Math.round(width);
+      state.appChatPosition = { left, top: hostRect.top - parentRect.top };
+      host.style.setProperty('--bd-app-chat-width', `${width}px`);
+      host.style.left = `${left}px`;
+      host.style.top = `${state.appChatPosition.top}px`;
+      host.style.right = 'auto';
+      host.style.bottom = 'auto';
+    };
+
+    const onUp = () => {
+      host.classList.remove('is-resizing');
+      resizeHandle.removeEventListener('pointermove', onMove);
+      resizeHandle.removeEventListener('pointerup', onUp);
+      resizeHandle.removeEventListener('pointercancel', onUp);
+      constrainPosition();
+    };
+
+    resizeHandle.addEventListener('pointermove', onMove);
+    resizeHandle.addEventListener('pointerup', onUp);
+    resizeHandle.addEventListener('pointercancel', onUp);
+  });
+
+  makeDraggable(host.querySelector('[data-app-chat-drag]'));
+  makeDraggable(launcher);
+  constrainPosition();
 
   host.querySelector('[data-app-chat-close]').addEventListener('click', () => {
     state.appChatOpen = false;
     host.classList.add('is-closed');
+    window.requestAnimationFrame(constrainPosition);
   });
-  host.querySelector('[data-app-chat-open]').addEventListener('click', () => {
+  launcher.addEventListener('click', () => {
+    if (suppressLauncherClick) {
+      suppressLauncherClick = false;
+      return;
+    }
     state.appChatOpen = true;
     host.classList.remove('is-closed');
-    input.focus();
-  });
-
-  input.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' || state.authed || !state.previewReady) return;
-    event.preventDefault();
-    state.pendingAuth = null;
-    showAuthGate();
+    window.requestAnimationFrame(() => {
+      constrainPosition();
+      input.focus();
+    });
   });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (!state.authed && state.previewReady) {
-      state.pendingAuth = null;
-      showAuthGate();
-      return;
-    }
     const question = input.value.trim();
     if (!question) return;
     state.appChatMessages.push({ role: 'user', text: question });
@@ -1081,6 +1208,11 @@ function dashboardIcon(name) {
   const paths = {
     home: '<path d="M4 10.5 12 4l8 6.5V20H5V10.5M9 20v-6h6v6"/>',
     file: '<path d="M7 3h7l4 4v14H7zM14 3v5h5"/>',
+    building: '<path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M3 21h18M10 7h4M10 11h4M10 15h4"/>',
+    grid: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+    template: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M10 9v12"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19 13.5v-3l-2-.7-.6-1.4.9-1.9-2.1-2.1-1.9.9-1.4-.6L10.5 3h-3l-.7 2-1.4.6-1.9-.9-2.1 2.1.9 1.9-.6 1.4L0 10.5v3l2 .7.6 1.4-.9 1.9 2.1 2.1 1.9-.9 1.4.6.7 2h3l.7-2 1.4-.6 1.9.9 2.1-2.1-.9-1.9.6-1.4z" transform="translate(2 -1) scale(.83)"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     activity: '<path d="M4 14h3l2.2-6 3.3 10 2.2-6H20"/>',
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M3 20h18"/>',
     users: '<path d="M16 20v-1.8a3.7 3.7 0 0 0-3.7-3.7H7.7A3.7 3.7 0 0 0 4 18.2V20M10 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM17 8v6M14 11h6"/>',
@@ -1098,11 +1230,156 @@ function dashboardIcon(name) {
 
 function adminHref(file, extra = {}) {
   return window.bdCarry(file, {
-    app: 'vendor-onboarding',
+    app: activeAppId,
     demo: 'michael',
     created: '1',
     ...extra,
   });
+}
+
+function builderDashboardHref(section = state.dashboardSection || 'overview') {
+  const extra = {
+    prompt: state.prompt,
+    app: activeAppId,
+    ws: state.ws,
+    email: state.email,
+    surface: state.buildSurface,
+    view: 'dashboard',
+    source: 'workspace',
+    drawer: document.body.classList.contains('bd-workspace-drawer-open') ? 'open' : null,
+  };
+  if (section && section !== 'overview') extra.section = section;
+  else extra.section = null;
+  return window.bdCarry('builder.html', extra);
+}
+
+function builderAppDashboardHref(appId, name, appSurface = 'ncb') {
+  return window.bdCarry('builder.html', {
+    prompt: name,
+    app: appId,
+    ws: state.ws,
+    email: state.email,
+    surface: appSurface,
+    view: 'dashboard',
+    source: 'workspace',
+    drawer: 'open',
+  });
+}
+
+function mountWorkspaceDrawer() {
+  if (document.querySelector('[data-workspace-drawer-layer]')) return;
+  const displayName = state.email
+    ? state.email.split('@')[0].replace(/[._+-]+/g, ' ').trim().replace(/\b\w/g, (letter) => letter.toUpperCase())
+    : 'Michael Nowosadko';
+  const initial = (displayName || 'M').charAt(0).toUpperCase();
+  let savedCreatedApp = null;
+  try {
+    savedCreatedApp = JSON.parse(localStorage.getItem(`${BUILDER_STORAGE_PREFIX}created-app`) || 'null');
+  } catch {
+    savedCreatedApp = null;
+  }
+  const primaryApp = savedCreatedApp?.name
+    ? {
+        id: savedCreatedApp.id || 'vendor-onboarding',
+        name: String(savedCreatedApp.name),
+        initial: String(savedCreatedApp.initial || savedCreatedApp.name.charAt(0)).toUpperCase(),
+        status: 'draft',
+        buildSurface: 'NCB',
+      }
+    : { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', status: 'draft', buildSurface: 'NCB' };
+  const recentApps = [
+    primaryApp,
+    { id: 'leave-approval', name: 'Leave approval', initial: 'L', status: 'live', buildSurface: 'NCB' },
+    primaryApp.name === 'Vendor Onboarding'
+      ? { id: 'kyc-onboarding', name: 'KYC Onboarding', initial: 'K', status: 'live', buildSurface: 'CLI' }
+      : { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', status: 'draft', buildSurface: 'CLI' },
+  ];
+
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="bd-workspace-drawer-layer" data-workspace-drawer-layer aria-hidden="true">
+      <button class="bd-workspace-drawer-backdrop" type="button" data-workspace-drawer-close aria-label="Close workspace navigation"></button>
+      <aside class="bd-workspace-drawer" id="bdWorkspaceDrawer" aria-label="Workspace navigation">
+        <div class="bd-workspace-drawer-head">
+          <a class="bd-workspace-company" href="${adminHref('ws-home.html')}">
+            <span class="bd-workspace-company-icon">${dashboardIcon('building')}</span>
+            <span><b>${esc(state.ws)}</b><small>Company platform</small></span>
+            <svg class="bd-workspace-swap" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <div class="bd-workspace-build-tabs" role="tablist" aria-label="How you build">
+            <button class="on" type="button" role="tab" aria-selected="true">No Code Builder</button>
+            <button type="button" role="tab" aria-selected="false" data-workspace-drawer-cli>${dashboardIcon('terminal')}CLI</button>
+          </div>
+        </div>
+
+        <div class="bd-workspace-drawer-body">
+          <nav class="bd-workspace-primary-nav" aria-label="Workspace">
+            <a href="${adminHref('ws-home.html')}">${dashboardIcon('home')}<span>Home</span></a>
+            <a href="${adminHref('ws-processes.html')}">${dashboardIcon('grid')}<span>All apps</span><i>${recentApps.length}</i></a>
+            <a href="${adminHref('ws-templates.html')}">${dashboardIcon('template')}<span>Templates</span></a>
+            <a href="${adminHref('ws-integrations.html')}">${dashboardIcon('plug')}<span>Integrations</span></a>
+          </nav>
+
+          <section class="bd-workspace-recents" aria-labelledby="bdWorkspaceRecentsTitle">
+            <h2 id="bdWorkspaceRecentsTitle">Recent apps</h2>
+            ${recentApps.map((app) => `
+              <a href="${builderAppDashboardHref(app.id, app.name, app.buildSurface.toLowerCase())}">
+                <span class="bd-workspace-app-icon">${esc(app.initial)}</span>
+                <b>${esc(app.name)}</b>
+                <span class="bd-workspace-app-kind" title="${app.buildSurface === 'NCB' ? 'No Code Builder' : 'Command line interface'}">${app.buildSurface}</span>
+                <i class="${app.status}" aria-label="${app.status === 'live' ? 'Live' : 'Draft'}"></i>
+              </a>`).join('')}
+          </section>
+        </div>
+
+        <footer class="bd-workspace-drawer-foot">
+          <a class="bd-workspace-settings-link" href="${adminHref('ws-home.html', { settings: 'users' })}">${dashboardIcon('gear')}<span>Workspace settings</span></a>
+          <a class="bd-workspace-user-link" href="${adminHref('ws-home.html', { profile: '1' })}">
+            <span class="bd-workspace-user-avatar">${esc(initial)}</span>
+            <span><b>${esc(displayName)}</b><small>Owner</small></span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </footer>
+      </aside>
+    </div>`);
+
+  const layer = document.querySelector('[data-workspace-drawer-layer]');
+  const opener = document.querySelector('[data-workspace-drawer-open]');
+  let closeTimer = null;
+
+  function setOpen(open, restoreFocus = false) {
+    clearTimeout(closeTimer);
+    layer.classList.toggle('is-open', open);
+    layer.setAttribute('aria-hidden', String(!open));
+    opener.classList.toggle('is-open', open);
+    opener.setAttribute('aria-expanded', String(open));
+    opener.setAttribute('aria-label', open ? 'Close workspace navigation' : 'Open workspace navigation');
+    document.body.classList.toggle('bd-workspace-drawer-open', open);
+    if (!open && restoreFocus) {
+      closeTimer = setTimeout(() => opener.focus({ preventScroll: true }), 260);
+    }
+  }
+
+  opener.addEventListener('click', () => setOpen(!layer.classList.contains('is-open')));
+  layer.querySelectorAll('[data-workspace-drawer-close]').forEach((button) => {
+    button.addEventListener('click', () => setOpen(false, true));
+  });
+  layer.querySelector('[data-workspace-drawer-cli]').addEventListener('click', () => {
+    setOpen(false);
+    goCli('workspace-drawer');
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && layer.classList.contains('is-open')) {
+      event.preventDefault();
+      setOpen(false, true);
+    }
+  });
+
+  if (params.get('drawer') === 'open') {
+    setOpen(true);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.body.classList.remove('bd-workspace-drawer-preopen');
+    }));
+  }
 }
 
 function paintAuthenticatedChrome() {
@@ -1110,161 +1387,260 @@ function paintAuthenticatedChrome() {
   if (!crumbs) return;
   crumbs.classList.add('bd-platform-crumbs');
   crumbs.innerHTML = `
-    <a class="bd-platform-mark" href="${adminHref('ws-home.html')}" aria-label="Open workspace home">
+    <button class="bd-platform-mark" type="button" data-workspace-drawer-open aria-label="Open workspace navigation" aria-controls="bdWorkspaceDrawer" aria-expanded="false">
       <img src="../assets/logos/eai-mark-dark.svg" alt="" />
-    </a>
-    <div class="bd-platform-company">
-      <button type="button" data-platform-company-toggle aria-expanded="false" aria-haspopup="listbox">
-        <span><small>Amazing Retail Group</small><b data-platform-company-name>${esc(state.ws)}</b></span>
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="bd-platform-company-menu" data-platform-company-menu hidden role="listbox" aria-label="Companies">
-        <span>Companies</span>
-        <button type="button" class="depth-0" data-platform-company="northwind-group" data-platform-company-label="Amazing Retail Group"><b>Amazing Retail Group</b><small>L1</small></button>
-        <button type="button" class="depth-1 on" data-platform-company="northwind-ops" data-platform-company-label="Amazing Pet Store"><i></i><b>Amazing Pet Store</b><small>L2</small></button>
-        <button type="button" class="depth-1" data-platform-company="northwind-logistics" data-platform-company-label="Amazing Clothes Store"><i></i><b>Amazing Clothes Store</b><small>L2</small></button>
-        <button type="button" class="depth-1" data-platform-company="northwind-digital" data-platform-company-label="Amazing Electronics store"><i></i><b>Amazing Electronics store</b><small>L2</small></button>
-      </div>
-    </div>
+    </button>
     <span class="sep">/</span>
     <b>${esc(projectName)}</b>`;
 
-  if (!document.querySelector('.bd-platform-actions')) {
-    const actions = document.createElement('nav');
-    actions.className = 'bd-platform-actions';
-    actions.setAttribute('aria-label', 'Platform navigation');
-    actions.innerHTML = `
-      <a href="${adminHref('ws-home.html')}">Workspace home</a>
-      <a href="${adminHref('app-overview.html')}" class="on">App settings</a>
-      <span class="bd-platform-user" title="${esc(state.email)}">${esc((state.email || 'U').charAt(0).toUpperCase())}</span>`;
-    document.querySelector('.bd-top-acts').before(actions);
-  }
+  document.querySelector('.bd-platform-actions')?.remove();
 
-  const companyToggle = crumbs.querySelector('[data-platform-company-toggle]');
-  const companyMenu = crumbs.querySelector('[data-platform-company-menu]');
-  companyToggle.addEventListener('click', () => {
-    const open = companyMenu.hidden;
-    companyMenu.hidden = !open;
-    companyToggle.setAttribute('aria-expanded', String(open));
-  });
-  companyMenu.querySelectorAll('[data-platform-company]').forEach((button) => {
-    button.addEventListener('click', () => {
-      localStorage.setItem('eai-michael-platform-journey:active-company', JSON.stringify(button.dataset.platformCompany));
-      location.href = adminHref('ws-home.html');
-    });
-  });
-  document.addEventListener('click', (event) => {
-    if (!crumbs.contains(event.target)) {
-      companyMenu.hidden = true;
-      companyToggle.setAttribute('aria-expanded', 'false');
-    }
-  });
+  mountWorkspaceDrawer();
 }
 
 function paintDashboard() {
   const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 36) || 'new-app';
   const appUrl = `${slug}.enterpriseai.app`;
-  const railLink = (label, icon, href, active = false) => `<a class="bd-dashboard-rail-link${active ? ' on' : ''}" href="${href}">${dashboardIcon(icon)}<span>${label}</span><i>›</i></a>`;
+  const isNoCodeApp = state.buildSurface === 'ncb';
+  const sections = {
+    overview: { label: 'Overview', icon: 'home' },
+    submissions: { label: 'Submissions', icon: 'file', page: 'app-submissions.html' },
+    analytics: { label: isNoCodeApp ? 'Analytics' : 'Analytics & reports', icon: 'chart', page: 'app-analytics.html' },
+    settings: { label: 'Settings', icon: 'gear' },
+    users: { label: 'Users', icon: 'users', page: 'app-users.html' },
+    workflow: { label: 'Workflow', icon: 'workflow', page: 'app-configure.html' },
+    resources: { label: 'Resources', icon: 'resources', page: 'app-configure.html' },
+    ai: { label: 'AI & prompts', icon: 'sparkle', page: 'app-configure.html' },
+    connections: { label: 'Connections', icon: 'plug', page: 'app-configure.html' },
+    readiness: { label: 'Readiness', icon: 'checklist' },
+    deploy: { label: 'Deploy', icon: 'rocket' },
+  };
+  const availableSections = isNoCodeApp
+    ? ['overview', 'submissions', 'analytics', 'settings']
+    : ['overview', 'submissions', 'analytics', 'users', 'workflow', 'resources', 'ai', 'connections', 'readiness', 'deploy'];
+  if (!availableSections.includes(state.dashboardSection)) state.dashboardSection = 'overview';
+  const activeSection = state.dashboardSection;
+  const railLink = (id, simple = false) => {
+    const item = sections[id];
+    return `<button class="bd-dashboard-rail-link${activeSection === id ? ' on' : ''}" type="button" data-dashboard-section="${id}">${dashboardIcon(item.icon)}<span>${item.label}</span>${simple ? '' : '<i>›</i>'}</button>`;
+  };
+  const overviewPane = `
+    <div class="bd-dashboard-pane">
+      <header class="bd-dashboard-head">
+        <div>
+          <span class="bd-dashboard-eyebrow">Overview</span>
+          <h2>${esc(projectName)}</h2>
+          <p>Manage this app and everything it needs from one place.</p>
+        </div>
+        <button class="nb-btn primary" type="button" data-dashboard-save>Save changes</button>
+      </header>
+
+      <div class="bd-dashboard-grid">
+        <article class="bd-dashboard-card bd-dashboard-wide bd-dashboard-overview">
+          <div class="bd-dashboard-title">${dashboardIcon('activity')}<div><h3>App overview</h3><p>A quick view of how this app is set up and being used.</p></div></div>
+          <div class="bd-dashboard-stats">
+            <span><b>Draft</b><small>Status</small></span>
+            <span><b>${WORKFLOW.length}</b><small>Stages</small></span>
+            <span><b>0</b><small>Submissions</small></span>
+          </div>
+        </article>
+
+        <article class="bd-dashboard-card">
+          <div class="bd-dashboard-title">${dashboardIcon('users')}<div><h3>Who can access</h3><p>Control who can open and use this app.</p></div></div>
+          <label class="bd-dashboard-label" for="bdDashboardAccess">App access</label>
+          <select id="bdDashboardAccess" class="bd-dashboard-select">
+            <option>Anyone in workspace</option>
+            <option>Only invited people</option>
+            <option>Anyone with the link</option>
+          </select>
+        </article>
+
+        <article class="bd-dashboard-card">
+          <div class="bd-dashboard-title">${dashboardIcon('link')}<div><h3>Share this app</h3><p>Send the app to people who need to use it.</p></div></div>
+          <div class="bd-dashboard-share">
+            <code>${esc(appUrl)}</code>
+            <button class="nb-btn" type="button" data-dashboard-copy>Copy link</button>
+          </div>
+        </article>
+
+        <article class="bd-dashboard-card bd-dashboard-wide">
+          <div class="bd-dashboard-toggle-row compact">
+            <div><b>“Built with EAI” badge</b><span>Show the badge in the footer of the published app.</span></div>
+            <button class="bd-dashboard-toggle${state.dashboardBadge ? ' on' : ''}" type="button" data-dashboard-badge aria-label="Show Built with EAI badge" aria-pressed="${state.dashboardBadge}"><i></i></button>
+          </div>
+        </article>
+      </div>
+    </div>`;
+  const settingsPane = `
+    <div class="bd-dashboard-pane">
+      <header class="bd-dashboard-head">
+        <div>
+          <span class="bd-dashboard-eyebrow">Configure</span>
+          <h2>Settings</h2>
+          <p>Update the essential settings for this app.</p>
+        </div>
+        <button class="nb-btn primary" type="button" data-dashboard-save>Save changes</button>
+      </header>
+
+      <div class="bd-dashboard-grid">
+        <article class="bd-dashboard-card bd-dashboard-wide">
+          <div class="bd-dashboard-title">${dashboardIcon('gear')}<div><h3>General settings</h3><p>Manage how this app is named and accessed.</p></div></div>
+          <label class="bd-dashboard-label" for="bdDashboardAppName">App name</label>
+          <input id="bdDashboardAppName" class="bd-dashboard-input" type="text" value="${esc(projectName)}" />
+        </article>
+
+        <article class="bd-dashboard-card bd-dashboard-wide">
+          <div class="bd-dashboard-title">${dashboardIcon('users')}<div><h3>Who can access</h3><p>Control who can open and use this app.</p></div></div>
+          <label class="bd-dashboard-label" for="bdDashboardAccess">App access</label>
+          <select id="bdDashboardAccess" class="bd-dashboard-select">
+            <option>Anyone in workspace</option>
+            <option>Only invited people</option>
+            <option>Anyone with the link</option>
+          </select>
+        </article>
+
+        <article class="bd-dashboard-card bd-dashboard-wide">
+          <div class="bd-dashboard-toggle-row compact">
+            <div><b>“Built with EAI” badge</b><span>Show the badge in the footer of the published app.</span></div>
+            <button class="bd-dashboard-toggle${state.dashboardBadge ? ' on' : ''}" type="button" data-dashboard-badge aria-label="Show Built with EAI badge" aria-pressed="${state.dashboardBadge}"><i></i></button>
+          </div>
+        </article>
+      </div>
+    </div>`;
+  const embeddedPane = (section) => {
+    const item = sections[section];
+    const extra = { embedded: '1', ui: 'polish1' };
+    if (item.page === 'app-configure.html') extra.section = section;
+    return `<div class="bd-dashboard-pane is-embedded"><iframe class="bd-dashboard-embed" title="${esc(item.label)}" src="${adminHref(item.page, extra)}"></iframe></div>`;
+  };
+  const simplePane = (section) => {
+    const item = sections[section];
+    const isDeploy = section === 'deploy';
+    return `
+      <div class="bd-dashboard-pane">
+        <header class="bd-dashboard-head">
+          <div>
+            <span class="bd-dashboard-eyebrow">Launch</span>
+            <h2>${item.label}</h2>
+            <p>${isDeploy ? 'Publish this app when it is ready for people to use.' : 'Review the checks that help this app launch safely.'}</p>
+          </div>
+          <button class="nb-btn primary" type="button" data-dashboard-launch-action>${isDeploy ? 'Publish app' : 'Run checks'}</button>
+        </header>
+        <article class="bd-dashboard-card bd-dashboard-wide bd-dashboard-launch-card">
+          <div class="bd-dashboard-title">${dashboardIcon(item.icon)}<div><h3>${isDeploy ? 'Ready to publish' : 'App readiness'}</h3><p>${isDeploy ? 'Your draft has four stages and can be published when you are ready.' : 'Workflow, access and required fields are ready to review.'}</p></div></div>
+        </article>
+      </div>`;
+  };
+  const pane = activeSection === 'overview'
+    ? overviewPane
+    : activeSection === 'settings'
+      ? settingsPane
+      : sections[activeSection].page
+        ? embeddedPane(activeSection)
+        : simplePane(activeSection);
+  const railNavigation = isNoCodeApp
+    ? `
+      ${railLink('overview', true)}
+      ${railLink('submissions', true)}
+      ${railLink('analytics', true)}
+      ${railLink('settings', true)}`
+    : `
+      <strong>Manage</strong>
+      ${railLink('overview')}
+      ${railLink('submissions')}
+      ${railLink('analytics')}
+      ${railLink('users')}
+      <strong>Configure</strong>
+      ${railLink('workflow')}
+      ${railLink('resources')}
+      ${railLink('ai')}
+      ${railLink('connections')}
+      <strong>Launch</strong>
+      ${railLink('readiness')}
+      ${railLink('deploy')}`;
   $('bdFrame').innerHTML = `
     <section class="bd-dashboard" aria-label="${esc(projectName)} dashboard">
-      <aside class="bd-dashboard-rail">
+      <aside class="bd-dashboard-rail${isNoCodeApp ? ' is-simple' : ''}">
         <div class="bd-dashboard-rail-head">
           <div class="bd-dashboard-app-icon">${esc(projectName.charAt(0).toUpperCase())}</div>
           <span><b>${esc(projectName)}</b><small>App settings</small></span>
         </div>
         <nav aria-label="App administration">
-          <strong>Manage</strong>
-          ${railLink('Overview', 'home', adminHref('app-overview.html'), true)}
-          ${railLink('Submissions', 'file', adminHref('app-submissions.html'))}
-          ${railLink('Analytics & reports', 'chart', adminHref('app-analytics.html'))}
-          ${railLink('Users', 'users', adminHref('app-users.html'))}
-          <strong>Configure</strong>
-          ${railLink('Workflow', 'workflow', adminHref('app-configure.html', { section: 'workflow' }))}
-          ${railLink('Resources', 'resources', adminHref('app-configure.html', { section: 'resources' }))}
-          ${railLink('AI & prompts', 'sparkle', adminHref('app-configure.html', { section: 'ai' }))}
-          ${railLink('Connections', 'plug', adminHref('app-configure.html', { section: 'connections' }))}
-          <strong>Launch</strong>
-          <button class="bd-dashboard-rail-link" type="button" data-dashboard-readiness>${dashboardIcon('checklist')}<span>Readiness</span><i>›</i></button>
-          <button class="bd-dashboard-rail-link" type="button" data-dashboard-deploy>${dashboardIcon('rocket')}<span>Deploy</span><i>›</i></button>
+          ${railNavigation}
         </nav>
-        <button class="bd-dashboard-cli-link" type="button" data-dashboard-cli>${dashboardIcon('terminal')}<span><b>Continue in CLI</b><small>For advanced changes</small></span></button>
+        <button class="bd-dashboard-cli-link${isNoCodeApp ? ' is-primary' : ''}" type="button" data-dashboard-cli>
+          ${dashboardIcon('terminal')}
+          <span>
+            <b>${isNoCodeApp ? 'Move to CLI' : 'Continue in CLI'}</b>
+            <small>${isNoCodeApp ? 'Unlock advanced changes' : 'For advanced changes'}</small>
+          </span>
+          ${isNoCodeApp ? '<span class="bd-dashboard-cli-arrow" aria-hidden="true">→</span>' : ''}
+        </button>
       </aside>
-
-      <div class="bd-dashboard-pane">
-        <header class="bd-dashboard-head">
-          <div>
-            <span class="bd-dashboard-eyebrow">Overview</span>
-            <h2>${esc(projectName)}</h2>
-            <p>Manage this app, or use the navigation to open its full admin screens.</p>
-          </div>
-          <button class="nb-btn primary" type="button" data-dashboard-save>Save changes</button>
-        </header>
-
-        <div class="bd-dashboard-grid">
-          <article class="bd-dashboard-card bd-dashboard-wide bd-dashboard-overview">
-            <div class="bd-dashboard-title">${dashboardIcon('activity')}<div><h3>App overview</h3><p>A quick view of how this app is set up and being used.</p></div></div>
-            <div class="bd-dashboard-stats">
-              <span><b>Draft</b><small>Status</small></span>
-              <span><b>${WORKFLOW.length}</b><small>Stages</small></span>
-              <span><b>0</b><small>Submissions</small></span>
-            </div>
-          </article>
-
-          <article class="bd-dashboard-card">
-            <div class="bd-dashboard-title">${dashboardIcon('users')}<div><h3>Who can access</h3><p>Control who can open and use this app.</p></div></div>
-            <label class="bd-dashboard-label" for="bdDashboardAccess">App access</label>
-            <select id="bdDashboardAccess" class="bd-dashboard-select">
-              <option>Anyone in workspace</option>
-              <option>Only invited people</option>
-              <option>Anyone with the link</option>
-            </select>
-          </article>
-
-          <article class="bd-dashboard-card">
-            <div class="bd-dashboard-title">${dashboardIcon('link')}<div><h3>Share this app</h3><p>Send the app to people who need to use it.</p></div></div>
-            <div class="bd-dashboard-share">
-              <code>${esc(appUrl)}</code>
-              <button class="nb-btn" type="button" data-dashboard-copy>Copy link</button>
-            </div>
-          </article>
-
-          <article class="bd-dashboard-card bd-dashboard-wide">
-            <div class="bd-dashboard-toggle-row compact">
-              <div><b>“Built with EAI” badge</b><span>Show the badge in the footer of the published app.</span></div>
-              <button class="bd-dashboard-toggle${state.dashboardBadge ? ' on' : ''}" type="button" data-dashboard-badge aria-label="Show Built with EAI badge" aria-pressed="${state.dashboardBadge}"><i></i></button>
-            </div>
-          </article>
-        </div>
-      </div>
+      ${pane}
     </section>`;
 
-  const access = $('bdDashboardAccess');
-  access.value = state.dashboardAccess;
-  access.addEventListener('change', () => { state.dashboardAccess = access.value; });
+  const dashboardEmbed = $('bdFrame').querySelector('.bd-dashboard-embed');
+  if (dashboardEmbed) {
+    dashboardEmbed.addEventListener('load', () => {
+      requestAnimationFrame(() => dashboardEmbed.classList.add('is-ready'));
+    }, { once: true });
+  }
 
-  $('bdFrame').querySelector('[data-dashboard-badge]').addEventListener('click', (event) => {
-    state.dashboardBadge = !state.dashboardBadge;
-    event.currentTarget.classList.toggle('on', state.dashboardBadge);
-    event.currentTarget.setAttribute('aria-pressed', String(state.dashboardBadge));
+  $('bdFrame').querySelectorAll('[data-dashboard-section]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const section = button.dataset.dashboardSection;
+      if (!sections[section] || section === state.dashboardSection) return;
+      state.dashboardSection = section;
+      history.replaceState({}, '', builderDashboardHref(section));
+      paintDashboard();
+    });
   });
-  $('bdFrame').querySelector('[data-dashboard-save]').addEventListener('click', () => {
-    state.dashboardAccess = access.value;
-    showBuilderToast('App settings saved.');
-  });
-  $('bdFrame').querySelector('[data-dashboard-copy]').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(appUrl);
-      showBuilderToast('App link copied.');
-    } catch {
-      showBuilderToast('Copy isn’t available here — select the link manually.');
-    }
-  });
-  $('bdFrame').querySelector('[data-dashboard-readiness]').addEventListener('click', () => showBuilderToast('Readiness checks are available from the full app admin.'));
-  $('bdFrame').querySelector('[data-dashboard-deploy]').addEventListener('click', () => void publish());
-  $('bdFrame').querySelector('[data-dashboard-cli]').addEventListener('click', () => goCli('dashboard'));
+
+  const access = $('bdDashboardAccess');
+  if (access) {
+    access.value = state.dashboardAccess;
+    access.addEventListener('change', () => { state.dashboardAccess = access.value; });
+  }
+  const badge = $('bdFrame').querySelector('[data-dashboard-badge]');
+  if (badge) {
+    badge.addEventListener('click', (event) => {
+      state.dashboardBadge = !state.dashboardBadge;
+      event.currentTarget.classList.toggle('on', state.dashboardBadge);
+      event.currentTarget.setAttribute('aria-pressed', String(state.dashboardBadge));
+    });
+  }
+  const save = $('bdFrame').querySelector('[data-dashboard-save]');
+  if (save) {
+    save.addEventListener('click', () => {
+      if (access) state.dashboardAccess = access.value;
+      showBuilderToast('App settings saved.');
+    });
+  }
+  const copy = $('bdFrame').querySelector('[data-dashboard-copy]');
+  if (copy) {
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(appUrl);
+        showBuilderToast('App link copied.');
+      } catch {
+        showBuilderToast('Copy isn’t available here — select the link manually.');
+      }
+    });
+  }
+
+  const launchAction = $('bdFrame').querySelector('[data-dashboard-launch-action]');
+  if (launchAction) {
+    launchAction.addEventListener('click', () => {
+      if (state.dashboardSection === 'deploy') void publish();
+      else showBuilderToast('Readiness checks complete.');
+    });
+  }
+  $('bdFrame').querySelector('[data-dashboard-cli]')?.addEventListener('click', () => goCli('dashboard'));
 }
 
 function setBuilderMode(mode) {
+  if (state.buildSurface === 'cli') mode = 'dashboard';
   if (mode === 'dashboard' && !state.authed) {
     state.pendingAuth = () => setBuilderMode('dashboard');
     showAuthGate();
@@ -1337,6 +1713,8 @@ function askBuildPreference() {
     $('bdSay').disabled = false;
     $('bdSend').disabled = false;
     $('bdSay').placeholder = 'Choose an option or reply here…';
+
+    requestAnimationFrame(() => requestAnimationFrame(scroll));
 
     box.innerHTML = `
       <section class="bd-assistant-card" aria-labelledby="bdBuildPreference">
@@ -1469,6 +1847,8 @@ function askClarify() {
           : Math.max(0, current < 0 ? 0 : current - 1);
         choices[next].focus();
       };
+
+      requestAnimationFrame(() => requestAnimationFrame(scroll));
     }
 
     function pick(value) {
@@ -1903,10 +2283,16 @@ function finishAuth() {
   hideAuthGate();
   paintAccount();
   paintMeter();
-  document.body.classList.add('bd-authenticated');
+  document.body.classList.add('bd-authenticated', 'bd-has-preview', 'bd-mvp-workshop');
+  document.body.classList.toggle('bd-cli-app', state.buildSurface === 'cli');
   paintAuthenticatedChrome();
-  setBuilderMode('dashboard');
-  showBuilderToast('Signed in — your app dashboard is ready.');
+  setBuilderMode(state.buildSurface === 'cli' ? 'dashboard' : 'preview');
+  requestAnimationFrame(() => {
+    document.querySelector('[data-workspace-drawer-open]')?.click();
+  });
+  showBuilderToast(state.buildSurface === 'cli'
+    ? 'Signed in — your app settings are ready.'
+    : 'Signed in — your app preview is ready.');
 }
 
 function wireAuthGate() {
@@ -1951,8 +2337,8 @@ function wirePreviewAuthBoundary() {
     if (state.authed || !state.previewReady || !$('authGate').hidden) return;
     const button = event.target.closest('button');
     if (!button || button.closest('#authGate')) return;
-    const isPreviewControl = button.closest('#bdDevice, #bdMode')
-      || button.matches('[data-app-chat-open], [data-app-chat-close], .bd-pv-step');
+    const isPreviewControl = button.closest('#bdDevice, #bdMode, [data-app-chat]')
+      || button.matches('.bd-pv-step');
     if (isPreviewControl) return;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -2018,6 +2404,23 @@ if (state.authed) {
 }
 
 function bootBuilder() {
+  if (params.get('view') === 'dashboard' && state.authed) {
+    state.runStarted = true;
+    state.previewReady = true;
+    paintMeter();
+    paintAccount();
+    setStep('improve');
+    document.title = `Prototype — ${projectName}`;
+    document.body.classList.add('bd-has-preview', 'bd-mvp-workshop');
+    document.body.classList.toggle('bd-cli-app', state.buildSurface === 'cli');
+    if (state.buildSurface !== 'cli') startBuilderConversation();
+    setBuilderMode('dashboard');
+    $('bdPublish').disabled = false;
+    $('bdSay').disabled = false;
+    $('bdSend').disabled = false;
+    $('bdSay').placeholder = 'What would you like to improve?';
+    return;
+  }
   void run();
 }
 

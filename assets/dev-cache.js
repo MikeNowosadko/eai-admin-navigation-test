@@ -1,18 +1,67 @@
 /* ------------------------------------------------------------------
-   Dev cache bust — load fresh assets without incognito.
+   First-paint guard + opt-in development cache busting.
 
-   Included first in <head> on every prototype page. On local / preview
-   hosts, appends ?v=<timestamp> to every /assets/ stylesheet and script
-   before the browser fetches them. Skips production (github.io) unless
-   ?dev=1 is in the URL.
+   Included first in <head> on every prototype page. It keeps the raw page
+   markup hidden until styles and the shared shell are ready, and opts every
+   page into a restrained cross-document fade. This prevents the oversized,
+   unstyled frame that otherwise appears between screens.
 
-   Disable for one session: ?prod=1
+   Asset cache busting is deliberately opt-in with ?dev=1. Giving every
+   navigation a new timestamp made the browser download and re-parse all CSS
+   on every click, which was the main source of transition flashes.
 ------------------------------------------------------------------- */
 (function () {
   'use strict';
 
   const params = new URLSearchParams(location.search);
-  if (params.has('prod')) return;
+
+  const root = document.documentElement;
+  root.classList.add('eai-booting');
+
+  const firstPaintStyle = document.createElement('style');
+  firstPaintStyle.dataset.eaiFirstPaint = '1';
+  firstPaintStyle.textContent = `
+    html { background: #fff; }
+    html.eai-booting body { visibility: hidden !important; opacity: 0 !important; }
+    html.eai-ready body {
+      visibility: visible;
+      opacity: 1;
+      animation: 120ms ease-out both eai-first-paint;
+    }
+
+    @view-transition { navigation: auto; }
+    ::view-transition-old(root) { animation: 120ms ease-out both eai-page-out; }
+    ::view-transition-new(root) { animation: 170ms ease-out both eai-page-in; }
+    @keyframes eai-page-out { to { opacity: 0; } }
+    @keyframes eai-page-in { from { opacity: 0; } }
+    @keyframes eai-first-paint { from { opacity: 0; } to { opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root),
+      ::view-transition-new(root),
+      html.eai-ready body { animation-duration: 1ms; }
+    }
+  `;
+  document.head.appendChild(firstPaintStyle);
+
+  let revealed = false;
+  function reveal() {
+    if (revealed) return;
+    revealed = true;
+    requestAnimationFrame(() => {
+      root.classList.remove('eai-booting');
+      root.classList.add('eai-ready');
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', reveal, { once: true });
+  } else {
+    reveal();
+  }
+  /* Never strand a page invisibly if a non-essential script fails. */
+  setTimeout(reveal, 2500);
+
+  if (params.has('prod') || !params.has('dev')) return;
 
   const host = location.hostname;
   const isProdHost = host.endsWith('github.io') || host.endsWith('enterpriseaigroup.com');
@@ -74,7 +123,8 @@
     });
   }).observe(document.documentElement, { childList: true, subtree: true });
 
-  /* Back-forward cache can restore old JS state — reload instead. */
+  /* Only explicit development sessions trade a smooth bfcache restore for
+     fully fresh script state. Normal prototype navigation keeps bfcache. */
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) location.reload();
   });

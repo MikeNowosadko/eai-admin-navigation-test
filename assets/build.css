@@ -170,8 +170,24 @@
 
 /* ============================ THE HARNESS ========================= */
 
-body.bd-builder { height: 100vh; overflow: hidden; }
-.bd-builder .nb-shell { height: 100vh; min-height: 0; }
+body.bd-builder {
+  --bd-workspace-drawer-width: min(280px, calc(100vw - 28px));
+  height: 100vh;
+  overflow: hidden;
+}
+.bd-builder :where(button, a):focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 2px;
+}
+.bd-builder .nb-shell {
+  height: 100vh;
+  min-height: 0;
+  margin-left: 0;
+  transition: margin-left 360ms cubic-bezier(.22, 1, .36, 1);
+}
+body.bd-workspace-drawer-open .nb-shell { margin-left: var(--bd-workspace-drawer-width); }
+body.bd-workspace-drawer-preopen .nb-shell,
+body.bd-workspace-drawer-preopen .bd-workspace-drawer { transition: none !important; }
 .bd-main { min-height: 0; height: 100vh; }
 
 /* --- the meter ----------------------------------------------------- */
@@ -869,6 +885,16 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame {
 body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::before,
 body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none; content: none; }
 
+/* CLI-built apps are managed here but edited in the external harness. Their
+   browser view is therefore settings-only: no no-code chat and no preview
+   mode that implies the app can be edited on this surface. */
+body.bd-cli-app .bd-chat { display: none !important; }
+body.bd-cli-app .bd-preview { flex: 1; width: 100%; opacity: 1; }
+body.bd-cli-app .bd-pv-bar { display: none; }
+body.bd-cli-app .bd-dashboard-rail { min-height: calc(100vh - 56px); }
+body.bd-cli-app .bd-dashboard-pane.is-embedded { min-height: calc(100vh - 56px); }
+body.bd-cli-app .bd-dashboard-embed { height: calc(100vh - 56px); }
+
 .bd-authenticated .bd-steps { display: none; }
 .bd-platform-crumbs { position: relative; gap: 10px; overflow: visible; }
 .bd-platform-mark {
@@ -881,8 +907,204 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none;
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 8px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
+.bd-platform-mark:hover,
+.bd-platform-mark.is-open { background: #f4f4f5; border-color: #d4d4d8; }
+.bd-platform-mark:focus-visible { outline: 2px solid #18181b; outline-offset: 2px; }
 .bd-platform-mark img { width: 23px; height: 18px; object-fit: contain; }
+
+/* Workspace navigation drawer opened from the EAI mark. It remains mounted
+   while closed so both the backdrop and panel can animate without a flash. */
+.bd-workspace-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 360ms;
+}
+.bd-workspace-drawer-layer.is-open {
+  visibility: visible;
+  pointer-events: none;
+  transition-delay: 0s;
+}
+.bd-workspace-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+  cursor: default;
+  transition: opacity 280ms ease;
+}
+.bd-workspace-drawer-layer.is-open .bd-workspace-drawer-backdrop { opacity: 0; }
+.bd-workspace-drawer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--bd-workspace-drawer-width);
+  overflow: hidden;
+  background: #fafafa;
+  border-right: 1px solid #e4e4e7;
+  box-shadow: 6px 0 20px rgba(9, 9, 11, 0.06);
+  transform: translate3d(-102%, 0, 0);
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+  pointer-events: auto;
+}
+.bd-workspace-drawer-layer.is-open .bd-workspace-drawer { transform: translate3d(0, 0, 0); }
+.bd-workspace-drawer a { color: inherit; text-decoration: none; }
+.bd-workspace-drawer svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bd-workspace-drawer-head { flex: none; padding: 16px 10px 8px; }
+.bd-workspace-company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  transition: background 150ms ease;
+}
+.bd-workspace-company:hover { background: #f0f0f1; }
+.bd-workspace-company-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  background: #18181b;
+  border-radius: 10px;
+  color: #fff;
+}
+.bd-workspace-company-icon svg { width: 23px; height: 23px; }
+.bd-workspace-company > span:nth-child(2) { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.bd-workspace-company b { overflow: hidden; font-size: 15px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-company small { margin-top: 2px; color: #71717a; font-size: 12px; }
+.bd-workspace-company .bd-workspace-swap { width: 18px; height: 18px; color: #18181b; }
+.bd-workspace-build-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 14px;
+  padding: 4px;
+  background: #f0f0ee;
+  border: 1px solid #e4e4e1;
+  border-radius: 10px;
+}
+.bd-workspace-build-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: #52525b;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.bd-workspace-build-tabs button.on { background: #fff; color: #18181b; box-shadow: 0 1px 3px rgba(9, 9, 11, .1); }
+.bd-workspace-drawer-body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 8px 24px; }
+.bd-workspace-primary-nav { display: flex; flex-direction: column; gap: 3px; }
+.bd-workspace-primary-nav a,
+.bd-workspace-settings-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #27272a;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 150ms ease;
+}
+.bd-workspace-primary-nav a:hover,
+.bd-workspace-settings-link:hover { background: #f0f0f1; }
+.bd-workspace-primary-nav a:first-child { background: #f1f1f2; }
+.bd-workspace-primary-nav span { flex: 1; }
+.bd-workspace-primary-nav i { color: #71717a; font-style: normal; font-weight: 500; }
+.bd-workspace-recents { margin-top: 24px; }
+.bd-workspace-recents h2 { margin: 0; padding: 0 10px 9px; color: #71717a; font-size: 12px; font-weight: 500; }
+.bd-workspace-recents a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.bd-workspace-recents a:hover { background: #f0f0f1; }
+.bd-workspace-app-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  background: #fff;
+  border: 1px solid #dedee2;
+  border-radius: 7px;
+  color: #52525b;
+  font-size: 12px;
+  font-weight: 500;
+}
+.bd-workspace-recents b { flex: 1; min-width: 0; overflow: hidden; color: #3f3f46; font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-app-kind {
+  flex: none;
+  padding: 2px 5px;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #fff;
+  color: #71717a;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
+.bd-workspace-recents i { width: 7px; height: 7px; flex: none; border-radius: 999px; }
+.bd-workspace-recents i.live { background: #22c55e; }
+.bd-workspace-recents i.draft { background: #f59e0b; }
+.bd-workspace-drawer-foot { flex: none; padding: 8px; background: #fafafa; }
+.bd-workspace-settings-link { margin-bottom: 8px; }
+.bd-workspace-user-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 9px 10px;
+  border-top: 1px solid #e4e4e7;
+}
+.bd-workspace-user-avatar { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 999px; background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 600; }
+.bd-workspace-user-link > span:nth-child(2) { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.bd-workspace-user-link b { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-user-link small { margin-top: 2px; color: #71717a; font-size: 11px; }
+.bd-workspace-user-link > svg { width: 15px; height: 15px; color: #a1a1aa; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-builder .nb-shell,
+  .bd-workspace-drawer-layer,
+  .bd-workspace-drawer-backdrop,
+  .bd-workspace-drawer { transition-duration: 1ms; }
+}
 .bd-platform-company { position: relative; }
 .bd-platform-company > button {
   display: flex;
@@ -989,12 +1211,27 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none;
   text-align: left;
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 .bd-dashboard-rail-link:hover,
 .bd-dashboard-rail-link.on { background: #ececee; color: #18181b; }
 .bd-dashboard-rail-link svg { width: 15px; height: 15px; flex: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .bd-dashboard-rail-link span { flex: 1; }
 .bd-dashboard-rail-link i { color: #a1a1aa; font-size: 16px; font-style: normal; }
+.bd-dashboard-rail.is-simple nav {
+  gap: 3px;
+  padding-top: 12px;
+}
+.bd-dashboard-rail.is-simple .bd-dashboard-rail-link {
+  min-height: 42px;
+  gap: 12px;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+.bd-dashboard-rail.is-simple .bd-dashboard-rail-link svg {
+  width: 18px;
+  height: 18px;
+}
 .bd-dashboard-cli-link {
   display: flex;
   align-items: center;
@@ -1008,13 +1245,62 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
 }
 .bd-dashboard-cli-link:hover { border-color: #a1a1aa; }
 .bd-dashboard-cli-link svg { width: 17px; height: 17px; flex: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .bd-dashboard-cli-link span { display: flex; flex-direction: column; }
 .bd-dashboard-cli-link b { font-size: 11px; }
 .bd-dashboard-cli-link small { margin-top: 2px; color: #71717a; font-size: 10px; }
-.bd-dashboard-pane { min-width: 0; padding: 30px clamp(24px, 4vw, 48px) 56px; }
+.bd-dashboard-cli-link.is-primary {
+  min-height: 52px;
+  padding: 11px 12px;
+  background: #18181b;
+  border-color: #18181b;
+  border-radius: 10px;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(24, 24, 27, 0.14);
+}
+.bd-dashboard-cli-link.is-primary:hover {
+  background: #000000;
+  border-color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(24, 24, 27, 0.2);
+}
+.bd-dashboard-cli-link.is-primary b { font-size: 12px; }
+.bd-dashboard-cli-link.is-primary small { color: #d4d4d8; }
+.bd-dashboard-cli-link .bd-dashboard-cli-arrow {
+  display: block;
+  margin-left: auto;
+  font-size: 17px;
+  line-height: 1;
+}
+.bd-dashboard-pane {
+  min-width: 0;
+  padding: 30px clamp(24px, 4vw, 48px) 56px;
+  animation: bdDashboardPaneIn 180ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.bd-dashboard-pane.is-embedded {
+  min-height: calc(100vh - 104px);
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+.bd-dashboard-embed {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 104px);
+  min-height: 640px;
+  border: 0;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.bd-dashboard-embed.is-ready { opacity: 1; }
+@keyframes bdDashboardPaneIn {
+  from { opacity: 0.72; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .bd-dashboard-head {
   display: flex;
   align-items: center;
@@ -1089,6 +1375,23 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none;
   font-size: 13px;
   color: #18181b;
 }
+.bd-dashboard-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #18181b;
+  font-family: inherit;
+  font-size: 13px;
+}
+.bd-dashboard-input:focus,
+.bd-dashboard-select:focus {
+  border-color: #a1a1aa;
+  outline: 2px solid rgba(24, 24, 27, 0.08);
+  outline-offset: 1px;
+}
 .bd-dashboard-share { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
 .bd-dashboard-share code {
   flex: 1;
@@ -1122,6 +1425,74 @@ body.bd-mvp-workshop[data-mode='dashboard'] .bd-pv-frame::after { display: none;
   .bd-dashboard { grid-template-columns: 190px minmax(0, 1fr); }
   .bd-dashboard-pane { padding-inline: 20px; }
   .bd-platform-actions a { display: none; }
+}
+
+/* Keep the pushed-open workspace drawer usable on laptop viewports. The
+   three-column no-code layout becomes intentionally denser while the drawer
+   is visible, then stacks at narrower sizes instead of crushing the app pane. */
+@media (min-width: 761px) and (max-width: 1440px) {
+  body.bd-workspace-drawer-open:not(.bd-cli-app) {
+    --bd-workspace-drawer-width: 244px;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-chat {
+    flex-basis: 350px;
+    width: 350px;
+    min-width: 350px;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-pane {
+    padding-inline: 20px;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-wide {
+    grid-column: auto;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-share {
+    flex-wrap: wrap;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-share code {
+    flex-basis: 100%;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-workspace-company b {
+    font-size: 14px;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-workspace-build-tabs button {
+    gap: 5px;
+    padding-inline: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-dashboard-rail-head b {
+    display: -webkit-box;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1160px) {
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-body {
+    flex-direction: column;
+  }
+  body.bd-workspace-drawer-open.bd-mvp-workshop:not(.bd-cli-app) .bd-chat {
+    flex: 0 0 36vh;
+    width: 100%;
+    min-width: 0;
+    max-height: 36vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-dashboard-pane { animation-duration: 1ms; }
+  .bd-dashboard-embed { transition-duration: 1ms; }
 }
 
 /* --- toast ------------------------------------------------------------ */

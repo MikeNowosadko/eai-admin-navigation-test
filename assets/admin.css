@@ -55,6 +55,52 @@ body.ad * { box-sizing: border-box; }
 .ad :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: inherit; }
 .ad :where(input, textarea, select) { font: inherit; color: inherit; }
 .ad :where(a) { color: inherit; text-decoration: none; }
+.ad :where(button, a):focus-visible {
+  outline: 2px solid var(--ad-ink-2);
+  outline-offset: 2px;
+}
+
+/* Same-document admin routes keep their shared chrome on screen while the
+   destination is fetched. Browsers without the View Transition API use this
+   short snapshot crossfade, so the rebuilt shell is never exposed halfway
+   through layout. */
+.ad-route-snapshot {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  opacity: 1;
+  pointer-events: none !important;
+  transition: opacity 150ms ease-out;
+}
+.ad-route-snapshot.is-leaving { opacity: 0; }
+body.ad > [data-ad-root].ad-route-entering { opacity: 0; }
+body.ad > [data-ad-root] { transition: opacity 150ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-route-snapshot,
+  body.ad > [data-ad-root] { transition-duration: 1ms; }
+}
+
+/* App pages can be mounted inside the signed-in builder dashboard. In that
+   mode the builder owns the top bar and navigation, so only the page pane is
+   rendered here. */
+body.ad.ad-embedded {
+  min-width: 0;
+  overflow: auto;
+  background: #fff;
+}
+.ad-embedded-pane {
+  --ad-embedded-gutter: clamp(24px, 4vw, 48px);
+  min-height: 100vh;
+  padding: 30px var(--ad-embedded-gutter) 56px;
+  background: #fff;
+}
+.ad-embedded-pane .ad-pane-col {
+  max-width: none;
+}
 
 /* =================================================================
    Workspace shell
@@ -211,6 +257,18 @@ body.ad * { box-sizing: border-box; }
   font-weight: 600;
 }
 .ad-recent-app .tx { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-recent-app .surface-tag {
+  flex: none;
+  padding: 2px 5px;
+  border: 1px solid var(--ad-line);
+  border-radius: var(--ad-r-full);
+  background: #fff;
+  color: var(--ad-mute);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
 .ad-recent-app > i { width: 6px; height: 6px; flex: 0 0 6px; border-radius: var(--ad-r-full); }
 .ad-recent-app > i.live { background: #22c55e; }
 .ad-recent-app > i.draft { background: #f59e0b; }
@@ -313,6 +371,20 @@ body.ad * { box-sizing: border-box; }
   backdrop-filter: blur(2px);
 }
 .ad-settings-modal-layer[hidden] { display: none; }
+.ad-settings-modal-layer:not([hidden]) {
+  animation: adModalBackdropIn 180ms ease-out both;
+}
+.ad-settings-modal-layer:not([hidden]) > .ad-settings-modal-window {
+  animation: adModalWindowIn 220ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes adModalBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes adModalWindowIn {
+  from { opacity: 0; transform: translateY(8px) scale(.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 body.ad-settings-modal-open { overflow: hidden; }
 body.ad-profile-modal-open { overflow: hidden; }
 
@@ -365,7 +437,7 @@ body.ad-profile-modal-open { overflow: hidden; }
   place-items: center;
   border-radius: var(--ad-r-sm);
   color: var(--ad-ink-4);
-  font-family: Arial, sans-serif;
+  font-family: inherit;
   font-size: 26px;
   font-weight: 300;
   line-height: 1;
@@ -645,6 +717,7 @@ button.ad-settings-member-action:hover { background: var(--ad-line-2); color: va
   padding: 0;
   background: #fff;
   backdrop-filter: none;
+  animation: none;
 }
 .ad-settings-layout-sidebar .ad-settings-modal-window {
   width: 100%;
@@ -653,6 +726,7 @@ button.ad-settings-member-action:hover { background: var(--ad-line-2); color: va
   border: 0;
   border-radius: 0;
   box-shadow: none;
+  animation: none !important;
 }
 .ad-settings-layout-sidebar .ad-settings-modal-nav { width: 264px; flex-basis: 264px; }
 
@@ -678,7 +752,7 @@ button.ad-settings-member-action:hover { background: var(--ad-line-2); color: va
 
 .ad-top {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  height: 56px; flex: 0 0 56px; padding: 0 24px; border-bottom: 1px solid var(--ad-line-3);
+  height: 64px; flex: 0 0 64px; padding: 0 24px; border-bottom: 1px solid var(--ad-line-3);
 }
 .ad-top-l { display: flex; align-items: center; gap: 10px; }
 .ad-top-l .collapse { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--ad-r-sm); color: var(--ad-ink-4); }
@@ -1124,6 +1198,30 @@ button.ad-settings-member-action:hover { background: var(--ad-line-2); color: va
 .ad-t .grow { flex: 1 1 0; min-width: 0; }
 .ad-t .num { text-align: right; }
 .ad-t .end { display: flex; justify-content: flex-end; }
+
+/* Embedded app tables share a narrower pane with the builder rail. Keep the
+   columns intact and scroll them as a single table rather than allowing text
+   and headings to overlap as the pane contracts. */
+body.ad-submissions-page.ad-embedded .ad-submissions-table-card {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+body.ad-submissions-page.ad-embedded .ad-submissions-table-card .ad-t {
+  min-width: 1000px;
+}
+body.ad-submissions-page.ad-embedded .ad-submissions-table-card .ad-empty {
+  position: sticky;
+  left: 0;
+  width: calc(100vw - var(--ad-embedded-gutter) - var(--ad-embedded-gutter));
+}
+body.ad-submissions-page.ad-embedded .ad-submissions-toolbar {
+  flex-wrap: wrap;
+}
+body.ad-submissions-page.ad-embedded .ad-submissions-toolbar > .ad-f {
+  flex: 1 1 320px !important;
+  min-width: min(320px, 100%) !important;
+}
 
 .ad-badge { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: var(--ad-r-full); font-size: 12px; font-weight: 500; }
 .ad-badge .dot { width: 6px; height: 6px; border-radius: var(--ad-r-full); background: currentColor; }
@@ -2262,4 +2360,11 @@ body.ad[data-ad-shell='app'] { background: #f8fafc; }
 
 @media (max-width: 900px) {
   .ad-edit-hd-r .ad-edit-saved { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-settings-modal-layer:not([hidden]),
+  .ad-settings-modal-layer:not([hidden]) > .ad-settings-modal-window {
+    animation-duration: 1ms;
+  }
 }

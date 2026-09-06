@@ -5,12 +5,12 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<script src="../assets/dev-cache.js?v=michael-dashboard2"></script>
+  <script src="../assets/dev-cache.js?v=transition3"></script>
 <title>Prototype — Configure app · Enterprise AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/admin.css?v=transition3" />
 </head>
 <body class="ad" data-ad-shell="app" data-ad-rail="configure">
 <div id="adPane"><div id="appConfigurePane"></div></div>
@@ -18,11 +18,14 @@
 <script src="../assets/page.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
 <script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-shell.js?v=michael-dashboard2"></script>
+<script src="../assets/admin-shell.js?v=transition3"></script>
 <script>
   const D = window.ADMIN;
   const query = new URLSearchParams(location.search);
   const app = D.process(query.get('app'));
+  if (query.get('demo') === 'michael' && query.get('embedded') !== '1' && window.adBuilderAppHref) {
+    location.replace(window.adBuilderAppHref(app.id, query.get('section') || 'resources'));
+  }
   const section = ['workflow', 'resources', 'ai', 'connections'].includes(query.get('section')) ? query.get('section') : 'resources';
   const company = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
   const storeKey = `app-tenant-config-${company.id}-${app.id}`;

@@ -196,6 +196,7 @@
     }
     return {
       shell: b.adShell,
+      embedded: p.get('embedded') === '1',
       nav,
       title: b.adTitle || 'Home',
       rail,
@@ -218,6 +219,25 @@
     if (s.settingsLayout === 'sidebar') target += '&workspaceSettings=sidebar';
     return target;
   }
+
+  function michaelBuilderAppHref(s, appOrId, section = 'overview', buildSurface = 'ncb') {
+    const app = typeof appOrId === 'string' ? D.process(appOrId) : appOrId;
+    if (!s.michaelDemo) return `app-overview.html?app=${encodeURIComponent(app.id)}`;
+    const company = michaelActiveCompany();
+    const query = new URLSearchParams({
+      prompt: app.name,
+      app: app.id,
+      ws: company.name,
+      email: D.user.email,
+      surface: buildSurface,
+      view: 'dashboard',
+      source: 'workspace',
+      drawer: 'open',
+    });
+    if (section && section !== 'overview') query.set('section', section);
+    return `builder.html?${query.toString()}`;
+  }
+  window.adBuilderAppHref = (appId, section = 'overview') => michaelBuilderAppHref(state(), D.process(appId), section);
 
   function wsItem(s, id, icon, label, href, extra) {
     const on = s.nav === id ? ' on' : '';
@@ -462,17 +482,43 @@
   }
 
   function michaelRecentApps(s) {
-    return michaelCompanyProcesses().slice(0, 4).map((process) => `
-      <a class="ad-recent-app" href="${michaelHref(s, `app-overview.html?app=${process.id}`)}">
+    const companyApps = michaelCompanyProcesses();
+    const leaveApproval = D.processes.find((process) => process.id === 'leave-approval');
+    const vendorOnboarding = D.processes.find((process) => process.id === 'vendor-onboarding');
+    const kycOnboarding = D.processes.find((process) => process.id === 'kyc-onboarding');
+    const primaryApp = companyApps[0];
+    const cliApp = primaryApp?.name === 'Vendor Onboarding'
+      ? kycOnboarding
+      : vendorOnboarding && {
+          ...vendorOnboarding,
+          name: 'Vendor Onboarding',
+          initial: 'V',
+          subtitle: 'Supplier checks · Procurement',
+          status: 'Draft',
+          live: false,
+        };
+    const recentApps = createdApp?.name && michaelActiveCompany().id === 'northwind-ops'
+      ? [
+          primaryApp,
+          leaveApproval,
+          cliApp,
+        ].filter(Boolean)
+      : companyApps.slice(0, 3);
+    return recentApps.map((process, index) => {
+      const buildSurface = index < 2 ? 'ncb' : 'cli';
+      return `
+      <a class="ad-recent-app" href="${michaelBuilderAppHref(s, process, 'overview', buildSurface)}">
         <span class="av">${esc(process.initial)}</span>
         <span class="tx">${esc(process.name)}</span>
+        <span class="surface-tag" title="${index < 2 ? 'No Code Builder' : 'Command line interface'}">${index < 2 ? 'NCB' : 'CLI'}</span>
         <i class="${process.live ? 'live' : 'draft'}" aria-label="${esc(process.status)}"></i>
-      </a>`).join('');
+      </a>`;
+    }).join('');
   }
 
   function michaelHomeRecentApps(s) {
-    return michaelCompanyProcesses().slice(0, 3).map((process) => `
-      <a class="ad-t-r" href="${michaelHref(s, `app-overview.html?app=${process.id}`)}">
+    return michaelCompanyProcesses().slice(0, 3).map((process, index) => `
+      <a class="ad-t-r" href="${michaelBuilderAppHref(s, process, 'overview', index < 2 ? 'ncb' : 'cli')}">
         <span class="tx"><b>${esc(process.name)}</b><span>${esc(process.subtitle)}</span></span>
         <span class="st">${process.status === 'Live' ? '<i class="live"></i>' : '<i class="draft"></i>'}${esc(process.status)}</span>
         <span class="ago">${esc(process.seen)}</span>
@@ -820,8 +866,8 @@
     <header class="ad-top">
       <div class="ad-top-l">
         <button class="collapse" type="button" data-stub aria-label="Collapse sidebar">${svg('panel')}</button>
-        <b>${s.title}</b>
-        ${s.michaelDemo ? `<span class="ad-top-company" data-company-current-name>${esc(activeCompany.name)}</span>` : ''}
+        ${s.michaelDemo && s.nav === 'home' ? '' : `<b>${s.title}</b>`}
+        ${s.michaelDemo && s.nav !== 'home' ? `<span class="ad-top-company" data-company-current-name>${esc(activeCompany.name)}</span>` : ''}
       </div>
       <div class="ad-search-wrap">
         <button class="ad-search-trigger" type="button" aria-label="Search apps" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
@@ -865,7 +911,7 @@
   function michaelAppRail(s) {
     return `
       <div class="ad-rail-section-label first">Manage</div>
-      ${railItem(s, 'overview', 'home', 'Overview', `app-overview.html?app=${s.appId}`)}
+      <a class="ad-rail-item${s.rail === 'overview' ? ' on' : ''}" href="${michaelBuilderAppHref(s, s.app)}">${svg('home')}<span class="lb">Overview</span></a>
       ${railItem(s, 'submissions', 'file', 'Submissions', `app-submissions.html?app=${s.appId}`)}
       ${railItem(s, 'analytics', 'chart', 'Analytics & reports', `app-analytics.html?app=${s.appId}`)}
       ${railItem(s, 'users', 'users', 'Users', `app-users.html?app=${s.appId}`)}
@@ -1016,9 +1062,10 @@
         list.innerHTML = '<li class="ad-search-empty" role="presentation">No apps match.</li>';
         return;
       }
+      const searchState = state();
       list.innerHTML = rows.map((p, i) => `
         <li role="option" aria-selected="${i === 0}">
-          <a class="ad-search-hit${i === 0 ? ' on' : ''}" href="app-overview.html?app=${esc(p.id)}">
+          <a class="ad-search-hit${i === 0 ? ' on' : ''}" href="${searchState.michaelDemo ? michaelBuilderAppHref(searchState, p) : `app-overview.html?app=${esc(p.id)}`}">
             <span class="tx">
               <b>${esc(p.name)}</b>
               <span>${esc(p.subtitle)}</span>
@@ -1673,6 +1720,12 @@
     if (window.__adSettingsModalTeardown) window.__adSettingsModalTeardown();
     if (window.__adCompanyPickerTeardown) window.__adCompanyPickerTeardown();
     document.querySelectorAll('[data-ad-root]').forEach((n) => n.remove());
+    document.body.classList.toggle('ad-embedded', s.embedded);
+    if (s.embedded) {
+      document.body.insertAdjacentHTML('afterbegin', `<main class="ad-embedded-pane" data-ad-root><div class="ad-pane-col">${paneHTML}</div></main>`);
+      document.querySelectorAll('[data-ad-root]').forEach((root) => bindStubs(root));
+      return;
+    }
     document.body.insertAdjacentHTML('afterbegin', s.shell === 'app' ? appShell(paneHTML, s) : wsShell(paneHTML, s));
     document.querySelectorAll('[data-ad-root]').forEach((root) => {
       bindStubs(root);
@@ -1766,23 +1819,60 @@
     }
     if (mine !== token) return; // a later click won
 
-    if (push) history.pushState({ ad: true }, '', href);
-
-    Object.keys(document.body.dataset)
-      .filter((k) => k.startsWith('ad'))
-      .forEach((k) => { delete document.body.dataset[k]; });
-    Object.keys(doc.body.dataset).forEach((k) => { document.body.dataset[k] = doc.body.dataset[k]; });
-
-    document.title = doc.title;
-    const urlMeta = document.querySelector('meta[name="eai-url"]');
-    const newMeta = doc.querySelector('meta[name="eai-url"]');
-    if (urlMeta && newMeta) urlMeta.content = newMeta.content;
-
     const pane = doc.getElementById('adPane');
-    mount(pane ? pane.innerHTML : '');
     await ensureScripts(doc);
-    runPageScripts(doc);
-    announce();
+
+    /* Keep the current screen painted while the destination is fetched, then
+       replace the shell and pane in one captured frame. Rebuilding outside a
+       view transition briefly exposed the destination at its unmeasured size
+       and made every route change look like a full-page zoom. */
+    const applyRoute = () => {
+      if (push) history.pushState({ ad: true }, '', href);
+
+      Object.keys(document.body.dataset)
+        .filter((k) => k.startsWith('ad'))
+        .forEach((k) => { delete document.body.dataset[k]; });
+      Object.keys(doc.body.dataset).forEach((k) => { document.body.dataset[k] = doc.body.dataset[k]; });
+
+      document.title = doc.title;
+      const urlMeta = document.querySelector('meta[name="eai-url"]');
+      const newMeta = doc.querySelector('meta[name="eai-url"]');
+      if (urlMeta && newMeta) urlMeta.content = newMeta.content;
+
+      mount(pane ? pane.innerHTML : '');
+      runPageScripts(doc);
+      announce();
+    };
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && !reducedMotion) {
+      const transition = document.startViewTransition(applyRoute);
+      await transition.updateCallbackDone.catch(() => {});
+    } else {
+      const currentRoot = !reducedMotion && document.querySelector('[data-ad-root]');
+      const snapshot = currentRoot ? currentRoot.cloneNode(true) : null;
+      if (snapshot) {
+        snapshot.removeAttribute('data-ad-root');
+        snapshot.classList.add('ad-route-snapshot');
+        snapshot.setAttribute('aria-hidden', 'true');
+        snapshot.inert = true;
+        document.body.appendChild(snapshot);
+      }
+
+      applyRoute();
+
+      const nextRoot = document.querySelector('[data-ad-root]');
+      if (snapshot && nextRoot) {
+        nextRoot.classList.add('ad-route-entering');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          nextRoot.classList.remove('ad-route-entering');
+          snapshot.classList.add('is-leaving');
+          setTimeout(() => snapshot.remove(), 180);
+        }));
+      } else {
+        snapshot?.remove();
+      }
+    }
   }
 
   document.addEventListener('click', (e) => {
@@ -1794,7 +1884,20 @@
     if (!isRoute(url)) return;
     const currentParams = new URLSearchParams(location.search);
     if (currentParams.get('demo') === 'michael') {
+      const targetFile = url.pathname.split('/').pop();
+      const dashboardSection = {
+        'app-overview.html': 'overview',
+        'app-submissions.html': 'submissions',
+        'app-analytics.html': 'analytics',
+        'app-users.html': 'users',
+      }[targetFile] || (targetFile === 'app-configure.html' ? (url.searchParams.get('section') || 'resources') : '');
+      if (dashboardSection && currentParams.get('embedded') !== '1') {
+        e.preventDefault();
+        location.href = michaelBuilderAppHref(state(), D.process(url.searchParams.get('app')), dashboardSection);
+        return;
+      }
       url.searchParams.set('demo', 'michael');
+      if (currentParams.get('embedded') === '1') url.searchParams.set('embedded', '1');
       if (currentParams.get('workspaceSettings') === 'sidebar') {
         url.searchParams.set('workspaceSettings', 'sidebar');
       }
@@ -1807,6 +1910,20 @@
   window.addEventListener('popstate', () => go(location.href, false));
 
   /* ------------------------------------------------------------ go */
+  const initialState = state();
+  const initialFile = location.pathname.split('/').pop();
+  const initialDashboardSection = {
+    'app-overview.html': 'overview',
+    'app-submissions.html': 'submissions',
+    'app-analytics.html': 'analytics',
+    'app-users.html': 'users',
+  }[initialFile] || (initialFile === 'app-configure.html'
+    ? (new URLSearchParams(location.search).get('section') || 'resources')
+    : '');
+  if (initialState.michaelDemo && !initialState.embedded && initialDashboardSection) {
+    location.replace(michaelBuilderAppHref(initialState, initialState.app, initialDashboardSection));
+    return;
+  }
   const paneEl = document.getElementById('adPane');
   const pane = paneEl ? paneEl.innerHTML : '';
   if (paneEl) paneEl.remove();

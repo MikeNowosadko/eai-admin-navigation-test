@@ -402,7 +402,7 @@ if (dialog) {
 document.querySelectorAll('[data-mkt-chip]').forEach((chip) => {
   chip.addEventListener('click', () => {
     if (!promptInput) return;
-    promptInput.value = chip.textContent;
+    promptInput.value = chip.dataset.prompt || chip.textContent.trim();
     promptInput.focus();
   });
 });

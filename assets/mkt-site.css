@@ -42,6 +42,12 @@
   min-height: 100vh;
 }
 
+.mkt-site :where(button, input, textarea, select) { font-family: inherit; }
+.mkt-site :where(button, a):focus-visible {
+  outline: 2px solid var(--mkt-ink);
+  outline-offset: 2px;
+}
+
 .mkt-main {
   display: flex;
   flex-direction: column;
@@ -286,6 +292,79 @@
   width: 15px;
   height: 15px;
   color: currentColor;
+}
+
+/* Compact starter templates keep the prompt-first page useful without
+   turning it back into a full marketing catalogue. */
+.mkt-starter-templates {
+  width: min(760px, 100%);
+  margin-top: 28px;
+}
+
+.mkt-starter-templates h2 {
+  margin: 0 0 11px;
+  color: #737373;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.mkt-starter-template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mkt-starter-template-grid > button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  min-height: 72px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid #e2e1de;
+  border-radius: 13px;
+  color: var(--mkt-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(38, 37, 30, 0.035);
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.mkt-starter-template-grid > button:hover {
+  background: #fff;
+  border-color: #cac8c2;
+  box-shadow: 0 8px 22px rgba(38, 37, 30, 0.07);
+  transform: translateY(-1px);
+}
+
+.mkt-starter-template-grid > button:focus-visible {
+  outline: 2px solid var(--mkt-ink);
+  outline-offset: 2px;
+}
+
+.mkt-starter-template-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  background: #f0efec;
+  border-radius: 9px;
+  color: #44433d;
+}
+
+.mkt-starter-template-icon svg { width: 18px; height: 18px; }
+.mkt-starter-template-grid > button > span:last-child { display: flex; min-width: 0; flex-direction: column; }
+.mkt-starter-template-grid b { overflow: hidden; font-size: 13px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.mkt-starter-template-grid small { margin-top: 2px; color: #777871; font-size: 11px; line-height: 15px; }
+
+@media (max-width: 720px) {
+  .mkt-starter-template-grid { grid-template-columns: 1fr; }
+  .mkt-starter-templates { max-width: 534px; }
+  .mkt-starter-template-grid > button { min-height: 64px; }
 }
 
 /* Mode rail */

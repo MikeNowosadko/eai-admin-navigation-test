@@ -31,7 +31,7 @@
   window.bdCarry = function bdCarry(url, extra) {
     const [path, existing] = String(url).split('?');
     const q = new URLSearchParams(existing || '');
-    if (prompt) q.set('prompt', prompt);
+    if (prompt && !q.has('prompt')) q.set('prompt', prompt);
     Object.entries(extra || {}).forEach(([k, v]) => { if (v) q.set(k, v); });
     const s = q.toString();
     return s ? `${path}?${s}` : path;

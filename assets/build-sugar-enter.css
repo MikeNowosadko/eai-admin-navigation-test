@@ -7,19 +7,19 @@
 }
 
 ::view-transition-old(root) {
-  animation: 180ms ease-out both bd-page-out;
+  animation: 120ms ease-out both bd-page-out;
 }
 
 ::view-transition-new(root) {
-  animation: 320ms cubic-bezier(0.22, 1, 0.36, 1) both bd-page-in;
+  animation: 170ms ease-out both bd-page-in;
 }
 
 @keyframes bd-page-out {
-  to { opacity: 0; transform: scale(0.992); }
+  to { opacity: 0; }
 }
 
 @keyframes bd-page-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; }
 }
 
 /* --- larger app-style composer (homepage) ------------------------- */
