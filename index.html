@@ -4,19 +4,19 @@
 <meta charset="utf-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<script src="assets/dev-cache.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <title>EAI prototypes — launch pad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/proto.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="assets/proto.css" />
 </head>
 <body class="site">
 
   <nav class="nav">
-    <a class="brand" href="index.html"><img src="assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" style="height:15px;" /></a>
+    <a class="brand" href="index.html"><img src="assets/logos/eai-wordmark.svg" alt="Enterprise AI" style="height:15px;" /></a>
     <div class="spacer"></div>
     <a class="nav-pad-btn" href="roadmap/funnel.html">Roadmap</a>
   </nav>
@@ -27,9 +27,8 @@
       <h1>Launch pad</h1>
     </header>
 
-    <!-- Marketing site + no-code builder: marketing site is the front door.
-         Signed-in home and builder are reached from Sign in / chat on the site.
-         Smart blocks tab only lists what's unique beyond that flow. -->
+    <!-- Marketing site + no-code builder: one entry — the Sugarhead flow.
+         Admin, CLI, and post-publish screens are reached inside the journey. -->
     <ul class="pad-list">
 
       <li class="pad-section">
@@ -81,11 +80,8 @@
 
           <div class="pad-tab-panel" data-pad-panel="mvp">
             <ul class="pad-entries">
-              <li><a class="pad-entry" href="build-web/index.html"><span class="pad-entry-text">Marketing site</span><span class="pad-badge pad-badge--green">Oct 16</span></a></li>
-              <li><a class="pad-entry" href="build-web/ws-home.html"><span class="pad-entry-text">Admin &amp; settings &mdash; workspace, process, profile</span><span class="pad-badge pad-badge--green">Current</span></a></li>
-              <li><a class="pad-entry" href="build-web/ut-leave.html"><span class="pad-entry-text">User study &mdash; find this week&apos;s leave submissions</span><span class="pad-badge pad-badge--green">Unmoderated</span></a></li>
-              <li><a class="pad-entry" href="build-web/ut-leave.html?desktop=1"><span class="pad-entry-text">User study &mdash; macOS desktop (Mail + notifications)</span><span class="pad-badge pad-badge--green">Unmoderated</span></a></li>
-              <li><a class="pad-entry" href="app-states/index.html">App state machine</a></li>
+              <li><a class="pad-entry" href="build-web/index.html"><span class="pad-entry-text">Marketing site &rarr; builder &rarr; brand &rarr; publish</span><span class="pad-badge pad-badge--green">Sugarhead</span></a></li>
+              <li><a class="pad-entry" href="build-web/ws-home.html?tenancy=seeded"><span class="pad-entry-text">Signed-in workspace</span><span class="pad-badge pad-badge--gray">User testing</span></a></li>
             </ul>
           </div>
 
@@ -124,6 +120,6 @@
 
   </main>
 
-<script src="assets/pad.js?v=mtg8tt0q.j1"></script>
+<script src="assets/pad.js"></script>
 </body>
 </html>

@@ -278,6 +278,7 @@
     },
     render,
     bindPreview,
+    setDevice,
     url(id) {
       return `process-live.html?app=${encodeURIComponent(id)}`;
     },

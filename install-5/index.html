@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/dev-cache.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Prototype — EAI Setup, two-column</title>
@@ -12,17 +12,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/desktop.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/desktop.css" />
 <!-- The disk image and the base app skin are /install's. install-3.css
      is this version's own: the bigger window, the logo, the shadcn hover
      states, and the one-page form that replaces the click-through. -->
-<link rel="stylesheet" href="../assets/install.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/install-3.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/install.css" />
+<link rel="stylesheet" href="../assets/install-3.css" />
 <!-- Only the last screen differs, so this adds to install-3.css rather
      than replacing it. -->
-<link rel="stylesheet" href="../assets/install-4.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/setup-split.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/install-4.css" />
+<link rel="stylesheet" href="../assets/setup-split.css" />
 </head>
 <body>
 
@@ -92,7 +92,7 @@
       <div class="dl-pop" id="dlPop" hidden>
         <div class="dl-pop-hd">Downloads</div>
         <button class="dl-row" id="dlItem" type="button">
-          <span class="dl-ico"><img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="dl-ico"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
           <span class="dl-meta">
             <b>EAI-Setup.dmg</b>
             <i id="dlSize">84 MB</i>
@@ -116,21 +116,21 @@
 
       <div class="dmg-intro" id="dmgIntro">
         <span class="dmg-mark">
-          <img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+          <img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
         </span>
         <div class="dmg-hint" id="dmgHint">To install, drag <b>EAI Setup</b> to <b>Applications</b></div>
       </div>
 
       <div class="dmg-row" id="dmgRow">
         <div class="dmg-item" id="dmgApp">
-          <span class="tile"><img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="tile"><img src="../assets/logos/eai-mark-dark.svg" alt="" /></span>
           <span class="nm">EAI Setup</span>
         </div>
         <span class="arrow" aria-hidden="true">
           <svg viewBox="0 0 28 16" fill="none"><path d="M3 8h19M16.5 2.5 22.5 8l-6 5.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
         <div class="dmg-item" id="dmgApplications">
-          <span class="tile"><img src="../assets/logos/applications-folder.png?v=mtg8tt0q.j1" alt="" /></span>
+          <span class="tile"><img src="../assets/logos/applications-folder.png" alt="" /></span>
           <span class="nm">Applications</span>
         </div>
       </div>
@@ -167,7 +167,7 @@
              on the screen after this one, when the count is true. -->
         <div class="eai-screen" data-screen="start">
           <div class="setup-start">
-            <img class="setup-start-mark" src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+            <img class="setup-start-mark" src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
             <div class="setup-start-tx">
               <h3>Set up Enterprise AI</h3>
               <p>Sign in, pick a workspace, and we&rsquo;ll build your first app in its own folder. It takes about a minute.</p>
@@ -190,7 +190,7 @@
              uses. The list only appears when something in it failed —
              see FAILURES.prereq in the journey. -->
         <div class="eai-screen gap-8" data-screen="signin" hidden>
-          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" /></div>
+          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
 
           <div class="eai-head">
             <h3>Sign in to Enterprise AI</h3>
@@ -233,7 +233,7 @@
              I did just answer that" is a click worth deleting. The
              primary appears once the last answer lands. -->
         <div class="eai-screen gap-6" data-screen="setup" hidden>
-          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" /></div>
+          <div class="i3-brand"><img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" /></div>
 
           <div class="eai-head">
             <h3>Let's get set up</h3>
@@ -417,10 +417,10 @@
         <aside class="setup-split-art" aria-hidden="true">
           <div class="setup-shader" id="setupShader"></div>
           <div class="setup-art-center">
-            <img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+            <img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
           </div>
           <div class="setup-art-mark">
-            <img src="../assets/logos/eai-mark-dark.svg?v=mtg8tt0q.j1" alt="" />
+            <img src="../assets/logos/eai-mark-dark.svg" alt="" />
           </div>
         </aside>
       </div>
@@ -636,10 +636,10 @@
   // the onboarding study's question, not this one's.
   window.EAI_HOME = 'pages/home.html';
 </script>
-<script src="../assets/icons.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/desktop.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/install-4.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/setup-split.js?v=mtg8tt0q.j1"></script>
-<script type="module" src="../assets/setup-shader.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/icons.js"></script>
+<script src="../assets/desktop.js"></script>
+<script src="../assets/install-4.js"></script>
+<script src="../assets/setup-split.js"></script>
+<script type="module" src="../assets/setup-shader.js"></script>
 </body>
 </html>

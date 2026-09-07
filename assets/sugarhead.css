@@ -1,0 +1,982 @@
+/* ------------------------------------------------------------------
+   Sugarhead — brand step, mobile QR, publish success
+------------------------------------------------------------------- */
+
+/* Preview toolbar — three zones */
+.bd-sugarhead .bd-pv-bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.bd-mobile-qr {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.bd-mobile-qr svg { width: 14px; height: 14px; }
+
+/* Branded preview accents */
+.bd-pv-doc.bd-branded .bd-pv-hd {
+  background: var(--bd-brand-accent, var(--primary));
+  color: var(--bd-brand-ink, #fff);
+  border-color: transparent;
+}
+
+.bd-pv-doc.bd-branded .bd-pv-hd span { opacity: 0.85; }
+
+.bd-pv-doc.bd-branded .bd-pv-step.on .bd-pv-step-dot,
+.bd-pv-doc.bd-branded .bd-pv-step.done .bd-pv-step-ico {
+  background: var(--bd-brand-accent, var(--primary));
+  color: var(--bd-brand-ink, #fff);
+}
+
+.bd-pv-doc.bd-template .bd-pv-hd span::before {
+  content: 'Template · ';
+}
+
+/* Brand step */
+.bd-brand-step { margin-bottom: 8px; }
+
+.bd-pill-read,
+.bd-brand-step .bd-cl-hd span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground, #71717a);
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--muted, #f4f4f5);
+}
+
+.bd-brand-sub {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-brand-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 14px;
+}
+
+.bd-brand-hint {
+  margin: 8px 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-brand-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+}
+
+.bd-brand-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.bd-brand-card b { display: block; font-size: 14px; }
+.bd-brand-card span { font-size: 12px; color: var(--muted-foreground, #71717a); }
+
+.bd-brand-swatch {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bd-brand-acts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bd-brand-done {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bd-brand-done b { font-size: 13px; }
+.bd-brand-done span { font-size: 12px; color: var(--muted-foreground, #71717a); }
+
+/* QR dialog */
+.bd-qr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(9, 9, 11, 0.45);
+}
+
+.bd-qr-dialog {
+  position: relative;
+  width: min(380px, 100%);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: 0 24px 48px rgba(9, 9, 11, 0.18);
+}
+
+.bd-qr-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted-foreground, #71717a);
+  cursor: pointer;
+}
+
+.bd-qr-dialog h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bd-qr-lede {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-qr-canvas-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+}
+
+.bd-qr-url {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bd-qr-url-txt {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-qr-note {
+  margin: 0 0 12px;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-qr-regen,
+.bd-qr-empty button {
+  display: block;
+  margin: 0 auto;
+}
+
+.bd-qr-regen {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted-foreground, #71717a);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.bd-qr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  text-align: center;
+}
+
+.bd-qr-empty-ico {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--muted, #f4f4f5);
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-qr-empty p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted-foreground, #71717a);
+}
+
+/* Publish success */
+.bd-pub-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(9, 9, 11, 0.5);
+}
+
+.bd-pub-dialog {
+  width: min(420px, 100%);
+  padding: 28px 24px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  text-align: center;
+  box-shadow: 0 24px 48px rgba(9, 9, 11, 0.2);
+}
+
+.bd-pub-check {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.bd-pub-check svg { width: 24px; height: 24px; }
+
+.bd-pub-dialog h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.bd-pub-name {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bd-pub-lede {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted-foreground, #71717a);
+}
+
+.bd-pub-url {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.bd-pub-url input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+}
+
+.bd-pub-fork {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bd-pub-fork .nb-btn { width: 100%; justify-content: center; }
+
+.bd-pub-keep {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted-foreground, #71717a);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Preview mode banner on process-live */
+.ad-live.ad-preview-mode .ad-live-hd {
+  background: #fffbeb;
+  border-bottom-color: #fcd34d;
+}
+
+.ad-preview-banner {
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  border: 1px solid #fcd34d;
+  border-radius: var(--radius-md, 8px);
+  background: #fffbeb;
+  font-size: 12px;
+  font-weight: 500;
+  color: #92400e;
+}
+
+/* ------------------------------------------------------------------
+   Builder preview — marketing template dialog shell (mkt-site.css)
+------------------------------------------------------------------- */
+
+/* Plan phase: chat + marketing preview (not process-map workshop) */
+.bd-sugarhead:not(.bd-mvp-workshop) .bd-process-map {
+  display: none !important;
+}
+
+.bd-sugarhead .bd-preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.bd-sugarhead .bd-pv-scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.bd-sugarhead .bd-pv-frame {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: none !important;
+  margin: 0;
+}
+
+.bd-sugarhead .mkt-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  padding: 0 20px 16px;
+}
+
+.bd-sugarhead .mkt-workflow-preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.bd-sugarhead .mkt-wf-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.bd-sugarhead .mkt-wf-stage {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Lives in the preview toolbar now, beside Editor/Preview and the device
+   row — it is a thing you do to the preview, not to the project. */
+.bd-sugarhead .mkt-wf-bar .bd-mobile-qr {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid var(--mkt-border, #e4e4e7);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0a0a0a;
+  cursor: pointer;
+}
+
+.bd-sugarhead .mkt-wf-bar .bd-mobile-qr svg { width: 15px; height: 15px; }
+
+.bd-branded-preview .mkt-wf-stage.active {
+  background: var(--bd-brand-accent, #1c84e0);
+  border-color: var(--bd-brand-accent, #1c84e0);
+  color: var(--bd-brand-ink, #fff);
+}
+
+.bd-branded-preview .mkt-wf-stage.active .mkt-wf-stage-ring {
+  background: var(--bd-brand-ink, #fff);
+  border-color: var(--bd-brand-ink, #fff);
+  color: var(--bd-brand-accent, #1c84e0);
+}
+
+/* ------------------------------------------------------------------
+   Branded app — the brand reaches the surfaces, not just the buttons.
+
+   Following the template-flow prototype: the header bar is filled with
+   the accent rather than carrying a small chip of it, and the body sits
+   on the brand's wash instead of neutral grey. An accent that only ever
+   appears on the primary button reads as a theme setting; an accent that
+   the whole app is standing on reads as "this is ours".
+------------------------------------------------------------------- */
+
+.bd-branded-preview .mkt-app-chrome {
+  background: var(--bd-brand-accent, #1c84e0);
+  border-bottom-color: transparent;
+  color: var(--bd-brand-ink, #fff);
+}
+
+.bd-branded-preview .mkt-app-brand { color: var(--bd-brand-ink, #fff); }
+
+/* An initial needs a tile to sit on, and it can't be accent-on-accent, so
+   it inverts. A drawn mark needs neither — it goes straight on the bar in
+   the header's ink, as the template flow does with the swoosh. */
+.bd-branded-preview .mkt-app-brand-icon {
+  background: var(--bd-brand-ink, #fff) !important;
+  color: var(--bd-brand-accent, #1c84e0) !important;
+}
+
+.bd-branded-preview .mkt-app-brand-icon.has-logo {
+  background: none !important;
+  color: var(--bd-brand-ink, #fff) !important;
+}
+
+.bd-branded-preview .mkt-app-main {
+  background: var(--bd-brand-wash, #fafafa);
+}
+
+/* The form keeps a white card on the wash so fields stay legible. */
+.bd-branded-preview .mkt-app-section {
+  padding: 18px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid var(--mkt-border, #e4e4e7);
+  border-radius: 12px;
+}
+
+/* The assistant is app furniture too, so it sits on the wash rather than
+   staying a white column bolted to a branded app. */
+.bd-branded-preview .mkt-assistant {
+  background: var(--bd-brand-wash, #fafafa);
+  border-left-color: rgba(9, 9, 11, 0.06);
+}
+
+.bd-branded-preview .mkt-assistant-hd {
+  border-bottom-color: rgba(9, 9, 11, 0.06);
+}
+
+/* A grey bubble on a grey wash is no bubble at all — some brands (Nike's
+   #F5F5F5) wash out to almost exactly the bubble fill. White plus a hairline
+   reads on every wash without reintroducing the harsh ink block. */
+.bd-branded-preview .mkt-bubble-user {
+  background: #fff;
+  border: 1px solid rgba(9, 9, 11, 0.1);
+}
+
+.bd-branded-preview .mkt-app-actions {
+  background: var(--bd-brand-wash, #fafafa);
+  border-top-color: transparent;
+}
+
+.bd-sugarhead.bd-mvp-workshop .bd-preview {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------------
+   Preview fidelity — the builder's right panel is ~300px narrower than
+   the marketing dialog, so the same markup has to survive less room.
+   Give the panel more of the split, hold a floor under the assistant,
+   and let the stage row wrap instead of clipping its labels.
+------------------------------------------------------------------- */
+
+/* Plan phase: the chat is a confirm-and-continue column, not the work.
+   Reclaiming 160px puts the preview close to the marketing dialog. */
+.bd-sugarhead.bd-has-preview:not(.bd-mvp-workshop) .bd-chat {
+  width: min(440px, 38%);
+}
+
+/* min(320px, 34%) crushes to ~210px in the builder — unreadable bubbles
+   and a clipped composer. Floor it at the width the copy needs. */
+.bd-sugarhead .mkt-assistant {
+  width: min(300px, 40%);
+  min-width: 256px;
+}
+
+/* Four equal columns clip "Submit"/"Approval" below ~560px of app panel.
+   auto-fit holds the marketing single row while it fits, then folds to a
+   tidy 2x2 — a 3+1 orphan reads as a bug, so the floor is set above it. */
+.bd-sugarhead .mkt-wf-stages {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.bd-sugarhead .mkt-wf-stage {
+  padding: 10px 12px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.bd-sugarhead .mkt-app-main {
+  padding: 18px 20px 0;
+}
+
+/* ------------------------------------------------------------------
+   Builder chrome — no app shell before there is an account.
+
+   `build-web/builder.html` carries the `.bd-sugar-home` wordmark and the
+   `.nb-side` shell it inherited from /build, but never linked the
+   stylesheet that sizes them (assets/build-sugar-focus.css, which is
+   /build-sugar only and drags its own gopher branding along). So the
+   wordmark rendered at its natural 436px and the sidebar sat there
+   showing a workspace switcher and a credit meter to a guest — the
+   logged-in framing sugarhead exists to avoid.
+------------------------------------------------------------------- */
+
+.bd-sugarhead .nb-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Kept in the DOM, not removed: paintMeter() and paintAccount() still
+   write to #crBar, #wsName and friends, and should not have to care. */
+.bd-sugarhead .nb-side {
+  display: none !important;
+}
+
+.bd-sugarhead .bd-top {
+  padding-left: 24px;
+}
+
+.bd-sugarhead .bd-sugar-home {
+  display: flex;
+  align-items: center;
+  flex: none;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.bd-sugarhead .bd-sugar-home:hover { opacity: 1; }
+
+/* The mark, not the wordmark — 245px of lettering dominated a header whose
+   job is to get out of the way. */
+.bd-sugarhead .bd-sugar-home img {
+  display: block;
+  height: 22px;
+  width: auto;
+}
+
+/* ------------------------------------------------------------------
+   Left chat — composer matches the Paper design (Configurator →
+   "app view, editor, preview"): one bordered field with the send
+   button living inside it, not a bare textarea with a button beside.
+------------------------------------------------------------------- */
+
+.bd-sugarhead .bd-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  height: 46px;
+  margin: 16px 20px 20px;
+  padding: 0 6px 0 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.bd-sugarhead .bd-composer-row:focus-within { border-color: #a1a1aa; }
+
+.bd-sugarhead .bd-composer-row textarea {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  line-height: 44px;
+  color: #0a0a0a;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+}
+
+.bd-sugarhead .bd-composer-row textarea::placeholder { color: #9aa4ad; }
+
+.bd-sugarhead .bd-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #0a0a0a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.bd-sugarhead .bd-send svg { width: 16px; height: 16px; }
+.bd-sugarhead .bd-send:disabled { opacity: 0.35; cursor: default; }
+
+/* ------------------------------------------------------------------
+   Device toggles — change the preview width, no device bezel.
+
+   The frame is the viewport; the card inside it is what narrows, so the
+   app keeps its own internal layout rules instead of being scaled. The
+   assistant is a desktop affordance — on a phone the app is the whole
+   screen, so it steps out rather than squeezing to 100px.
+------------------------------------------------------------------- */
+
+.bd-sugarhead .bd-pv-frame[data-device='tablet'] .mkt-workflow-preview,
+.bd-sugarhead .bd-pv-frame[data-device='mobile'] .mkt-workflow-preview {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.bd-sugarhead .bd-pv-frame[data-device='tablet'] .mkt-workflow-preview {
+  max-width: 834px;
+}
+
+.bd-sugarhead .bd-pv-frame[data-device='mobile'] .mkt-workflow-preview {
+  max-width: 420px;
+}
+
+.bd-sugarhead .bd-pv-frame[data-device='mobile'] .mkt-assistant {
+  display: none;
+}
+
+/* Narrower device, higher floor: at 834px the 150px desktop floor yields
+   three columns and a 3+1 orphan row. Force the fold to a clean 2x2. */
+.bd-sugarhead .bd-pv-frame[data-device='tablet'] .mkt-wf-stages {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.bd-sugarhead .bd-pv-frame[data-device='mobile'] .mkt-wf-stages {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bd-sugarhead .bd-pv-frame[data-device='tablet'] .mkt-assistant {
+  width: min(280px, 34%);
+  min-width: 220px;
+}
+
+/* ------------------------------------------------------------------
+   Chat messages — Paper design (chat column of the Configurator frame).
+
+   The assistant speaks on the surface: no card, no bubble, no "AI"
+   avatar. Only the person's own words get a container, because only
+   they need distinguishing — whose turn it is is obvious without
+   chrome. Cards (process card, result chips) keep their border; they
+   are objects in the conversation, not speech.
+------------------------------------------------------------------- */
+
+.bd-sugarhead .bd-msg .bd-av {
+  display: none;
+}
+
+.bd-sugarhead .bd-msg.ai .bd-bub {
+  max-width: 100%;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #0a0a0a;
+}
+
+/* Black read as a primary button sitting in the transcript. Grey says
+   "you said this" without competing with anything actionable. */
+.bd-sugarhead .bd-msg.user .bd-bub {
+  background: #f4f4f5;
+  color: #18181b;
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.bd-sugarhead .bd-msg { padding: 9px 0; }
+
+/* ------------------------------------------------------------------
+   Setup card — ported from smart-blocks-config/template-flow, variation B
+   (`.clarify` + `.wsfields` + `.exp` + `.cfoot`).
+
+   Same markup and same class names as the source, scoped under
+   `.bd-setup-card` so bare names like `.q`, `.row` and `.count` cannot
+   collide with the builder's own CSS. It renders inside the chat log, in
+   the position the question was asked — it is a turn in the conversation,
+   not a tray bolted above the composer.
+------------------------------------------------------------------- */
+
+.bd-sugarhead .bd-setup-row { display: block; }
+
+.bd-sugarhead .bd-setup-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 100%;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid var(--border, #e4e4e7);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.bd-sugarhead .bd-setup-card .q {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+
+.bd-sugarhead .bd-setup-card .help {
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 18px;
+  color: #71717a;
+}
+
+.bd-sugarhead .bd-setup-card .wsfields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bd-sugarhead .bd-setup-card .wsf {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bd-sugarhead .bd-setup-card .wsf label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+
+.bd-sugarhead .bd-setup-card .wsin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--border, #e4e4e7);
+  border-radius: 8px;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.bd-sugarhead .bd-setup-card .wsin:focus-within {
+  border-color: #1c84e0;
+  box-shadow: 0 0 0 3px rgba(28, 132, 224, 0.12);
+}
+
+.bd-sugarhead .bd-setup-card .wsin input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: #0a0a0a;
+}
+
+.bd-sugarhead .bd-setup-card .wsin input::placeholder { color: #b4b2ab; }
+
+.bd-sugarhead .bd-setup-card .wsin .dom {
+  font-size: 11px;
+  color: #9a9891;
+  white-space: nowrap;
+}
+
+.bd-sugarhead .bd-setup-card .wshint {
+  font-size: 12px;
+  line-height: 18px;
+  color: #71717a;
+}
+
+.bd-sugarhead .bd-setup-card .wshint b { color: #0a0a0a; font-weight: 600; }
+
+/* The expansion panel — what we read, and everything you can change. */
+.bd-sugarhead .bd-setup-card .exp {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #fafafa;
+  border: 1px solid #f1f1f3;
+  border-radius: 8px;
+}
+
+.bd-sugarhead .bd-setup-card .exp .lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: #71717a;
+}
+
+.bd-sugarhead .bd-setup-card .row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: #0a0a0a;
+}
+
+.bd-sugarhead .bd-setup-card .row .grow { flex: 1; }
+.bd-sugarhead .bd-setup-card .muted { color: #71717a; }
+
+.bd-sugarhead .bd-setup-card .app-logo {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bd-sugarhead .bd-setup-card .swrow {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.bd-sugarhead .bd-setup-card .swrow button {
+  flex: 1;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #e4e2db;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bd-sugarhead .bd-setup-card .swrow button.sel {
+  outline: 2px solid #26251e;
+  outline-offset: 1px;
+}
+
+.bd-sugarhead .bd-setup-card .sw {
+  display: flex;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: #dcdcdc;
+  cursor: pointer;
+}
+
+.bd-sugarhead .bd-setup-card .sw i {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.bd-sugarhead .bd-setup-card .sw.on {
+  background: #1c84e0;
+  justify-content: flex-end;
+}
+
+.bd-sugarhead .bd-setup-card .cfoot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f1f3;
+}
+
+.bd-sugarhead .bd-setup-card .cfoot .count {
+  flex: 1;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: #71717a;
+}
+
+.bd-sugarhead .bd-setup-card .btn-skip {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: #71717a;
+  cursor: pointer;
+}
+
+.bd-sugarhead .bd-setup-card .btn-next {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #1c84e0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.bd-sugarhead .bd-setup-card .btn-next[disabled] {
+  background: #e4e4e4;
+  color: #a8a8a8;
+  cursor: not-allowed;
+}

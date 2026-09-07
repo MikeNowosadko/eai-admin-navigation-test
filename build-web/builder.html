@@ -4,7 +4,8 @@
 <meta charset="utf-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<script>(function(){if(/[?&]prod=1/.test(location.search))return;var V=Date.now().toString(36);window.__EAI_DEV_V=V;window.__EAI_asset=function(p){try{var u=new URL(p,location.href);if(!/(?:^|\/)assets\//.test(p))return p;u.searchParams.set('v',V);return u.pathname+u.search}catch(e){return p}};if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});if('caches' in window)caches.keys().then(function(k){return Promise.all(k.map(function(n){return caches.delete(n)}))});var n=Element.prototype.setAttribute;Element.prototype.setAttribute=function(a,v){if((a==='href'||a==='src')&&typeof v==='string'&&/(?:^|\/)assets\//.test(v)){try{var u=new URL(v,location.href);u.searchParams.set('v',V);v=u.pathname+u.search}catch(e){}}return n.call(this,a,v)};function b(el){if(!el||el.dataset.eaiBust)return;var h=el.getAttribute('href'),s=el.getAttribute('src');if(el.tagName==='LINK'&&h&&/(?:^|\/)assets\//.test(h)){el.setAttribute('href',window.__EAI_asset(h));el.dataset.eaiBust=1}if(el.tagName==='SCRIPT'&&s&&/(?:^|\/)assets\//.test(s)){el.setAttribute('src',window.__EAI_asset(s));el.dataset.eaiBust=1}}new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(node){if(node.nodeType===1){b(node);node.querySelectorAll&&node.querySelectorAll('link[rel=stylesheet],script[src]').forEach(b)}})})}).observe(document.documentElement,{childList:true,subtree:true});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('link[rel=stylesheet],script[src]').forEach(b)})})();</script>
+<script src="../assets/dev-cache.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/builder" />
@@ -12,15 +13,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/proto.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/signup.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/build.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/build-sugar-enter.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/build-web-app.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/build-web-mvp.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/signup.css" />
+<link rel="stylesheet" href="../assets/build.css" />
+<link rel="stylesheet" href="../assets/build-sugar-enter.css" />
+<link rel="stylesheet" href="../assets/build-web-app.css" />
+<link rel="stylesheet" href="../assets/mkt-site.css" />
+<link rel="stylesheet" href="../assets/build-web-mvp.css" />
+<link rel="stylesheet" href="../assets/sugarhead.css" />
 </head>
-<!-- /build-web — MVP builder. No smart blocks. -->
-<body class="nb bd-builder bd-web-app" data-bd-strip="off" data-bd-blocks="off">
+<!-- /build-web — MVP builder. Sugarhead: value before account. -->
+<!-- build: sugarhead-preview-mkt-v4 -->
+<body class="nb bd-builder bd-web-app bd-sugarhead bd-has-preview" data-bd-strip="off" data-bd-blocks="off" data-sugarhead="on">
 
   <div class="bd-enter" id="bdEnter" hidden>
     <div class="bd-enter-inner">
@@ -66,7 +70,7 @@
       <header class="bd-top">
         <div class="bd-crumbs">
           <a class="bd-sugar-home" href="index.html" title="Back to site">
-            <img src="../assets/logos/eai-wordmark.svg?v=mtg8tt0q.j1" alt="Enterprise AI" />
+            <img src="../assets/logos/eai-mark-dark.svg" alt="Enterprise AI" />
           </a>
           <span class="sep">/</span>
           <b id="bdProjectName">New process</b>
@@ -81,6 +85,10 @@
         </nav>
 
         <div class="bd-top-acts">
+          <button type="button" class="bd-mobile-qr" id="bdMobileQr" title="Preview on mobile">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 3h3v3h-3v-3zm3-3h3v3h-3v-3zM14 14h3v3h-3v-3z" stroke="currentColor" stroke-width="1.5"/></svg>
+            Mobile
+          </button>
           <button class="nb-btn" type="button" id="bdSuggest" hidden>Suggest improvements <i class="bd-cost">15</i></button>
           <button class="nb-btn primary" type="button" id="bdPublish" disabled>Publish <i class="bd-cost">10</i></button>
         </div>
@@ -92,33 +100,16 @@
           <div class="bd-log" id="bdLog"></div>
           <div class="bd-anchor" id="bdAnchor"></div>
           <div class="bd-composer-row">
-            <textarea id="bdSay" rows="3" placeholder="Describe a change&hellip;" autocomplete="off" disabled></textarea>
-            <div class="bd-composer-actions">
-              <button class="nb-btn primary" type="button" id="bdSend" disabled>Send <i class="bd-cost">10</i></button>
-            </div>
+            <textarea id="bdSay" rows="1" placeholder="Describe a change&hellip;" autocomplete="off" disabled></textarea>
+            <button class="bd-send" type="button" id="bdSend" aria-label="Send" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
         </section>
 
         <aside class="bd-process-map" id="bdProcessMap" aria-label="Process steps"></aside>
 
         <aside class="bd-preview" id="bdPreview">
-          <div class="bd-pv-bar">
-            <div class="bd-seg" id="bdMode">
-              <button type="button" class="on" data-mode="editor">Editor</button>
-              <button type="button" data-mode="preview">Preview</button>
-            </div>
-            <div class="bd-seg" id="bdDevice">
-              <button type="button" class="on" data-device="desktop" title="Desktop">
-                <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              </button>
-              <button type="button" data-device="tablet" title="Tablet">
-                <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-              </button>
-              <button type="button" data-device="mobile" title="Mobile">
-                <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-              </button>
-            </div>
-          </div>
           <div class="bd-pv-scroll"><div class="bd-pv-frame" id="bdFrame"></div></div>
         </aside>
       </div>
@@ -133,7 +124,7 @@
       </div>
 
       <div class="bd-wizard-panel bd-wizard-panel--signup" id="wizardStep1">
-        <p class="bd-wizard-lede" id="gateLede">Sign up to keep building</p>
+        <p class="bd-wizard-lede" id="gateLede">Sign in to publish your app</p>
         <div class="bd-wizard-field">
           <label for="gateEmail">Work email</label>
           <input type="email" id="gateEmail" autocomplete="email" inputmode="email" />
@@ -181,15 +172,17 @@
             <input type="text" id="wsNameInput" autocomplete="organization" />
           </div>
         </div>
-        <button class="bd-gate-go bd-wizard-submit" type="button" id="wsGo" disabled>Continue building</button>
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="wsGo" disabled>Continue to publish</button>
       </div>
     </div>
   </div>
 
-<script src="../assets/build-prompt.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/build-prompt.js"></script>
+<script src="../assets/page.js"></script>
 <script type="module">
-  import { playBuilderEnter } from '../assets/build-sugar-enter.js';
+  const v = window.__EAI_DEV_V || Date.now().toString(36);
+  const bust = window.__EAI_asset || ((p) => p);
+  const { playBuilderEnter } = await import(bust('../assets/build-sugar-enter.js'));
 
   const params = new URLSearchParams(location.search);
   const prompt = (params.get('prompt') || '').trim();
@@ -203,6 +196,76 @@
 
   boot();
 </script>
-<script src="../assets/build-sugar-builder.js?v=mtg8tt0q.j1"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="../assets/mkt-app-preview.js"></script>
+<!-- The inline duplicate of the MKT_APP_PREVIEW renderer that used to sit here is gone.
+     It was cache insurance for a bug that turned out to be a temporal-dead-zone throw in
+     build-sugar-builder.js, and keeping a second copy of the markup in sync by hand was a
+     standing drift risk. mkt-app-preview.js above is now the only renderer. -->
+<script>
+(function () {
+  if (document.body.dataset.sugarhead !== 'on' || !window.MKT_APP_PREVIEW) return;
+  var WF = [
+    { id: 'submit', tab: 'Submit', previewTitle: 'Supplier submits the invoice', previewSub: 'Replaces the email inbox — every invoice is tracked from the moment it arrives.', fields: [{ label: 'Supplier name', type: 'Text', req: true }, { label: 'Invoice document', type: 'File', req: true }] },
+    { id: 'review', tab: 'Review', previewTitle: 'Accounts checks it against the purchase order', previewSub: 'PO match status is visible before anyone approves.', fields: [{ label: 'PO match status', type: 'Select', req: true, opts: ['Matched'] }] },
+    { id: 'approval', tab: 'Approval', previewTitle: 'Finance director signs off anything over $10,000', previewSub: 'Routing and reminders are built into the step.', fields: [{ label: 'Approval decision', type: 'Select', req: true, opts: ['Approve'] }] },
+    { id: 'payment', tab: 'Payment', previewTitle: 'Payment is scheduled and the supplier is notified', previewSub: 'The supplier gets notified when payment is scheduled.', fields: [{ label: 'Payment date', type: 'Text', req: true }] },
+  ];
+  var params = new URLSearchParams(location.search);
+  var prompt = (params.get('prompt') || 'Invoice processing').trim();
+  var project = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+  window.__BD_WORKFLOW__ = WF;
+  window.__BD_PROJECT__ = project;
+
+  function paintStep(step) {
+    var PL = window.MKT_APP_PREVIEW;
+    var frame = document.getElementById('bdFrame');
+    if (!PL || !frame) return;
+    var app = PL.workflowToApp(WF, step, project);
+    frame.innerHTML = PL.render(app, { activeStep: step, interactive: true });
+    PL.bind(frame, { onStep: paintStep });
+  }
+
+  paintStep(0);
+})();
+</script>
+<script src="../assets/brand-match.js"></script>
+<script src="../assets/preview-qr-dialog.js"></script>
+<script src="../assets/publish-success.js"></script>
+<script src="../assets/build-sugar-builder.js"></script>
+<script>
+/* Safety net — if a stale build-sugar-builder.js painted the legacy pill preview, replace it. */
+(function () {
+  if (document.body.dataset.sugarhead !== 'on') return;
+
+  function paintMkt(step) {
+    var PL = window.MKT_APP_PREVIEW;
+    var frame = document.getElementById('bdFrame');
+    var wf = window.__BD_WORKFLOW__;
+    if (!PL || !frame || !wf || !wf.length) return false;
+    var app = PL.workflowToApp(wf, step, window.__BD_PROJECT__ || 'Your process');
+    frame.innerHTML = PL.render(app, { activeStep: step, interactive: true });
+    PL.bind(frame, {
+      onStep: function (i) { paintMkt(i); },
+    });
+    return true;
+  }
+
+  function tryFix() {
+    var frame = document.getElementById('bdFrame');
+    if (!frame) return;
+    if (frame.querySelector('.mkt-workflow-preview')) return;
+    if (frame.querySelector('.bd-pv-mvp') || !frame.innerHTML.trim()) paintMkt(0);
+  }
+
+  tryFix();
+  document.addEventListener('bd-enter-done', tryFix);
+  var n = 0;
+  var t = setInterval(function () {
+    tryFix();
+    if (++n > 40 || document.getElementById('bdFrame')?.querySelector('.mkt-workflow-preview')) clearInterval(t);
+  }, 150);
+})();
+</script>
 </body>
 </html>

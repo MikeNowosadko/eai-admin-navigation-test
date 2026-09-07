@@ -89,6 +89,12 @@ const smartBlocks = params.get('blocks') === '1'
   || params.get('variant') === 'blocks'
   || document.body.dataset.bdBlocks === 'on';
 
+/** Sugarhead — value before account; sign-in only at publish. */
+const sugarhead = document.body.dataset.sugarhead === 'on'
+  || params.get('flow') === 'sugarhead';
+
+if (sugarhead) document.body.classList.add('bd-sugarhead');
+
 const state = {
   prompt: (params.get('prompt') || 'a new business process').trim(),
   ws: params.get('ws') || 'Preview',
@@ -108,6 +114,10 @@ const state = {
   continuing: false,
   activeStep: 0,
   expandedStep: 0,
+  branded: false,
+  generated: false,
+  brandKey: 'none',
+  device: 'desktop',
 };
 
 const $ = (id) => document.getElementById(id);
@@ -118,6 +128,10 @@ const sentence = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 /* What somebody typed is the name of the thing. Asking them to name it
    again, having just described it, is a question with one answer. */
 const projectName = sentence(state.prompt);
+
+/* The live QR button, moved into the preview toolbar on every repaint. */
+let mobileQrBtn = null;
+
 
 /* ====================== the workflow it builds ===================== */
 
@@ -236,6 +250,14 @@ const WORKFLOW_MVP = [
 
 const WORKFLOW = smartBlocks ? WORKFLOW_BLOCKS : WORKFLOW_MVP;
 
+/* Exposed for the inline preview painter in builder.html. Must come after
+   WORKFLOW is declared — reading it earlier throws on the temporal dead
+   zone and kills the whole script. */
+if (sugarhead) {
+  window.__BD_WORKFLOW__ = WORKFLOW;
+  window.__BD_PROJECT__ = projectName;
+}
+
 if (smartBlocks) document.body.classList.add('bd-has-blocks');
 else document.body.classList.add('bd-no-blocks');
 
@@ -257,7 +279,9 @@ function paintMeter() {
     ? 'Out of credits'
     : state.credits <= 50
       ? `About ${state.credits >= 40 ? 'one more workflow' : 'half a workflow'} left`
-      : state.authed ? 'Builder preview · free' : `${AUTH_CREDITS_USED} free · no account yet`;
+      : state.authed ? 'Builder preview · free'
+        : sugarhead ? 'Preview · no account yet'
+          : `${AUTH_CREDITS_USED} free · no account yet`;
 }
 
 function paintAccount() {
@@ -376,8 +400,11 @@ function authRequiredFor(cost) {
   return !state.authed && creditsUsed() + cost > AUTH_CREDITS_USED;
 }
 
-function requireAuth(cost, resume) {
-  if (state.authed || !authRequiredFor(cost)) return true;
+function requireAuth(cost, resume, { atPublish = false } = {}) {
+  if (state.authed) return true;
+  /* Sugarhead: delay sign-in until publish — let them see full value first. */
+  if (sugarhead && !atPublish) return true;
+  if (!sugarhead && !authRequiredFor(cost)) return true;
   state.pendingAuth = resume;
   showAuthGate();
   return false;
@@ -393,7 +420,7 @@ function charge(kind) {
 }
 
 async function maybeAuthNudge() {
-  if (state.authed || state.authNudgeShown || creditsUsed() < AUTH_CREDITS_USED) return;
+  if (sugarhead || state.authed || state.authNudgeShown || creditsUsed() < AUTH_CREDITS_USED) return;
   state.authNudgeShown = true;
   await wait(400);
   await say('That\'s the free preview — sign in when you\'re ready to keep going. Your workflow stays here.');
@@ -679,18 +706,90 @@ function mvpStepperHtml(index) {
   return `<div class="bd-pv-stepper" role="group" aria-label="Form steps">${steps}</div>`;
 }
 
+function brandedPreviewClasses() {
+  const cls = ['bd-pv-doc', 'bd-pv-mvp'];
+  if (sugarhead && !state.generated) cls.push('bd-template');
+  if (state.branded) cls.push('bd-branded');
+  return cls.join(' ');
+}
+
+function applyBrandToPreviewFrame() {
+  const frame = $('bdFrame');
+  if (!frame || !window.BrandMatch) return;
+  window.BrandMatch.applyBrandVars(frame);
+  /* The brand step promises "the preview is already wearing it", so the
+     preview follows whatever is currently active — not just what has been
+     committed. Picking a swatch has to show up immediately or the promise
+     is a lie. */
+  const live = window.BrandMatch.getActiveBrand?.();
+  const branded = state.branded || !!(live && live.key && live.key !== 'none');
+  document.body.classList.toggle('bd-branded-preview', branded);
+}
+
 function paintMvpPreviewStep(index) {
+  if (sugarhead && !smartBlocks) return paintMktPreviewStep(index);
+  return paintLegacyMvpPreviewStep(index);
+}
+
+function paintTemplatePreview() {
+  if (!sugarhead || smartBlocks) return;
+  document.body.classList.add('bd-has-preview');
+  state.activeStep = 0;
+  paintMktPreviewStep(0);
+}
+
+function paintMktPreviewStep(index) {
+  const PL = window.MKT_APP_PREVIEW;
+  if (!PL) {
+    console.error('[sugarhead] MKT_APP_PREVIEW missing');
+    return;
+  }
+
+  const brand = window.BrandMatch?.getActiveBrand?.();
+  const app = PL.workflowToApp(WORKFLOW, index, projectName);
+  const frame = $('bdFrame');
+  frame.dataset.device = state.device;
+  frame.innerHTML = PL.render(app, {
+    activeStep: index,
+    brand,
+    interactive: true,
+    device: state.device,
+    mobileSlot: true,
+  });
+  /* The QR button is wired once at boot, so it is moved into each freshly
+     painted toolbar rather than re-rendered and re-bound. Held by reference,
+     not by id — repainting the frame detaches it from the document. */
+  const slot = frame.querySelector('.mkt-wf-mobile-slot');
+  if (slot && mobileQrBtn) slot.replaceWith(mobileQrBtn);
+  PL.bind(frame, {
+    onStep: (i) => {
+      state.activeStep = i;
+      state.expandedStep = i;
+      paintMktPreviewStep(i);
+      if (!sugarhead) paintProcessMap();
+    },
+    onDevice: (d) => {
+      state.device = d;
+      paintMktPreviewStep(state.activeStep);
+    },
+  });
+  applyBrandToPreviewFrame();
+}
+
+function paintLegacyMvpPreviewStep(index) {
   const step = WORKFLOW[index];
   if (!step) return;
   state.activeStep = index;
 
   const extra = state.extraFields.filter((f) => f.stepId === step.id);
   const fields = [...step.fields, ...extra].map(mvpFieldHtml).join('');
+  const brand = window.BrandMatch?.getActiveBrand?.();
+  const title = state.branded && brand && brand.key !== 'none' ? brand.name : projectName;
 
   $('bdFrame').innerHTML = `
-    <div class="bd-pv-doc bd-pv-mvp">
+    <div class="${brandedPreviewClasses()}">
       <div class="bd-pv-hd">
-        <b>${esc(projectName)}</b>
+        <b>${esc(title)}</b>
         <span>${state.published ? 'Published · anyone with the link' : 'Draft · only you'}</span>
       </div>
       <div class="bd-pv-body">
@@ -705,6 +804,8 @@ function paintMvpPreviewStep(index) {
       </div>
       <span class="bd-pv-watermark">MVP · prototype</span>
     </div>`;
+
+  applyBrandToPreviewFrame();
 
   $('bdFrame').querySelectorAll('.bd-pv-step').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -765,11 +866,15 @@ function paintProcessMap() {
 
 function enterMvpWorkshop() {
   document.body.classList.add('bd-has-preview', 'bd-mvp-workshop');
+  state.generated = true;
   state.activeStep = 0;
   state.expandedStep = 0;
   paintProcessMap();
   paintMvpPreviewStep(0);
   $('bdProjectName').textContent = projectName;
+  /* The chat keeps its scroll height from before the layout changed, so the
+     newest message ends up above the fold in the shorter workshop panel. */
+  requestAnimationFrame(scroll);
 }
 
 function fieldRow(f) {
@@ -934,6 +1039,21 @@ async function generate() {
   const cost = charge('generate');
   await thinking(700);
 
+  /* Sugarhead shows the app itself, not a description of it. No process
+     map, no build-progress theatre, no summary card — the preview on the
+     right has been the answer since the first paint. */
+  if (sugarhead) {
+    state.generated = true;
+    await say('Done — it\'s wearing your brand. Try the steps and the device sizes on the right, then publish when it looks right.', cost);
+    paintMktPreviewStep(state.activeStep);
+    setStep('improve');
+    $('bdPublish').disabled = false;
+    $('bdSay').disabled = false;
+    $('bdSend').disabled = false;
+    $('bdSay').placeholder = 'Describe a change…';
+    return;
+  }
+
   if (!smartBlocks) {
     await say('Here\'s your workflow — expand each step to see the problem, solution, and impact. The form preview updates as you go.', cost);
     enterMvpWorkshop();
@@ -1032,9 +1152,25 @@ async function run() {
   paintAccount();
   document.title = `Prototype — ${projectName}`;
 
+  if (sugarhead) paintTemplatePreview();
+
   /* The prompt is already the first message. On /build-sugar nobody
      signed up to get here — they typed on the homepage and landed. */
   bubble('user', esc(state.prompt));
+
+  /* Sugarhead is five beats: they type, we show the app, we ask for the
+     email that brands it, they try it, they publish. The business process
+     card and the three clarify questions were both interrogations standing
+     between somebody and the thing they asked for — the app on the right
+     already answers "did you understand me?" better than a card could. */
+  if (sugarhead) {
+    await thinking(900);
+    const understood = charge('understand');
+    await say(`Here's ${state.prompt} as a working app — it's on the right.`, understood);
+    await wait(300);
+    await brandThenGenerate();
+    return;
+  }
 
   await thinking(1100);
   const cost = charge('understand');
@@ -1083,6 +1219,24 @@ async function run() {
     bu.querySelector('.acts').innerHTML = '<span class="bd-confirmed">Confirmed</span>';
     await continueAfterConfirm();
   });
+}
+
+/** Ask for the work email, dress the preview in that brand, then build. */
+async function brandThenGenerate() {
+  setStep('generate');
+  if (window.BrandMatch) {
+    await say('One thing — your work email, so it can wear your colours and logo.');
+    /* The card lands in the transcript where the question was asked, not
+       pinned above the composer: it is a turn in the conversation. */
+    const r = await window.BrandMatch.askInChat(log(), esc, () => paintTemplatePreview());
+    state.brandKey = r.brandKey;
+    state.branded = r.brandKey !== 'none';
+    state.email = r.email || state.email;
+    if (r.workspace) state.ws = r.workspace;
+    paintTemplatePreview();
+    scroll();
+  }
+  await generate();
 }
 
 async function continueAfterConfirm() {
@@ -1157,17 +1311,46 @@ async function suggest() {
   await afterTurn();
 }
 
+function publicUrl() {
+  const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24);
+  return `forms.enterpriseaigroup.com/n/${slug}`;
+}
+
 async function publish() {
   if (state.busy) return;
-  if (state.credits < PRICE.publish) { costFork(); return; }
-  if (!requireAuth(PRICE.publish, () => publish())) return;
+  if (state.credits < PRICE.publish && !sugarhead) { costFork(); return; }
+  if (!requireAuth(PRICE.publish, () => publish(), { atPublish: true })) return;
   state.busy = true;
-  const cost = charge('publish');
+  const cost = sugarhead ? 0 : charge('publish');
   await thinking(900);
   state.published = true;
   paintPreview();
   setStep('publish');
   $('bdPublish').textContent = 'Republish';
+  const url = publicUrl();
+  if (sugarhead && window.showPublishSuccess) {
+    state.busy = false;
+    window.showPublishSuccess({
+      projectName,
+      publicUrl: url,
+      onManage: () => {
+        location.href = window.bdCarry('ws-home.html', {
+          tenancy: 'seeded',
+          email: state.email,
+          ws: state.ws,
+        });
+      },
+      onCli: () => {
+        location.href = window.bdCarry('ws-cli.html', {
+          email: state.email,
+          ws: state.ws,
+          project: projectName,
+        });
+      },
+      onKeepEditing: () => {},
+    });
+    return;
+  }
   await say('Published. It\'s on a link you can send to anybody, and every submission is logged against your workspace.', cost);
   state.busy = false;
   await afterTurn();
@@ -1221,17 +1404,28 @@ function syncWorkspaceGo() {
 
 let signedUpEmail = '';
 
+function prefillAuthGate() {
+  /* The setup card already collected both of these. Asking again at publish
+     would be the same question twice in one flow. */
+  if (state.email && !$('gateEmail').value) $('gateEmail').value = state.email;
+  if (state.ws && state.ws !== 'Preview') $('wsNameInput').value = state.ws;
+  $('gateGo').disabled = !validEmail($('gateEmail').value);
+}
+
 function showAuthGate() {
   const gate = $('authGate');
   const lede = $('gateLede');
   if (lede) {
-    lede.textContent = creditsUsed() >= AUTH_CREDITS_USED
-      ? 'Sign in to keep building'
-      : 'Sign up to save your work';
+    lede.textContent = sugarhead
+      ? 'Sign in to publish your app'
+      : creditsUsed() >= AUTH_CREDITS_USED
+        ? 'Sign in to keep building'
+        : 'Sign up to save your work';
   }
   gate.hidden = false;
   document.body.classList.add('bd-gate');
   showSignUpPanel();
+  prefillAuthGate();
   $('gateEmail').focus();
 }
 
@@ -1357,7 +1551,6 @@ document.querySelectorAll('#bdMode button, #bdDevice button').forEach((b) => {
     const group = b.parentElement;
     group.querySelectorAll('button').forEach((x) => x.classList.remove('on'));
     b.classList.add('on');
-    if (b.dataset.device) $('bdFrame').dataset.device = b.dataset.device;
     if (b.dataset.mode) document.body.dataset.mode = b.dataset.mode;
   });
 });
@@ -1379,7 +1572,40 @@ document.querySelectorAll('[data-keep]').forEach((a) => {
 
 wireAuthGate();
 
+function sugarheadPreviewUrl(token) {
+  const brand = window.BrandMatch?.getActiveBrand?.();
+  const qs = new URLSearchParams({
+    preview: '1',
+    app: 'invoice-processing',
+    name: projectName,
+    t: token || '',
+  });
+  if (brand && brand.key !== 'none') {
+    qs.set('brand', brand.name);
+    qs.set('accent', brand.accent);
+    qs.set('initial', brand.initial);
+    if (brand.ink) qs.set('ink', brand.ink);
+  }
+  const base = `${location.origin}${location.pathname.replace(/[^/]+$/, '')}process-live.html`;
+  return `${base}?${qs}`;
+}
+
+function wireSugarheadExtras() {
+  const btn = $('bdMobileQr');
+  if (!btn) return;
+  mobileQrBtn = btn;
+  if (!window.initPreviewQr) return;
+  window.initPreviewQr({
+    button: btn,
+    getUrl: (token) => sugarheadPreviewUrl(token),
+  });
+}
+
 function bootBuilder() {
+  if (sugarhead) {
+    wireSugarheadExtras();
+    paintTemplatePreview();
+  }
   void run();
 }
 

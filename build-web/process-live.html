@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/dev-cache.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/processes/live" />
@@ -12,12 +12,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
-<link rel="stylesheet" href="../assets/mkt-site.css?v=mtg8tt0q.j1" />
+<link rel="stylesheet" href="../assets/admin.css" />
+<link rel="stylesheet" href="../assets/mkt-site.css" />
+<link rel="stylesheet" href="../assets/sugarhead.css" />
 </head>
-<body class="ad ad-live">
+<body class="ad ad-live" id="liveBody">
 
-<header class="ad-live-hd">
+<header class="ad-live-hd" id="liveHd">
   <a class="ad-live-back" href="ws-processes.html" id="backLink">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     All processes
@@ -31,17 +32,19 @@
 
 <main class="ad-live-main" id="preview"></main>
 
-<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
-<script src="../assets/admin-process-live.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/page.js"></script>
+<script src="../assets/admin-analytics.js"></script>
+<script src="../assets/admin-data.js"></script>
+<script src="../assets/admin-process-live.js"></script>
 <script>
   (function () {
     const qs = new URLSearchParams(location.search);
+    const isPreview = qs.get('preview') === '1';
     const id = qs.get('app') || 'candidate-screening';
     const D = window.ADMIN;
     const PL = window.AD_PROCESS_LIVE;
     const preview = document.getElementById('preview');
+    const body = document.getElementById('liveBody');
 
     if (!D || !PL) {
       preview.innerHTML =
@@ -52,24 +55,55 @@
     const p = D.process(id);
     const live = PL.forProcess(id);
 
-    if (!p || !live) {
+    if (!live) {
       preview.innerHTML =
-        '<div class="ad-live-miss"><p>That process doesn’t have a live preview in this prototype.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
+        '<div class="ad-live-miss"><p>That process doesn&rsquo;t have a live preview in this prototype.</p><a class="ad-btn" href="ws-processes.html">Back to processes</a></div>';
       return;
     }
 
-    document.title = `Prototype — ${p.name} · Enterprise AI`;
-    document.getElementById('pName').textContent = p.name;
-    const badge = document.getElementById('pBadge');
-    badge.className = `ad-badge ${p.live ? 'green' : 'amber'}`;
-    badge.innerHTML = `<i class="dot"></i>${p.status}`;
-    if (p.live && p.url && p.url !== '—') {
-      document.getElementById('pUrl').textContent = p.url;
-    }
-    preview.innerHTML = PL.render(live.app, live.brand);
-    PL.bindPreview(preview);
+    const brand = Object.assign({}, live.brand);
+    if (qs.get('brand')) brand.name = qs.get('brand');
+    if (qs.get('initial')) brand.initial = qs.get('initial');
+    if (qs.get('accent')) brand.accent = qs.get('accent');
+    if (qs.get('ink')) brand.ink = qs.get('ink');
 
-    /* Return to the page we came from when possible. */
+    const displayName = qs.get('name') || (p && p.name) || live.app.title;
+
+    if (isPreview) {
+      body.classList.add('ad-preview-mode');
+      document.getElementById('liveHd').hidden = true;
+      document.title = `Preview — ${displayName}`;
+    } else if (p) {
+      document.title = `Prototype — ${p.name} · Enterprise AI`;
+      document.getElementById('pName').textContent = p.name;
+      const badge = document.getElementById('pBadge');
+      badge.className = `ad-badge ${p.live ? 'green' : 'amber'}`;
+      badge.innerHTML = `<i class="dot"></i>${p.status}`;
+      if (p.live && p.url && p.url !== '—') {
+        document.getElementById('pUrl').textContent = p.url;
+      }
+    }
+
+    preview.innerHTML = isPreview
+      ? `<div class="ad-preview-banner">Preview — this workflow isn&rsquo;t published yet and responses won&rsquo;t be saved.</div>${PL.render(live.app, brand)}`
+      : PL.render(live.app, brand);
+
+    if (brand.accent) {
+      const style = document.createElement('style');
+      style.textContent = `
+        .mkt-app-brand-icon { background: ${brand.accent} !important; color: ${brand.ink || '#fff'} !important; }
+        .mkt-browse-btn, .mkt-app-actions .go { background: ${brand.accent} !important; color: ${brand.ink || '#fff'} !important; }
+        .mkt-wf-stage.active .mkt-wf-stage-ring { background: ${brand.accent} !important; color: ${brand.ink || '#fff'} !important; }
+      `;
+      document.head.appendChild(style);
+    }
+
+    PL.bindPreview(preview);
+    if (isPreview) {
+      const wrap = preview.querySelector('.ad-process-preview') || preview;
+      PL.setDevice(wrap, 'mobile');
+    }
+
     const ref = document.referrer;
     if (ref && /\/build-web\//.test(ref)) {
       try {

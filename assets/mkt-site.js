@@ -10,10 +10,6 @@ const DEPT_COLORS = {
   Risk: { bg: '#FEE2E2', color: '#B91C1C' },
 };
 
-const SPARKLE = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l1.4 4.6L18 8l-4.6 1.4L12 14l-1.4-4.6L6 8l4.6-1.4L12 2zM5 16l.8 2.6L8.4 19l-2.6.8L5 22.4l-.8-2.6L1.6 19l2.6-.8L5 16zM19 14l.6 2L21.6 17l-2 .6L19 19.6l-.6-2-2-.6 2-.6.6-2z" fill="currentColor"/></svg>';
-const UPLOAD = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const ARROW = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-
 const TEMPLATES = {
   rfi: {
     id: 'rfi',
@@ -210,6 +206,19 @@ function signupTarget(prompt) {
   return q ? `${base}?${q}` : base;
 }
 
+/** Sugarhead — prompt goes straight to the builder; sign-in waits until publish. */
+function sugarheadFlow() {
+  return document.body.dataset.mktSugarhead === '1';
+}
+
+function goFromPrompt(prompt) {
+  if (sugarheadFlow()) {
+    goBuilder(prompt);
+    return;
+  }
+  if (!goSignup(prompt)) goBuilder(prompt);
+}
+
 function goSignup(prompt) {
   const href = signupTarget(prompt);
   if (!href) return false;
@@ -235,78 +244,7 @@ function renderSteps(steps) {
 }
 
 function renderAppPreview(app) {
-  const stages = app.tabs.map((t, i) => {
-    const active = i === 0;
-    return `
-      <div class="mkt-wf-stage${active ? ' active' : ''}">
-        <span class="mkt-wf-stage-ring">${active ? String(i + 1) : '○'}</span>
-        ${t}
-      </div>
-    `;
-  }).join('');
-
-  const msgs = app.messages.map(([role, text]) => `
-    <div class="mkt-bubble mkt-bubble-${role}">${text}</div>
-  `).join('');
-
-  return `
-    <div class="mkt-preview-wrap">
-      <div class="mkt-workflow-preview">
-        <div class="mkt-wf-bar">
-          <span class="mkt-wf-bar-title">Workflow Preview</span>
-          <div class="mkt-wf-bar-spacer"></div>
-          <div class="mkt-seg-tabs mkt-seg-tabs-sm">
-            <button type="button">Editor</button>
-            <button type="button" class="on">Preview</button>
-          </div>
-          <div class="mkt-app-devices">
-            <span class="on" title="Desktop">▭</span>
-            <span title="Tablet">▢</span>
-            <span title="Mobile">▯</span>
-          </div>
-        </div>
-        <div class="mkt-wf-body">
-          <div class="mkt-app-panel">
-            <div class="mkt-app-chrome">
-              <div class="mkt-app-brand">
-                <span class="mkt-app-brand-icon">A</span>
-                Adaptovate
-              </div>
-            </div>
-            <div class="mkt-app-main">
-              <h3 class="mkt-app-title">${app.title}</h3>
-              <div class="mkt-wf-stages">${stages}</div>
-              <div class="mkt-app-section">
-                <h4>${app.sectionTitle}</h4>
-                <p>${app.sectionDesc}</p>
-                <label>${app.fieldLabel}</label>
-                <div class="mkt-upload-zone">
-                  <div class="mkt-upload-icon">${UPLOAD}</div>
-                  <b>${app.uploadTitle}</b>
-                  <span>${app.uploadHint}</span>
-                  <button class="mkt-browse-btn" type="button">Browse files</button>
-                </div>
-              </div>
-            </div>
-            <div class="mkt-app-actions">
-              <button class="back" type="button" disabled>Back</button>
-              <button class="go" type="button">${app.actionLabel} ${ARROW}</button>
-            </div>
-          </div>
-          <aside class="mkt-assistant">
-            <div class="mkt-assistant-hd">${SPARKLE} Assistant</div>
-            <div class="mkt-assistant-body">
-              <p class="mkt-assistant-intro">${app.assistantIntro}</p>
-              <div class="mkt-assistant-msgs">${msgs}</div>
-            </div>
-            <div class="mkt-assistant-ft">
-              <input type="text" placeholder="Ask about your results…" readonly />
-              <button class="mkt-assistant-send" type="button" aria-label="Send">${ARROW}</button>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </div>`;
+  return window.MKT_APP_PREVIEW?.render(app, { activeStep: 0 }) || '';
 }
 
 function openPreview(id) {
@@ -372,7 +310,7 @@ if (useTemplateBtn) {
 document.querySelectorAll('button[data-mkt-start]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const prompt = promptInput?.value?.trim();
-    if (!goSignup(prompt)) goBuilder(prompt);
+    goFromPrompt(prompt);
   });
 });
 
@@ -416,7 +354,7 @@ if (mktForm) {
       promptInput?.focus();
       return;
     }
-    if (!goSignup(v)) goBuilder(v);
+    goFromPrompt(v);
   });
 }
 
