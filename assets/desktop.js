@@ -591,6 +591,7 @@ function safePath(url) {
 const browser = {
   history: [],
   at: -1,
+  iframeAdDepth: 0,
 
   go(url, { push = true } = {}) {
     const path = safePath(url);
@@ -611,7 +612,16 @@ const browser = {
 };
 
 document.getElementById('browBack').addEventListener('click', () => {
-  if (browser.at > 0) { browser.at -= 1; browser.go(browser.history[browser.at], { push: false }); }
+  if (browser.at <= 0) return;
+  try {
+    const doc = desktop.frame.contentDocument;
+    if (doc?.body?.dataset?.adShell && browser.iframeAdDepth > 0) {
+      desktop.frame.contentWindow.postMessage({ eai: true, action: 'ad-history-back' }, '*');
+      return;
+    }
+  } catch (err) { /* cross-origin */ }
+  browser.at -= 1;
+  browser.go(browser.history[browser.at], { push: false });
 });
 document.getElementById('browFwd').addEventListener('click', () => {
   if (browser.at < browser.history.length - 1) { browser.at += 1; browser.go(browser.history[browser.at], { push: false }); }
@@ -681,10 +691,18 @@ window.addEventListener('message', (e) => {
     desktop.titleBar.textContent = String(msg.nav.title || 'Safari');
     const current = browser.history[browser.at];
     const file = msg.nav.file && safePath(msg.nav.file);
-    if (file && file !== current) {
+    const nextDepth = typeof msg.nav.adDepth === 'number' ? msg.nav.adDepth : null;
+
+    if (nextDepth !== null && nextDepth < browser.iframeAdDepth && browser.at > 0) {
+      browser.at -= 1;
+      browser.iframeAdDepth = nextDepth;
+    } else if (file && file !== current) {
       browser.history = browser.history.slice(0, browser.at + 1);
       browser.history.push(file);
       browser.at = browser.history.length - 1;
+      if (nextDepth !== null) browser.iframeAdDepth = nextDepth;
+    } else if (nextDepth !== null) {
+      browser.iframeAdDepth = nextDepth;
     }
   }
 

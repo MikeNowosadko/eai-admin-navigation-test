@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js?v=mtg8tt0q.j1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/resources" />
+<title>Prototype — Resources · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=mtg8tt0q.j1" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="resources">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Resources</h1>
+      <p>Connections and infrastructure allocated to this app from the workspace.</p>
+    </div>
+  </div>
+
+  <div class="ad-c pad" style="margin-top:24px;">
+    <div id="resources"></div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
+  const appId = app.id;
+  const allocated = D.resourcesFor(appId);
+  const resourcesEl = document.getElementById('resources');
+
+  document.title = `Prototype — Resources · ${app.name}`;
+
+  if (allocated.length) {
+    resourcesEl.innerHTML = `
+      <div class="ad-c" style="margin-top:0;border-radius:8px;box-shadow:none;">
+        ${allocated.map((r, i) => `
+          <div class="ad-c-row"${i ? '' : ' style="border-top:0;"'}>
+            <div class="tx"><b>${r.name}</b><span>${r.detail}</span></div>
+            <span class="ad-badge grey">${r.type}</span>
+          </div>`).join('')}
+      </div>
+      <p style="margin:12px 0 0;font-size:12px;color:var(--ad-mute);">Resources are managed in <a href="ws-settings.html?tab=resources" style="color:var(--ad-blue);font-weight:500;text-decoration:none;">workspace settings</a>.</p>`;
+  } else {
+    resourcesEl.innerHTML = `
+      <div class="ad-resource-empty">
+        <p><b>No resources allocated</b></p>
+        <p>This app doesn&rsquo;t have any workspace resources yet. Add them in workspace settings, then allocate them to this app.</p>
+        <a class="ad-btn" href="ws-settings.html?tab=resources">Add resources in workspace settings</a>
+        <span class="perm">Don&rsquo;t have permission? Message your administrator or ask for permission.</span>
+      </div>`;
+  }
+</script>
+</body>
+</html>

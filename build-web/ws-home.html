@@ -17,11 +17,11 @@
 <body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-mode="ncb" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
 
 <div id="adPane">
-  <h1 class="ad-home-h1">Let&apos;s build a process</h1>
+  <h1 class="ad-home-h1">Let&apos;s build an app</h1>
 
   <form class="ad-composer" id="composer" autocomplete="off">
-    <label class="ad-sr" for="prompt">Describe the process you want to build</label>
-    <input id="prompt" type="text" placeholder="Describe the process you want to build, or bring an existing one in…" />
+    <label class="ad-sr" for="prompt">Describe the app you want to build</label>
+    <input id="prompt" type="text" placeholder="Describe the app you want to build, or bring an existing one in…" />
     <div class="ft">
       <button type="button" data-stub aria-label="Attach a file">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13.2 20.3a4.5 4.5 0 0 1-6.4-6.4l8.5-8.5a3 3 0 0 1 4.3 4.3l-8.6 8.5a1.5 1.5 0 0 1-2.1-2.1l7.9-7.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -57,7 +57,7 @@
     </button>
   </div>
 
-  <div class="ad-sec-hd"><b>Recent processes</b><a class="ad-link" href="ws-processes.html">View all ›</a></div>
+  <div class="ad-sec-hd"><b>Recent apps</b><a class="ad-link" href="ws-processes.html">View all ›</a></div>
   <div class="ad-c" style="margin-top:12px;" id="recent"></div>
 </div>
 
@@ -75,7 +75,7 @@
     </a>`).join('');
   document.getElementById('composer').addEventListener('submit', (e) => {
     e.preventDefault();
-    window.adToast('Building a new process isn’t part of this prototype.');
+    window.adToast('Building a new app isn’t part of this prototype.');
   });
 </script>
 </body>

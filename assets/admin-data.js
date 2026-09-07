@@ -230,6 +230,21 @@ window.ADMIN = (function () {
 
   const leaveSubmissionsHref = 'app-submissions.html?app=leave-approval';
 
+  /* Workspace-level resources — added in settings, allocated to apps. */
+  const resources = [
+    { id: 'postgres-prod', name: 'Production Postgres', type: 'Database', detail: 'Shared cluster · Sydney' },
+    { id: 's3-uploads', name: 'Upload bucket', type: 'Storage', detail: 's3://northwind-uploads' },
+    { id: 'sendgrid', name: 'SendGrid', type: 'Email', detail: 'Transactional mail' },
+  ];
+
+  const resourceAllocations = {
+    'kyc-onboarding': ['postgres-prod', 's3-uploads'],
+    'leave-approval': [],
+    'candidate-screening': ['postgres-prod'],
+    'vendor-onboarding': [],
+    'invoice-processing': [],
+  };
+
   const notifications = [
     {
       id: 'leave-week',
@@ -313,6 +328,112 @@ window.ADMIN = (function () {
     return processes.find((p) => p.id === id) || processes[0];
   }
 
+  function resource(id) {
+    return resources.find((r) => r.id === id);
+  }
+
+  function resourcesFor(processId) {
+    const ids = resourceAllocations[processId] || [];
+    return ids.map((rid) => resource(rid)).filter(Boolean);
+  }
+
+  /** Per-step form answers for submission detail — keyed by process:ref. */
+  const SUBMISSION_ANSWERS = {
+    'leave-approval:LVE-1048': [
+      [{ label: 'Full name', value: 'Priya Sharma' }, { label: 'Work email', value: 'priya@northwindops.com' }, { label: 'Department', value: 'Product design' }],
+      [{ label: 'Leave type', value: 'Annual leave' }, { label: 'Start date', value: '12 Sep 2026' }, { label: 'End date', value: '16 Sep 2026' }, { label: 'Working days', value: '5' }, { label: 'Reason', value: 'Family holiday — school break trip. Already discussed with Tom.' }],
+      [{ label: 'Reporting manager', value: 'Tom Halloran' }, { label: 'Cover arranged', value: 'Yes — Mei Lin covering stand-ups' }, { label: 'Manager notes', value: 'Approved. Enjoy the break.' }],
+      [{ label: 'Confirmation', value: 'Submitted' }],
+    ],
+    'leave-approval:LVE-1047': [
+      [{ label: 'Full name', value: 'Tom Halloran' }, { label: 'Work email', value: 'tom@northwindops.com' }, { label: 'Department', value: 'Engineering' }],
+      [{ label: 'Leave type', value: 'Sick leave' }, { label: 'Start date', value: '2 Sep 2026' }, { label: 'End date', value: '3 Sep 2026' }, { label: 'Reason', value: 'Flu — doctor certificate attached.' }],
+      [{ label: 'Reporting manager', value: 'Gareth Chainey' }, { label: 'Cover arranged', value: 'Not answered' }],
+      [],
+    ],
+    'leave-approval:LVE-1046': [
+      [{ label: 'Full name', value: 'Mei Lin' }, { label: 'Work email', value: 'mei@northwindops.com' }, { label: 'Department', value: 'Operations' }],
+      [{ label: 'Leave type', value: 'Annual leave' }, { label: 'Start date', value: '22 Sep 2026' }, { label: 'End date', value: '26 Sep 2026' }, { label: 'Working days', value: '5' }, { label: 'Reason', value: 'Long weekend extension.' }],
+      [{ label: 'Reporting manager', value: 'Priya Sharma' }, { label: 'Cover arranged', value: 'Yes — Rafael covering inbox' }, { label: 'Manager notes', value: 'Approved.' }],
+      [{ label: 'Confirmation', value: 'Submitted' }],
+    ],
+    'leave-approval:LVE-1045': [
+      [{ label: 'Full name', value: 'Rafael Ibarra' }, { label: 'Work email', value: 'rafael@northwindops.com' }, { label: 'Department', value: 'Sales' }],
+      [{ label: 'Leave type', value: 'Personal leave' }, { label: 'Start date', value: '5 Sep 2026' }, { label: 'End date', value: '5 Sep 2026' }, { label: 'Reason', value: 'Medical appointment.' }],
+      [{ label: 'Reporting manager', value: 'Priya Sharma' }, { label: 'Manager notes', value: 'Approved — half day.' }],
+      [{ label: 'Confirmation', value: 'Submitted' }],
+    ],
+    'leave-approval:LVE-1044': [
+      [{ label: 'Full name', value: 'Anneliese Vogt' }, { label: 'Work email', value: 'anneliese@northwindops.com' }, { label: 'Department', value: 'Finance' }],
+      [{ label: 'Leave type', value: 'Sick leave' }, { label: 'Start date', value: '1 Sep 2026' }, { label: 'End date', value: '2 Sep 2026' }, { label: 'Reason', value: 'Migraine — working from bed this morning.' }],
+      [{ label: 'Reporting manager', value: 'Gareth Chainey' }, { label: 'Cover arranged', value: 'Not answered' }],
+      [],
+    ],
+    'leave-approval:LVE-1043': [
+      [{ label: 'Full name', value: 'Grace Mutumbo' }, { label: 'Work email', value: 'g.mutumbo@northwindops.com' }, { label: 'Department', value: 'Customer success' }],
+      [{ label: 'Leave type', value: 'Annual leave' }, { label: 'Start date', value: '15 Sep 2026' }, { label: 'End date', value: '19 Sep 2026' }, { label: 'Reason', value: 'Annual leave — wedding travel.' }],
+      [{ label: 'Reporting manager', value: 'Tom Halloran' }, { label: 'Manager notes', value: 'Approved.' }],
+      [{ label: 'Confirmation', value: 'Submitted' }],
+    ],
+    'leave-approval:LVE-1042': [
+      [{ label: 'Full name', value: 'Hamish Dunlop' }, { label: 'Work email', value: 'h.dunlop@northwindops.com' }, { label: 'Department', value: 'Engineering' }],
+      [{ label: 'Leave type', value: 'Sick leave' }, { label: 'Start date', value: 'Not answered' }, { label: 'End date', value: 'Not answered' }],
+      [], [],
+    ],
+    'leave-approval:LVE-1041': [
+      [{ label: 'Full name', value: 'Sunita Rao' }, { label: 'Work email', value: 's.rao@northwindops.com' }, { label: 'Department', value: 'Legal' }],
+      [{ label: 'Leave type', value: 'Annual leave' }, { label: 'Start date', value: '8 Sep 2026' }, { label: 'End date', value: '12 Sep 2026' }, { label: 'Reason', value: 'Family visit.' }],
+      [{ label: 'Reporting manager', value: 'Gareth Chainey' }, { label: 'Manager notes', value: 'Approved.' }],
+      [{ label: 'Confirmation', value: 'Submitted' }],
+    ],
+  };
+
+  function submissionFor(processId, ref) {
+    return allSubmissionsFor(processId).find((s) => s.ref === ref) || null;
+  }
+
+  function genericAnswers(processId, sub) {
+    const steps = stepsFor(processId);
+    if (processId === 'leave-approval') {
+      return steps.map((_, i) => {
+        if (i === 0) return [{ label: 'Full name', value: sub.who }, { label: 'Work email', value: sub.email }];
+        if (i === 1) return [{ label: 'Leave type', value: sub.leaveType || '—' }];
+        return [{ label: 'Notes', value: sub.step > i + 1 ? '—' : 'Not answered' }];
+      });
+    }
+    if (processId === 'kyc-onboarding') {
+      return steps.map((title, i) => {
+        if (i === 0) return [{ label: 'Full name', value: sub.who }, { label: 'Email', value: sub.email }];
+        if (i === 1 && sub.step > 1) return [{ label: 'Document type', value: 'Passport' }, { label: 'Upload status', value: sub.step > 2 ? 'Verified' : 'Pending review' }];
+        if (i === 2 && sub.step > 2) return [{ label: 'Declaration', value: sub.step > 3 ? 'Confirmed' : 'Not answered' }];
+        if (i === 3 && sub.step > 3) return [{ label: 'Submission', value: 'Complete' }];
+        return [];
+      });
+    }
+    return steps.map(() => []);
+  }
+
+  function submissionDetail(processId, ref) {
+    const sub = submissionFor(processId, ref);
+    if (!sub) return null;
+    const stepTitles = stepsFor(processId);
+    const answerSets = SUBMISSION_ANSWERS[`${processId}:${ref}`] || genericAnswers(processId, sub);
+    const groups = stepTitles.map((title, i) => ({
+      index: i,
+      title,
+      reached: (i + 1) <= sub.step,
+      active: sub.step === i + 1 && sub.status !== 'completed',
+      fields: (answerSets[i] || []).map((f) => ({
+        label: f.label,
+        value: f.value,
+        empty: !f.value || f.value === 'Not answered',
+      })),
+    }));
+    const fillable = groups.reduce((n, g) => n + g.fields.length, 0);
+    const answered = groups.reduce((n, g) => n + g.fields.filter((f) => !f.empty).length, 0);
+    return { submission: sub, groups, fillable, answered };
+  }
+
   function unreadCount() {
     return notifications.filter((n) => n.unread).length;
   }
@@ -339,6 +460,12 @@ window.ADMIN = (function () {
     submissionOs,
     client,
     process,
+    resource,
+    resources,
+    resourceAllocations,
+    resourcesFor,
+    submissionFor,
+    submissionDetail,
     STEPS: kyc.steps,
     overview: kyc.overview,
     clients: kyc.clients,

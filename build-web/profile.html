@@ -34,7 +34,7 @@
       <div style="flex:1;min-width:0;">
         <div class="ad-f-row">
           <div class="ad-f"><label for="pName">Full name</label><input id="pName" type="text" /></div>
-          <div class="ad-f"><label for="pTitle">What you do</label><input id="pTitle" type="text" /></div>
+          <div class="ad-f"><label for="pRole">Your role</label><input id="pRole" type="text" readonly /></div>
         </div>
         <div class="ad-f"><label for="pEmail">Email</label>
           <div class="ctl read"><span class="grow" id="pEmail"></span><span class="ad-badge green">Verified</span></div>
@@ -89,12 +89,12 @@
 
   document.getElementById('pAv').textContent = u.av;
   document.getElementById('pName').value = u.name;
-  document.getElementById('pTitle').value = u.title;
+  document.getElementById('pRole').value = u.role;
   document.getElementById('pEmail').textContent = u.email;
 
   const WORKSPACES = [
-    { initial: w.initial, name: w.name, meta: `${D.processes.length} processes · 42 credits left`, role: 'Owner', dark: true },
-    { initial: 'B', name: 'Bendigo pilot', meta: '1 process · guest access', role: 'Builder', dark: false },
+    { initial: w.initial, name: w.name, meta: `${D.processes.length} apps · 42 credits left`, role: 'Owner', dark: true },
+    { initial: 'B', name: 'Bendigo pilot', meta: '1 app · guest access', role: 'Builder', dark: false },
   ];
   document.getElementById('wsRows').innerHTML = WORKSPACES.map((x) => `
     <div class="ad-c-row">

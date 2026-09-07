@@ -157,7 +157,7 @@
 
     document.getElementById('subRows').innerHTML = shown.length ? shown.map((s) => {
       const st = D.STATUS[s.status];
-      return `<button class="r" type="button" data-sub="${s.ref}">
+      return `<a class="r" href="app-submission.html?app=${appId}&client=${encodeURIComponent(c.id)}&ref=${encodeURIComponent(s.ref)}">
         <div style="width:104px;flex:0 0 104px;font-family:var(--ad-mono);font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.ref}</div>
         <div class="grow" style="text-align:left;min-width:0;">
           <span style="display:block;font-size:14px;font-weight:500;">${s.who}</span>
@@ -172,12 +172,8 @@
         </div>
         <div style="width:76px;flex:0 0 76px;font-size:13px;color:var(--ad-ink-4);" class="num">${A.formatTime(s.minutes)}</div>
         <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
-      </button>`;
+      </a>`;
     }).join('') : `<div class="ad-empty">No submissions match that filter.</div>`;
-
-    document.querySelectorAll('[data-sub]').forEach((el) => {
-      el.addEventListener('click', () => window.adToast(`${el.dataset.sub} — the answers view isn’t in this prototype yet.`));
-    });
   }
   document.getElementById('q').addEventListener('input', paintSubs);
   document.getElementById('statusFilter').addEventListener('change', paintSubs);

@@ -20,7 +20,7 @@
   <div class="ad-hd">
     <div>
       <h1>Settings</h1>
-      <p>What this process is called, who can reach it, and where it lives.</p>
+      <p>What this app is called, who can reach it, and where it lives.</p>
     </div>
     <div class="ad-hd-acts">
       <button class="ad-btn" type="button" id="openBtn"></button>
@@ -37,7 +37,7 @@
         <button type="button" class="ad-link" style="margin-top:8px;font-size:12px;" data-stub>Replace</button>
       </div>
       <div style="flex:1;min-width:0;">
-        <div class="ad-f"><label for="gName">Process name</label><input id="gName" type="text" /></div>
+        <div class="ad-f"><label for="gName">App name</label><input id="gName" type="text" /></div>
         <div class="ad-f"><label for="gDesc">Description</label><textarea id="gDesc"></textarea></div>
       </div>
     </div>
@@ -45,7 +45,7 @@
 
   <div class="ad-c pad">
     <h2>Access</h2>
-    <p class="sub">Who can open and run this process, and where it answers.</p>
+    <p class="sub">Who can open and run this app, and where it answers.</p>
     <div class="ad-f-row" style="margin-top:20px;">
       <div class="ad-f"><label for="gAccess">Who can use it</label>
         <select id="gAccess">
@@ -63,10 +63,10 @@
   <div class="ad-c">
     <div class="ad-c-row" style="border-top:0;">
       <div class="tx"><b>Workspace</b><span id="gWs">—</span></div>
-      <button class="ad-btn sm" type="button" data-stub>Move process</button>
+      <button class="ad-btn sm" type="button" data-stub>Move app</button>
     </div>
     <div class="ad-c-row">
-      <div class="tx"><b>&ldquo;Built with EAI&rdquo; badge</b><span>Shown in the footer of the published process.</span></div>
+      <div class="tx"><b>&ldquo;Built with EAI&rdquo; badge</b><span>Shown in the footer of the published app.</span></div>
       <button class="ad-toggle on" type="button" data-toggle><i></i></button>
     </div>
     <div class="ad-c-row">
@@ -95,11 +95,11 @@
   document.getElementById('gAccess').value = app.access;
   document.getElementById('gUrl').textContent = app.url;
   document.getElementById('gWs').textContent = `${D.workspace.name} · owned by ${D.user.name}`;
-  document.getElementById('openBtn').innerHTML = `${window.adIcon('open')}Open process`;
+  document.getElementById('openBtn').innerHTML = `${window.adIcon('open')}Open app`;
   document.title = `Prototype — ${app.name} settings · Enterprise AI`;
 
   document.getElementById('openBtn').addEventListener('click', () => {
-    window.adToast(app.url === '—' ? 'This process has not been published yet.' : `Would open ${app.url}`);
+    window.adToast(app.url === '—' ? 'This app has not been published yet.' : `Would open ${app.url}`);
   });
   document.querySelectorAll('[data-toggle]').forEach((el) => el.addEventListener('click', () => el.classList.toggle('on')));
   document.querySelectorAll('[data-copy]').forEach((el) => el.addEventListener('click', () => window.adToast('Copied to clipboard.')));

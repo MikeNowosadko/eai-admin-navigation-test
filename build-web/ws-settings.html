@@ -27,6 +27,7 @@
 
   <div class="ad-tabs" id="tabs">
     <button type="button" data-tab="general">General</button>
+    <button type="button" data-tab="resources">Resources</button>
     <button type="button" data-tab="harness" class="on">Harness defaults</button>
     <button type="button" data-tab="billing">Billing &amp; credits</button>
     <button type="button" data-tab="danger">Danger zone</button>
@@ -51,15 +52,29 @@
     </div>
     <div class="ad-c">
       <div class="ad-c-row" style="border-top:0;">
-        <div class="tx"><b>Default access for new processes</b><span>What a process is set to the moment it is created.</span></div>
+        <div class="tx"><b>Default access for new apps</b><span>What an app is set to the moment it is created.</span></div>
         <select style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;">
           <option>Only invited people</option><option selected>Anyone in workspace</option>
         </select>
       </div>
       <div class="ad-c-row">
-        <div class="tx"><b>Require sign-in to run a process</b><span>Off means anyone with the link can submit.</span></div>
+        <div class="tx"><b>Require sign-in to run an app</b><span>Off means anyone with the link can submit.</span></div>
         <button class="ad-toggle on" type="button" data-toggle><i></i></button>
       </div>
+    </div>
+  </section>
+
+  <!-- Resources ---------------------------------------------------- -->
+  <section data-pane="resources" hidden>
+    <div class="ad-c pad">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <h2>Resources</h2>
+          <p class="sub">Add connections once at the workspace level, then allocate them to apps.</p>
+        </div>
+        <button class="ad-btn dark" type="button" data-stub>Add resource</button>
+      </div>
+      <div class="ad-c" style="margin-top:16px;border-radius:8px;box-shadow:none;" id="wsResources"></div>
     </div>
   </section>
 
@@ -132,7 +147,7 @@
         <button class="ad-btn sm" type="button" data-stub>Transfer</button>
       </div>
       <div class="ad-c-row">
-        <div class="tx"><b>Delete workspace</b><span>Removes 4 processes, 1,284 submissions and every member. Cannot be undone.</span></div>
+        <div class="tx"><b>Delete workspace</b><span>Removes 4 apps, 1,284 submissions and every member. Cannot be undone.</span></div>
         <button class="ad-btn sm" type="button" style="border-color:#FECACA;color:var(--ad-red);" data-stub>Delete workspace</button>
       </div>
     </div>
@@ -174,6 +189,15 @@
     });
   }
   paintSurfaces();
+
+  document.getElementById('wsResources').innerHTML = D.resources.map((r, i) => {
+    const apps = D.processes.filter((p) => (D.resourceAllocations[p.id] || []).includes(r.id)).map((p) => p.name);
+    return `
+      <div class="ad-c-row"${i ? '' : ' style="border-top:0;"'}>
+        <div class="tx"><b>${r.name}</b><span>${r.detail}${apps.length ? ` · Used by ${apps.join(', ')}` : ' · Not allocated yet'}</span></div>
+        <span class="ad-badge grey">${r.type}</span>
+      </div>`;
+  }).join('');
 
   function paintRoles() {
     document.getElementById('cliRoles').innerHTML = Object.keys(h.cliRoles).map((r) => {

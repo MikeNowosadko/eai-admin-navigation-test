@@ -39,7 +39,7 @@
   const ROUTES = [
     'ws-home.html', 'ws-processes.html', 'ws-cli.html', 'ws-templates.html', 'ws-integrations.html',
     'ws-users.html', 'ws-settings.html', 'profile.html',
-    'app-overview.html', 'app-submissions.html', 'app-analytics.html', 'app-general.html', 'app-clients.html', 'app-client.html',
+    'app-overview.html', 'app-submissions.html', 'app-submission.html', 'app-analytics.html', 'app-resources.html', 'app-general.html', 'app-clients.html', 'app-client.html',
   ];
 
   const I = {
@@ -66,6 +66,7 @@
     search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
     chev: '<path d="m6 9 6 6 6-6"/>',
     right: '<path d="m9 18 6-6-6-6"/>',
+    left: '<path d="m15 18-6-6 6-6"/>',
     up: '<path d="m5 15 7-7 7 7"/>',
     down: '<path d="m5 9 7 7 7-7"/>',
     open: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/>',
@@ -132,12 +133,28 @@
   }
 
   /* ------------------------------------------------------ ws shell */
+  function tipText(label) {
+    return String(label)
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&mdash;/g, '—')
+      .replace(/&ldquo;/g, '\u201c')
+      .replace(/&rdquo;/g, '\u201d');
+  }
+
+  function tipPop(label) {
+    return `<span class="ad-tip-pop" aria-hidden="true">${esc(tipText(label))}</span>`;
+  }
+
   function wsItem(s, id, icon, label, href, extra) {
     const on = s.nav === id ? ' on' : '';
     const tail = extra || '';
     return href
-      ? `<a class="ad-item${on}" href="${href}">${svg(icon)}<span>${label}</span>${tail}</a>`
-      : `<button class="ad-item${on}" type="button" data-stub>${svg(icon)}<span>${label}</span>${tail}</button>`;
+      ? `<a class="ad-item ad-tip${on}" href="${href}">${svg(icon)}<span>${label}</span>${tail}${tipPop(label)}</a>`
+      : `<button class="ad-item ad-tip${on}" type="button" data-stub>${svg(icon)}<span>${label}</span>${tail}${tipPop(label)}</button>`;
   }
 
   function wsShell(pane, s) {
@@ -147,10 +164,11 @@
 <div class="ad-ws" data-ad-root>
   <aside class="ad-side">
     <div class="ad-side-hd">
-      <button class="ad-ws-switch" type="button" data-stub>
+      <button class="ad-ws-switch ad-tip" type="button" data-stub>
         <span class="tile">${w.initial}</span>
         <span class="tx"><b>${w.name}</b></span>
         ${svg('swap')}
+        ${tipPop(w.name)}
       </button>
       <div class="ad-seg" role="tablist" aria-label="How you build">
         <a class="ad-seg-tab${s.mode === 'ncb' ? ' on' : ''}" href="ws-home.html" role="tab" aria-selected="${s.mode === 'ncb'}">No Code Builder</a>
@@ -160,7 +178,7 @@
     <div class="ad-side-body">
       <nav class="ad-nav">
         ${wsItem(s, 'home', 'home', 'Home', 'ws-home.html')}
-        ${wsItem(s, 'processes', 'grid', 'All processes', 'ws-processes.html', `<i class="count">${D.processes.length}</i>`)}
+        ${wsItem(s, 'processes', 'grid', 'All apps', 'ws-processes.html', `<i class="count">${D.processes.length}</i>`)}
         ${wsItem(s, 'templates', 'template', 'Templates', 'ws-templates.html')}
         ${wsItem(s, 'integrations', 'plug', 'Integrations', 'ws-integrations.html')}
       </nav>
@@ -172,46 +190,50 @@
         ${wsItem(s, 'automations', 'zap', 'Automations', null)}
         ${wsItem(s, 'audit', 'file', 'Audit log', null)}
       </nav>
+      <nav class="ad-nav">
+        <div class="ad-nav-label">Workspace Settings</div>
+        ${wsItem(s, 'settings', 'gear', 'Settings', 'ws-settings.html')}
+      </nav>
     </div>
     <div class="ad-side-ft">
-      <nav class="ad-nav">${wsItem(s, 'settings', 'gear', 'Settings', 'ws-settings.html')}</nav>
       <div class="ad-upsell">
         <b>Upgrade to Team</b>
-        <p>Unlimited processes, roles &amp; audit history.</p>
+        <p>Unlimited apps, roles &amp; audit history.</p>
         <button class="btn" type="button" data-stub>View plans</button>
       </div>
-      <a class="ad-user${s.nav === 'profile' ? ' on' : ''}" href="profile.html">
+      <a class="ad-user ad-tip${s.nav === 'profile' ? ' on' : ''}" href="profile.html">
         <span class="av">${u.av}</span>
         <span class="tx"><b>${u.name}</b><span>${u.role}</span></span>
         ${svg('dots')}
+        ${tipPop(u.name)}
       </a>
     </div>
   </aside>
   <main class="ad-main">
     <header class="ad-top">
       <div class="ad-top-l">
-        <button class="collapse" type="button" data-stub aria-label="Collapse sidebar">${svg('panel')}</button>
+        <button class="collapse" type="button" data-ad-collapse-ws aria-expanded="true" aria-label="Collapse sidebar">${svg('panel')}</button>
         <b>${s.title}</b>
       </div>
       <div class="ad-search-wrap">
-        <button class="ad-search-trigger" type="button" aria-label="Search processes" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
-          ${svg('search')}<span>Search processes…</span><kbd>&#8984;K</kbd>
+        <button class="ad-search-trigger" type="button" aria-label="Search apps" aria-expanded="false" aria-controls="adSearchPal" aria-haspopup="dialog">
+          ${svg('search')}<span>Search apps…</span><kbd>&#8984;K</kbd>
         </button>
-        <div class="ad-search-pal" id="adSearchPal" hidden role="dialog" aria-label="Search processes">
+        <div class="ad-search-pal" id="adSearchPal" hidden role="dialog" aria-label="Search apps">
           <div class="ad-search-pal-hd">
             ${svg('search')}
-            <input class="ad-search-input" type="search" placeholder="Search processes…" autocomplete="off" spellcheck="false" aria-label="Search processes" />
+            <input class="ad-search-input" type="search" placeholder="Search apps…" autocomplete="off" spellcheck="false" aria-label="Search apps" />
             <kbd class="ad-search-esc" aria-hidden="true">esc</kbd>
           </div>
-          <ul class="ad-search-list" role="listbox" aria-label="Processes"></ul>
+          <ul class="ad-search-list" role="listbox" aria-label="Apps"></ul>
           <div class="ad-search-pal-ft">
-            <a href="ws-processes.html">Browse all processes</a>
+            <a href="ws-processes.html">Browse all apps</a>
           </div>
         </div>
       </div>
       <div class="ad-top-r">
         ${notifBell()}
-        <button class="ad-btn dark" type="button" data-stub>${svg('plus')}New process</button>
+        <button class="ad-btn" type="button" data-stub>${svg('plus')}Create new app</button>
       </div>
     </header>
     <div class="ad-body${s.hero ? ' hero' : ''}"><div class="ad-col${s.narrow ? ' narrow' : ''}">${pane}</div></div>
@@ -223,7 +245,7 @@
   /* ----------------------------------------------------- app shell */
   function railItem(s, id, icon, label, href) {
     const on = s.rail === id ? ' on' : '';
-    return `<a class="ad-rail-item${on}" href="${href}">${svg(icon)}<span class="lb">${label}</span></a>`;
+    return `<a class="ad-rail-item ad-tip${on}" href="${href}">${svg(icon)}<span class="lb">${label}</span>${tipPop(label)}</a>`;
   }
 
   function notifBell() {
@@ -256,34 +278,19 @@
   }
 
   function appShell(pane, s) {
-    const w = D.workspace;
-    const u = D.user;
     const app = s.app;
     const clientsOpen = s.rail === 'clients' || s.rail === 'client';
     return `
 <div class="ad-app" data-ad-root>
   <div class="ad-app-outer">
     <header class="ad-app-top">
-      <a class="ad-mark" href="ws-home.html" aria-label="Back to ${w.name}">${svg('logo')}</a>
-      <span class="ad-slash" aria-hidden="true"></span>
-      <div class="ad-appid">
-        <span class="av">${app.initial}</span>
-        <span class="tx"><b>${app.name}</b><span>${w.name}</span></span>
-      </div>
-      <div class="ad-app-acts">
-        ${notifBell()}
-        <div class="ad-av-stack">
-          <span class="av">${u.av}</span>
-          <button class="add" type="button" data-stub aria-label="Invite people">${svg('plus')}</button>
-        </div>
-        <button class="ad-icon-btn" type="button" data-stub aria-label="More">${svg('dots')}</button>
-        <button class="ad-upgrade" type="button" data-stub>${svg('gem')}Upgrade</button>
-      </div>
+      <button class="ad-back" type="button" data-ad-back aria-label="Back to workspace">${svg('left')}<span>Back to workspace</span></button>
+      <div class="ad-app-acts">${notifBell()}</div>
     </header>
     <div class="ad-card-shell">
       <div class="ad-card-bar">
-        <button class="ad-icon-btn" type="button" data-stub aria-label="Collapse rail" style="width:28px;height:28px;">${svg('panel')}</button>
-        <span>App settings</span>
+        <button class="ad-icon-btn" type="button" data-ad-collapse-rail aria-expanded="true" aria-label="Collapse rail" style="width:28px;height:28px;">${svg('panel')}</button>
+        <span class="ad-card-title"><b>${app.name}</b> App settings</span>
       </div>
       <div class="ad-card-body">
         <aside class="ad-rail">
@@ -294,15 +301,17 @@
             ${railItem(s, 'overview', 'home', 'Overview', `app-overview.html?app=${s.appId}`)}
             ${railItem(s, 'submissions', 'file', 'Submissions', `app-submissions.html?app=${s.appId}`)}
             ${railItem(s, 'analytics', 'chart', 'Analytics', `app-analytics.html?app=${s.appId}`)}
+            ${railItem(s, 'resources', 'data', 'Resources', `app-resources.html?app=${s.appId}`)}
             ${railItem(s, 'general', 'gear', 'Settings', `app-general.html?app=${s.appId}`)}
             <div>
-              <a class="ad-rail-item${clientsOpen ? ' on' : ''}" href="app-clients.html?app=${s.appId}" aria-expanded="${clientsOpen}">
+              <a class="ad-rail-item ad-tip${clientsOpen ? ' on' : ''}" href="app-clients.html?app=${s.appId}" aria-expanded="${clientsOpen}">
                 ${svg('building')}<span class="lb">Clients</span>${svg('chev', 'chev')}
+                ${tipPop('Clients')}
               </a>
               ${clientsOpen ? clientSub(s) : ''}
             </div>
             <div class="ad-rail-ft">
-              <button class="ad-rail-item" type="button" data-stub>${svg('warn')}<span class="lb">Danger zone</span></button>
+              <button class="ad-rail-item ad-tip" type="button" data-stub>${svg('warn')}<span class="lb">Danger zone</span>${tipPop('Danger zone')}</button>
             </div>
           </nav>
         </aside>
@@ -355,7 +364,7 @@
       const rows = match(q);
       idx = rows.length ? 0 : -1;
       if (!rows.length) {
-        list.innerHTML = '<li class="ad-search-empty" role="presentation">No processes match.</li>';
+        list.innerHTML = '<li class="ad-search-empty" role="presentation">No apps match.</li>';
         return;
       }
       list.innerHTML = rows.map((p, i) => `
@@ -503,12 +512,67 @@
     });
   }
 
+  const WS_SIDE_KEY = 'ad-ws-side-collapsed';
+  const APP_RAIL_KEY = 'ad-app-rail-collapsed';
+
+  function setWsSideCollapsed(ws, btn, collapsed) {
+    ws.classList.toggle('side-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+  }
+
+  function setAppRailCollapsed(body, btn, collapsed) {
+    body.classList.toggle('rail-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.setAttribute('aria-label', collapsed ? 'Expand rail' : 'Collapse rail');
+  }
+
+  function bindBack(root) {
+    root.querySelector('[data-ad-back]')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      go(new URL('ws-home.html', location.href).href, true);
+    });
+  }
+
+  function bindCollapse(root) {
+    const ws = root.classList.contains('ad-ws') ? root : root.querySelector('.ad-ws');
+    if (ws) {
+      const btn = ws.querySelector('[data-ad-collapse-ws]');
+      if (btn) {
+        setWsSideCollapsed(ws, btn, sessionStorage.getItem(WS_SIDE_KEY) === '1');
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const collapsed = !ws.classList.contains('side-collapsed');
+          setWsSideCollapsed(ws, btn, collapsed);
+          sessionStorage.setItem(WS_SIDE_KEY, collapsed ? '1' : '0');
+        });
+      }
+    }
+
+    const app = root.classList.contains('ad-app') ? root : root.querySelector('.ad-app');
+    if (app) {
+      const btn = app.querySelector('[data-ad-collapse-rail]');
+      const body = app.querySelector('.ad-card-body');
+      if (btn && body) {
+        setAppRailCollapsed(body, btn, sessionStorage.getItem(APP_RAIL_KEY) === '1');
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const collapsed = !body.classList.contains('rail-collapsed');
+          setAppRailCollapsed(body, btn, collapsed);
+          sessionStorage.setItem(APP_RAIL_KEY, collapsed ? '1' : '0');
+        });
+      }
+    }
+  }
+
   function mount(paneHTML) {
     const s = state();
     if (window.__adSearchTeardown) window.__adSearchTeardown();
     document.querySelectorAll('[data-ad-root]').forEach((n) => n.remove());
     document.body.insertAdjacentHTML('afterbegin', s.shell === 'app' ? appShell(paneHTML, s) : wsShell(paneHTML, s));
     document.querySelectorAll('[data-ad-root]').forEach((root) => {
+      bindCollapse(root);
+      bindBack(root);
       bindStubs(root);
       bindNotifications(root);
       const off = bindSearch(root);
@@ -558,6 +622,7 @@
         url: meta ? meta.content : file,
         title: document.title.replace(/^Prototype — /, ''),
         file: `pages/${file}`,
+        adDepth: adNavCount,
       },
     }, '*');
   }
@@ -583,7 +648,12 @@
   }
 
   let token = 0;
+  let navigating = false;
+  let adNavCount = 0;
+
   async function go(href, push) {
+    if (navigating) return;
+    navigating = true;
     const mine = ++token;
     let doc;
     try {
@@ -591,12 +661,19 @@
       if (!res.ok) throw new Error(res.status);
       doc = new DOMParser().parseFromString(await res.text(), 'text/html');
     } catch (err) {
+      navigating = false;
       location.href = href; // fall back to a real navigation
       return;
     }
-    if (mine !== token) return; // a later click won
+    if (mine !== token) {
+      navigating = false;
+      return; // a later click won
+    }
 
-    if (push) history.pushState({ ad: true }, '', href);
+    if (push) {
+      adNavCount += 1;
+      history.pushState({ ad: true, depth: adNavCount }, '', href);
+    }
 
     Object.keys(document.body.dataset)
       .filter((k) => k.startsWith('ad'))
@@ -613,6 +690,7 @@
     await ensureScripts(doc);
     runPageScripts(doc);
     announce();
+    navigating = false;
   }
 
   document.addEventListener('click', (e) => {
@@ -627,11 +705,20 @@
     go(url.href, true);
   });
 
-  window.addEventListener('popstate', () => go(location.href, false));
+  window.addEventListener('popstate', () => {
+    if (history.state?.ad && typeof history.state.depth === 'number') adNavCount = history.state.depth;
+    go(location.href, false);
+  });
+
+  window.addEventListener('message', (e) => {
+    if (e.data?.eai && e.data.action === 'ad-history-back' && adNavCount > 0) history.back();
+  });
 
   /* ------------------------------------------------------------ go */
   const paneEl = document.getElementById('adPane');
   const pane = paneEl ? paneEl.innerHTML : '';
   if (paneEl) paneEl.remove();
   mount(pane);
+  history.replaceState({ ad: true, depth: 0 }, '', location.href);
+  announce();
 })();
