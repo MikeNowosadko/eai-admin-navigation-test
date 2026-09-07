@@ -27,13 +27,6 @@
 <!-- build: sugarhead-preview-mkt-v4 -->
 <body class="nb bd-builder bd-web-app bd-sugarhead bd-sugar-focus bd-chat-first" data-bd-strip="off" data-bd-blocks="off" data-sugarhead="on" data-flow="chat-first">
 
-  <div class="bd-enter" id="bdEnter" hidden>
-    <div class="bd-enter-inner">
-      <div class="bd-enter-prompt" id="bdEnterPrompt"></div>
-      <p class="bd-enter-status">Opening the workshop</p>
-    </div>
-  </div>
-
   <div class="nb-shell">
 
     <aside class="nb-side" hidden aria-hidden="true">
@@ -71,19 +64,11 @@
       <header class="bd-top">
         <div class="bd-crumbs">
           <a class="bd-sugar-home" href="index-chat-first.html" title="Back to site">
-            <img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
+            <img src="../assets/logos/eai-mark-dark.svg" alt="EAI" />
           </a>
           <span class="sep">/</span>
           <b id="bdProjectName">New process</b>
         </div>
-
-        <nav class="bd-steps" id="bdSteps" aria-label="Progress">
-          <span class="st on" data-step="plan">Plan</span>
-          <span class="ln"></span>
-          <span class="st" data-step="build">Build</span>
-          <span class="ln"></span>
-          <span class="st" data-step="deploy">Deploy</span>
-        </nav>
 
         <div class="bd-top-acts">
           <button type="button" class="bd-mobile-qr" id="bdMobileQr" title="Preview on mobile">
@@ -92,6 +77,9 @@
           </button>
           <button class="nb-btn" type="button" id="bdSuggest" hidden>Suggest improvements <i class="bd-cost">15</i></button>
           <button class="nb-btn primary" type="button" id="bdPublish" disabled>Publish <i class="bd-cost">10</i></button>
+          <div class="bd-header-auth" id="bdHeaderAuth">
+            <button type="button" data-header-auth="signin">Sign In / Sign Up</button>
+          </div>
         </div>
       </header>
 
@@ -100,10 +88,20 @@
         <section class="bd-chat" id="bdChat">
           <div class="bd-log" id="bdLog"></div>
           <div class="bd-anchor" id="bdAnchor"></div>
+          <div id="bdAttachments" class="bd-attachments" hidden></div>
+          <aside id="bdCliOffer" class="bd-cli-offer" hidden aria-labelledby="bdCliOfferTitle">
+            <h3 id="bdCliOfferTitle">Go further with EAI CLI</h3>
+            <p>Need custom logic, integrations or more advanced features? Continue building your app in EAI CLI, or keep refining it in this chat.</p>
+            <div><button type="button" id="bdContinueCli">Continue in CLI <span aria-hidden="true">↗</span></button></div>
+          </aside>
+          <p id="bdMediaStatus" class="bd-media-status" role="status" hidden></p>
+          <input id="bdFileInput" type="file" multiple hidden />
           <div class="bd-composer-row">
+            <button type="button" id="bdAttach" class="bd-media-button" aria-label="Attach files" title="Attach files">＋</button>
             <textarea id="bdSay" rows="3" placeholder="Describe a change&hellip;" autocomplete="off" disabled></textarea>
             <div class="bd-composer-actions">
-              <button class="nb-btn primary" type="button" id="bdSend" disabled>Send</button>
+              <button type="button" id="bdDictate" class="bd-media-button" aria-label="Start dictation" title="Start dictation" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3" stroke="currentColor" stroke-width="1.5"/></svg></button>
+              <button class="nb-btn primary" type="button" id="bdSend" aria-label="Send" disabled>→</button>
             </div>
           </div>
         </section>
@@ -119,6 +117,7 @@
 
   <div class="bd-gate-overlay" id="authGate" hidden role="dialog" aria-modal="true" aria-labelledby="gateLede">
     <div class="bd-gate-card bd-gate-auth bd-wizard-gate">
+      <button type="button" id="bdAuthClose" aria-label="Close sign in" class="bd-auth-close">×</button>
       <div class="bd-wizard-rail" id="wizardRail" aria-hidden="true">
         <span class="on" data-step="1"></span>
         <span data-step="2"></span>
@@ -126,6 +125,7 @@
 
       <div class="bd-wizard-panel bd-wizard-panel--signup" id="wizardStep1">
         <p class="bd-wizard-lede" id="gateLede">Sign in to publish your app</p>
+        <p id="gateExplanation" hidden></p>
         <div class="bd-wizard-field">
           <label for="gateEmail">Work email</label>
           <input type="email" id="gateEmail" autocomplete="email" inputmode="email" />
@@ -180,24 +180,11 @@
 
 <script src="../assets/build-prompt.js"></script>
 <script src="../assets/page.js"></script>
-<script type="module">
-  const v = window.__EAI_DEV_V || Date.now().toString(36);
-  const bust = window.__EAI_asset || ((p) => p);
-  const { playBuilderEnter } = await import(bust('../assets/build-sugar-enter.js'));
-
-  const params = new URLSearchParams(location.search);
-  const prompt = (params.get('prompt') || '').trim();
-
-  async function boot() {
-    if (params.get('enter') === '1' && prompt) {
-      await playBuilderEnter(prompt);
-    }
-    window.dispatchEvent(new CustomEvent('bd-enter-done'));
-  }
-
-  boot();
+<script>
+  window.__BD_ENTER_DONE__ = true;
+  sessionStorage.removeItem('build-sugar-enter');
 </script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script src="../assets/mkt-app-preview.js"></script>
 <!-- The inline duplicate of the MKT_APP_PREVIEW renderer that used to sit here is gone.
      It was cache insurance for a bug that turned out to be a temporal-dead-zone throw in
@@ -223,5 +210,6 @@
 <script src="../assets/preview-qr-dialog.js"></script>
 <script src="../assets/publish-success.js"></script>
 <script src="../assets/build-sugar-builder.js"></script>
+<script src="../assets/builder-composer-media.js"></script>
 </body>
 </html>

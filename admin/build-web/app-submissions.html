@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script src="../assets/local-handoff.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+  <script src="../assets/dev-cache.js?v=transition3"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/submissions" />
+<title>Prototype — Submissions · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=transition3" />
+</head>
+<body class="ad ad-submissions-page" data-ad-shell="app" data-ad-rail="submissions">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Submissions</h1>
+      <p id="subDesc">Every form someone filled in through this app.</p>
+    </div>
+  </div>
+
+  <div class="ad-submissions-toolbar" style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+    <div class="ad-f" style="flex:1;min-width:0;">
+      <div class="ctl" style="margin-top:0;">
+        <span style="color:var(--ad-faint);display:flex;" id="searchIcon"></span>
+        <input id="q" type="search" placeholder="Search by reference or person…" style="flex:1;border:0;outline:none;padding:0;height:auto;margin-top:0;" />
+      </div>
+    </div>
+    <select id="statusFilter" style="height:36px;padding:0 12px;border:1px solid var(--ad-line);border-radius:6px;background:#fff;font-size:14px;font-weight:500;">
+      <option value="">All statuses</option>
+      <option value="completed">Completed</option>
+      <option value="in_progress">In progress</option>
+      <option value="abandoned">Abandoned</option>
+    </select>
+    <div class="ad-pop-wrap" id="rangeWrap" data-open="false">
+      <button class="ad-btn" type="button" id="rangeBtn" aria-expanded="false" aria-haspopup="dialog"></button>
+      <div class="ad-range-pop" id="rangePop" hidden role="dialog" aria-label="Date range">
+        <div class="ad-range-presets">
+          <button type="button" data-preset="today">Today</button>
+          <button type="button" data-preset="7">Last 7 days</button>
+          <button type="button" data-preset="30" class="on">Last 30 days</button>
+        </div>
+        <div class="ad-range-fields">
+          <label>From<input type="date" id="rangeFrom" value="2026-08-04" /></label>
+          <label>To<input type="date" id="rangeTo" value="2026-09-02" /></label>
+        </div>
+        <div class="ad-range-foot">
+          <button class="ad-btn sm" type="button" data-range-clear>Reset</button>
+          <button class="ad-btn sm dark" type="button" data-range-apply>Apply</button>
+        </div>
+      </div>
+    </div>
+    <div class="ad-pop-wrap ad-export-wrap" id="exportWrap" data-open="false">
+      <button class="ad-btn" type="button" id="exportBtn" aria-expanded="false" aria-haspopup="menu"></button>
+      <div class="ad-menu" id="exportMenu" hidden>
+        <button type="button" data-export="csv">Export as CSV</button>
+        <button type="button" data-export="pdf">Export as PDF</button>
+        <button type="button" data-export="xlsx">Export as Excel (.xlsx)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-c ad-submissions-table-card" style="margin-top:16px;">
+    <div class="ad-t">
+      <div class="hd" id="subHead">
+        <div style="width:104px;flex:0 0 104px;">Reference</div>
+        <div class="grow">Person</div>
+        <div style="width:132px;flex:0 0 132px;">Started</div>
+        <div style="width:132px;flex:0 0 132px;">Status</div>
+        <div style="width:150px;flex:0 0 150px;">Reached</div>
+        <div style="width:128px;flex:0 0 128px;">Device</div>
+        <div style="width:76px;flex:0 0 76px;" class="num">Time</div>
+        <div style="width:20px;flex:0 0 20px;"></div>
+      </div>
+      <div id="subRows"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=transition3"></script>
+<script src="../assets/admin-filters.js?v=mtg8tt0q.j1"></script>
+<script>
+  const D = window.ADMIN;
+  const A = window.ADANALYTICS;
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
+  const appId = app.id;
+  if (qs.get('demo') === 'michael' && qs.get('embedded') !== '1' && window.adBuilderAppHref) {
+    location.replace(window.adBuilderAppHref(appId, 'submissions'));
+  }
+  const clients = D.clientsFor(appId);
+  const multiClient = clients.length > 1;
+  const steps = D.stepsFor(appId);
+  const rows = D.allSubmissionsFor(appId);
+
+  document.title = `Prototype — ${app.name} submissions · Enterprise AI`;
+  document.getElementById('searchIcon').innerHTML = window.adIcon('search');
+  document.getElementById('exportBtn').innerHTML = `${window.adIcon('download')}Export<span class="ad-ico-chev">${window.adIcon('chev')}</span>`;
+
+  if (multiClient) {
+    const person = document.querySelector('#subHead .grow');
+    const clientCol = document.createElement('div');
+    clientCol.style.cssText = 'width:140px;flex:0 0 140px;';
+    clientCol.textContent = 'Client';
+    person.after(clientCol);
+  }
+
+  if (window.__adSubmissionsFiltersTeardown) window.__adSubmissionsFiltersTeardown();
+
+  let filteredCount = rows.length;
+
+  function paintSubs() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    const shown = rows.filter((s) =>
+      (!status || s.status === status) &&
+      (!q || s.ref.toLowerCase().includes(q) || s.who.toLowerCase().includes(q) ||
+        (s.clientName && s.clientName.toLowerCase().includes(q))) &&
+      (!rangeFilter || rangeFilter.matches(s.at)));
+
+    filteredCount = shown.length;
+
+    document.getElementById('subRows').innerHTML = shown.length ? shown.map((s) => {
+      const st = D.STATUS[s.status];
+      const clientCell = multiClient ? `
+        <div style="width:140px;flex:0 0 140px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.clientName}</div>` : '';
+      return `<button class="r" type="button" data-sub="${s.ref}">
+        <div style="width:104px;flex:0 0 104px;font-family:var(--ad-mono);font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.ref}</div>
+        <div class="grow" style="text-align:left;min-width:0;">
+          <span style="display:block;font-size:14px;font-weight:500;">${s.who}</span>
+          <span style="display:block;font-size:12px;color:var(--ad-mute);">${s.email}</span>
+        </div>${clientCell}
+        <div style="width:132px;flex:0 0 132px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${s.at}</div>
+        <div style="width:132px;flex:0 0 132px;display:flex;"><span class="ad-badge ${st.tone}"><i class="dot"></i>${st.label}</span></div>
+        <div style="width:150px;flex:0 0 150px;font-size:13px;color:var(--ad-ink-4);text-align:left;">${steps[s.step - 1]}</div>
+        <div style="width:128px;flex:0 0 128px;font-size:13px;color:var(--ad-ink-4);text-align:left;">
+          <span style="display:block;font-weight:500;color:var(--ad-ink-3);">${s.device}</span>
+          <span style="display:block;font-size:12px;color:var(--ad-mute);">${D.submissionOs(s)}</span>
+        </div>
+        <div style="width:76px;flex:0 0 76px;font-size:13px;color:var(--ad-ink-4);" class="num">${A.formatTime(s.minutes)}</div>
+        <div style="width:20px;flex:0 0 20px;color:var(--ad-faint);" class="end">${window.adIcon('right')}</div>
+      </button>`;
+    }).join('') : `<div class="ad-empty">${rows.length ? 'No submissions match that filter.' : 'No submissions for this app yet.'}</div>`;
+
+    document.querySelectorAll('[data-sub]').forEach((el) => {
+      el.addEventListener('click', () => window.adToast(`${el.dataset.sub} — the answers view isn’t in this prototype yet.`));
+    });
+  }
+
+  document.getElementById('q').addEventListener('input', paintSubs);
+  document.getElementById('statusFilter').addEventListener('change', paintSubs);
+
+  const rangeFilter = window.AD_FILTERS?.bindDateRange({
+    wrap: document.getElementById('rangeWrap'),
+    btn: document.getElementById('rangeBtn'),
+    pop: document.getElementById('rangePop'),
+    fromInput: document.getElementById('rangeFrom'),
+    toInput: document.getElementById('rangeTo'),
+    onApply: () => paintSubs(),
+  });
+
+  const exportFilter = window.AD_FILTERS?.bindExport({
+    wrap: document.getElementById('exportWrap'),
+    btn: document.getElementById('exportBtn'),
+    menu: document.getElementById('exportMenu'),
+    onExport: (format) => {
+      const labels = { csv: 'CSV', pdf: 'PDF', xlsx: 'Excel' };
+      window.adToast(`Exported ${filteredCount} submission${filteredCount === 1 ? '' : 's'} as ${labels[format] || format.toUpperCase()}.`);
+    },
+  });
+
+  window.__adSubmissionsFiltersTeardown = () => {
+    rangeFilter?.teardown();
+    exportFilter?.teardown();
+    window.__adSubmissionsFiltersTeardown = null;
+  };
+
+  paintSubs();
+</script>
+</body>
+</html>

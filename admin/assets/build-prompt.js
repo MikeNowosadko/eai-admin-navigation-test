@@ -26,24 +26,19 @@
 (function () {
   const params = new URLSearchParams(window.location.search);
   const prompt = (params.get('prompt') || '').trim();
-  const experience = params.get('experience');
 
   /** Append the prompt (and anything else already carried) to a URL. */
   window.bdCarry = function bdCarry(url, extra) {
-    if (experience === 'sugar' && /(?:^|\/)admin\/build-web\//.test(String(url))) {
-      return 'test-complete.html?experience=sugar';
-    }
     const [path, existing] = String(url).split('?');
     const q = new URLSearchParams(existing || '');
-    if (prompt) q.set('prompt', prompt);
-    if (experience === 'sugar' || experience === 'full') q.set('experience', experience);
+    if (prompt && !q.has('prompt')) q.set('prompt', prompt);
     Object.entries(extra || {}).forEach(([k, v]) => { if (v) q.set(k, v); });
     const s = q.toString();
     return s ? `${path}?${s}` : path;
   };
 
   window.bdPrompt = prompt;
-  if (!prompt && !experience) return;
+  if (!prompt) return;
 
   window.addEventListener('DOMContentLoaded', () => {
     // Every link that stays inside the prototype keeps the prompt. Doing it
@@ -53,7 +48,7 @@
       a.setAttribute('href', window.bdCarry(a.getAttribute('href')));
     });
 
-    if (!prompt || document.body.dataset.bdStrip === 'off') return;
+    if (document.body.dataset.bdStrip === 'off') return;
 
     const strip = document.createElement('div');
     strip.className = 'bd-strip';

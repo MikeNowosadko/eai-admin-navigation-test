@@ -1,0 +1,231 @@
+/* ------------------------------------------------------------------
+   Homepage → builder enter transition
+------------------------------------------------------------------- */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 120ms ease-out both bd-page-out;
+}
+
+::view-transition-new(root) {
+  animation: 170ms ease-out both bd-page-in;
+}
+
+@keyframes bd-page-out {
+  to { opacity: 0; }
+}
+
+@keyframes bd-page-in {
+  from { opacity: 0; }
+}
+
+/* --- larger app-style composer (homepage) ------------------------- */
+
+.sg-composer-app {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 16px 16px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(9, 9, 11, 0.08);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s;
+}
+
+.sg-composer-app:focus-within {
+  border-color: #52525b;
+  box-shadow: 0 12px 32px rgba(9, 9, 11, 0.1);
+}
+
+.sg-composer-app textarea {
+  width: 100%;
+  min-height: 120px;
+  max-height: 240px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.sg-composer-app textarea::placeholder { color: #a1a1aa; }
+
+.sg-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sg-composer-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* --- homepage launch exit ---------------------------------------- */
+
+body.sg-launching {
+  overflow: hidden;
+}
+
+body.sg-launching .sg-nav,
+body.sg-launching .sg-section,
+body.sg-launching .sg-cta,
+body.sg-launching .sg-footer {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+body.sg-launching .sg-hero-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+body.sg-launching .sg-hero {
+  padding: 0 24px;
+  width: 100%;
+}
+
+body.sg-launching .sg-hero h1,
+body.sg-launching .sg-tagline,
+body.sg-launching .sg-kicker,
+body.sg-launching .sg-chips,
+body.sg-launching .sg-hero-note {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+body.sg-launching .sg-composer-app {
+  transform: scale(0.96) translateY(8px);
+  opacity: 0.6;
+}
+
+body.sg-launching .sg-gopher-scene.collecting .sg-gopher {
+  animation: sg-gopher-bob 0.5s ease-in-out infinite;
+}
+
+body.sg-launching .sg-stage-card.on {
+  box-shadow: 0 0 0 2px #18181b;
+}
+
+/* --- builder enter overlay --------------------------------------- */
+
+.bd-enter {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #fafafa;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+
+.bd-enter[hidden] {
+  display: none;
+}
+
+.bd-enter.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bd-enter-inner {
+  width: min(760px, 100%);
+  text-align: center;
+}
+
+.bd-enter-prompt {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1.5px solid #18181b;
+  border-radius: 14px;
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: left;
+  color: #18181b;
+  box-shadow: 0 8px 24px rgba(9, 9, 11, 0.08);
+  animation: bd-enter-prompt-in 0.5s ease both;
+}
+
+@keyframes bd-enter-prompt-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bd-enter-status {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #71717a;
+  animation: bd-enter-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes bd-enter-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* --- builder: larger composer ------------------------------------ */
+
+.bd-sugar-focus .bd-composer-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 16px 24px 24px;
+}
+
+.bd-sugar-focus .bd-composer-row textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 88px;
+  max-height: 200px;
+  padding: 12px 14px;
+  background: var(--background, #fff);
+  border: 1px solid var(--border, #e4e4e7);
+  border-radius: var(--radius-md, 8px);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+  resize: vertical;
+}
+
+.bd-sugar-focus .bd-composer-row textarea:focus {
+  border-color: #a1a1aa;
+}
+
+.bd-sugar-focus .bd-composer-row textarea:disabled {
+  background: var(--muted, #f4f4f5);
+}
+
+.bd-sugar-focus .bd-composer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.bd-sugar-focus .bd-composer-actions .nb-btn {
+  min-width: 96px;
+}

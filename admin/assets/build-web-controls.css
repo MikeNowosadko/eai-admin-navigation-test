@@ -1,0 +1,111 @@
+/* ⌘K prototype controls — build-web and marketing variants */
+
+.bw-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgb(0 0 0 / 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.bw-sheet-backdrop.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bw-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 901;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: rgb(9 9 11 / 0.94);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid #27272a;
+  box-shadow: -24px 0 60px rgb(0 0 0 / 0.5);
+  color: #fafafa;
+  transform: translateX(100%);
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+}
+
+.bw-sheet.on { transform: translateX(0); }
+
+.bw-sheet h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.bw-sheet .sub {
+  margin: 0 0 20px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #a1a1aa;
+}
+
+.bw-sheet .grp {
+  margin: 18px 0 8px;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.bw-sheet .act {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  color: #fafafa;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.bw-sheet .act:hover { background: #27272a; border-color: #3f3f46; }
+.bw-sheet .act.primary { background: #fafafa; color: #09090b; border-color: #fafafa; }
+.bw-sheet .act.on { border-color: #0099ff; }
+.bw-sheet .act .hint { margin-left: auto; font-size: 11px; font-weight: 400; color: #a1a1aa; }
+
+.bw-sheet .close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #71717a;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.bw-sheet .foot {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #27272a;
+  font-size: 11.5px;
+  color: #71717a;
+}
+
+.bw-sheet kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  font-size: 10.5px;
+}

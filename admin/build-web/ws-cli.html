@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="../assets/local-handoff.js"></script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<script src="../assets/dev-cache.js"></script>
+  <script src="../assets/dev-cache.js?v=transition3"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="eai-url" content="app.enterpriseaigroup.com/cli" />
@@ -12,17 +13,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/admin.css" />
+<link rel="stylesheet" href="../assets/admin.css?v=transition3" />
 </head>
 <body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-mode="cli" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
 
 <div id="adPane">
-  <div id="builderHandoff" hidden style="padding:16px;margin-bottom:24px;border:1px solid #e4e4e7;border-radius:12px;background:#fff;">
-    <strong id="builderHandoffTitle"></strong>
-    <p style="font-size:13px;color:#71717a;">Set up EAI CLI to explore custom logic, integrations and advanced features for this app.</p>
-    <a id="builderHandoffBack" href="index-chat-first.html">Back to the builder</a>
-  </div>
-  <h1 class="ad-home-h1">Get started with the EAI Setup app</h1>
+  <h1 class="ad-home-h1">Get started with the EAI CLI</h1>
 
   <div class="ad-cli">
     <div class="ad-cli-get">
@@ -53,23 +49,11 @@
   </div>
 </div>
 
-<script src="../assets/page.js"></script>
-<script src="../assets/admin-data.js"></script>
-<script src="../assets/admin-shell.js"></script>
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=transition3"></script>
 <script>
-  if (new URLSearchParams(location.search).get('from') === 'builder') {
-    try {
-      const handoff = JSON.parse(sessionStorage.getItem('eai-cli-handoff') || 'null');
-      if (handoff) {
-        document.getElementById('builderHandoff').hidden = false;
-        document.getElementById('builderHandoffTitle').textContent = `Continue building: ${handoff.project}`;
-        const back = new URL(handoff.returnUrl, location.href);
-        if (back.origin === location.origin && back.pathname.endsWith('/builder-chat-first.html')) {
-          document.getElementById('builderHandoffBack').href = back.href;
-        }
-      }
-    } catch (_) { /* Setup remains usable without a saved handoff. */ }
-  }
   document.getElementById('downloadBtn').addEventListener('click', () => {
     window.adToast('Download isn’t wired in this prototype.');
   });

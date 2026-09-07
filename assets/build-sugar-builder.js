@@ -154,9 +154,29 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const sentence = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* What somebody typed is the name of the thing. Asking them to name it
-   again, having just described it, is a question with one answer. */
-const projectName = sentence(state.prompt);
+/* Keep the original prompt in chat; use a concise process name elsewhere. */
+function appNameFromPrompt(prompt) {
+  const topics = [
+    [/\b(?:supplier|vendor)s?\b.*\bonboard|\bonboard\w*\b.*\b(?:supplier|vendor)s?\b/i, 'Supplier Onboarding'],
+    [/\b(?:employee|staff)s?\b.*\bonboard|\bonboard\w*\b.*\b(?:employee|staff)s?\b/i, 'Employee Onboarding'],
+    [/\bKYC\b|\bknow your customer\b/i, 'KYC Onboarding'],
+    [/\binvoice\w*\b.*\bapprov|\bapprov\w*\b.*\binvoice/i, 'Invoice Approval'],
+    [/\binvoice\w*\b/i, 'Invoice Processing'],
+    [/\bleave\b.*\bapprov|\bapprov\w*\b.*\bleave\b/i, 'Leave Approval'],
+  ];
+  const match = topics.find(([pattern]) => pattern.test(prompt));
+  if (match) return match[1];
+  const topic = prompt
+    .replace(/^(?:(?:please|can you|could you|help me|I want to|I'd like to)\s+)+/i, '')
+    .replace(/^(?:build|create|make|design)\s+(?:(?:me|us)\s+)?(?:an?\s+)?(?:app(?:lication)?|tool|system|workflow)\s*(?:(?:that|which)\s+)?(?:(?:helps?\s+)?(?:me|us)\s+)?(?:(?:to|for)\s+)?/i, '')
+    .replace(/^(?:manages?|tracks?|handles?|automates?|improves?|streamlines?)\s+/i, '')
+    .replace(/^(?:my|our|the|an?)\s+/i, '')
+    .split(/[.!?\n]/)[0]
+    .trim().split(/\s+/).slice(0, 6).join(' ');
+  return (topic || 'New App').replace(/\b\w+\b/g, word =>
+    /^[A-Z0-9]+$/.test(word) ? word : sentence(word.toLowerCase()));
+}
+const projectName = chatFirst ? appNameFromPrompt(state.prompt) : sentence(state.prompt);
 
 /* The live QR button, moved into the preview toolbar on every repaint. */
 let mobileQrBtn = null;
@@ -314,6 +334,15 @@ function paintMeter() {
 }
 
 function paintAccount() {
+  if ($('bdHeaderAuth')) {
+    $('bdHeaderAuth').hidden = false;
+    const button = $('bdHeaderAuth').querySelector('[data-header-auth]');
+    if (button) button.textContent = state.authed ? 'Manage apps' : 'Sign In / Sign Up';
+  }
+  if ($('bdHeaderAccount')) {
+    $('bdHeaderAccount').hidden = !state.authed;
+    $('bdHeaderAccount').textContent = state.ws;
+  }
   if (state.authed) {
     $('wsName').textContent = state.ws;
     $('wsInitial').textContent = state.ws.charAt(0).toUpperCase();
@@ -360,9 +389,66 @@ function setStep(step) {
 /* ============================ transcript ========================== */
 
 const log = () => $('bdLog');
+let activeChatMessage = null;
+let followChatMessage = true;
+let chatScrollFrame = null;
+let chatScrollTarget = 0;
+
+function moveChatTo(top) {
+  chatScrollTarget = Math.max(0, top);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    cancelAnimationFrame(chatScrollFrame);
+    chatScrollFrame = null;
+    log().scrollTop = chatScrollTarget;
+    return;
+  }
+  if (chatScrollFrame !== null) return;
+  let previousTime;
+  function step(time) {
+    if (!followChatMessage || !activeChatMessage?.isConnected) {
+      chatScrollFrame = null;
+      return;
+    }
+    const elapsed = previousTime === undefined ? 16 : Math.min(time - previousTime, 64);
+    previousTime = time;
+    const remaining = chatScrollTarget - log().scrollTop;
+    if (Math.abs(remaining) < 1) {
+      log().scrollTop = chatScrollTarget;
+      chatScrollFrame = null;
+      return;
+    }
+    const distance = Math.max(1, Math.abs(remaining) * (1 - Math.exp(-elapsed / 100)));
+    log().scrollTop += Math.sign(remaining) * distance;
+    chatScrollFrame = requestAnimationFrame(step);
+  }
+  chatScrollFrame = requestAnimationFrame(step);
+}
+
+if (chatFirst) {
+  const pauseFollowing = () => { followChatMessage = false; };
+  log().addEventListener('wheel', pauseFollowing, { passive: true });
+  log().addEventListener('touchstart', pauseFollowing, { passive: true });
+  log().addEventListener('keydown', (event) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) pauseFollowing();
+  });
+  new ResizeObserver(() => scroll()).observe(log());
+  new MutationObserver(() => scroll()).observe(log(), { childList: true, subtree: true, characterData: true });
+}
 
 function scroll() {
   const l = log();
+  if (chatFirst) {
+    if (!activeChatMessage?.isConnected) return;
+    const logTop = l.getBoundingClientRect().top;
+    // Align the row boundary, not an inset above it: that inset exposed
+    // the clipped bottom of the preceding message. Rows own their spacing.
+    const top = Math.max(0, activeChatMessage.getBoundingClientRect().top - logTop + l.scrollTop);
+    const children = [...l.children];
+    const bottom = Math.max(...children.map((child) => child.getBoundingClientRect().bottom - l.getBoundingClientRect().top + l.scrollTop));
+    l.style.setProperty('--bd-scroll-space', `${Math.max(0, l.clientHeight - (bottom - top) - 16)}px`);
+    if (followChatMessage) moveChatTo(top);
+    return;
+  }
   l.scrollTop = l.scrollHeight;
 }
 
@@ -380,6 +466,15 @@ function bubble(role, html, cost) {
     row.querySelector('.bd-bub').appendChild(chip);
   }
   log().appendChild(row);
+  if (chatFirst) {
+    if (!row.querySelector('.bd-dots')) {
+      const messages = [...log().children].filter((child) => child.classList.contains('bd-msg') && !child.querySelector('.bd-dots'));
+      // Reset on each new message, retaining the complete previous message.
+      // Follow-up cards stay attached to the message that introduced them.
+      activeChatMessage = messages[messages.length - 2] || row;
+      followChatMessage = true;
+    }
+  }
   scroll();
   return row;
 }
@@ -431,6 +526,11 @@ function authRequiredFor(cost) {
 
 function requireAuth(cost, resume, { atPublish = false } = {}) {
   if (state.authed) return true;
+  if (chatFirst && state.generated) {
+    state.pendingAuth = resume;
+    showAuthGate('preview-limit');
+    return false;
+  }
   /* Sugarhead: delay sign-in until publish — let them see full value first. */
   if (sugarhead && !atPublish) return true;
   if (!sugarhead && !authRequiredFor(cost)) return true;
@@ -681,11 +781,19 @@ function fitFork(trigger) {
 /** The exit. Everything a person built is named in the URL, because the
     whole offer depends on it arriving at the other end. */
 function goCli(why) {
-  location.href = window.bdCarry('app.html', {
+  saveNcbPreview();
+  if (chatFirst) {
+    sessionStorage.setItem('eai-cli-handoff', JSON.stringify({
+      project: projectName, prompt: state.prompt, brand: state.brandKey,
+      extraFields: state.extraFields, workflow: WORKFLOW, returnUrl: location.href,
+    }));
+  }
+  location.href = window.bdCarry(chatFirst ? '../admin/build-web/builder.html' : 'app.html', {
     tab: 'cli',
     ws: state.ws,
     email: state.email,
     project: projectName,
+    ...(chatFirst ? { demo: 'michael', handoff: '1', published: state.published ? '1' : '0', app: 'vendor-onboarding', surface: 'ncb', view: 'dashboard', section: 'overview', cliSetup: '1', drawer: 'open' } : {}),
     from: why,
   });
 }
@@ -777,6 +885,7 @@ function paintMktPreviewStep(index) {
   const brand = window.BrandMatch?.getActiveBrand?.();
   const app = PL.workflowToApp(WORKFLOW, index, projectName);
   const frame = $('bdFrame');
+  const publishButton = chatFirst ? $('bdPublish') : null;
   frame.dataset.device = state.device;
   frame.innerHTML = PL.render(app, {
     activeStep: index,
@@ -790,6 +899,46 @@ function paintMktPreviewStep(index) {
      not by id — repainting the frame detaches it from the document. */
   const slot = frame.querySelector('.mkt-wf-mobile-slot');
   if (slot && mobileQrBtn) slot.replaceWith(mobileQrBtn);
+  if (chatFirst) {
+    frame.querySelector('.mkt-wf-bar > .mkt-seg-tabs')?.remove();
+    if (params.get('previewOnly') !== '1') {
+      const settings = document.createElement('button');
+      settings.type = 'button';
+      settings.className = 'bd-mobile-qr bd-app-settings';
+      settings.textContent = 'App settings';
+      settings.addEventListener('click', () => {
+        const openSettings = () => {
+          saveNcbPreview();
+          location.href = window.bdCarry('../admin/build-web/builder.html', {
+            demo: 'michael', handoff: '1', app: 'vendor-onboarding',
+            surface: 'ncb', view: 'dashboard', section: 'settings', drawer: 'open',
+            project: projectName, prompt: state.prompt, ws: state.ws, email: state.email,
+            published: state.published ? '1' : '0', appUrl: state.published ? publicUrl() : '',
+          });
+        };
+        if (requireAuth(0, openSettings, { atPublish: true })) openSettings();
+        else {
+          $('gateLede').textContent = 'Sign in to open app settings';
+          $('wsGo').textContent = 'Continue to app settings';
+        }
+      });
+      frame.querySelector('.mkt-wf-bar')?.prepend(settings);
+    }
+    frame.querySelectorAll('.mkt-app-devices button').forEach((button) => {
+      const label = document.createElement('span');
+      label.textContent = button.getAttribute('aria-label');
+      button.appendChild(label);
+    });
+    if (mobileQrBtn) {
+      mobileQrBtn.title = 'Preview link';
+      mobileQrBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Preview link';
+      const actions = document.createElement('div');
+      actions.className = 'bd-preview-actions';
+      mobileQrBtn.replaceWith(actions);
+      actions.appendChild(mobileQrBtn);
+      if (publishButton && params.get('previewOnly') !== '1') actions.appendChild(publishButton);
+    }
+  }
   PL.bind(frame, {
     onStep: (i) => {
       state.activeStep = i;
@@ -985,7 +1134,20 @@ const QUESTIONS = [
   },
 ];
 
+let pendingChoiceReply = null;
+
+function setChoiceReply(handler) {
+  pendingChoiceReply = handler;
+  $('bdSay').disabled = !handler;
+  $('bdSend').disabled = !handler;
+  $('bdSay').placeholder = handler ? 'Choose an option or reply here...' : 'Describe a change…';
+}
+
 function askClarify() {
+  if (chatFirst) {
+    // Preserve the exchange anchor when the question panel opens.
+    scroll();
+  }
   return new Promise((resolve) => {
     let at = 0;
     let done = false;
@@ -1024,17 +1186,31 @@ function askClarify() {
           <button class="bd-cl-skip" type="button" data-skip>Skip &mdash; just build it</button>
         </div>`;
 
-      box.querySelectorAll('.bd-cl-opts button, .bd-cl-radio button').forEach((b) => {
+      if (chatFirst) {
+        box.className = 'bd-choice-card';
+        box.innerHTML = `
+          <div class="bd-choice-heading"><h3>${esc(q.q)}</h3><span>${at + 1} of ${QUESTIONS.length} · Choose one</span></div>
+          <p>Choose an option below or write your answer in the chat.</p>
+          ${q.opts.map((option, i) => `<button type="button" data-i="${i}"><span class="bd-choice-number">${i + 1}</span><span><b>${esc(option)}</b></span></button>`).join('')}
+          <div class="bd-choice-footer"><button type="button" data-skip>Skip — just build it</button></div>`;
+      }
+
+      box.querySelectorAll('[data-i]').forEach((b) => {
         b.addEventListener('click', () => pick(q.opts[Number(b.dataset.i)]));
       });
       const other = box.querySelector('[data-other]');
-      other.addEventListener('keydown', (e) => {
+      other?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && other.value.trim()) pick(other.value.trim());
       });
       box.querySelector('[data-skip]').addEventListener('click', () => finish(true));
+      if (chatFirst) setChoiceReply((text) => {
+        const option = /^[1-3]$/.test(text) ? q.opts[Number(text) - 1] : text;
+        pick(option);
+      });
     }
 
     function pick(value) {
+      if (chatFirst) bubble('user', esc(value));
       answers.push({ q: QUESTIONS[at].q, a: value });
       at += 1;
       if (at >= QUESTIONS.length) return finish(false);
@@ -1044,8 +1220,9 @@ function askClarify() {
     function finish(skipped) {
       if (done) return;
       done = true;
+      if (chatFirst) setChoiceReply(null);
       box.remove();
-      if (!skipped && answers.length) {
+      if (!skipped && answers.length && !chatFirst) {
         /* clarification-answers-card.tsx: a read-only record of what was
            confirmed, not a chat bubble pretending they typed it. */
         card(`
@@ -1073,13 +1250,16 @@ async function generate() {
      right has been the answer since the first paint. */
   if (sugarhead) {
     state.generated = true;
-    await say('Done — it\'s wearing your brand. Try the steps and the device sizes on the right, then publish when it looks right.', cost);
+    await say(chatFirst
+      ? 'Your first version is ready, with your company’s colours and logo.\n\nTry it out in the preview. Walk through the process and see how it looks on desktop, tablet or mobile.\n\nWhat would you like to change? Tell me here and we’ll refine it together. For custom logic, integrations or more advanced features, you can continue in EAI CLI using the option below.\n\nWhen you’re happy with it, click Publish.'
+      : 'Done — it\'s wearing your brand. Try the steps and the device sizes on the right, then publish when it looks right.', cost);
     paintMktPreviewStep(state.activeStep);
     setStep('improve');
     $('bdPublish').disabled = false;
     $('bdSay').disabled = false;
     $('bdSend').disabled = false;
     $('bdSay').placeholder = 'Describe a change…';
+    if (chatFirst) $('bdCliOffer').hidden = false;
     return;
   }
 
@@ -1255,7 +1435,7 @@ async function run() {
   if (chatFirst) {
     await thinking(900);
     const understood = charge('understand');
-    await say(`Right — ${state.prompt}. A few questions first — they're free, asking you something isn't work.`, understood);
+    await say(`Right — ${state.prompt}. A few questions first...`, understood);
     await askClarify();
     await wait(200);
     await say('Here\'s my understanding of the process — confirm or refine it before we build.');
@@ -1303,7 +1483,7 @@ async function run() {
 async function brandThenGenerate() {
   setStep('generate');
   if (window.BrandMatch) {
-    await say('One thing — your work email, so it can wear your colours and logo.');
+    await say('Next, let’s make it look like your app. Enter your work email to apply your company’s colours and logo.');
     /* The card lands in the transcript where the question was asked, not
        pinned above the composer: it is a turn in the conversation. */
     const r = await window.BrandMatch.askInChat(log(), esc, () => paintTemplatePreview());
@@ -1360,13 +1540,20 @@ async function continueAfterChatFirstCard() {
 async function send() {
   const input = $('bdSay');
   const text = input.value.trim();
+  if (text && pendingChoiceReply) {
+    input.value = '';
+    pendingChoiceReply(text);
+    return;
+  }
   if (!text || state.busy) return;
   if (state.credits <= 0) { costFork(); return; }
   if (!requireAuth(PRICE.change, () => send())) return;
 
   state.busy = true;
   input.value = '';
-  bubble('user', esc(text));
+  const attachments = window.builderComposerMedia?.take() || [];
+  const attachmentLinks = attachments.map((file) => `<a class="bd-sent-file" href="${esc(file.url)}" download="${esc(file.name)}">📎 ${esc(file.name)}</a>`).join('');
+  bubble('user', esc(text) + attachmentLinks);
 
   if (APP_WORDS.test(text) && !state.fitForkShown) {
     state.pendingFit = (text.match(APP_WORDS) || [])[0];
@@ -1431,9 +1618,10 @@ async function publish() {
   const cost = sugarhead ? 0 : charge('publish');
   await thinking(900);
   state.published = true;
+  saveNcbPreview();
   paintPreview();
   setStep('publish');
-  $('bdPublish').textContent = 'Republish';
+  $('bdPublish').textContent = chatFirst ? 'Publish' : 'Republish';
   const url = publicUrl();
   if (sugarhead && window.showPublishSuccess) {
     state.busy = false;
@@ -1441,17 +1629,20 @@ async function publish() {
       projectName,
       publicUrl: url,
       onManage: () => {
-        location.href = window.bdCarry('ws-home.html', {
+        location.href = window.bdCarry(chatFirst ? '../admin/build-web/ws-home.html' : 'ws-home.html', {
           tenancy: 'seeded',
           email: state.email,
           ws: state.ws,
+          ...(chatFirst ? { demo: 'michael', handoff: '1', project: projectName, prompt: state.prompt, published: '1', appUrl: url } : {}),
         });
       },
       onCli: () => {
-        location.href = window.bdCarry('ws-cli.html', {
+        if (chatFirst) { goCli('publish'); return; }
+        location.href = window.bdCarry(chatFirst ? '../admin/build-web/ws-cli.html' : 'ws-cli.html', {
           email: state.email,
           ws: state.ws,
           project: projectName,
+          ...(chatFirst ? { demo: 'michael', handoff: '1', published: '1', appUrl: url } : {}),
         });
       },
       onKeepEditing: () => {},
@@ -1519,7 +1710,7 @@ function prefillAuthGate() {
   $('gateGo').disabled = !validEmail($('gateEmail').value);
 }
 
-function showAuthGate() {
+function showAuthGate(mode) {
   const gate = $('authGate');
   const lede = $('gateLede');
   if (lede) {
@@ -1533,6 +1724,26 @@ function showAuthGate() {
   document.body.classList.add('bd-gate');
   showSignUpPanel();
   prefillAuthGate();
+  if (mode === 'signin' || mode === 'signup') {
+    lede.textContent = mode === 'signin' ? 'Sign in to your workspace' : 'Create your account';
+  }
+  document.querySelectorAll('.bd-oauth-btn').forEach((button) => {
+    const provider = button.dataset.provider;
+    button.textContent = (mode === 'signup' ? 'Sign up with ' : 'Sign in with ')
+      + ({ google: 'Google', github: 'GitHub', microsoft: 'Microsoft' }[provider]);
+  });
+  $('wsGo').textContent = mode ? 'Continue to workspace' : 'Continue to publish';
+  const explanation = $('gateExplanation');
+  if (explanation) {
+    explanation.hidden = !(chatFirst && state.generated);
+    explanation.textContent = mode === 'leave'
+      ? 'Sign in or create an account to keep working on your app. Leaving now may lose your unsaved work.'
+      : 'Your free preview is ready. Sign in or create an account to keep chatting, add features and publish your app. You can still explore the preview without signing in.';
+  }
+  if (chatFirst && state.generated) {
+    lede.textContent = mode === 'leave' ? 'Keep your work before you leave' : 'Sign in to continue with your app';
+    $('wsGo').textContent = 'Continue with my app';
+  }
   $('gateEmail').focus();
 }
 
@@ -1652,6 +1863,15 @@ $('bdPublish').addEventListener('click', () => void publish());
 /* The CLI tab is the same fork, reachable at any time — which is the
    point of it sitting above everything else in the sidebar. */
 $('tabCli')?.addEventListener('click', () => goCli('tab'));
+$('bdContinueCli')?.addEventListener('click', () => {
+  const proceed = () => goCli('builder');
+  if (!requireAuth(0, proceed, { atPublish: true })) {
+    $('gateLede').textContent = 'Sign in or create an account to continue in EAI CLI';
+    $('wsGo').textContent = 'Continue to CLI';
+    return;
+  }
+  proceed();
+});
 
 document.querySelectorAll('#bdMode button, #bdDevice button').forEach((b) => {
   b.addEventListener('click', () => {
@@ -1678,6 +1898,47 @@ document.querySelectorAll('[data-keep]').forEach((a) => {
 });
 
 wireAuthGate();
+if (chatFirst) {
+  const needsAccount = () => state.generated && !state.authed;
+  // Drafting (including attachments and dictation) stays available.
+  // send() checks authentication before clearing or submitting the draft.
+  window.addEventListener('beforeunload', (event) => {
+    if (!needsAccount()) return;
+    // Browsers own the exit warning. If the user stays, the sign-in
+    // panel is ready in the unchanged builder beneath that warning.
+    showAuthGate('leave');
+    event.preventDefault();
+    event.returnValue = true;
+  });
+  document.querySelector('.bd-sugar-home')?.addEventListener('click', (event) => {
+    if (!needsAccount()) return;
+    event.preventDefault();
+    showAuthGate('leave');
+  });
+}
+document.querySelectorAll('[data-header-auth]').forEach((button) => {
+  button.addEventListener('click', () => {
+    if (!state.authed) {
+      showAuthGate(button.dataset.headerAuth);
+      return;
+    }
+    saveNcbPreview();
+    location.href = window.bdCarry('../admin/build-web/ws-home.html', {
+      demo: 'michael', handoff: '1', ws: state.ws, email: state.email,
+      project: projectName, prompt: state.prompt,
+      published: state.published ? '1' : '0',
+      appUrl: state.published ? publicUrl() : '',
+    });
+  });
+});
+$('bdAuthClose')?.addEventListener('click', () => {
+  state.pendingAuth = null;
+  hideAuthGate();
+  if (chatFirst && params.get('signin') === '1' && !state.runStarted) {
+    wireSugarheadExtras();
+    void run();
+  }
+});
 
 function sugarheadPreviewUrl(token) {
   const brand = window.BrandMatch?.getActiveBrand?.();
@@ -1708,15 +1969,55 @@ function wireSugarheadExtras() {
   });
 }
 
+function saveNcbPreview() {
+  if (!chatFirst || !state.generated) return;
+  try {
+    localStorage.setItem('eai-local-admin:ncb-preview', JSON.stringify({
+      project: projectName, prompt: state.prompt, ws: state.ws,
+      brandKey: state.brandKey, branded: state.branded,
+      extraFields: state.extraFields, published: state.published,
+    }));
+  } catch { /* Preview remains available if browser storage is unavailable. */ }
+}
+
 function bootBuilder() {
+  if (chatFirst && params.get('signin') === '1') {
+    paintAccount();
+    state.pendingAuth = () => {
+      location.href = window.bdCarry('../admin/build-web/ws-home.html', {
+        demo: 'michael', email: state.email, ws: state.ws,
+      });
+    };
+    showAuthGate('signin');
+    return;
+  }
   if (sugarhead) {
     wireSugarheadExtras();
     if (!chatFirst) paintTemplatePreview();
   }
+  if (chatFirst && params.get('previewOnly') === '1') {
+    let saved;
+    try { saved = JSON.parse(localStorage.getItem('eai-local-admin:ncb-preview')); } catch {}
+    if (saved && saved.project === projectName && saved.ws === state.ws) {
+      state.brandKey = saved.brandKey;
+      state.branded = saved.branded;
+      state.extraFields = saved.extraFields || [];
+      state.published = saved.published;
+    } else {
+      state.brandKey = window.BrandMatch?.resolveBrand?.(state.email)?.key || 'none';
+    }
+    window.BrandMatch?.setActive(state.brandKey, state.email);
+    state.generated = true;
+    state.runStarted = true;
+    document.body.classList.add('bd-preview-only', 'bd-has-preview');
+    document.title = projectName;
+    paintTemplatePreview();
+    return;
+  }
   void run();
 }
 
-if (new URLSearchParams(location.search).get('enter') === '1') {
+if (new URLSearchParams(location.search).get('enter') === '1' && !window.__BD_ENTER_DONE__) {
   window.addEventListener('bd-enter-done', bootBuilder, { once: true });
 } else {
   bootBuilder();

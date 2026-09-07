@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script src="../assets/local-handoff.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+  <script src="../assets/dev-cache.js?v=transition3"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/me" />
+<title>Prototype — Your profile · Enterprise AI</title>
+<script>
+  if (new URLSearchParams(location.search).get('demo') === 'michael') {
+    const params = new URLSearchParams(location.search);
+    params.set('profile', '1');
+    location.replace(`ws-home.html?${params.toString()}`);
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css?v=transition3" />
+</head>
+<body class="ad" data-ad-shell="ws" data-ad-nav="profile" data-ad-title="Your profile">
+
+<div id="adPane">
+  <div class="ad-hd">
+    <div>
+      <h1>Profile</h1>
+      <p>How you appear to everyone you build with.</p>
+    </div>
+    <div class="ad-hd-acts"><button class="ad-btn dark" type="button" id="saveBtn">Save changes</button></div>
+  </div>
+
+  <div class="ad-c pad" style="margin-top:24px;">
+    <div style="display:flex;align-items:flex-start;gap:20px;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:88px;">
+        <div style="width:72px;height:72px;border-radius:999px;background:var(--ad-line);color:var(--ad-ink-3);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;" id="pAv">GC</div>
+        <button type="button" class="ad-link" style="margin-top:8px;font-size:12px;" data-stub>Change photo</button>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div class="ad-f-row">
+          <div class="ad-f"><label for="pName">Full name</label><input id="pName" type="text" /></div>
+          <div class="ad-f"><label for="pTitle">What you do</label><input id="pTitle" type="text" /></div>
+        </div>
+        <div class="ad-f"><label for="pEmail">Email</label>
+          <div class="ctl read"><span class="grow" id="pEmail"></span><span class="ad-badge green">Verified</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-c">
+    <div class="ad-c-hd">
+      <div><h2>Your workspaces</h2><p class="sub">Your role is set by each workspace owner.</p></div>
+    </div>
+    <div id="wsRows"></div>
+  </div>
+
+  <div class="ad-c">
+    <div class="ad-c-row" style="border-top:0;">
+      <div class="tx" style="flex:1;min-width:0;">
+        <b>How you build</b>
+        <span id="harnessLine">&mdash;</span>
+      </div>
+      <div style="display:flex;gap:6px;" id="harnessChips"></div>
+      <button class="ad-btn sm" type="button" id="changeHarness">Change</button>
+    </div>
+    <div class="ad-c-row">
+      <div class="tx"><b>Notifications</b><span>Daily digest of submissions that need you.</span></div>
+      <button class="ad-toggle on" type="button" id="notificationToggle" data-toggle aria-label="Daily notification digest" aria-pressed="true"><i></i></button>
+    </div>
+    <div class="ad-c-row">
+      <div class="tx"><b>Sign-in &amp; security</b><span>Microsoft Entra ID · last signed in 2 minutes ago</span></div>
+      <button class="ad-btn sm" type="button" data-stub>Manage</button>
+    </div>
+  </div>
+
+  <div class="ad-c" style="border-color:#FECACA;">
+    <div class="ad-c-row" style="border-top:0;">
+      <div class="tx"><b>Sign out everywhere</b><span>Ends every session on every device, including this one.</span></div>
+      <button class="ad-btn sm" type="button" style="border-color:#FECACA;color:var(--ad-red);" data-stub>Sign out everywhere</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/page.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-analytics.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-data.js?v=mtg8tt0q.j1"></script>
+<script src="../assets/admin-shell.js?v=transition3"></script>
+<script>
+  const D = window.ADMIN;
+  const u = D.user;
+  const w = D.workspace;
+  const h = D.harness;
+  const profilePreferences = window.adDemoStore.read('profile', {
+    name: u.name,
+    title: u.title,
+    notifications: true,
+  });
+
+  u.name = profilePreferences.name;
+  u.title = profilePreferences.title;
+  u.av = profilePreferences.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase() || u.av;
+
+  document.getElementById('pAv').textContent = u.av;
+  document.getElementById('pName').value = u.name;
+  document.getElementById('pTitle').value = u.title;
+  document.getElementById('pEmail').textContent = u.email;
+  const notificationToggle = document.getElementById('notificationToggle');
+  notificationToggle.classList.toggle('on', profilePreferences.notifications !== false);
+  notificationToggle.setAttribute('aria-pressed', String(profilePreferences.notifications !== false));
+
+  const WORKSPACES = [
+    { initial: w.initial, name: w.name, meta: `${D.processes.length} apps · 42 credits left`, role: 'Owner', dark: true },
+    { initial: 'B', name: 'Bendigo pilot', meta: '1 app · guest access', role: 'Builder', dark: false },
+  ];
+  document.getElementById('wsRows').innerHTML = WORKSPACES.map((x) => `
+    <div class="ad-c-row">
+      <span class="ad-avatar sq" style="${x.dark ? 'background:#18181B;color:#fff;' : 'background:var(--ad-line);color:var(--ad-ink-3);'}width:28px;height:28px;flex-basis:28px;">${x.initial}</span>
+      <div class="tx" style="flex:1;min-width:0;"><b>${x.name}</b></div>
+      <span style="width:190px;flex:0 0 190px;font-size:13px;color:var(--ad-mute);">${x.meta}</span>
+      <span class="ad-role">${x.role}</span>
+    </div>`).join('');
+
+  function paintHarness() {
+    const surface = h.surface === 'cli' ? ['CLI'] : h.surface === 'nocode' ? ['No-code'] : ['No-code', 'CLI'];
+    document.getElementById('harnessChips').innerHTML = surface.map((s) => `<span class="ad-chip">${s}</span>`).join('');
+    document.getElementById('harnessLine').textContent =
+      `${surface.join(' and ')}, running ${h.agent}. Inherited from ${w.name}.`;
+  }
+  paintHarness();
+
+  document.getElementById('changeHarness').addEventListener('click', () => {
+    window.adToast('Your workspace owner sets this in Settings → Harness defaults.');
+  });
+  notificationToggle.addEventListener('click', () => {
+    const on = !notificationToggle.classList.contains('on');
+    notificationToggle.classList.toggle('on', on);
+    notificationToggle.setAttribute('aria-pressed', String(on));
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const name = document.getElementById('pName').value.trim();
+    const title = document.getElementById('pTitle').value.trim();
+    if (!name || !title) {
+      window.adToast('Enter your name and job title before saving.');
+      return;
+    }
+    const initials = name.split(/\s+/).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase();
+    const next = { name, title, notifications: notificationToggle.classList.contains('on') };
+    window.adDemoStore.write('profile', next);
+    u.name = name;
+    u.title = title;
+    u.av = initials;
+    document.getElementById('pAv').textContent = initials;
+    document.querySelectorAll('.ad-user .tx b, .ad-user-menu-head .tx b').forEach((el) => { el.textContent = name; });
+    document.querySelectorAll('.ad-user .av, .ad-user-menu-head .av').forEach((el) => { el.textContent = initials; });
+    window.adToast('Profile saved.');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script src="../assets/local-handoff.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script src="../assets/dev-cache.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/processes/submissions/detail" />
+<title>Prototype — Submission · Enterprise AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/admin.css" />
+</head>
+<body class="ad" data-ad-shell="app" data-ad-rail="submissions">
+
+<div id="adPane">
+  <div class="ad-sub-hd">
+    <a class="ad-sub-back" id="backLink" href="#"></a>
+    <div>
+      <h1>Submission <span class="mono" id="subRef">—</span></h1>
+      <p class="sub" id="subApp">—</p>
+    </div>
+  </div>
+
+  <div id="subBody"></div>
+</div>
+
+<script src="../assets/page.js"></script>
+<script src="../assets/admin-analytics.js"></script>
+<script src="../assets/admin-data.js"></script>
+<script src="../assets/admin-shell.js"></script>
+<script>
+  const D = window.ADMIN;
+  const A = window.ADANALYTICS;
+  const qs = new URLSearchParams(location.search);
+  const app = D.process(qs.get('app'));
+  const appId = app.id;
+  const ref = qs.get('ref') || '';
+  const clientId = qs.get('client') || '';
+  const detail = D.submissionDetail(appId, ref);
+
+  const backHref = clientId
+    ? `app-client.html?app=${appId}&client=${encodeURIComponent(clientId)}&tab=submissions`
+    : `app-submissions.html?app=${appId}`;
+
+  document.getElementById('backLink').href = backHref;
+  document.getElementById('backLink').innerHTML = `${window.adIcon('left')}Submissions`;
+  document.title = `Prototype — ${ref || 'Submission'} · ${app.name}`;
+
+  const body = document.getElementById('subBody');
+
+  if (!detail) {
+    document.getElementById('subRef').textContent = ref || '—';
+    document.getElementById('subApp').textContent = app.name;
+    body.innerHTML = `
+      <div class="ad-c pad" style="margin-top:24px;">
+        <div class="ad-empty" style="padding:32px 20px;">This submission could not be found.</div>
+      </div>`;
+  } else {
+    const s = detail.submission;
+    const st = D.STATUS[s.status];
+    document.getElementById('subRef').textContent = s.ref;
+    document.getElementById('subApp').textContent = app.name;
+
+    const duration = s.status === 'completed'
+      ? `${A.formatTime(s.minutes)} total`
+      : `Reached step ${s.step} of ${detail.groups.length}`;
+
+    body.innerHTML = `
+      <div class="ad-c pad ad-sub-summary" style="margin-top:24px;">
+        <div class="ad-sub-summary-hd">
+          <div class="who">
+            <span class="av">${s.who.split(' ').map((w) => w[0]).join('').slice(0, 2)}</span>
+            <div>
+              <b>${s.who}</b>
+              <span class="ad-badge ${st.tone}"><i class="dot"></i>${st.label}</span>
+            </div>
+          </div>
+          <span class="count">${detail.answered} of ${detail.fillable} questions answered</span>
+        </div>
+        <dl class="ad-sub-meta">
+          <div><dt>Email</dt><dd>${s.email}</dd></div>
+          <div><dt>Started</dt><dd>${s.at}</dd></div>
+          <div><dt>${s.status === 'completed' ? 'Completed' : 'Progress'}</dt><dd>${duration}</dd></div>
+          <div><dt>Device</dt><dd>${s.device} · ${D.submissionOs(s)}</dd></div>
+        </dl>
+      </div>
+      ${detail.groups.map((g) => `
+        <div class="ad-c pad ad-sub-step${g.reached ? '' : ' dim'}">
+          <div class="ad-sub-step-hd">
+            <h2><span class="step-num">Step ${g.index + 1}</span>${g.title}</h2>
+            ${!g.reached ? '<span class="ad-badge grey">Not reached</span>' : ''}
+            ${g.active ? '<span class="ad-badge amber">In progress</span>' : ''}
+          </div>
+          ${g.fields.length ? `
+            <dl class="ad-sub-fields">
+              ${g.fields.map((f) => `
+                <div class="ad-sub-field">
+                  <dt>${f.label}</dt>
+                  <dd${f.empty ? ' class="empty"' : ''}>${f.empty ? 'Not answered' : f.value}</dd>
+                </div>`).join('')}
+            </dl>` : `<p class="ad-sub-empty">No respondent-filled fields on this step.</p>`}
+        </div>`).join('')}`;
+  }
+</script>
+</body>
+</html>

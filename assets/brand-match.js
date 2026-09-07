@@ -239,7 +239,7 @@
         if (id) {
           const el = row.querySelector(`#${id}`);
           if (el) {
-            el.focus();
+            el.focus({ preventScroll: true });
             if (pos != null && el.setSelectionRange) el.setSelectionRange(pos, pos);
           }
         }
@@ -301,7 +301,7 @@
 
       paint(false);
       const first = row.querySelector('#cemail');
-      if (first && document.activeElement === document.body) first.focus();
+      if (first && document.activeElement === document.body) first.focus({ preventScroll: true });
     });
   }
 
