@@ -37,7 +37,7 @@
 
   /* The pages this router owns. A link to anything else is a real link. */
   const ROUTES = [
-    'ws-home.html', 'ws-processes.html', 'ws-cli.html', 'ws-templates.html', 'ws-integrations.html',
+    'builder.html', 'ws-home.html', 'ws-processes.html', 'ws-cli.html', 'ws-templates.html', 'ws-integrations.html',
     'ws-users.html', 'ws-settings.html', 'ws-advanced-settings.html', 'profile.html',
     'app-overview.html', 'app-submissions.html', 'app-analytics.html', 'app-users.html', 'app-general.html', 'app-configure.html', 'app-clients.html', 'app-client.html',
   ];
@@ -237,6 +237,12 @@
       source: 'workspace',
       drawer: 'open',
     });
+    if (app.companyId && buildSurface === 'ncb' && section === 'overview') {
+      query.set('experience', 'full');
+      query.set('workspaceApp', '1');
+      query.set('prompt', app.prompt || app.name);
+      return '../../build-web/builder-chat-first.html?' + query.toString();
+    }
     if (section && section !== 'overview') query.set('section', section);
     return `builder.html?${query.toString()}`;
   }
@@ -331,6 +337,8 @@
   function michaelCompanyProcesses() {
     const ids = MICHAEL_COMPANY_APPS[michaelActiveCompany().id] || [];
     const apps = ids.map((id) => D.processes.find((process) => process.id === id)).filter(Boolean);
+    const extra = D.processes.filter(app => app.companyId === michaelActiveCompany().id && !ids.includes(app.id));
+    if (extra.length) return [...extra, ...apps];
     if (createdApp?.name && michaelActiveCompany().id === 'northwind-ops') {
       return apps.sort((a, b) => (a.id === 'vendor-onboarding' ? -1 : b.id === 'vendor-onboarding' ? 1 : 0));
     }
@@ -355,7 +363,7 @@
           <div class="ad-company-label">Companies</div>
           <div class="ad-company-list" role="listbox" aria-label="Companies">
             ${MICHAEL_COMPANIES.map((company) => `
-              <button class="ad-company-row depth-${company.depth}${company.id === active.id ? ' on' : ''}" type="button" role="option" aria-selected="${company.id === active.id}" data-company-id="${company.id}" data-company-parent="${company.parent || ''}" data-company-name="${esc(company.name.toLowerCase())}">
+              <button class="ad-company-row depth-${company.depth}${company.id === active.id ? ' on' : ''}" type="button" disabled role="option" aria-disabled="true" aria-selected="${company.id === active.id}" data-company-id="${company.id}" data-company-parent="${company.parent || ''}" data-company-name="${esc(company.name.toLowerCase())}">
                 ${company.depth ? '<span class="branch" aria-hidden="true"></span>' : ''}
                 <span class="company-icon">${svg('building')}</span>
                 <span class="company-name">${esc(company.name)}</span>
@@ -489,7 +497,7 @@
     const leaveApproval = D.processes.find((process) => process.id === 'leave-approval');
     const vendorOnboarding = D.processes.find((process) => process.id === 'vendor-onboarding');
     const kycOnboarding = D.processes.find((process) => process.id === 'kyc-onboarding');
-    const primaryApp = companyApps[0];
+    const primaryApp = companyApps.find(app => app.id === 'vendor-onboarding') || companyApps[0];
     const cliApp = primaryApp?.name === 'Vendor Onboarding'
       ? kycOnboarding
       : vendorOnboarding && {
@@ -507,13 +515,15 @@
           cliApp,
         ].filter(Boolean)
       : companyApps.slice(0, 3);
-    return recentApps.map((process, index) => {
-      const buildSurface = index < 2 ? 'ncb' : 'cli';
+    const additional = companyApps.filter(app => app.companyId && !recentApps.some(item => item.id === app.id));
+    return [...additional, ...recentApps].map((process, index) => {
+      let buildSurface = process.buildSurface ? process.buildSurface.toLowerCase() : index < 2 ? 'ncb' : 'cli';
+      try { if (localStorage.getItem('eai-cli-app:' + michaelActiveCompany().name + ':' + process.name)) buildSurface = 'cli'; } catch {}
       return `
       <a class="ad-recent-app" href="${michaelBuilderAppHref(s, process, 'overview', buildSurface)}">
         <span class="av">${esc(process.initial)}</span>
         <span class="tx">${esc(process.name)}</span>
-        <span class="surface-tag" title="${index < 2 ? 'No Code Builder' : 'Command line interface'}">${index < 2 ? 'NCB' : 'CLI'}</span>
+        <span class="surface-tag" title="${buildSurface === 'ncb' ? 'No Code Builder' : 'Command line interface'}">${buildSurface === 'ncb' ? 'NCB' : 'CLI'}</span>
         <i class="${process.live ? 'live' : 'draft'}" aria-label="${esc(process.status)}"></i>
       </a>`;
     }).join('');
@@ -817,6 +827,7 @@
     return `
 <div class="ad-ws${s.settingsLayout === 'sidebar' ? ' ad-settings-layout-sidebar' : ''}" data-ad-root>
   <aside class="ad-side">
+    <div class="ad-sidebar-brand"><button type="button" class="ad-sidebar-logo-toggle" data-sidebar-close aria-label="Close sidebar" title="Close sidebar"><img src="../../assets/logos/eai-mark-dark.svg" alt="EAI" />${svg('panel')}</button></div>
     <div class="ad-side-hd">
       ${s.michaelDemo ? michaelCompanyPicker() : `<button class="ad-ws-switch" type="button" data-stub>
         <span class="tile">${w.initial}</span>
@@ -868,7 +879,7 @@
   <main class="ad-main">
     <header class="ad-top">
       <div class="ad-top-l">
-        <button class="collapse" type="button" data-stub aria-label="Collapse sidebar">${svg('panel')}</button>
+        <button class="collapse" type="button" data-sidebar-toggle aria-label="Toggle sidebar" aria-expanded="true">${svg('panel')}</button>
         ${s.michaelDemo && s.nav === 'home' ? '' : `<b>${s.title}</b>`}
         ${s.michaelDemo && s.nav !== 'home' ? `<span class="ad-top-company" data-company-current-name>${esc(activeCompany.name)}</span>` : ''}
       </div>
@@ -1550,6 +1561,9 @@
     function close() {
       if (layer.hidden) return;
       closeWorkspaceUserDialog();
+      if (new URLSearchParams(location.search).get('settingsOverlay') === '1') {
+        window.parent.postMessage('close-workspace-settings', location.origin);
+      }
       layer.hidden = true;
       root.classList.remove('ad-settings-active');
       document.body.classList.remove('ad-settings-modal-open');
@@ -1717,6 +1731,29 @@
 
   function mount(paneHTML) {
     const s = state();
+    const existing = document.querySelector('.ad-ws');
+    if (existing && s.shell === 'ws' && !s.embedded) {
+      const template = document.createElement('template');
+      template.innerHTML = wsShell(paneHTML, s);
+      const nextBody = template.content.querySelector('.ad-body');
+      const currentBody = existing.querySelector('.ad-body');
+      if (nextBody && currentBody) {
+        window.__wsProcessesTeardown?.();
+        currentBody.replaceWith(nextBody);
+        const currentTitle = existing.querySelector('.ad-top-l');
+        const nextTitle = template.content.querySelector('.ad-top-l');
+        const toggle = currentTitle.querySelector('[data-sidebar-toggle]');
+        currentTitle.replaceChildren(toggle, ...[...nextTitle.children].filter(node => !node.matches('[data-sidebar-toggle]')));
+        const nextLinks = [...template.content.querySelectorAll('.ad-side a')];
+        existing.querySelectorAll('.ad-side a').forEach(link => {
+          const match = nextLinks.find(item => item.getAttribute('href') === link.getAttribute('href'));
+          link.classList.toggle('on', !!match?.classList.contains('on'));
+          if (link.hasAttribute('role')) link.setAttribute('aria-selected', String(!!match?.classList.contains('on')));
+        });
+        bindStubs(nextBody);
+        return;
+      }
+    }
     if (window.__adSearchTeardown) window.__adSearchTeardown();
     if (window.__adUserMenuTeardown) window.__adUserMenuTeardown();
     if (window.__adProfileModalTeardown) window.__adProfileModalTeardown();
@@ -1811,6 +1848,31 @@
   let token = 0;
   async function go(href, push) {
     const mine = ++token;
+    const destination = new URL(href, location.href);
+    if (destination.pathname.endsWith('/builder.html') && document.querySelector('.ad-ws')) {
+      const frame = document.createElement('iframe');
+      frame.title = destination.searchParams.get('project') || 'App builder';
+      frame.className = 'ad-app-workspace-frame';
+      destination.searchParams.set('workspaceEmbed', '1');
+      frame.src = destination.href;
+      frame.style.visibility = 'hidden';
+      frame.addEventListener('load', () => {
+        if (mine !== token) { frame.remove(); return; }
+        const pane = document.querySelector('.ad-body');
+        pane.replaceChildren(frame);
+        pane.className = 'ad-body ad-app-workspace';
+        frame.style.visibility = '';
+        document.querySelector('.ad-ws').classList.add('ad-show-app-workspace');
+        if (push) history.pushState({ad:true}, '', href);
+        document.querySelectorAll('.ad-side a').forEach(link => {
+          const url = new URL(link.href);
+          const selected = url.pathname.endsWith('/builder.html') && url.searchParams.get('app') === destination.searchParams.get('app') && url.searchParams.get('surface') === destination.searchParams.get('surface') && url.searchParams.get('project') === destination.searchParams.get('project');
+          link.classList.toggle('on', selected);
+        });
+      }, {once:true});
+      document.body.appendChild(frame);
+      return;
+    }
     let doc;
     try {
       const res = await fetch(href, { cache: 'no-store' });
@@ -1842,40 +1904,14 @@
       const newMeta = doc.querySelector('meta[name="eai-url"]');
       if (urlMeta && newMeta) urlMeta.content = newMeta.content;
 
+      document.querySelector('.ad-ws')?.classList.remove('ad-show-app-workspace');
       mount(pane ? pane.innerHTML : '');
       runPageScripts(doc);
       announce();
     };
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (document.startViewTransition && !reducedMotion) {
-      const transition = document.startViewTransition(applyRoute);
-      await transition.updateCallbackDone.catch(() => {});
-    } else {
-      const currentRoot = !reducedMotion && document.querySelector('[data-ad-root]');
-      const snapshot = currentRoot ? currentRoot.cloneNode(true) : null;
-      if (snapshot) {
-        snapshot.removeAttribute('data-ad-root');
-        snapshot.classList.add('ad-route-snapshot');
-        snapshot.setAttribute('aria-hidden', 'true');
-        snapshot.inert = true;
-        document.body.appendChild(snapshot);
-      }
+    applyRoute();
 
-      applyRoute();
-
-      const nextRoot = document.querySelector('[data-ad-root]');
-      if (snapshot && nextRoot) {
-        nextRoot.classList.add('ad-route-entering');
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          nextRoot.classList.remove('ad-route-entering');
-          snapshot.classList.add('is-leaving');
-          setTimeout(() => snapshot.remove(), 180);
-        }));
-      } else {
-        snapshot?.remove();
-      }
-    }
   }
 
   document.addEventListener('click', (e) => {
@@ -1896,7 +1932,7 @@
       }[targetFile] || (targetFile === 'app-configure.html' ? (url.searchParams.get('section') || 'resources') : '');
       if (dashboardSection && currentParams.get('embedded') !== '1') {
         e.preventDefault();
-        location.href = michaelBuilderAppHref(state(), D.process(url.searchParams.get('app')), dashboardSection);
+        go(michaelBuilderAppHref(state(), D.process(url.searchParams.get('app')), dashboardSection), true);
         return;
       }
       url.searchParams.set('demo', 'michael');
@@ -1911,6 +1947,19 @@
   });
 
   window.addEventListener('popstate', () => go(location.href, false));
+
+  document.addEventListener('click', (event) => {
+    const control = event.target.closest('[data-sidebar-close], [data-sidebar-toggle]');
+    if (!control) return;
+    const shell = document.querySelector('.ad-ws');
+    if (!shell) return;
+    const closed = control.hasAttribute('data-sidebar-close') || !shell.classList.contains('ad-sidebar-closed');
+    shell.classList.toggle('ad-sidebar-closed', closed);
+    const toggle = shell.querySelector('[data-sidebar-toggle]');
+    toggle?.setAttribute('aria-expanded', String(!closed));
+    toggle?.setAttribute('aria-label', closed ? 'Open sidebar' : 'Close sidebar');
+    if (closed) toggle?.focus();
+  });
 
   /* ------------------------------------------------------------ go */
   const initialState = state();
@@ -1931,4 +1980,25 @@
   const pane = paneEl ? paneEl.innerHTML : '';
   if (paneEl) paneEl.remove();
   mount(pane);
+})();
+
+// A CLI conversion inside the app iframe also updates the persistent workspace sidebar.
+(function () {
+  function syncCliTags() {
+    document.querySelectorAll('.ad-recent-app').forEach(link => {
+      const url = new URL(link.href, location.href);
+      const name = link.querySelector('.tx')?.textContent.trim();
+      let moved = false;
+      try { moved = !!localStorage.getItem('eai-cli-app:' + (url.searchParams.get('ws') || '') + ':' + name); } catch {}
+      if (!moved) return;
+      const tag = link.querySelector('.surface-tag');
+      if (tag) { tag.textContent = 'CLI'; tag.title = 'Command line interface'; }
+      url.searchParams.set('surface', 'cli');
+      url.searchParams.set('view', 'dashboard');
+      link.href = url.href;
+    });
+  }
+  window.addEventListener('storage', syncCliTags);
+  window.addEventListener('focus', syncCliTags);
+  syncCliTags();
 })();

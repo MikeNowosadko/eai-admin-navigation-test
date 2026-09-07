@@ -2368,3 +2368,76 @@ body.ad[data-ad-shell='app'] { background: #f8fafc; }
     animation-duration: 1ms;
   }
 }
+
+/* Full-experience workspace chrome, matching the shared builder. */
+.ad-ws > .ad-side { width:280px; flex-basis:280px; background:#fafafa; }
+.ad-sidebar-brand { height:64px; min-height:64px; padding:0 20px; display:flex; align-items:center; border-bottom:1px solid #e5e5e5; background:white; }
+.ad-sidebar-logo-toggle { display:grid; place-items:center; position:relative; width:30px; height:30px; padding:0; border:1px solid #e5e5e5; border-radius:50%; background:white; color:#52525b; cursor:pointer; }
+.ad-sidebar-logo-toggle img { width:22px; height:14px; object-fit:contain; }
+.ad-sidebar-logo-toggle svg { position:absolute; width:18px; height:18px; opacity:0; }
+.ad-sidebar-logo-toggle:is(:hover,:focus-visible) img { opacity:0; }
+.ad-sidebar-logo-toggle:is(:hover,:focus-visible) svg { opacity:1; }
+.ad-side-hd { padding:16px 10px 8px; gap:12px; }
+.ad-side-hd .ad-ws-switch { height:auto; min-height:54px; border:1px solid #dedee2; border-radius:12px; background:white; padding:7px 8px; gap:10px; }
+.ad-side-hd .ad-ws-switch .tile { width:40px; height:40px; border-radius:10px; }
+.ad-side-body { padding:0 8px; }
+.ad-nav > .ad-nav-item { font-size:14px; }
+.ad-sidebar-closed > .ad-side { display:none; }
+.ad-top-company { display:none; }
+.ad-top { height:64px; flex-basis:64px; background:#fff; }
+.ad-top-l b { font-weight:600; }
+.ad-sidebar-logo-toggle:focus-visible { outline:2px solid #52525b; outline-offset:3px; }
+/* Match the compact builder header. */
+.ad-sidebar-brand { height:44px; min-height:44px; }
+.ad-top { height:44px; flex-basis:44px; }
+.ad-company-row:disabled { opacity:1; cursor:default; }
+.ad-app-workspace-frame { border:0; width:100%; height:100%; background:white; }
+body > .ad-app-workspace-frame { position:fixed; left:-10000px; width:1000px; height:800px; }
+.ad-show-app-workspace > .ad-main > .ad-top { display:none; }
+.ad-body.ad-app-workspace { padding:0; overflow:hidden; flex:1; min-height:0; }
+.ad-recent-apps .ad-item.on { background:#ececee; }
+
+/* Stable action widths keep View/Preview rows aligned without clipping Manage. */
+.apps-row-actions { display:inline-grid; grid-template-columns:44px 72px 78px; flex:none; border:1px solid #dedee2; border-radius:9px; overflow:hidden; white-space:nowrap; }
+.apps-row-actions > button,.apps-row-actions > a { box-sizing:border-box; display:flex; align-items:center; justify-content:center; min-width:0; height:34px; margin:0; border:0; border-right:1px solid #e5e5e5; padding:0 8px; background:white; color:#111; font-family:inherit; font-size:13px; line-height:1; text-decoration:none; cursor:pointer; }
+.apps-row-actions > :last-child { border-right:0; }
+.apps-row-actions > :hover { background:#f6f6f6; }
+
+/* The EAI logo closes the sidebar; show the toolbar control only to reopen it. */
+.ad-ws:not(.ad-sidebar-closed) [data-sidebar-toggle] { display:none; }
+
+/* Workspace entry mirrors the marketing process builder. */
+.home-samples { width: 100%; max-width: 760px; margin-top: 28px; }
+.home-samples > p { margin: 0 0 12px; text-align: center; font-size: 12px; color: #737373; }
+.home-sample-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.home-sample-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  min-height: 76px;
+  border: 1px solid #e1e0dc;
+  border-radius: 14px;
+  background: #ffffffb3;
+  color: #111;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 16px #00000003;
+}
+.home-sample-card:hover { background: #fff; border-color: #bdbbb4; }
+.home-sample-card:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+.home-sample-card strong { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; }
+.home-sample-card small { display: block; margin-top: 3px; font-size: 11px; line-height: 1.4; color: #7b7b75; }
+.home-sample-icon { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 10px; background: #f0efec; }
+.home-sample-icon svg { width: 18px; height: 18px; }
+@media (max-width: 620px) {
+  .home-sample-grid { grid-template-columns: 1fr; }
+}
+
+.ad-home-h1 { font-size:26px; line-height:1.25; letter-spacing:-.325px; margin-bottom:22px; }
+.ad-composer { max-width:534px; margin:0 auto; border-radius:28px; border:1px solid #e5e5e5; padding:12px; box-shadow:0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a; }
+.ad-composer input { height:72px; padding:12px 12px 24px; font-size:16px; }
+.ad-composer .ft { padding:0 8px; height:40px; }
+.ad-composer .ft button[aria-label="Attach a file"] { border:0; background:transparent; }
+.home-samples { margin:28px auto 40px; }

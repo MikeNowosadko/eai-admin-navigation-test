@@ -345,3 +345,8 @@ window.ADMIN = (function () {
     submissions: kyc.submissions,
   };
 })();
+
+try {
+  const customApps = JSON.parse(localStorage.getItem('eai-local-admin:workspace-apps') || '[]');
+  customApps.forEach(app => { if (!window.ADMIN.processes.some(existing => existing.id === app.id)) window.ADMIN.processes.push(app); });
+} catch {}

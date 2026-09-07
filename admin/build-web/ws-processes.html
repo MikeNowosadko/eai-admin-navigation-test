@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/admin.css?v=transition3" />
+
 </head>
 <body class="ad" data-ad-shell="ws" data-ad-nav="processes" data-ad-title="All apps">
 
@@ -42,7 +43,7 @@
         <div style="width:100px;flex:0 0 100px;" class="num"><button type="button" data-sort="submissions">Submissions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
         <div style="width:96px;flex:0 0 96px;" class="num"><button type="button" data-sort="completed">Completed<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
         <div style="width:110px;flex:0 0 110px;padding-left:20px;"><button type="button" data-sort="edited">Edited<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button></div>
-        <div style="width:180px;flex:0 0 180px;"></div>
+        <div style="width:196px;flex:0 0 196px;"></div>
       </div>
       <div id="rows"></div>
     </div>
@@ -57,10 +58,31 @@
 <script src="../assets/admin-shell.js?v=transition3"></script>
 <script>
   const D = window.ADMIN;
+  const escapeAppText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const sum = D.summary;
-  const availableProcesses = () => new URLSearchParams(location.search).get('demo') === 'michael' && window.adCompanyProcesses
-    ? window.adCompanyProcesses()
-    : D.processes;
+  function manageHref(id) {
+    const url = new URL(appHref(id, true), location.href);
+    url.searchParams.set('view', 'dashboard');
+    url.searchParams.set('section', 'overview');
+    return url.href;
+  }
+  const availableProcesses = () => {
+    const apps = window.adCompanyProcesses ? window.adCompanyProcesses() : D.processes;
+    return apps.map(app => app.id === 'kyc-onboarding' && apps.some(p => p.id === 'vendor-onboarding' && p.name !== 'Vendor Onboarding')
+      ? {...app, name:'Vendor Onboarding', status:'Draft', live:false, stats:null, seen:'3d ago', hoursAgo:72, cli:true} : app);
+  };
+  function appHref(id, manage = false) {
+    const app = availableProcesses().find(item => item.id === id);
+    const url = new URL(window.adBuilderAppHref(app?.cli ? 'vendor-onboarding' : id), location.href);
+    if (app?.cli) {
+      url.searchParams.set('surface', 'cli');
+      url.searchParams.set('project', 'Vendor Onboarding');
+      url.searchParams.set('prompt', 'Vendor Onboarding');
+      url.searchParams.set('published', '0');
+    }
+    url.searchParams.set('view', manage || app?.cli ? 'dashboard' : 'preview');
+    return url.href;
+  }
   const initialProcesses = availableProcesses();
   const initialLive = initialProcesses.filter((p) => p.live).length;
 
@@ -74,8 +96,8 @@
         <span style="display:flex;align-items:center;gap:5px;"><i style="width:6px;height:6px;border-radius:999px;background:#D97706;display:block;"></i><span id="companyDraftCount">${initialProcesses.length - initialLive}</span> draft</span>
       </span>
     </div>
-    <div class="ad-tile"><span class="k">Submissions</span><span class="v">${sum.submissions.toLocaleString()}</span><span class="m up">${window.adIcon('up')}14% vs last month</span></div>
-    <div class="ad-tile"><span class="k">Avg completion</span><span class="v">${sum.completionRate}%</span><span class="m">weighted across live apps</span></div>
+    <div class="ad-tile"><span class="k">Submissions</span><span class="v" id="appsSubmissions"></span><span class="m">across your apps</span></div>
+    <div class="ad-tile"><span class="k">Avg completion</span><span class="v" id="appsCompletion"></span><span class="m">weighted across live apps</span></div>
     <div class="ad-tile"><span class="k">Credits left</span><span class="v">${sum.creditsLeft}</span><span class="m">of ${sum.creditsTotal} this month</span></div>`;
 
   /* Sorting replaces the old All/Live/Draft tabs: clicking Status groups
@@ -95,6 +117,12 @@
     const get = SORTERS[sortKey];
     const available = availableProcesses();
     const liveCount = available.filter((p) => p.live).length;
+    const submissions = available.reduce((total, app) => total + (app.stats?.submissions || 0), 0);
+    const liveStats = available.filter(app => app.live && app.stats);
+    const liveSubmissions = liveStats.reduce((total, app) => total + app.stats.submissions, 0);
+    const completed = liveStats.reduce((total, app) => total + app.stats.submissions * app.stats.completionRate, 0);
+    document.getElementById('appsSubmissions').textContent = submissions.toLocaleString();
+    document.getElementById('appsCompletion').textContent = liveSubmissions ? Math.round(completed / liveSubmissions) + '%' : '—';
     document.getElementById('companyProcessCount').textContent = available.length;
     document.getElementById('companyLiveCount').textContent = liveCount;
     document.getElementById('companyDraftCount').textContent = available.length - liveCount;
@@ -120,21 +148,18 @@
 
     document.getElementById('rows').innerHTML = shown.length ? shown.map((p) => `
       <div class="r">
-        <a class="grow" href="${window.adBuilderAppHref ? window.adBuilderAppHref(p.id) : `app-overview.html?app=${p.id}`}" style="font-size:14px;font-weight:600;padding-right:16px;color:inherit;text-decoration:none;">${p.name}</a>
+        <a class="grow" href="${appHref(p.id)}" style="font-size:14px;font-weight:600;padding-right:16px;color:inherit;text-decoration:none;">${escapeAppText(p.name)}</a>
         <div style="width:92px;flex:0 0 92px;display:flex;">
           <span class="ad-badge ${p.live ? 'green' : 'amber'}"><i class="dot"></i>${p.status}</span>
         </div>
         <div style="width:100px;flex:0 0 100px;" class="num">${p.stats ? `<b style="font-weight:500;">${p.stats.submissions.toLocaleString()}</b>` : '<span style="color:var(--ad-faint);">—</span>'}</div>
         <div style="width:96px;flex:0 0 96px;color:var(--ad-ink-3);" class="num">${p.stats ? p.stats.completionRate + '%' : '<span style="color:var(--ad-faint);">—</span>'}</div>
         <div style="width:110px;flex:0 0 110px;padding-left:20px;font-size:13px;color:var(--ad-mute);">${p.seen}</div>
-        <div style="width:180px;flex:0 0 180px;display:flex;justify-content:flex-end;position:relative;">
-          <span class="ad-split" data-open="false" data-row="${p.id}">
-            <button type="button" class="main" data-edit="${p.id}">Edit</button>
-            <button type="button" class="caret" data-menu="${p.id}" aria-haspopup="true" aria-expanded="false" aria-label="More actions for ${p.name}">${window.adIcon('down')}</button>
-          </span>
-          <div class="ad-menu" id="menu-${p.id}" hidden style="top:36px;right:0;">
-            <button type="button" data-view="${p.id}">${window.adIcon('open')}${p.live ? 'View live app' : 'Preview draft'}</button>
-            <a href="${window.adBuilderAppHref ? window.adBuilderAppHref(p.id) : `app-overview.html?app=${p.id}`}">${window.adIcon('gear')}Manage</a>
+        <div style="width:196px;flex:0 0 196px;display:flex;justify-content:flex-end;position:relative;">
+          <div class="apps-row-actions">
+            <button type="button" data-edit="${p.id}">Edit</button>
+            <button type="button" data-view="${p.id}">${p.live ? 'View' : 'Preview'}</button>
+            <a href="${manageHref(p.id)}">Manage</a>
           </div>
         </div>
       </div>`).join('') : '<div class="ad-empty">No apps match that search.</div>';
@@ -167,15 +192,13 @@
 
     const edit = e.target.closest('[data-edit]');
     if (edit) {
-      location.href = window.adBuilderAppHref
-        ? window.adBuilderAppHref(edit.dataset.edit)
-        : window.AD_PROCESS_EDIT.url(edit.dataset.edit);
+      location.href = appHref(edit.dataset.edit);
       return;
     }
     const view = e.target.closest('[data-view]');
     if (view) {
       closeMenus();
-      location.href = window.AD_PROCESS_LIVE.url(view.dataset.view);
+      location.href = appHref(view.dataset.view);
     }
   };
   const onKey = (e) => { if (e.key === 'Escape') closeMenus(); };

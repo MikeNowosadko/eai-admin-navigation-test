@@ -14,24 +14,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/admin.css?v=transition3" />
+<script>if(new URLSearchParams(location.search).get('settingsOverlay') === '1') document.documentElement.classList.add('settings-overlay-only');</script>
+<style>
+html.settings-overlay-only, .settings-overlay-only body { background:transparent !important; }
+.settings-overlay-only body { visibility:hidden; }
+.settings-overlay-only [data-settings-modal] { visibility:visible; }
+</style>
 </head>
 <body class="ad" data-ad-shell="ws" data-ad-nav="home" data-ad-mode="ncb" data-ad-title="Home" data-ad-hero="1" data-ad-narrow="1">
 
 <div id="adPane">
-  <h1 class="ad-home-h1">Let&apos;s build an app</h1>
+  <h1 class="ad-home-h1">Let&apos;s improve a process</h1>
 
   <form class="ad-composer" id="composer" autocomplete="off">
     <label class="ad-sr" for="prompt">Describe the app you want to build</label>
-    <input id="prompt" type="text" placeholder="Describe the app you want to build, or bring an existing one in…" />
+    <input id="prompt" type="text" placeholder="Build an app that manages my KYC onboarding..." />
     <div class="ft">
       <button type="button" data-stub aria-label="Attach a file">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13.2 20.3a4.5 4.5 0 0 1-6.4-6.4l8.5-8.5a3 3 0 0 1 4.3 4.3l-8.6 8.5a1.5 1.5 0 0 1-2.1-2.1l7.9-7.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <button type="button" class="chip" data-stub>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Template
-      </button>
-      <button type="button" class="chip" data-stub>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg>Data
       </button>
       <button type="submit" class="go" aria-label="Start building">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -39,24 +39,23 @@
     </div>
   </form>
 
-  <div class="ad-sec-hd"><b>Start from a template</b><a class="ad-link" href="ws-templates.html">Browse all ›</a></div>
-  <div class="ad-tpl">
-    <button type="button" class="card" data-stub>
-      <span class="art teal"><svg viewBox="0 0 120 70" aria-hidden="true"><rect x="30" y="10" width="60" height="50" rx="4" fill="#fff" stroke="#CBD5E1"/><rect x="38" y="20" width="30" height="4" rx="2" fill="#CBD5E1"/><rect x="38" y="29" width="44" height="4" rx="2" fill="#E2E8F0"/><rect x="38" y="38" width="44" height="4" rx="2" fill="#E2E8F0"/><rect x="38" y="48" width="26" height="7" rx="3.5" fill="#0EA5A4"/></svg></span>
-      <span class="bd"><b>Form</b><span class="d">Collect clean, structured inputs from anyone — validated as they type.</span>
-        <span class="tags"><i>Onboarding intake</i><i>Request form</i></span></span>
-    </button>
-    <button type="button" class="card" data-stub>
-      <span class="art blue"><svg viewBox="0 0 120 70" aria-hidden="true"><rect x="12" y="18" width="36" height="34" rx="4" fill="#fff" stroke="#CBD5E1"/><rect x="18" y="26" width="20" height="3" rx="1.5" fill="#CBD5E1"/><rect x="18" y="33" width="24" height="3" rx="1.5" fill="#E2E8F0"/><path d="M54 35h12m0 0-4-4m4 4-4 4" stroke="#64748B" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="72" y="18" width="36" height="34" rx="4" fill="#fff" stroke="#CBD5E1"/><path d="M72 28h36M84 28v24" stroke="#E2E8F0" stroke-width="2"/></svg></span>
-      <span class="bd"><i class="soon">Coming soon</i><b>Input → Output</b><span class="d">Upload raw data — we turn it into a structured, scored table.</span>
-        <span class="tags"><i>Resumes → shortlist</i><i>Invoices → ledger</i></span></span>
-    </button>
-    <button type="button" class="card" data-stub>
-      <span class="art violet"><svg viewBox="0 0 120 70" aria-hidden="true"><rect x="8" y="24" width="22" height="22" rx="5" fill="#7C3AED"/><path d="M15 39V31m0 0-3 3m3-3 3 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="36" y="24" width="22" height="22" rx="5" fill="#fff" stroke="#DDD6FE"/><path d="M40 31h14M47 31v11" stroke="#C4B5FD" stroke-width="2"/><rect x="64" y="24" width="22" height="22" rx="5" fill="#fff" stroke="#DDD6FE"/><path d="M69 31h9M69 35h12M69 39h7" stroke="#C4B5FD" stroke-width="2" stroke-linecap="round"/><rect x="92" y="24" width="22" height="22" rx="5" fill="#fff" stroke="#DDD6FE"/><path d="M97 41v-6M103 41v-11M109 41v-4" stroke="#C4B5FD" stroke-width="2" stroke-linecap="round"/></svg></span>
-      <span class="bd"><i class="soon">Coming soon</i><b>Rubric → Ranking</b><span class="d">A 4-step flow: rubric in, scoring table out, applicants ranked.</span>
-        <span class="tags"><i>4-step workflow</i><i>Candidate screening</i></span></span>
-    </button>
-  </div>
+      <div class="home-samples" role="group" aria-labelledby="mktSamplesLabel">
+        <p id="mktSamplesLabel">Sample prompts</p>
+        <div class="home-sample-grid">
+          <button type="button" class="home-sample-card" data-sample-prompt="Build an app that manages my supplier onboarding">
+            <span class="home-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14M9 21v-7h6v7M8 9h1m6 0h1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Supplier onboarding</strong><small>Collect details, checks and approvals</small></span>
+          </button>
+          <button type="button" class="home-sample-card" data-sample-prompt="Build an app that manages my employee onboarding">
+            <span class="home-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M19 6v6m-3-3h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+            <span><strong>Employee onboarding</strong><small>Coordinate tasks, documents and access</small></span>
+          </button>
+          <button type="button" class="home-sample-card" data-sample-prompt="Build an app that manages my invoice approval">
+            <span class="home-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6m-6 4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Invoice approval</strong><small>Route reviews and record decisions</small></span>
+          </button>
+        </div>
+      </div>
 
   <div class="ad-sec-hd"><b>Recent apps</b><a class="ad-link" href="ws-processes.html">View all ›</a></div>
   <div class="ad-c" style="margin-top:12px;" id="recent"></div>
@@ -68,15 +67,22 @@
 <script src="../assets/admin-shell.js?v=transition3"></script>
 <script>
   const D = window.ADMIN;
+  const escapeAppText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const recentProcesses = new URLSearchParams(location.search).get('demo') === 'michael' && window.adCompanyProcesses
     ? window.adCompanyProcesses()
     : D.processes;
   document.getElementById('recent').innerHTML = recentProcesses.slice(0, 3).map((p) => `
     <a class="ad-t-r" href="${window.adBuilderAppHref ? window.adBuilderAppHref(p.id) : `app-overview.html?app=${p.id}`}">
-      <span class="tx"><b>${p.name}</b><span>${p.subtitle}</span></span>
+      <span class="tx"><b>${escapeAppText(p.name)}</b><span>${escapeAppText(p.subtitle)}</span></span>
       <span class="st">${p.status === 'Live' ? '<i class="live"></i>' : '<i class="draft"></i>'}${p.status}</span>
       <span class="ago">${p.seen}</span>
     </a>`).join('');
+  document.querySelectorAll('[data-sample-prompt]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.getElementById('prompt').value = button.dataset.samplePrompt;
+      document.getElementById('prompt').focus();
+    });
+  });
   document.getElementById('composer').addEventListener('submit', (e) => {
     e.preventDefault();
     const prompt = document.getElementById('prompt').value.trim();
@@ -86,14 +92,19 @@
     }
 
     const activeCompany = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
-    const appId = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 36) || 'new-app';
+    const appId = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 36) + '-' + Date.now().toString(36);
+    const name = prompt.replace(/^build\s+(?:an?\s+)?app\s+(?:that\s+)?(?:manages?\s+)?(?:my\s+)?/i, '').replace(/^./, c => c.toUpperCase());
+    const savedApps = JSON.parse(localStorage.getItem('eai-local-admin:workspace-apps') || '[]');
+    savedApps.unshift({id:appId, name, prompt, ws:activeCompany.name, companyId:activeCompany.id, initial:name.charAt(0), status:'Draft', live:false, stats:null, seen:'Just now', hoursAgo:0, buildSurface:'NCB', subtitle:'Built with EAI', url:'—'});
+    localStorage.setItem('eai-local-admin:workspace-apps', JSON.stringify(savedApps));
     const query = new URLSearchParams({
-      prompt,
+      prompt, project:name, workspaceApp:'1', drawer:'open',
       app: appId,
       demo: 'michael',
       ws: activeCompany.name,
       email: D.user.email,
       surface: 'ncb',
+      experience: 'full',
       source: 'workspace',
     });
 

@@ -86,7 +86,16 @@ function blockMeta(f) {
 const params = new URLSearchParams(location.search);
 const BUILDER_STORAGE_PREFIX = 'eai-local-admin:';
 const activeAppId = params.get('app') || 'vendor-onboarding';
+let movedToCli = false;
+try { movedToCli = !!localStorage.getItem('eai-cli-app:' + (params.get('ws') || '') + ':' + (params.get('project') || '')); } catch {}
+if (movedToCli) {
+  params.set('surface', 'cli');
+  params.set('view', 'dashboard');
+  history.replaceState(history.state, '', location.pathname + '?' + params.toString());
+}
 const buildSurface = params.get('surface') === 'cli' ? 'cli' : 'ncb';
+// Establish layout before mounting the shared header and workspace navigation.
+document.body.classList.toggle('bd-cli-app', buildSurface === 'cli');
 
 const smartBlocks = params.get('blocks') === '1'
   || params.get('variant') === 'blocks'
@@ -730,6 +739,12 @@ function fitFork(trigger) {
 /** The exit. Everything a person built is named in the URL, because the
     whole offer depends on it arriving at the other end. */
 function goCli(why) {
+  if (state.buildSurface === 'ncb' && why !== 'workspace-drawer') {
+    state.dashboardSection = 'overview';
+    setBuilderMode('dashboard');
+    window.openEaiCliHandoff(projectName, () => window.moveEaiAppToCli(projectName, {ws:state.ws, email:state.email, app:activeAppId, published:state.published ? '1' : '0', demo:'michael'}));
+    return;
+  }
   const appHandoff = state.buildSurface === 'ncb' && why !== 'workspace-drawer';
   location.href = window.bdCarry(appHandoff ? 'builder.html' : 'ws-cli.html', {
     demo: 'michael',
@@ -1219,7 +1234,7 @@ function dashboardIcon(name) {
     building: '<path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M3 21h18M10 7h4M10 11h4M10 15h4"/>',
     grid: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
     template: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M10 9v12"/>',
-    gear: '<circle cx="12" cy="12" r="3"/><path d="M19 13.5v-3l-2-.7-.6-1.4.9-1.9-2.1-2.1-1.9.9-1.4-.6L10.5 3h-3l-.7 2-1.4.6-1.9-.9-2.1 2.1.9 1.9-.6 1.4L0 10.5v3l2 .7.6 1.4-.9 1.9 2.1 2.1 1.9-.9 1.4.6.7 2h3l.7-2 1.4-.6 1.9.9 2.1-2.1-.9-1.9.6-1.4z" transform="translate(2 -1) scale(.83)"/>',
+    gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
     person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     activity: '<path d="M4 14h3l2.2-6 3.3 10 2.2-6H20"/>',
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M3 20h18"/>',
@@ -1276,119 +1291,7 @@ function builderAppDashboardHref(appId, name, appSurface = 'ncb') {
 }
 
 function mountWorkspaceDrawer() {
-  if (document.querySelector('[data-workspace-drawer-layer]')) return;
-  const displayName = state.email
-    ? state.email.split('@')[0].replace(/[._+-]+/g, ' ').trim().replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : 'Michael Nowosadko';
-  const initial = (displayName || 'M').charAt(0).toUpperCase();
-  let savedCreatedApp = null;
-  try {
-    savedCreatedApp = JSON.parse(localStorage.getItem(`${BUILDER_STORAGE_PREFIX}created-app`) || 'null');
-  } catch {
-    savedCreatedApp = null;
-  }
-  const primaryApp = savedCreatedApp?.name
-    ? {
-        id: savedCreatedApp.id || 'vendor-onboarding',
-        name: String(savedCreatedApp.name),
-        initial: String(savedCreatedApp.initial || savedCreatedApp.name.charAt(0)).toUpperCase(),
-        status: savedCreatedApp.status === 'Live' ? 'live' : 'draft',
-        buildSurface: 'NCB',
-      }
-    : { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', status: 'draft', buildSurface: 'NCB' };
-  const recentApps = [
-    primaryApp,
-    { id: 'leave-approval', name: 'Leave approval', initial: 'L', status: 'live', buildSurface: 'NCB' },
-    primaryApp.name === 'Vendor Onboarding'
-      ? { id: 'kyc-onboarding', name: 'KYC Onboarding', initial: 'K', status: 'live', buildSurface: 'CLI' }
-      : { id: 'vendor-onboarding', name: 'Vendor Onboarding', initial: 'V', status: 'draft', buildSurface: 'CLI' },
-  ];
-
-  document.body.insertAdjacentHTML('beforeend', `
-    <div class="bd-workspace-drawer-layer" data-workspace-drawer-layer aria-hidden="true">
-      <button class="bd-workspace-drawer-backdrop" type="button" data-workspace-drawer-close aria-label="Close workspace navigation"></button>
-      <aside class="bd-workspace-drawer" id="bdWorkspaceDrawer" aria-label="Workspace navigation">
-        <div class="bd-workspace-drawer-head">
-          <a class="bd-workspace-company" href="${adminHref('ws-home.html')}">
-            <span class="bd-workspace-company-icon">${dashboardIcon('building')}</span>
-            <span><b>${esc(state.ws)}</b><small>Company platform</small></span>
-            <svg class="bd-workspace-swap" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <div class="bd-workspace-build-tabs" role="tablist" aria-label="How you build">
-            <button class="on" type="button" role="tab" aria-selected="true">No Code Builder</button>
-            <button type="button" role="tab" aria-selected="false" data-workspace-drawer-cli>${dashboardIcon('terminal')}CLI</button>
-          </div>
-        </div>
-
-        <div class="bd-workspace-drawer-body">
-          <nav class="bd-workspace-primary-nav" aria-label="Workspace">
-            <a href="${adminHref('ws-home.html')}">${dashboardIcon('home')}<span>Home</span></a>
-            <a href="${adminHref('ws-processes.html')}">${dashboardIcon('grid')}<span>All apps</span><i>${recentApps.length}</i></a>
-            <a href="${adminHref('ws-templates.html')}">${dashboardIcon('template')}<span>Templates</span></a>
-            <a href="${adminHref('ws-integrations.html')}">${dashboardIcon('plug')}<span>Integrations</span></a>
-          </nav>
-
-          <section class="bd-workspace-recents" aria-labelledby="bdWorkspaceRecentsTitle">
-            <h2 id="bdWorkspaceRecentsTitle">Recent apps</h2>
-            ${recentApps.map((app) => `
-              <a href="${builderAppDashboardHref(app.id, app.name, app.buildSurface.toLowerCase())}">
-                <span class="bd-workspace-app-icon">${esc(app.initial)}</span>
-                <b>${esc(app.name)}</b>
-                <span class="bd-workspace-app-kind" title="${app.buildSurface === 'NCB' ? 'No Code Builder' : 'Command line interface'}">${app.buildSurface}</span>
-                <i class="${app.status}" aria-label="${app.status === 'live' ? 'Live' : 'Draft'}"></i>
-              </a>`).join('')}
-          </section>
-        </div>
-
-        <footer class="bd-workspace-drawer-foot">
-          <a class="bd-workspace-settings-link" href="${adminHref('ws-home.html', { settings: 'users' })}">${dashboardIcon('gear')}<span>Workspace settings</span></a>
-          <a class="bd-workspace-user-link" href="${adminHref('ws-home.html', { profile: '1' })}">
-            <span class="bd-workspace-user-avatar">${esc(initial)}</span>
-            <span><b>${esc(displayName)}</b><small>Owner</small></span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </footer>
-      </aside>
-    </div>`);
-
-  const layer = document.querySelector('[data-workspace-drawer-layer]');
-  const opener = document.querySelector('[data-workspace-drawer-open]');
-  let closeTimer = null;
-
-  function setOpen(open, restoreFocus = false) {
-    clearTimeout(closeTimer);
-    layer.classList.toggle('is-open', open);
-    layer.setAttribute('aria-hidden', String(!open));
-    opener.classList.toggle('is-open', open);
-    opener.setAttribute('aria-expanded', String(open));
-    opener.setAttribute('aria-label', open ? 'Close workspace navigation' : 'Open workspace navigation');
-    document.body.classList.toggle('bd-workspace-drawer-open', open);
-    if (!open && restoreFocus) {
-      closeTimer = setTimeout(() => opener.focus({ preventScroll: true }), 260);
-    }
-  }
-
-  opener.addEventListener('click', () => setOpen(!layer.classList.contains('is-open')));
-  layer.querySelectorAll('[data-workspace-drawer-close]').forEach((button) => {
-    button.addEventListener('click', () => setOpen(false, true));
-  });
-  layer.querySelector('[data-workspace-drawer-cli]').addEventListener('click', () => {
-    setOpen(false);
-    goCli('workspace-drawer');
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && layer.classList.contains('is-open')) {
-      event.preventDefault();
-      setOpen(false, true);
-    }
-  });
-
-  if (params.get('drawer') === 'open') {
-    setOpen(true);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      document.body.classList.remove('bd-workspace-drawer-preopen');
-    }));
-  }
+  window.mountEaiWorkspaceDrawer({state, params, esc, adminHref, builderAppDashboardHref, goCli, storagePrefix: BUILDER_STORAGE_PREFIX});
 }
 
 function paintAuthenticatedChrome() {
@@ -1412,6 +1315,16 @@ function paintAuthenticatedChrome() {
     view.textContent = 'View app';
     view.addEventListener('click', () => setBuilderMode('preview'));
     $('bdPublish').before(view);
+  }
+
+  if (state.buildSurface === 'ncb' && !document.querySelector('[data-toolbar-cli]')) {
+    const cli = document.createElement('button');
+    cli.type = 'button';
+    cli.className = 'nb-btn bd-toolbar-cli';
+    cli.dataset.toolbarCli = '';
+    cli.textContent = 'Go further with EAI CLI';
+    cli.addEventListener('click', () => goCli('dashboard'));
+    (document.querySelector('[data-view-ncb]') || $('bdPublish')).before(cli);
   }
 
   mountWorkspaceDrawer();
@@ -1455,11 +1368,15 @@ function paintDashboard() {
       </header>
 
       <div class="bd-dashboard-grid">
-        ${params.get('cliSetup') === '1' ? `
-        <article class="bd-dashboard-card bd-dashboard-wide bd-cli-download">
-          <h3>Download EAI app to continue building with the CLI</h3>
-          <button class="nb-btn primary" type="button" data-cli-download>Download EAI Setup app · 84 MB</button>
-        </article>` : ''}
+        ${isNoCodeApp ? `
+        <article class="bd-dashboard-card bd-dashboard-wide bd-cli-download bd-overview-cli-banner">
+          <div><h3>Go further with EAI CLI</h3><p>Add custom logic, integrations and advanced features. Continue building this app in your preferred coding tool.</p></div>
+          <button class="nb-btn primary" type="button" data-cli-download>Go further with EAI CLI</button>
+        </article>` : `
+        <article class="bd-dashboard-card bd-dashboard-wide bd-cli-download bd-overview-cli-banner">
+          <div><h3>Continue building your app in the AI product of your choice</h3><p>Pick up where you left off. Choose your preferred coding tool to keep building this app.</p></div>
+          <button class="nb-btn primary" type="button" data-open-harness>Open App in AI Product</button>
+        </article>`}
         <article class="bd-dashboard-card bd-dashboard-wide bd-dashboard-overview">
           <div class="bd-dashboard-title">${dashboardIcon('activity')}<div><h3>App overview</h3><p>A quick view of how this app is set up and being used.</p></div></div>
           <div class="bd-dashboard-stats">
@@ -1567,7 +1484,7 @@ function paintDashboard() {
       ${railLink('overview', true)}
       ${railLink('submissions', true)}
       ${railLink('analytics', true)}
-      ${railLink('settings', true)}`
+      ${railLink('resources', true)}`
     : `
       <strong>Manage</strong>
       ${railLink('overview')}
@@ -1592,14 +1509,14 @@ function paintDashboard() {
         <nav aria-label="App administration">
           ${railNavigation}
         </nav>
-        <button class="bd-dashboard-cli-link${isNoCodeApp ? ' is-primary' : ''}" type="button" data-dashboard-cli>
+        ${isNoCodeApp ? `<button class="bd-dashboard-cli-link is-primary" type="button" data-dashboard-cli>
           ${dashboardIcon('terminal')}
           <span>
             <b>${isNoCodeApp ? 'Move to CLI' : 'Continue in CLI'}</b>
             <small>${isNoCodeApp ? 'Unlock advanced changes' : 'For advanced changes'}</small>
           </span>
-          ${isNoCodeApp ? '<span class="bd-dashboard-cli-arrow" aria-hidden="true">→</span>' : ''}
-        </button>
+          <span class="bd-dashboard-cli-arrow" aria-hidden="true">→</span>
+        </button>` : ''}
       </aside>
       ${pane}
     </section>`;
@@ -1661,8 +1578,9 @@ function paintDashboard() {
     });
   }
   $('bdFrame').querySelector('[data-dashboard-cli]')?.addEventListener('click', () => goCli('dashboard'));
+  $('bdFrame').querySelector('[data-open-harness]')?.addEventListener('click', () => window.openEaiCliHandoff(projectName));
   $('bdFrame').querySelector('[data-cli-download]')?.addEventListener('click', () => {
-    showBuilderToast('Download isn’t wired in this prototype.');
+    goCli('dashboard');
   });
 }
 
@@ -2038,13 +1956,13 @@ async function run() {
       <div class="quote">${esc(sentence(state.prompt))} — today this runs on email and a shared inbox, with the same details re-keyed at least twice.</div>
       <div class="bd-goal-grid">
         <div class="kv">
-          <span class="i goal">◎</span><div><b>Goal</b><span>Get to a decision without anybody chasing the paperwork.</span></div>
+          <span class="i goal"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span><div><b>Goal</b><span>Get to a decision without anybody chasing the paperwork.</span></div>
         </div>
         <div class="kv">
-          <span class="i aud">◍</span><div><b>Audience</b><span>The person submitting, and the one or two people who review it.</span></div>
+          <span class="i aud"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg></span><div><b>Audience</b><span>The person submitting, and the one or two people who review it.</span></div>
         </div>
         <div class="kv">
-          <span class="i out">✓</span><div><b>Outcome</b><span>A decision on record, with everything it was based on attached to it.</span></div>
+          <span class="i out"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><div><b>Outcome</b><span>A decision on record, with everything it was based on attached to it.</span></div>
         </div>
       </div>
       <div class="bd-goal-improvement" data-goal-improvement hidden><b>Your improvement</b><span></span></div>

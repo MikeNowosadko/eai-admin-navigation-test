@@ -101,7 +101,9 @@
       .map((t, i) => {
         const active = i === activeStep;
         const done = i < activeStep;
-        const ring = done ? '✓' : active ? String(i + 1) : '○';
+        const numberedStages = new URLSearchParams(window.location.search).get('experience') === 'full'
+          || window.location.pathname.includes('/admin/');
+        const ring = numberedStages ? String(i + 1) : done ? '✓' : active ? String(i + 1) : '○';
         const cls = active ? ' active' : done ? ' done' : '';
         if (interactive) {
           return `<button type="button" class="mkt-wf-stage${cls}" data-step="${i}">
@@ -220,6 +222,42 @@
 
   function bind(root, { onStep, onDevice } = {}) {
     if (!root) return;
+    const canTestAssistant = new URLSearchParams(location.search).get('experience') === 'full'
+      || location.pathname.includes('/admin/');
+    const composer = root.querySelector('.mkt-assistant-composer');
+    if (canTestAssistant && composer && !composer.dataset.bound) {
+      composer.dataset.bound = 'true';
+      const input = composer.querySelector('input');
+      const send = composer.querySelector('button');
+      const messages = root.querySelector('.mkt-assistant-msgs');
+      input.readOnly = false;
+      input.setAttribute('aria-label', 'Message the app assistant');
+      root.assistantTestMessages ||= [];
+      const append = (role, text) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'mkt-bubble mkt-bubble-' + role;
+        bubble.textContent = text;
+        messages.appendChild(bubble);
+      };
+      root.assistantTestMessages.forEach(([role, text]) => append(role, text));
+      const submit = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        const reply = 'Test message received. This assistant is a prototype; live answers are not connected yet.';
+        [['user', text], ['assistant', reply]].forEach(([role, message]) => {
+          root.assistantTestMessages.push([role, message]);
+          append(role, message);
+        });
+        input.value = '';
+        const body = root.querySelector('.mkt-assistant-body');
+        body.scrollTop = body.scrollHeight;
+        input.focus();
+      };
+      send.addEventListener('click', submit);
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); submit(); }
+      });
+    }
     if (onStep) {
       root.querySelectorAll('.mkt-wf-stage[data-step]').forEach((btn) => {
         btn.addEventListener('click', () => {

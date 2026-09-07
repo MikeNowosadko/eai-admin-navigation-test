@@ -1,0 +1,231 @@
+/* Shared full-experience builder: three aligned column headers. */
+.bd-column-headers .bd-chat > .bd-top { flex:none; height:64px; min-height:64px; width:100%; box-sizing:border-box; padding:0 20px; border-bottom:1px solid #e5e5e5; background:#fff; display:flex; align-items:center; }
+.bd-column-headers .bd-full-wordmark { display:none; }
+.bd-column-headers .bd-body { height:100vh; min-height:0; }
+.bd-column-headers .bd-sidebar-brand { height:64px; min-height:64px; display:flex; align-items:center; padding:0 20px; border-bottom:1px solid #e5e5e5; box-sizing:border-box; background:#fff; }
+.bd-column-headers .bd-sidebar-brand img { width:64px; height:32px; object-fit:contain; }
+.bd-column-headers .bd-workspace-drawer-head { padding:16px 10px 8px; }
+.bd-column-headers .bd-workspace-company { border:1px solid #dedee2; background:white; border-radius:12px; margin-bottom:12px; }
+.bd-column-headers .bd-pv-bar { height:64px; min-height:64px; box-sizing:border-box; border-bottom:1px solid #e5e5e5; }
+.bd-column-headers .bd-pv-bar > .bd-top-acts { margin-left:auto; }
+.bd-column-headers.bd-chat-first .bd-pv-scroll { padding:0; }
+.bd-column-headers.bd-chat-first .mkt-wf-bar { min-height:64px; box-sizing:border-box; padding:12px 16px; margin:0; border-bottom:1px solid #e5e5e5; background:#fff; }
+.bd-column-headers.bd-chat-first .mkt-workflow-preview { margin-top:24px; }
+.bd-column-headers .bd-top-acts { display:flex; align-items:center; gap:8px; flex:none; }
+.bd-column-headers .bd-settings-rail { min-height:calc(100vh - 64px); }
+.bd-column-headers .bd-inline-settings { margin-top:0; }
+.bd-column-headers .bd-top .bd-crumbs::before { display:none; }
+.bd-column-headers.bd-chat-first .mkt-preview-wrap { padding:0 0 16px; }
+.bd-column-headers.bd-chat-first .mkt-workflow-preview { max-width:calc(100% - 40px); }
+.bd-column-headers.bd-chat-first .mkt-wf-bar { position:sticky; top:0; z-index:5; }
+.bd-column-headers .bd-chat > .bd-top .sep { display:none; }
+.bd-column-headers .bd-chat > .bd-top .bd-crumbs { flex:1; min-width:0; }
+.bd-chat-panel-button { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; padding:6px; flex:none; border:0; border-radius:6px; background:transparent; color:#52525b; cursor:pointer; }
+.bd-chat-panel-button:hover { background:#f1f1f2; }
+.bd-chat-panel-button svg { width:20px; height:20px; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.bd-column-headers .bd-chat > .bd-top > [data-close-chat] { margin-left:auto; }
+.bd-chat-panel-reopen { display:none; }
+.bd-column-headers.bd-chat-panel-closed .bd-chat { display:none !important; }
+.bd-column-headers.bd-chat-panel-closed .bd-body { grid-template-columns:minmax(0,1fr) !important; }
+.bd-chat-panel-closed .bd-chat-panel-reopen { display:inline-flex; }
+.bd-chat-panel-reopen svg { transform:scaleX(-1); }
+.bd-sidebar-logo-toggle { position:relative; display:grid; place-items:center; width:30px; height:30px; padding:0; border:1px solid #e5e5e5; border-radius:50%; background:#fff; cursor:pointer; color:#52525b; }
+.bd-column-headers .bd-sidebar-logo-toggle img { width:22px; height:14px; object-fit:contain; }
+.bd-sidebar-logo-toggle svg { position:absolute; width:18px; height:18px; opacity:0; }
+.bd-sidebar-logo-toggle:is(:hover,:focus-visible) img { opacity:0; }
+.bd-sidebar-logo-toggle:is(:hover,:focus-visible) svg { opacity:1; }
+.bd-column-headers.bd-cli-app .bd-body { height:auto; }
+.bd-column-headers.bd-cli-app .bd-top { height:64px; min-height:64px; }
+
+/* Device gutters stay visible at every device size and panel width. */
+.bd-full-header.bd-chat-first .bd-pv-frame[data-device] .mkt-workflow-preview {
+  margin:24px auto !important;
+  max-width:min(var(--preview-device-width, 1280px), calc(100% - 48px));
+  flex-shrink:0;
+}
+.bd-full-header.bd-chat-first .bd-pv-frame[data-device] .mkt-preview-wrap { padding-bottom:24px; }
+
+/* Compact, aligned headers across the full builder. */
+.bd-column-headers .bd-chat > .bd-top,
+.bd-column-headers .bd-sidebar-brand,
+.bd-column-headers .bd-pv-bar,
+.bd-column-headers.bd-cli-app .bd-top {
+  height:44px;
+  min-height:44px;
+  flex-shrink:0;
+}
+.bd-column-headers.bd-chat-first .mkt-wf-bar {
+  min-height:44px;
+  padding:5px 16px;
+}
+.bd-column-headers .bd-pv-bar { padding-top:5px; padding-bottom:5px; }
+.bd-column-headers .bd-settings-rail { min-height:calc(100vh - 44px); }
+
+/* The sidebar's logo supplies its close control while open. */
+.bd-column-headers.bd-workspace-drawer-open .bd-top [data-workspace-drawer-open] {
+  display:none !important;
+}
+/* Current app is selected instead of the workspace Home link. */
+.bd-workspace-primary-nav a:first-child { background:transparent; }
+.bd-workspace-primary-nav a:first-child:hover { background:#f1f1f2; }
+.bd-workspace-recents a[aria-current='page'] { background:#ececee; color:#18181b; }
+.bd-workspace-company { width:100%; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+.bd-workspace-drawer-head { position:relative; }
+.bd-company-options { position:absolute; top:78px; left:10px; right:10px; z-index:20; border:1px solid #dedee2; border-radius:12px; background:white; box-shadow:0 8px 24px #0002; padding:8px; }
+.bd-company-options[hidden],.bd-company-options button[hidden] { display:none; }
+.bd-company-options label { display:block; font-size:0; }
+.bd-company-options input { box-sizing:border-box; width:100%; padding:10px; border:1px solid #e5e5e5; border-radius:6px; font:inherit; font-size:13px; }
+.bd-company-options > small { display:block; padding:12px 8px 6px; color:#71717a; }
+.bd-company-options button { display:flex; align-items:center; gap:8px; width:100%; border:0; background:white; padding:10px 8px; text-align:left; color:#52525b; font:inherit; font-size:13px; opacity:1; cursor:default; }
+.bd-company-options button span { flex:1; }
+.bd-company-options button small { color:#71717a; }
+.bd-company-options button.child { padding-left:22px; }
+.workspace-embedded .bd-workspace-drawer-layer,
+.workspace-embedded [data-workspace-drawer-open] { display:none !important; }
+.workspace-embedded body.bd-workspace-drawer-open .nb-shell { margin-left:0 !important; }
+
+/* Keep the chat scrollbar free of a surrounding border. */
+.bd-full-header .bd-chat { border-right:0; }
+.bd-full-header .bd-log::-webkit-scrollbar { width:10px; }
+.bd-full-header .bd-log::-webkit-scrollbar-track { background:transparent; border:0; box-shadow:none; }
+.bd-full-header .bd-log::-webkit-scrollbar-thumb { background:#c7c7c7; border:2px solid white; border-radius:8px; }
+.bd-column-headers .bd-top .bd-sidebar-opener-logo { position:relative; display:inline-grid; place-items:center; width:30px; height:30px; padding:0; border:1px solid #e5e5e5; border-radius:50%; background:white; flex:none; }
+.bd-sidebar-opener-logo img { width:22px; height:14px; object-fit:contain; }
+.bd-column-headers .bd-sidebar-opener-logo svg { position:absolute; width:18px; height:18px; opacity:0; }
+.bd-sidebar-opener-logo:is(:hover,:focus-visible) img { opacity:0; }
+.bd-column-headers .bd-sidebar-opener-logo:is(:hover,:focus-visible) svg { opacity:1; }
+/* Match the compact controls beside the app title. */
+.bd-column-headers .bd-top .bd-sidebar-opener-logo,
+.bd-full-header #bdSidebarToggle { width:28px; height:28px; }
+.bd-column-headers .bd-sidebar-opener-logo img { width:20px; height:12px; }
+.bd-column-headers .bd-sidebar-opener-logo svg,
+.bd-full-header #bdSidebarToggle svg { width:16px; height:16px; }
+/* CLI app navigation fills the available app pane. */
+body.bd-cli-app .bd-dashboard,
+body.bd-cli-app .bd-dashboard-rail { min-height:100vh; }
+body.bd-cli-app .bd-dashboard-rail { background:#fff; }
+/* App navigation fills the screen below the compact toolbar. */
+body.bd-column-headers:not(.bd-cli-app) .bd-dashboard,
+body.bd-column-headers:not(.bd-cli-app) .bd-dashboard-rail,
+.bd-column-headers .bd-inline-settings,
+.bd-column-headers .bd-settings-rail { min-height:calc(100vh - 44px); }
+body.bd-cli-app .bd-dashboard,
+body.bd-cli-app .bd-dashboard-rail { min-height:100vh; }
+.bd-workspace-opener-backup { display:none; }
+.bd-chat-panel-closed:not(.bd-workspace-drawer-open) .bd-workspace-opener-backup { display:inline-grid; flex:none; margin-right:8px; }
+.bd-column-headers .bd-workspace-opener-backup img { width:20px; height:12px; }
+.bd-workspace-opener-backup svg { stroke:currentColor; stroke-width:1.6; }
+.bd-chat-first.bd-chat-panel-closed:not(.bd-workspace-drawer-open) .mkt-wf-bar { grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr); }
+.bd-chat-first.bd-chat-panel-closed:not(.bd-workspace-drawer-open) .mkt-wf-bar > .bd-app-settings { grid-column:2; }
+.bd-chat-first.bd-chat-panel-closed:not(.bd-workspace-drawer-open) .mkt-wf-bar > .mkt-app-devices { grid-column:3; }
+.bd-chat-first.bd-chat-panel-closed:not(.bd-workspace-drawer-open) .mkt-wf-bar > .bd-preview-actions { grid-column:4; }
+.workspace-embedded .bd-workspace-opener-backup { display:none !important; }
+.bd-overview-cli-banner { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px; margin-bottom:24px; border:1px solid #bdd1e5; border-radius:12px; background:#eef5fc; }
+.bd-overview-cli-banner h3 { margin:0 0 8px; font-size:18px; font-weight:600; color:#172b40; }
+.bd-overview-cli-banner p { margin:0; max-width:620px; font-size:14px; line-height:1.5; color:#4b6075; }
+.bd-overview-cli-banner button { flex:none; }
+.bd-dashboard-grid .bd-overview-cli-banner { background:#eef5fc; border-color:#bdd1e5; margin-bottom:0; }
+@container (max-width:650px) { .bd-overview-cli-banner { align-items:flex-start; flex-direction:column; gap:16px; } }
+
+/* Prominent CLI invitation, inspired by the dark flowing brand artwork. */
+.bd-overview-cli-banner,
+.bd-dashboard-grid .bd-overview-cli-banner {
+  background:#0b2936 url('cli-banner-background.svg') center / cover no-repeat;
+  border-color:#173d4c;
+  padding:30px 28px;
+  min-height:140px;
+  box-sizing:border-box;
+  box-shadow:0 6px 18px rgba(7,28,35,.12);
+}
+.bd-inline-settings .bd-overview-cli-banner h3,
+.bd-overview-cli-banner h3 { color:#fff; font-size:22px; margin:0 0 10px; }
+.bd-inline-settings .bd-overview-cli-banner p,
+.bd-overview-cli-banner p { color:#fff; line-height:1.6; }
+.bd-overview-cli-banner button,
+.bd-overview-cli-banner .nb-btn.primary { background:#fff; color:#102a37; border:1px solid #fff; font-weight:600; box-shadow:0 2px 6px #0002; }
+.bd-overview-cli-banner button:hover { background:#eaf2f6; border-color:#eaf2f6; }
+/* Match the persistent CLI action to the overview banner. */
+.bd-full-header .bd-toolbar-cli {
+  background:#0b2936 url('cli-banner-background.svg') center / cover no-repeat;
+  color:#fff;
+  border:1px solid #173d4c;
+  font-weight:600;
+}
+.bd-full-header .bd-toolbar-cli:hover {
+  background:#10394b url('cli-banner-background.svg') center / cover no-repeat;
+  color:#fff;
+  filter:brightness(1.12);
+}
+.bd-column-headers .bd-toolbar-cli {
+  background:#0b2936 url('cli-banner-background.svg') center / cover no-repeat;
+  color:#fff;
+  border:1px solid #173d4c;
+  font-weight:600;
+  white-space:nowrap;
+}
+.bd-column-headers .bd-toolbar-cli:hover {
+  background:#10394b url('cli-banner-background.svg') center / cover no-repeat;
+  color:#fff;
+  filter:brightness(1.12);
+}
+/* One consistent CLI action across toolbar and chat. */
+.bd-full-header #bdContinueCli,
+.bd-full-header #bdContinueCli:hover,
+.bd-full-header .mkt-wf-bar .bd-toolbar-cli,
+.bd-column-headers .bd-toolbar-cli.bd-toolbar-cli,
+.bd-full-header .mkt-wf-bar .bd-toolbar-cli:hover,
+.bd-column-headers .bd-toolbar-cli.bd-toolbar-cli:hover {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:32px;
+  min-height:32px;
+  padding:0 12px;
+  border:1px solid #173d4c;
+  border-radius:7px;
+  background:#0b2936 url('cli-banner-background.svg') center / cover no-repeat;
+  color:#fff;
+  font-family:'Geist',system-ui,sans-serif;
+  font-size:13px;
+  font-weight:500;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:none;
+  filter:none;
+}
+.eai-cli-dialog { width:min(480px,calc(100vw - 40px)); box-sizing:border-box; border:1px solid #e4e4e7; border-radius:16px; padding:32px; color:#18181b; background:white; box-shadow:0 24px 80px #0003; font:14px 'Geist',system-ui,sans-serif; }
+.eai-cli-dialog::backdrop { background:rgba(10,20,28,.42); }
+.eai-cli-dialog h2 { margin:0 20px 12px 0; font-size:22px; line-height:1.3; }
+.eai-cli-dialog p { line-height:1.6; color:#62626b; }
+.eai-cli-dialog fieldset { border:0; padding:0; margin:24px 0 0; }
+.eai-cli-dialog legend { font-weight:600; margin-bottom:12px; }
+.eai-cli-dialog label { display:flex; gap:12px; padding:14px; margin:8px 0; border:1px solid #dedee2; border-radius:9px; cursor:pointer; }
+.eai-cli-dialog label:has(input:checked) { background:#eef5fa; border-color:#27546a; }
+.eai-cli-dialog input { accent-color:#143e52; }
+.eai-cli-dialog footer { display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+.eai-cli-dialog button { padding:10px 14px; border:1px solid #dedee2; border-radius:7px; background:white; font:inherit; cursor:pointer; }
+.eai-cli-dialog [data-move],
+.eai-cli-dialog [data-cli-continue] { background:#10364a; color:#fff; border-color:#10364a; }
+.eai-cli-dialog [data-cli-continue]:disabled { opacity:.45; cursor:default; }
+.eai-cli-dialog .eai-cli-dismiss { position:absolute; top:12px; right:12px; border:0; padding:4px 9px; font-size:22px; }
+.eai-cli-result:empty { display:none; }
+
+.bd-choice-custom { padding:16px 0; }
+.bd-choice-custom[hidden] { display:none; }
+.bd-choice-custom label { display:block; margin-bottom:8px; font-size:13px; font-weight:500; }
+.bd-choice-custom > div { display:flex; gap:8px; }
+.bd-choice-custom input { flex:1; min-width:0; padding:10px 12px; border:1px solid #d4d4d8; border-radius:8px; font:inherit; }
+.bd-choice-card .bd-choice-custom button { width:auto; padding:10px 18px; border:0; border-radius:8px; background:#111; color:#fff; font:inherit; }
+.bd-choice-custom button:disabled { opacity:.4; cursor:default; }
+
+/* Keep reopening chat beside the view switch, including App settings. */
+.bd-column-headers.bd-chat-panel-closed:not(.bd-cli-app) .bd-pv-bar > .bd-chat-panel-reopen { display:inline-flex; flex-shrink:0; margin-right:8px; }
+.bd-column-headers .bd-pv-bar > .bd-chat-panel-reopen { order:-1; }
+
+/* CLI apps use their deployment section instead of the no-code Publish action. */
+body.bd-cli-app #bdPublish,
+body.bd-cli-app .bd-top .bd-crumbs .sep { display:none !important; }
+
+.bd-full-header.bd-chat-first .bd-pv-frame[data-device='desktop'] { --preview-device-width:1280px; }
+.bd-full-header.bd-chat-first .bd-pv-frame[data-device='tablet'] { --preview-device-width:834px; }
+.bd-full-header.bd-chat-first .bd-pv-frame[data-device='mobile'] { --preview-device-width:402px; }

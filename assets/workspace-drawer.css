@@ -1,0 +1,191 @@
+.bd-workspace-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 360ms;
+}
+.bd-workspace-drawer-layer.is-open {
+  visibility: visible;
+  pointer-events: none;
+  transition-delay: 0s;
+}
+.bd-workspace-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+  cursor: default;
+  transition: opacity 280ms ease;
+}
+.bd-workspace-drawer-layer.is-open .bd-workspace-drawer-backdrop { opacity: 0; }
+.bd-workspace-drawer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--bd-workspace-drawer-width);
+  overflow: hidden;
+  background: #fafafa;
+  border-right: 1px solid #e4e4e7;
+  box-shadow: 6px 0 20px rgba(9, 9, 11, 0.06);
+  transform: translate3d(-102%, 0, 0);
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+  pointer-events: auto;
+}
+.bd-workspace-drawer-layer.is-open .bd-workspace-drawer { transform: translate3d(0, 0, 0); }
+.bd-workspace-drawer a { color: inherit; text-decoration: none; }
+.bd-workspace-drawer svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bd-workspace-drawer-head { flex: none; padding: 16px 10px 8px; }
+.bd-workspace-company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  transition: background 150ms ease;
+}
+.bd-workspace-company:hover { background: #f0f0f1; }
+.bd-workspace-company-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  background: #18181b;
+  border-radius: 10px;
+  color: #fff;
+}
+.bd-workspace-company-icon svg { width: 23px; height: 23px; }
+.bd-workspace-company > span:nth-child(2) { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.bd-workspace-company b { overflow: hidden; font-size: 15px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-company small { margin-top: 2px; color: #71717a; font-size: 12px; }
+.bd-workspace-company .bd-workspace-swap { width: 18px; height: 18px; color: #18181b; }
+.bd-workspace-build-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 14px;
+  padding: 4px;
+  background: #f0f0ee;
+  border: 1px solid #e4e4e1;
+  border-radius: 10px;
+}
+.bd-workspace-build-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: #52525b;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.bd-workspace-build-tabs button.on { background: #fff; color: #18181b; box-shadow: 0 1px 3px rgba(9, 9, 11, .1); }
+.bd-workspace-drawer-body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 8px 24px; }
+.bd-workspace-primary-nav { display: flex; flex-direction: column; gap: 3px; }
+.bd-workspace-primary-nav a,
+.bd-workspace-settings-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #27272a;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 150ms ease;
+}
+.bd-workspace-primary-nav a:hover,
+.bd-workspace-settings-link:hover { background: #f0f0f1; }
+.bd-workspace-primary-nav a:first-child { background: #f1f1f2; }
+.bd-workspace-primary-nav span { flex: 1; }
+.bd-workspace-primary-nav i { color: #71717a; font-style: normal; font-weight: 500; }
+.bd-workspace-recents { margin-top: 24px; }
+.bd-workspace-recents h2 { margin: 0; padding: 0 10px 9px; color: #71717a; font-size: 12px; font-weight: 500; }
+.bd-workspace-recents a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.bd-workspace-recents a:hover { background: #f0f0f1; }
+.bd-workspace-app-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  background: #fff;
+  border: 1px solid #dedee2;
+  border-radius: 7px;
+  color: #52525b;
+  font-size: 12px;
+  font-weight: 500;
+}
+.bd-workspace-recents b { flex: 1; min-width: 0; overflow: hidden; color: #3f3f46; font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-app-kind {
+  flex: none;
+  padding: 2px 5px;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #fff;
+  color: #71717a;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
+.bd-workspace-recents i { width: 7px; height: 7px; flex: none; border-radius: 999px; }
+.bd-workspace-recents i.live { background: #22c55e; }
+.bd-workspace-recents i.draft { background: #f59e0b; }
+.bd-workspace-drawer-foot { flex: none; padding: 8px; background: #fafafa; }
+.bd-workspace-settings-link { margin-bottom: 8px; }
+.bd-workspace-user-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 9px 10px;
+  border-top: 1px solid #e4e4e7;
+}
+.bd-workspace-user-avatar { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 999px; background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 600; }
+.bd-workspace-user-link > span:nth-child(2) { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.bd-workspace-user-link b { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.bd-workspace-user-link small { margin-top: 2px; color: #71717a; font-size: 11px; }
+.bd-workspace-user-link > svg { width: 15px; height: 15px; color: #a1a1aa; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-builder .nb-shell,
+  .bd-workspace-drawer-layer,
+  .bd-workspace-drawer-backdrop,
+  .bd-workspace-drawer { transition-duration: 1ms; }
+}
+
+.bd-full-header { --bd-workspace-drawer-width: 280px; }
+.bd-full-header.bd-workspace-drawer-open .nb-shell { margin-left:var(--bd-workspace-drawer-width); }
+.bd-full-header .nb-shell { transition:margin-left 260ms ease; }

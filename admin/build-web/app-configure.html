@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/admin.css?v=transition3" />
+<script src="../../assets/workspace-settings-overlay.js"></script>
 </head>
 <body class="ad" data-ad-shell="app" data-ad-rail="configure">
 <div id="adPane"><div id="appConfigurePane"></div></div>
@@ -29,6 +30,12 @@
   }
   const section = ['workflow', 'resources', 'ai', 'connections'].includes(query.get('section')) ? query.get('section') : 'resources';
   const company = window.adActiveCompany ? window.adActiveCompany() : D.workspace;
+  const workspaceSettingsUrl = new URL('ws-home.html', location.href);
+  ['ws', 'email', 'project', 'prompt', 'experience'].forEach(key => {
+    if (query.has(key)) workspaceSettingsUrl.searchParams.set(key, query.get(key));
+  });
+  workspaceSettingsUrl.searchParams.set('demo', 'michael');
+  workspaceSettingsUrl.searchParams.set('settings', 'knowledge');
   const storeKey = `app-tenant-config-${company.id}-${app.id}`;
   const saved = window.adDemoStore.read(storeKey, {});
 
@@ -112,7 +119,7 @@
     <div class="ad-config-source">
       <span class="ad-config-source-icon">${window.adIcon('building')}</span>
       <span class="tx"><b>Available from ${safe(company.name)}</b><span>Only workspace-approved items you can use are shown here.</span></span>
-      <a class="ad-btn sm" href="ws-home.html?demo=michael&settings=knowledge">Manage workspace settings</a>
+      <a class="ad-btn sm" href="${safe(workspaceSettingsUrl.href)}" target="_top">Manage workspace settings</a>
     </div>
     <div class="ad-config-grid">
       ${meta.groups.map((group) => `

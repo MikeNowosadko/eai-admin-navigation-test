@@ -176,7 +176,7 @@ function appNameFromPrompt(prompt) {
   return (topic || 'New App').replace(/\b\w+\b/g, word =>
     /^[A-Z0-9]+$/.test(word) ? word : sentence(word.toLowerCase()));
 }
-const projectName = chatFirst ? appNameFromPrompt(state.prompt) : sentence(state.prompt);
+const projectName = params.get('workspaceApp') === '1' && params.get('project') ? params.get('project') : chatFirst ? appNameFromPrompt(state.prompt) : sentence(state.prompt);
 
 /* The live QR button, moved into the preview toolbar on every repaint. */
 let mobileQrBtn = null;
@@ -334,8 +334,52 @@ function paintMeter() {
 }
 
 function paintAccount() {
+  if (chatFirst && params.get('experience') === 'full') {
+    document.body.classList.add('bd-full-header');
+    if (state.authed && $('bdCliOffer')) $('bdCliOffer').hidden = true;
+    if (!$('bdSidebarToggle')) {
+      const logo = document.createElement('img');
+      logo.className = 'bd-full-wordmark';
+      logo.src = '../assets/logos/eai-wordmark.svg';
+      logo.alt = 'Enterprise AI';
+      document.querySelector('.bd-top').appendChild(logo);
+      const toggle = document.createElement('button');
+      toggle.id = 'bdSidebarToggle';
+      toggle.type = 'button';
+      toggle.setAttribute('aria-label', 'Open sidebar');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4v16" stroke="currentColor" stroke-width="1.6"/></svg>';
+      document.querySelector('.bd-crumbs').prepend(toggle);
+      toggle.setAttribute('data-workspace-drawer-open', '');
+    }
+    $('bdSidebarToggle').hidden = !state.authed;
+    if (state.authed) {
+      const adminHref = (file, extra = {}) => window.bdCarry('../admin/build-web/' + file, {
+        demo: 'michael', handoff: params.get('workspaceApp') === '1' ? null : '1', project: projectName, prompt: state.prompt,
+        ws: state.ws, email: state.email, experience: 'full', published: state.published ? '1' : '0', ...extra,
+      });
+      try { if (params.get('workspaceApp') !== '1') localStorage.setItem('eai-local-admin:created-app', JSON.stringify({id:'vendor-onboarding', name:projectName, initial:projectName.charAt(0), status:state.published ? 'Live' : 'Draft'})); } catch {}
+      window.mountEaiWorkspaceDrawer({state, params, esc, adminHref,
+        builderAppDashboardHref: (id, name, surface) => id === (params.get('app') || 'vendor-onboarding') && surface === 'ncb'
+          ? location.href : adminHref('builder.html', {app:id, project:name, handoff:null, surface, view:surface === 'ncb' ? 'preview' : 'dashboard', drawer:'open'}),
+        goCli: () => { saveNcbPreview(); location.href = adminHref('ws-cli.html'); },
+      });
+      const drawer = document.querySelector('#bdWorkspaceDrawer');
+      if (drawer && !drawer.dataset.localBound) {
+        drawer.dataset.localBound = '1';
+        drawer.addEventListener('click', (event) => {
+          const link = event.target.closest('a');
+          if (!link) return;
+          if (link.href === location.href) { event.preventDefault(); return; }
+          saveNcbPreview();
+        });
+      }
+    }
+    if ($('bdHeaderAuth')) document.querySelector('.bd-crumbs').prepend($('bdHeaderAuth'));
+    if ($('bdPublish')) document.querySelector('.bd-top-acts').appendChild($('bdPublish'));
+  }
   if ($('bdHeaderAuth')) {
-    $('bdHeaderAuth').hidden = false;
+    $('bdHeaderAuth').hidden = chatFirst && params.get('experience') === 'full' && state.authed;
     const button = $('bdHeaderAuth').querySelector('[data-header-auth]');
     if (button) button.textContent = state.authed ? 'Manage apps' : 'Sign In / Sign Up';
   }
@@ -781,6 +825,15 @@ function fitFork(trigger) {
 /** The exit. Everything a person built is named in the URL, because the
     whole offer depends on it arriving at the other end. */
 function goCli(why) {
+  if (chatFirst && params.get('experience') === 'full') {
+    const proceed = () => {
+      saveNcbPreview();
+      showInlineAppSettings($('bdFrame'));
+      window.openEaiCliHandoff(projectName, () => window.moveEaiAppToCli(projectName, {ws:state.ws, email:state.email, app:params.get('app') || 'vendor-onboarding', published:state.published ? '1' : '0', demo:'michael'}));
+    };
+    if (requireAuth(0, proceed, { atPublish:true })) proceed();
+    return;
+  }
   saveNcbPreview();
   if (chatFirst) {
     sessionStorage.setItem('eai-cli-handoff', JSON.stringify({
@@ -886,6 +939,8 @@ function paintMktPreviewStep(index) {
   const app = PL.workflowToApp(WORKFLOW, index, projectName);
   const frame = $('bdFrame');
   const publishButton = chatFirst ? $('bdPublish') : null;
+  const headerActions = document.querySelector('.bd-top-acts');
+  if (headerActions && frame.contains(headerActions)) document.querySelector('.bd-top').appendChild(headerActions);
   frame.dataset.device = state.device;
   frame.innerHTML = PL.render(app, {
     activeStep: index,
@@ -908,6 +963,10 @@ function paintMktPreviewStep(index) {
       settings.textContent = 'App settings';
       settings.addEventListener('click', () => {
         const openSettings = () => {
+          if (params.get('experience') === 'full') {
+            showInlineAppSettings(frame);
+            return;
+          }
           saveNcbPreview();
           location.href = window.bdCarry('../admin/build-web/builder.html', {
             demo: 'michael', handoff: '1', app: 'vendor-onboarding',
@@ -922,7 +981,30 @@ function paintMktPreviewStep(index) {
           $('wsGo').textContent = 'Continue to app settings';
         }
       });
-      frame.querySelector('.mkt-wf-bar')?.prepend(settings);
+      if (params.get('experience') === 'full') {
+        const views = document.createElement('div');
+        views.className = 'mkt-seg-tabs mkt-seg-tabs-sm bd-app-settings';
+        views.setAttribute('role', 'group');
+        views.setAttribute('aria-label', 'App view');
+        const preview = document.createElement('button');
+        preview.type = 'button';
+        preview.className = 'on';
+        preview.textContent = 'Preview';
+        preview.setAttribute('aria-pressed', 'true');
+        preview.addEventListener('click', () => {
+          frame.classList.remove('bd-show-settings');
+          preview.classList.add('on');
+          settings.classList.remove('on');
+          preview.setAttribute('aria-pressed', 'true');
+          settings.setAttribute('aria-pressed', 'false');
+        });
+        settings.className = '';
+        settings.setAttribute('aria-pressed', 'false');
+        views.append(preview, settings);
+        frame.querySelector('.mkt-wf-bar')?.prepend(views);
+      } else {
+        frame.querySelector('.mkt-wf-bar')?.prepend(settings);
+      }
     }
     frame.querySelectorAll('.mkt-app-devices button').forEach((button) => {
       const label = document.createElement('span');
@@ -936,7 +1018,19 @@ function paintMktPreviewStep(index) {
       actions.className = 'bd-preview-actions';
       mobileQrBtn.replaceWith(actions);
       actions.appendChild(mobileQrBtn);
-      if (publishButton && params.get('previewOnly') !== '1') actions.appendChild(publishButton);
+      if (params.get('experience') === 'full' && params.get('previewOnly') !== '1') {
+        const cli = document.createElement('button');
+        cli.type = 'button';
+        cli.className = 'bd-mobile-qr bd-toolbar-cli';
+        cli.textContent = 'Go further with EAI CLI';
+        cli.addEventListener('click', () => $('bdContinueCli')?.click());
+        actions.insertBefore(cli, mobileQrBtn);
+      }
+      if (publishButton && params.get('previewOnly') !== '1') {
+        const destination = params.get('experience') === 'full'
+          ? document.querySelector('.bd-top-acts') : actions;
+        destination.appendChild(publishButton);
+      }
     }
   }
   PL.bind(frame, {
@@ -952,6 +1046,90 @@ function paintMktPreviewStep(index) {
     },
   });
   applyBrandToPreviewFrame();
+  window.alignEaiBuilderColumns?.();
+}
+
+function showInlineAppSettings(frame) {
+  let panel = frame.querySelector('.bd-inline-settings');
+  if (!panel) {
+    panel = document.createElement('section');
+    panel.className = 'bd-inline-settings';
+    panel.setAttribute('aria-label', 'App settings');
+    panel.innerHTML = `
+      <header><div><h2>${esc(projectName)}</h2><p>Manage your app settings.</p></div><button type="button" class="bd-settings-save">Save changes</button></header>
+      <article><h3>App overview</h3><div class="bd-settings-facts"><div><b>${state.published ? 'Published' : 'Draft'}</b><span>Status</span></div><div><b>${WORKFLOW.length}</b><span>Stages</span></div></div></article>
+      <article><h3>Who can access</h3><p>Control who can open and use this app.</p><label for="bdInlineAccess">App access</label><select id="bdInlineAccess"><option>Anyone in workspace</option><option>Only invited people</option><option>Anyone with the link</option></select></article>
+      <article><label class="bd-settings-badge"><span><b>“Built with EAI” badge</b><small>Show the badge in the footer of the published app.</small></span><input type="checkbox" aria-label="Show Built with EAI badge" checked></label></article>
+      <p class="bd-settings-status" role="status"></p>`;
+    panel.querySelector('select').value = state.appAccess || 'Anyone in workspace';
+    panel.querySelector('input').checked = state.appBadge !== false;
+    panel.querySelector('.bd-settings-save').addEventListener('click', () => {
+      state.appAccess = panel.querySelector('select').value;
+      state.appBadge = panel.querySelector('input').checked;
+      panel.querySelector('.bd-settings-status').textContent = 'Settings saved for this session.';
+    });
+    const content = document.createElement('div');
+    content.className = 'bd-settings-content';
+    while (panel.firstChild) content.appendChild(panel.firstChild);
+    const cliBanner = document.createElement('div');
+    cliBanner.className = 'bd-overview-cli-banner';
+    cliBanner.innerHTML = '<div><h3>Go further with EAI CLI</h3><p>Add custom logic, integrations and advanced features. Continue building this app in EAI CLI.</p></div><button type="button" class="bd-settings-save">Go further with EAI CLI</button>';
+    cliBanner.querySelector('button').addEventListener('click', () => goCli('builder'));
+    content.prepend(cliBanner);
+
+    const rail = document.createElement('nav');
+    rail.className = 'bd-settings-rail';
+    rail.setAttribute('aria-label', 'App settings sections');
+    rail.innerHTML = `<div class="bd-settings-identity"><span class="bd-settings-app-icon">${esc(projectName.charAt(0))}</span><span><b>${esc(projectName)}</b><small>App settings</small></span></div>`;
+    const embedded = document.createElement('div');
+    embedded.className = 'bd-settings-embedded';
+    embedded.hidden = true;
+    const cards = [...content.querySelectorAll('article')];
+    ['Overview', 'Submissions', 'Analytics', 'Resources'].forEach((name) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      const icons = {
+        Overview: '<path d="M4 10.5 12 4l8 6.5V20H5V10.5M9 20v-6h6v6"/>',
+        Submissions: '<path d="M7 3h7l4 4v14H7zM14 3v5h5"/>',
+        Analytics: '<path d="M4 20V10M10 20V4M16 20v-7M3 20h18"/>',
+        Resources: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/>',
+      };
+      button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">${icons[name]}</svg><span>${name}</span>`;
+      button.classList.toggle('on', name === 'Overview');
+      if (name === 'Overview') button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => {
+        rail.querySelectorAll('button').forEach((item) => {
+          item.classList.toggle('on', item === button);
+          if (item === button) item.setAttribute('aria-current', 'page');
+          else item.removeAttribute('aria-current');
+        });
+        const local = name === 'Overview';
+        content.hidden = !local;
+        embedded.hidden = local;
+        if (local) {
+          cards[0].hidden = name === 'Settings';
+          content.querySelector('header p').textContent = name === 'Overview' ? 'Manage your app settings.' : 'Manage how your app is accessed and displayed.';
+        } else {
+          const page = name === 'Submissions' ? 'app-submissions.html' : name === 'Resources' ? 'app-configure.html' : 'app-analytics.html';
+          if (embedded.dataset.page !== page) {
+            const iframe = document.createElement('iframe');
+            iframe.title = name;
+            iframe.src = window.bdCarry('../admin/build-web/' + page, {embedded:'1', section:name === 'Resources' ? 'resources' : null, demo:'michael', app:'vendor-onboarding', project:projectName, ws:state.ws, email:state.email});
+            embedded.replaceChildren(iframe);
+            embedded.dataset.page = page;
+          }
+        }
+      });
+      rail.appendChild(button);
+    });
+    panel.append(rail, content, embedded);
+    frame.querySelector('.mkt-preview-wrap').appendChild(panel);
+  }
+  frame.classList.add('bd-show-settings');
+  frame.querySelectorAll('.bd-app-settings button').forEach((button, index) => {
+    button.classList.toggle('on', index === 1);
+    button.setAttribute('aria-pressed', String(index === 1));
+  });
 }
 
 function paintLegacyMvpPreviewStep(index) {
@@ -1192,18 +1370,34 @@ function askClarify() {
           <div class="bd-choice-heading"><h3>${esc(q.q)}</h3><span>${at + 1} of ${QUESTIONS.length} · Choose one</span></div>
           <p>Choose an option below or write your answer in the chat.</p>
           ${q.opts.map((option, i) => `<button type="button" data-i="${i}"><span class="bd-choice-number">${i + 1}</span><span><b>${esc(option)}</b></span></button>`).join('')}
+          ${params.get('experience') === 'full' ? `<form class="bd-choice-custom"><div><input id="bdCustomAnswer" type="text" aria-label="Other answer" placeholder="Other — type your answer…" autocomplete="off" /><button type="submit" disabled>Send</button></div></form>` : ''}
           <div class="bd-choice-footer"><button type="button" data-skip>Skip — just build it</button></div>`;
       }
 
       box.querySelectorAll('[data-i]').forEach((b) => {
         b.addEventListener('click', () => pick(q.opts[Number(b.dataset.i)]));
       });
+      const customForm = box.querySelector('.bd-choice-custom');
+      const openCustom = () => {
+        customForm.hidden = false;
+        customForm.querySelector('input').focus();
+      };
+      if (customForm) {
+        const input = customForm.querySelector('input');
+        const send = customForm.querySelector('button');
+        input.addEventListener('input', () => { send.disabled = !input.value.trim(); });
+        customForm.addEventListener('submit', event => {
+          event.preventDefault();
+          if (input.value.trim()) pick(input.value.trim());
+        });
+      }
       const other = box.querySelector('[data-other]');
       other?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && other.value.trim()) pick(other.value.trim());
       });
       box.querySelector('[data-skip]').addEventListener('click', () => finish(true));
       if (chatFirst) setChoiceReply((text) => {
+        if (text.trim() === '4' && customForm) { openCustom(); return; }
         const option = /^[1-3]$/.test(text) ? q.opts[Number(text) - 1] : text;
         pick(option);
       });
@@ -1259,7 +1453,7 @@ async function generate() {
     $('bdSay').disabled = false;
     $('bdSend').disabled = false;
     $('bdSay').placeholder = 'Describe a change…';
-    if (chatFirst) $('bdCliOffer').hidden = false;
+    if (chatFirst) $('bdCliOffer').hidden = params.get('experience') === 'full' && state.authed;
     return;
   }
 
@@ -1362,13 +1556,13 @@ function mountBusinessProcessCard(onConfirm) {
       </div>
       <div class="quote">${esc(sentence(state.prompt))} — today this runs on email and a shared inbox, with the same details re-keyed at least twice.</div>
       <div class="kv">
-        <span class="i goal">◎</span><div><b>Goal</b><span>Get to a decision without anybody chasing the paperwork.</span></div>
+        <span class="i goal">${params.get('experience') === 'full' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>' : '◎'}</span><div><b>Goal</b><span>Get to a decision without anybody chasing the paperwork.</span></div>
       </div>
       <div class="kv">
-        <span class="i aud">◍</span><div><b>Audience</b><span>The person submitting, and the one or two people who review it.</span></div>
+        <span class="i aud">${params.get('experience') === 'full' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>' : '◍'}</span><div><b>Audience</b><span>The person submitting, and the one or two people who review it.</span></div>
       </div>
       <div class="kv">
-        <span class="i out">✓</span><div><b>Outcome</b><span>A decision on record, with everything it was based on attached to it.</span></div>
+        <span class="i out">${params.get('experience') === 'full' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>' : '✓'}</span><div><b>Outcome</b><span>A decision on record, with everything it was based on attached to it.</span></div>
       </div>
       <div class="acts">
         <button class="nb-btn" type="button" data-refine>Make changes</button>
@@ -1863,6 +2057,9 @@ $('bdPublish').addEventListener('click', () => void publish());
 /* The CLI tab is the same fork, reachable at any time — which is the
    point of it sitting above everything else in the sidebar. */
 $('tabCli')?.addEventListener('click', () => goCli('tab'));
+if (params.get('experience') === 'full' && $('bdContinueCli')) {
+  $('bdContinueCli').textContent = 'Go further with EAI CLI';
+}
 $('bdContinueCli')?.addEventListener('click', () => {
   const proceed = () => goCli('builder');
   if (!requireAuth(0, proceed, { atPublish: true })) {

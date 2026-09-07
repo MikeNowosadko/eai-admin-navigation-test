@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>if(new URLSearchParams(location.search).get('workspaceEmbed')==='1')document.documentElement.classList.add('workspace-embedded');</script>
 <script src="../assets/local-handoff.js"></script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
@@ -19,6 +20,8 @@
 <link rel="stylesheet" href="../assets/build-sugar-enter.css?v=transition3" />
 <link rel="stylesheet" href="../assets/build-web-app.css?v=mtg8tt0q.j1" />
 <link rel="stylesheet" href="../assets/build-web-mvp.css?v=transition3" />
+<link rel="stylesheet" href="../../assets/builder-columns.css" />
+<script src="../../assets/workspace-settings-overlay.js"></script>
 </head>
 <!-- /build-web — MVP builder. No smart blocks. -->
 <body class="nb bd-builder bd-web-app" data-bd-strip="off" data-bd-blocks="off">
@@ -201,6 +204,8 @@
 
   boot();
 </script>
+<script src="../../assets/workspace-drawer.js"></script>
+<script src="../../assets/cli-handoff-dialog.js"></script>
 <script src="../assets/build-sugar-builder.js?v=transition3"></script>
 </body>
 </html>

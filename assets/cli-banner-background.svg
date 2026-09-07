@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="320" viewBox="0 0 1400 320" preserveAspectRatio="xMidYMid slice">
+<defs>
+  <linearGradient id="base" x2=".7" y2="1"><stop stop-color="#123f5a"/><stop offset="1" stop-color="#071c17"/></linearGradient>
+  <linearGradient id="ribbon" x2="1" y2="1"><stop stop-color="#1c536f"/><stop offset=".55" stop-color="#0c2c39"/><stop offset="1" stop-color="#06160f"/></linearGradient>
+  <filter id="flow" x="-20%" y="-60%" width="140%" height="220%"><feTurbulence type="fractalNoise" baseFrequency=".003 .008" numOctaves="2" seed="8" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="85" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<path fill="url(#base)" d="M0 0h1400v320H0z"/>
+<g filter="url(#flow)">
+<path fill="#071b16" d="M-100 320C180 140 190 330 380 170S580-110 810 30s220 230 410 50 230 70 300 150v230H-100z"/>
+<path fill="url(#ribbon)" d="M-80 30C150 200 220-130 480 60S660 320 850 190 1120-50 1500 160v70c-300-100-440 60-630 50S630 150 430 120 200 270-80 90z"/>
+<path fill="#154663" opacity=".65" d="M800-80C630 100 910 160 1060 90s190-80 400 40V-80z"/>
+</g>
+<path fill="#041512" opacity=".22" d="M0 0h1400v320H0z"/>
+</svg>
