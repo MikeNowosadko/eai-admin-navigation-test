@@ -105,9 +105,16 @@ const brandFirst = sugarhead && (
   || params.get('flow') === 'brand-first'
 );
 
+/** Chat-first Sugarhead — full-screen questionnaire + card, then split + brand. */
+const chatFirst = sugarhead && (
+  document.body.dataset.flow === 'chat-first'
+  || params.get('flow') === 'chat-first'
+);
+
 if (sugarhead) document.body.classList.add('bd-sugarhead');
 if (planFirst) document.body.classList.add('bd-plan-first');
 if (brandFirst) document.body.classList.add('bd-brand-first');
+if (chatFirst) document.body.classList.add('bd-chat-first');
 
 const state = {
   prompt: (params.get('prompt') || 'a new business process').trim(),
@@ -1219,7 +1226,9 @@ async function run() {
   paintAccount();
   document.title = `Prototype — ${projectName}`;
 
-  if (sugarhead) paintTemplatePreview();
+  /* Chat-first has no preview panel yet — the split only opens once the
+     business process card is confirmed, so painting here would flash it in. */
+  if (sugarhead && !chatFirst) paintTemplatePreview();
 
   /* The prompt is already the first message. On /build-sugar nobody
      signed up to get here — they typed on the homepage and landed. */
@@ -1234,12 +1243,24 @@ async function run() {
      Plan-first keeps the instant preview but puts the card and the
      questionnaire back in before branding — for when we want confirmation
      before we dress it in their colours. */
-  if (sugarhead && !planFirst && !brandFirst) {
+  if (sugarhead && !planFirst && !brandFirst && !chatFirst) {
     await thinking(900);
     const understood = charge('understand');
     await say(`Here's ${state.prompt} as a working app — it's on the right.`, understood);
     await wait(300);
     await brandThenGenerate();
+    return;
+  }
+
+  if (chatFirst) {
+    await thinking(900);
+    const understood = charge('understand');
+    await say(`Right — ${state.prompt}. A few questions first — they're free, asking you something isn't work.`, understood);
+    await askClarify();
+    await wait(200);
+    await say('Here\'s my understanding of the process — confirm or refine it before we build.');
+    await wait(200);
+    mountBusinessProcessCard(continueAfterChatFirstCard);
     return;
   }
 
@@ -1317,6 +1338,21 @@ async function continueAfterBrandFirstCard() {
   if (state.step !== 'describe') return;
   setStep('generate');
   await generate();
+}
+
+function enterSplitPreview() {
+  document.body.classList.add('bd-has-preview');
+  paintTemplatePreview();
+  requestAnimationFrame(scroll);
+}
+
+async function continueAfterChatFirstCard() {
+  if (state.step !== 'describe') return;
+  setStep('generate');
+  await wait(400);
+  enterSplitPreview();
+  await wait(500);
+  await brandThenGenerate();
 }
 
 /* ============================ the composer ======================== */
@@ -1675,7 +1711,7 @@ function wireSugarheadExtras() {
 function bootBuilder() {
   if (sugarhead) {
     wireSugarheadExtras();
-    paintTemplatePreview();
+    if (!chatFirst) paintTemplatePreview();
   }
   void run();
 }

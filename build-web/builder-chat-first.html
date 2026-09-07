@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<script>(function(){if(/[?&]prod=1/.test(location.search))return;var V=Date.now().toString(36);window.__EAI_DEV_V=V;window.__EAI_asset=function(p){try{var u=new URL(p,location.href);if(!/(?:^|\/)assets\//.test(p))return p;u.searchParams.set('v',V);return u.pathname+u.search}catch(e){return p}};if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});if('caches' in window)caches.keys().then(function(k){return Promise.all(k.map(function(n){return caches.delete(n)}))});var n=Element.prototype.setAttribute;Element.prototype.setAttribute=function(a,v){if((a==='href'||a==='src')&&typeof v==='string'&&/(?:^|\/)assets\//.test(v)){try{var u=new URL(v,location.href);u.searchParams.set('v',V);v=u.pathname+u.search}catch(e){}}return n.call(this,a,v)};function b(el){if(!el||el.dataset.eaiBust)return;var h=el.getAttribute('href'),s=el.getAttribute('src');if(el.tagName==='LINK'&&h&&/(?:^|\/)assets\//.test(h)){el.setAttribute('href',window.__EAI_asset(h));el.dataset.eaiBust=1}if(el.tagName==='SCRIPT'&&s&&/(?:^|\/)assets\//.test(s)){el.setAttribute('src',window.__EAI_asset(s));el.dataset.eaiBust=1}}new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(node){if(node.nodeType===1){b(node);node.querySelectorAll&&node.querySelectorAll('link[rel=stylesheet],script[src]').forEach(b)}})})}).observe(document.documentElement,{childList:true,subtree:true});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('link[rel=stylesheet],script[src]').forEach(b)})})();</script>
+<script src="../assets/dev-cache.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="eai-url" content="app.enterpriseaigroup.com/builder" />
+<title>Prototype — Enterprise AI Builder (chat first)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/proto.css" />
+<link rel="stylesheet" href="../assets/signup.css" />
+<link rel="stylesheet" href="../assets/build.css" />
+<link rel="stylesheet" href="../assets/build-sugar-enter.css" />
+<link rel="stylesheet" href="../assets/build-web-app.css" />
+<link rel="stylesheet" href="../assets/mkt-site.css" />
+<link rel="stylesheet" href="../assets/build-sugar-focus.css" />
+<link rel="stylesheet" href="../assets/build-web-mvp.css" />
+<link rel="stylesheet" href="../assets/sugarhead.css" />
+</head>
+<!-- /build-web — chat-first Sugarhead: questionnaire + card in full chat, then split + brand. -->
+<!-- build: sugarhead-preview-mkt-v4 -->
+<body class="nb bd-builder bd-web-app bd-sugarhead bd-sugar-focus bd-chat-first" data-bd-strip="off" data-bd-blocks="off" data-sugarhead="on" data-flow="chat-first">
+
+  <div class="bd-enter" id="bdEnter" hidden>
+    <div class="bd-enter-inner">
+      <div class="bd-enter-prompt" id="bdEnterPrompt"></div>
+      <p class="bd-enter-status">Opening the workshop</p>
+    </div>
+  </div>
+
+  <div class="nb-shell">
+
+    <aside class="nb-side" hidden aria-hidden="true">
+      <button class="nb-ws" type="button">
+        <span class="tile" id="wsInitial">?</span>
+        <span class="tx">
+          <b id="wsName">Preview</b>
+          <span>Guest &middot; <span id="wsPlan">No account yet</span></span>
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 15l5 5 5-5M7 9l5-5 5 5" stroke="#9A9AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="nb-tabs" role="tablist" aria-label="How you build">
+        <button class="nb-tab on" type="button" role="tab" aria-selected="true" data-tab="ncb">No code builder</button>
+        <button class="nb-tab" type="button" role="tab" aria-selected="false" data-tab="cli" id="tabCli">CLI</button>
+      </div>
+      <nav class="nb-nav">
+        <a class="nb-item" href="#" data-stub><span>Home</span></a>
+        <a class="nb-item on" href="#" data-stub><span>All processes</span><i class="count" id="processCount">1</i></a>
+      </nav>
+      <div class="nb-side-ft">
+        <a class="bd-credits" id="creditCard" href="../build/pages/plans.html">
+          <span class="hd"><b>Credits</b><i><span id="crLeft">100</span> of 100 left</i></span>
+          <span class="bar"><i id="crBar" style="width:100%"></i></span>
+          <span class="lbl" id="crLbl">50 free · no account yet</span>
+        </a>
+        <button class="nb-user" type="button">
+          <span class="av" id="userAv">?</span>
+          <span class="tx"><b id="userName">Guest</b><span>Sign in to save</span></span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="nb-main bd-main">
+
+      <header class="bd-top">
+        <div class="bd-crumbs">
+          <a class="bd-sugar-home" href="index-chat-first.html" title="Back to site">
+            <img src="../assets/logos/eai-wordmark.svg" alt="Enterprise AI" />
+          </a>
+          <span class="sep">/</span>
+          <b id="bdProjectName">New process</b>
+        </div>
+
+        <nav class="bd-steps" id="bdSteps" aria-label="Progress">
+          <span class="st on" data-step="plan">Plan</span>
+          <span class="ln"></span>
+          <span class="st" data-step="build">Build</span>
+          <span class="ln"></span>
+          <span class="st" data-step="deploy">Deploy</span>
+        </nav>
+
+        <div class="bd-top-acts">
+          <button type="button" class="bd-mobile-qr" id="bdMobileQr" title="Preview on mobile">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 3h3v3h-3v-3zm3-3h3v3h-3v-3zM14 14h3v3h-3v-3z" stroke="currentColor" stroke-width="1.5"/></svg>
+            Mobile
+          </button>
+          <button class="nb-btn" type="button" id="bdSuggest" hidden>Suggest improvements <i class="bd-cost">15</i></button>
+          <button class="nb-btn primary" type="button" id="bdPublish" disabled>Publish <i class="bd-cost">10</i></button>
+        </div>
+      </header>
+
+      <div class="bd-body">
+
+        <section class="bd-chat" id="bdChat">
+          <div class="bd-log" id="bdLog"></div>
+          <div class="bd-anchor" id="bdAnchor"></div>
+          <div class="bd-composer-row">
+            <textarea id="bdSay" rows="3" placeholder="Describe a change&hellip;" autocomplete="off" disabled></textarea>
+            <div class="bd-composer-actions">
+              <button class="nb-btn primary" type="button" id="bdSend" disabled>Send</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="bd-process-map" id="bdProcessMap" aria-label="Process steps"></aside>
+
+        <aside class="bd-preview" id="bdPreview">
+          <div class="bd-pv-scroll"><div class="bd-pv-frame" id="bdFrame"></div></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="bd-gate-overlay" id="authGate" hidden role="dialog" aria-modal="true" aria-labelledby="gateLede">
+    <div class="bd-gate-card bd-gate-auth bd-wizard-gate">
+      <div class="bd-wizard-rail" id="wizardRail" aria-hidden="true">
+        <span class="on" data-step="1"></span>
+        <span data-step="2"></span>
+      </div>
+
+      <div class="bd-wizard-panel bd-wizard-panel--signup" id="wizardStep1">
+        <p class="bd-wizard-lede" id="gateLede">Sign in to publish your app</p>
+        <div class="bd-wizard-field">
+          <label for="gateEmail">Work email</label>
+          <input type="email" id="gateEmail" autocomplete="email" inputmode="email" />
+        </div>
+        <div class="bd-wizard-or"><span>or</span></div>
+        <div class="bd-oauth-stack">
+          <button type="button" class="bd-oauth-btn" data-provider="google">Sign up with Google</button>
+          <button type="button" class="bd-oauth-btn" data-provider="github">Sign up with GitHub</button>
+          <button type="button" class="bd-oauth-btn" data-provider="microsoft">Sign up with Microsoft</button>
+        </div>
+        <button class="bd-gate-go bd-wizard-submit bd-wizard-submit--foot" type="button" id="gateGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStepOAuth" hidden>
+        <button type="button" class="bd-wizard-back" id="oauthBack">Back</button>
+        <p class="bd-wizard-lede" id="oauthTitle">Sign in with Google</p>
+        <div class="bd-wizard-field">
+          <label for="oauthEmail">Email</label>
+          <input type="email" id="oauthEmail" autocomplete="email" inputmode="email" />
+        </div>
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="oauthGo" disabled>Continue</button>
+      </div>
+
+      <div class="bd-wizard-panel" id="wizardStep2" hidden>
+        <p class="bd-wizard-lede">Workspace</p>
+        <div class="bd-wizard-field">
+          <label for="wsCountry">Country</label>
+          <select id="wsCountry" autocomplete="country-name">
+            <option value="Australia">Australia</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Singapore">Singapore</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Japan">Japan</option>
+            <option value="India">India</option>
+          </select>
+        </div>
+        <div class="bd-wizard-field bd-ws-name-field">
+          <label for="wsNameInput">Workspace name</label>
+          <div class="bd-ws-name-row">
+            <div class="bd-ws-logo" aria-label="Workspace logo"></div>
+            <input type="text" id="wsNameInput" autocomplete="organization" />
+          </div>
+        </div>
+        <button class="bd-gate-go bd-wizard-submit" type="button" id="wsGo" disabled>Continue to publish</button>
+      </div>
+    </div>
+  </div>
+
+<script src="../assets/build-prompt.js"></script>
+<script src="../assets/page.js"></script>
+<script type="module">
+  const v = window.__EAI_DEV_V || Date.now().toString(36);
+  const bust = window.__EAI_asset || ((p) => p);
+  const { playBuilderEnter } = await import(bust('../assets/build-sugar-enter.js'));
+
+  const params = new URLSearchParams(location.search);
+  const prompt = (params.get('prompt') || '').trim();
+
+  async function boot() {
+    if (params.get('enter') === '1' && prompt) {
+      await playBuilderEnter(prompt);
+    }
+    window.dispatchEvent(new CustomEvent('bd-enter-done'));
+  }
+
+  boot();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="../assets/mkt-app-preview.js"></script>
+<!-- The inline duplicate of the MKT_APP_PREVIEW renderer that used to sit here is gone.
+     It was cache insurance for a bug that turned out to be a temporal-dead-zone throw in
+     build-sugar-builder.js, and keeping a second copy of the markup in sync by hand was a
+     standing drift risk. mkt-app-preview.js above is now the only renderer. -->
+<script>
+(function () {
+  if (document.body.dataset.sugarhead !== 'on' || !window.MKT_APP_PREVIEW) return;
+  var WF = [
+    { id: 'submit', tab: 'Submit', previewTitle: 'Supplier submits the invoice', previewSub: 'Replaces the email inbox — every invoice is tracked from the moment it arrives.', fields: [{ label: 'Supplier name', type: 'Text', req: true }, { label: 'Invoice document', type: 'File', req: true }] },
+    { id: 'review', tab: 'Review', previewTitle: 'Accounts checks it against the purchase order', previewSub: 'PO match status is visible before anyone approves.', fields: [{ label: 'PO match status', type: 'Select', req: true, opts: ['Matched'] }] },
+    { id: 'approval', tab: 'Approval', previewTitle: 'Finance director signs off anything over $10,000', previewSub: 'Routing and reminders are built into the step.', fields: [{ label: 'Approval decision', type: 'Select', req: true, opts: ['Approve'] }] },
+    { id: 'payment', tab: 'Payment', previewTitle: 'Payment is scheduled and the supplier is notified', previewSub: 'The supplier gets notified when payment is scheduled.', fields: [{ label: 'Payment date', type: 'Text', req: true }] },
+  ];
+  var params = new URLSearchParams(location.search);
+  var prompt = (params.get('prompt') || 'Invoice processing').trim();
+  var project = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+  window.__BD_WORKFLOW__ = WF;
+  window.__BD_PROJECT__ = project;
+})();
+</script>
+<script src="../assets/brand-match.js"></script>
+<script src="../assets/preview-qr-dialog.js"></script>
+<script src="../assets/publish-success.js"></script>
+<script src="../assets/build-sugar-builder.js"></script>
+</body>
+</html>

@@ -980,3 +980,94 @@
   color: #a8a8a8;
   cursor: not-allowed;
 }
+
+/* ------------------------------------------------------------------
+   Chat-first — full-width plan phase, preview slides in after the card
+
+   build-sugar-focus.css already handles the centred full-width chat
+   column; the only thing it does not do is take the preview panel out,
+   because .bd-sugarhead always flexes it open. That is all this does.
+------------------------------------------------------------------- */
+
+.bd-chat-first:not(.bd-has-preview) .bd-preview {
+  display: none !important;
+}
+
+/* Nothing to publish, suggest or scan on a phone until the app exists. */
+.bd-chat-first:not(.bd-has-preview) .bd-mobile-qr,
+.bd-chat-first:not(.bd-has-preview) #bdPublish,
+.bd-chat-first:not(.bd-has-preview) #bdSuggest {
+  display: none;
+}
+
+/* The composer is the one place .bd-sugarhead and .bd-sugar-focus disagree,
+   and chat-first is the only page wearing both. Sugarhead styles it as a
+   46px pill with the send button inside; sugar-focus styles it as the tall
+   /build-sugar field with Send underneath. Left alone they interleave — a
+   column flex box locked to 46px around an 88px textarea. The plan phase
+   wants the sugar-focus one, so put every sugarhead pill property back. */
+
+.bd-chat-first:not(.bd-has-preview) .bd-composer-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  height: auto;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.bd-chat-first:not(.bd-has-preview) .bd-composer-row textarea {
+  height: auto;
+  min-height: 88px;
+  max-height: 200px;
+  padding: 12px 14px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+  overflow: auto;
+}
+
+.bd-chat-first:not(.bd-has-preview) .bd-composer-row textarea:disabled {
+  background: var(--muted);
+}
+
+/* After the split the two-panel design is the shipped sugarhead one, so the
+   composer goes back to the pill — but build-sugar-enter.css still stacks it
+   into a column for every .bd-sugar-focus page. Undo that here. */
+
+.bd-chat-first.bd-has-preview .bd-composer-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px 0 14px;
+}
+
+.bd-chat-first.bd-has-preview .bd-composer-row textarea {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 14px;
+  line-height: 44px;
+  resize: none;
+  overflow: hidden;
+}
+
+.bd-chat-first.bd-has-preview .bd-composer-actions {
+  flex: none;
+}
+
+.bd-chat-first.bd-has-preview .bd-composer-actions .nb-btn {
+  min-width: 0;
+  height: 32px;
+  padding: 0 12px;
+}
