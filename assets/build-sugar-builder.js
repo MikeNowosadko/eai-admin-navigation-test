@@ -93,7 +93,21 @@ const smartBlocks = params.get('blocks') === '1'
 const sugarhead = document.body.dataset.sugarhead === 'on'
   || params.get('flow') === 'sugarhead';
 
+/** Plan-first Sugarhead — same instant preview, then card + questionnaire before branding. */
+const planFirst = sugarhead && (
+  document.body.dataset.flow === 'plan-first'
+  || params.get('flow') === 'plan-first'
+);
+
+/** Brand-first Sugarhead — full-screen branding before the editor. */
+const brandFirst = sugarhead && (
+  document.body.dataset.flow === 'brand-first'
+  || params.get('flow') === 'brand-first'
+);
+
 if (sugarhead) document.body.classList.add('bd-sugarhead');
+if (planFirst) document.body.classList.add('bd-plan-first');
+if (brandFirst) document.body.classList.add('bd-brand-first');
 
 const state = {
   prompt: (params.get('prompt') || 'a new business process').trim(),
@@ -116,9 +130,17 @@ const state = {
   expandedStep: 0,
   branded: false,
   generated: false,
-  brandKey: 'none',
+  brandKey: params.get('brand') || 'none',
   device: 'desktop',
 };
+
+if (brandFirst && params.get('brand') && window.BrandMatch) {
+  window.BrandMatch.setActive(params.get('brand'), params.get('email') || '');
+  state.brandKey = params.get('brand');
+  state.branded = params.get('brand') !== 'none';
+  if (params.get('email')) state.email = params.get('email');
+  if (params.get('ws')) state.ws = params.get('ws');
+}
 
 const $ = (id) => document.getElementById(id);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -1144,39 +1166,7 @@ async function afterTurn() {
   }
 }
 
-async function run() {
-  if (state.runStarted) return;
-  state.runStarted = true;
-  paintMeter();
-  $('bdProjectName').textContent = projectName;
-  paintAccount();
-  document.title = `Prototype — ${projectName}`;
-
-  if (sugarhead) paintTemplatePreview();
-
-  /* The prompt is already the first message. On /build-sugar nobody
-     signed up to get here — they typed on the homepage and landed. */
-  bubble('user', esc(state.prompt));
-
-  /* Sugarhead is five beats: they type, we show the app, we ask for the
-     email that brands it, they try it, they publish. The business process
-     card and the three clarify questions were both interrogations standing
-     between somebody and the thing they asked for — the app on the right
-     already answers "did you understand me?" better than a card could. */
-  if (sugarhead) {
-    await thinking(900);
-    const understood = charge('understand');
-    await say(`Here's ${state.prompt} as a working app — it's on the right.`, understood);
-    await wait(300);
-    await brandThenGenerate();
-    return;
-  }
-
-  await thinking(1100);
-  const cost = charge('understand');
-  await say(`Right — ${state.prompt}. Here's what I think you're describing. Correct me before I build anything.`, cost);
-
-  await wait(200);
+function mountBusinessProcessCard(onConfirm) {
   const bu = card(`
     <div class="bd-bu">
       <div class="hd">
@@ -1217,8 +1207,75 @@ async function run() {
     if (state.continuing) return;
     state.continuing = true;
     bu.querySelector('.acts').innerHTML = '<span class="bd-confirmed">Confirmed</span>';
-    await continueAfterConfirm();
+    await onConfirm();
   });
+}
+
+async function run() {
+  if (state.runStarted) return;
+  state.runStarted = true;
+  paintMeter();
+  $('bdProjectName').textContent = projectName;
+  paintAccount();
+  document.title = `Prototype — ${projectName}`;
+
+  if (sugarhead) paintTemplatePreview();
+
+  /* The prompt is already the first message. On /build-sugar nobody
+     signed up to get here — they typed on the homepage and landed. */
+  bubble('user', esc(state.prompt));
+
+  /* Sugarhead is five beats: they type, we show the app, we ask for the
+     email that brands it, they try it, they publish. The business process
+     card and the three clarify questions were both interrogations standing
+     between somebody and the thing they asked for — the app on the right
+     already answers "did you understand me?" better than a card could.
+
+     Plan-first keeps the instant preview but puts the card and the
+     questionnaire back in before branding — for when we want confirmation
+     before we dress it in their colours. */
+  if (sugarhead && !planFirst && !brandFirst) {
+    await thinking(900);
+    const understood = charge('understand');
+    await say(`Here's ${state.prompt} as a working app — it's on the right.`, understood);
+    await wait(300);
+    await brandThenGenerate();
+    return;
+  }
+
+  if (planFirst) {
+    await thinking(900);
+    const understood = charge('understand');
+    await say(`Here's ${state.prompt} as a working app — it's on the right.`, understood);
+    await wait(200);
+    await say('Before we brand it, here\'s my understanding — correct me if anything\'s off.');
+    await wait(200);
+    mountBusinessProcessCard(continueAfterPlanFirstConfirm);
+    return;
+  }
+
+  if (brandFirst) {
+    const brand = window.BrandMatch?.getActiveBrand?.();
+    const brandName = brand && brand.key !== 'none' ? brand.name : 'your brand';
+    await thinking(900);
+    const understood = charge('understand');
+    await say(`Here's ${state.prompt} as a working app — on the right, wearing ${brandName}.`, understood);
+    await wait(200);
+    await say('Two or three questions first — they\'re free, asking you something isn\'t work.');
+    await askClarify();
+    await wait(200);
+    await say('Here\'s my understanding of the process — confirm or refine it before I build.');
+    await wait(200);
+    mountBusinessProcessCard(continueAfterBrandFirstCard);
+    return;
+  }
+
+  await thinking(1100);
+  const cost = charge('understand');
+  await say(`Right — ${state.prompt}. Here's what I think you're describing. Correct me before I build anything.`, cost);
+
+  await wait(200);
+  mountBusinessProcessCard(continueAfterConfirm);
 }
 
 /** Ask for the work email, dress the preview in that brand, then build. */
@@ -1245,6 +1302,20 @@ async function continueAfterConfirm() {
   await wait(400);
   await say('Two or three questions, then I\'ll build it. They\'re free — asking you something isn\'t work.');
   await askClarify();
+  await generate();
+}
+
+async function continueAfterPlanFirstConfirm() {
+  if (state.step !== 'describe') return;
+  await wait(400);
+  await say('Two or three questions, then we\'ll brand it. They\'re free — asking you something isn\'t work.');
+  await askClarify();
+  await brandThenGenerate();
+}
+
+async function continueAfterBrandFirstCard() {
+  if (state.step !== 'describe') return;
+  setStep('generate');
   await generate();
 }
 
